@@ -1,40 +1,9 @@
 plugins {
-    id 'java'
-    id 'jacoco-report-aggregation'
+    id 'java-library'
+    id 'java-conventions'
 }
 
 group = 'com.kaua.ecommerce.application'
-version = '0.1.0'
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-}
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
-test {
-    useJUnitPlatform()
-}
-
-jacocoTestReport {
-    reports {
-        csv.required = true
-    }
-}
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.95
-            }
-        }
-    }
 }

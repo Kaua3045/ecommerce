@@ -1,0 +1,30 @@
+name: Pull Request Analysis
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  code-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run tests and calculate coverage for domain
+        run: ./gradlew :domain:test jacocoTestCoverageVerification
+
+      - name: Run tests and calculate coverage for application
+        run: ./gradlew :application:test jacocoTestCoverageVerification
+
+      - name: Run tests and calculate coverage for infrasctructure
+        run: ./gradlew :infrastructure:test jacocoTestCoverageVerification

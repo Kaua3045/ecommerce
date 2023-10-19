@@ -1,5 +1,7 @@
 package com.kaua.ecommerce.domain.exceptions;
 
+import com.kaua.ecommerce.domain.validation.Error;
+
 import java.util.List;
 
 public class DomainException extends NoStackTraceException {

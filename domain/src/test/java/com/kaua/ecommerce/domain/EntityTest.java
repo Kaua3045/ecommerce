@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.domain;
 
+import com.kaua.ecommerce.domain.validation.ValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -51,7 +52,12 @@ public class EntityTest {
     }
 
     private Entity<SampleIdentifier> createEntity(SampleIdentifier id) {
-        return new Entity<>(id) {};
+        return new Entity<>(id) {
+            @Override
+            public void validate(ValidationHandler handler) {
+                // Do nothing
+            }
+        };
     }
 
     static class SampleIdentifier extends Identifier {

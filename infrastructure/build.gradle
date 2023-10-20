@@ -37,3 +37,9 @@ dependencies {
 
     testRuntimeOnly 'com.h2database:h2'
 }
+
+flyway {
+    url = 'jdbc:mysql://' + System.getenv('DATABASE_MYSQL_URL') + '/ecommerce' ?: 'jdbc:mysql://localhost:3306/ecommerce'
+    user = System.getenv('DATABASE_MYSQL_USERNAME') ?: 'root'
+    password = System.getenv('DATABASE_MYSQL_PASSWORD') ?: '123456'
+}

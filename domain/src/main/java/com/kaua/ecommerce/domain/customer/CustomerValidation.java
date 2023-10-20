@@ -1,7 +1,6 @@
 package com.kaua.ecommerce.domain.customer;
 
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
-import com.kaua.ecommerce.domain.utils.CpfValidator;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 import com.kaua.ecommerce.domain.validation.Validator;
@@ -25,7 +24,6 @@ public class CustomerValidation extends Validator {
         checkFirstNameConstraints();
         checkLastNameConstraints();
         checkEmailConstraints();
-        checkCpfConstraints();
     }
 
     private void checkAccountIdConstraints() {
@@ -61,16 +59,6 @@ public class CustomerValidation extends Validator {
     private void checkEmailConstraints() {
         if (customer.getEmail() == null || customer.getEmail().isBlank()) {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("email")));
-        }
-    }
-
-    private void checkCpfConstraints() {
-        if (customer.getCpf() == null || customer.getCpf().isBlank()) {
-            this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("cpf")));
-            return;
-        }
-        if (!CpfValidator.validateCpf(customer.getCpf())) {
-            this.validationHandler().append(new Error("'cpf' is invalid"));
         }
     }
 }

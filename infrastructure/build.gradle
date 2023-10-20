@@ -45,3 +45,18 @@ flyway {
     user = System.getenv('DATABASE_MYSQL_USERNAME') ?: 'root'
     password = System.getenv('DATABASE_MYSQL_PASSWORD') ?: '123456'
 }
+
+testCodeCoverageReport {
+    dependsOn(test)
+
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, exclude: [
+                            'com/kaua/ecommerce/infrastructure/configurations/*',
+                            'com/kaua/ecommerce/infrastructure/Main.class'
+                    ])
+                })
+        )
+    }
+}

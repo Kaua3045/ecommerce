@@ -21,7 +21,7 @@ public class DefaultCreateCustomerUseCase extends CreateCustomerUseCase {
         final var aNotification = NotificationHandler.create();
 
         if (this.customerGateway.existsByAccountId(input.accountId())) {
-            return Either.left(aNotification.append(new Error("Customer already exists.")));
+            return Either.left(aNotification.append(new Error("Customer already exists with this account id")));
         }
 
         final var aCustomer = Customer.newCustomer(

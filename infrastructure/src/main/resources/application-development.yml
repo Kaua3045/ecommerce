@@ -3,12 +3,8 @@ amqp:
     auto-create: false
   host: localhost
   port: 5672
-  username: ecommerce_admin
-  password: ecommerce_admin123456
-
-redis:
-  host: localhost
-  port: 6379
+  username: ecommerce_users_admin
+  password: ecommerce_users_admin123456
 
 logging:
   level:

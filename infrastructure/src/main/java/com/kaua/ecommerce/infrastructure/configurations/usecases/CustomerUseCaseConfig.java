@@ -18,7 +18,7 @@ public class CustomerUseCaseConfig {
     }
 
     @Bean
-    private CreateCustomerUseCase createCustomerUseCase() {
+    public CreateCustomerUseCase createCustomerUseCase() {
         return new DefaultCreateCustomerUseCase(customerGateway);
     }
 }

@@ -30,4 +30,6 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.1.4'
     testImplementation 'org.springframework.amqp:spring-rabbit-test:3.0.10'
+
+    testRuntimeOnly 'com.h2database:h2'
 }

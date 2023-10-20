@@ -58,6 +58,7 @@ public class Customer extends AggregateRoot<CustomerID> {
 
     @Override
     public void validate(ValidationHandler handler) {
+        new CustomerValidation(this, handler).validate();
     }
 
     public String getAccountId() {

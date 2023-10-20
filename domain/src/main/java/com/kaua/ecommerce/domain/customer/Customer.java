@@ -56,6 +56,12 @@ public class Customer extends AggregateRoot<CustomerID> {
         );
     }
 
+    public Customer update(final String aCpf) {
+        this.cpf = aCpf;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
     public static Customer with(
             final String aId,
             final String aAccountId,

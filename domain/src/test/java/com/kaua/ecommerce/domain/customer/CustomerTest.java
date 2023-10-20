@@ -2,6 +2,7 @@ package com.kaua.ecommerce.domain.customer;
 
 import com.kaua.ecommerce.domain.TestValidationHandler;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
+import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
@@ -270,5 +271,39 @@ public class CustomerTest {
 
         Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenAValidValues_whenCallWith_shouldReturnCustomerObject() {
+        final var aId = "123456789";
+        final var aAccountId = "10102012012010";
+        final var aFirstName = "Teste";
+        final var aLastName = "Testes";
+        final var aEmail = "teste.testes@tessss.com";
+        final var aCpf = "12345678901";
+        final var aCreatedAt = InstantUtils.now();
+        final var aUpdatedAt = InstantUtils.now();
+
+        final var aCustomer = Customer.with(
+                aId,
+                aAccountId,
+                aFirstName,
+                aLastName,
+                aEmail,
+                aCpf,
+                aCreatedAt,
+                aUpdatedAt
+        );
+
+        Assertions.assertNotNull(aCustomer);
+        Assertions.assertEquals(aId, aCustomer.getId().getValue());
+        Assertions.assertEquals(aAccountId, aCustomer.getAccountId());
+        Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
+        Assertions.assertEquals(aLastName, aCustomer.getLastName());
+        Assertions.assertEquals(aEmail, aCustomer.getEmail());
+        Assertions.assertEquals(aCpf, aCustomer.getCpf());
+        Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
+        Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
+        Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
     }
 }

@@ -63,7 +63,7 @@ git clone https://github.com/Kaua3045/ecommerce.git cd ecommerce
 
 2. Antes de executar a aplicação, você precisa configurar o arquivo .env.example, depois renomeie ele para .env
 
-3. Agora inicie o container do banco de dados e rabbitmq:
+3. Agora inicie o container do banco de dados:
 ```bash
 # Execute o container do banco de dados
 docker-compose -f docker-compose-dev.yml up -d

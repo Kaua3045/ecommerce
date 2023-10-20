@@ -306,4 +306,30 @@ public class CustomerTest {
         Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
     }
+
+    @Test
+    void givenAValidCpf_whenCallChangeCpf_shouldReturnACustomerWithCpf() {
+        final var aAccountId = "123456789";
+        final var aFirstName = "Teste";
+        final var aLastName = "Testes";
+        final var aEmail = "teste.testes@fakte.com";
+        final var aCpf = "502.123.670-99";
+
+        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
+        final var aCustomerUpdatedAt = aCustomer.getUpdatedAt();
+
+        final var aCustomerWithCpf = aCustomer.changeCpf(aCpf);
+
+        Assertions.assertNotNull(aCustomerWithCpf);
+        Assertions.assertEquals(aCustomerWithCpf.getId(), aCustomer.getId());
+        Assertions.assertEquals(aAccountId, aCustomerWithCpf.getAccountId());
+        Assertions.assertEquals(aFirstName, aCustomerWithCpf.getFirstName());
+        Assertions.assertEquals(aLastName, aCustomerWithCpf.getLastName());
+        Assertions.assertEquals(aEmail, aCustomerWithCpf.getEmail());
+        Assertions.assertEquals(aCpf, aCustomerWithCpf.getCpf());
+        Assertions.assertEquals(aCustomer.getCreatedAt(), aCustomerWithCpf.getCreatedAt());
+        Assertions.assertTrue(aCustomerUpdatedAt.isBefore(aCustomerWithCpf.getUpdatedAt()));
+
+        Assertions.assertDoesNotThrow(() -> aCustomerWithCpf.validate(new ThrowsValidationHandler()));
+    }
 }

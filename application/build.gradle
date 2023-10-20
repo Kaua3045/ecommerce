@@ -6,4 +6,5 @@ plugins {
 group = 'com.kaua.ecommerce.application'
 
 dependencies {
+    implementation(project(':domain'))
 }

@@ -56,6 +56,28 @@ public class Customer extends AggregateRoot<CustomerID> {
         );
     }
 
+    public static Customer with(
+            final String aId,
+            final String aAccountId,
+            final String aFirstName,
+            final String aLastName,
+            final String aEmail,
+            final String aCpf,
+            final Instant aCreatedAt,
+            final Instant aUpdatedAt
+    ) {
+        return new Customer(
+                CustomerID.from(aId),
+                aAccountId,
+                aFirstName,
+                aLastName,
+                aEmail,
+                aCpf,
+                aCreatedAt,
+                aUpdatedAt
+        );
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new CustomerValidation(this, handler).validate();

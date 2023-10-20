@@ -16,6 +16,8 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":application"))
 
+    implementation 'mysql:mysql-connector-java:8.0.33'
+
     implementation('org.springframework.boot:spring-boot-starter-web:3.1.4') {
         exclude module: 'spring-boot-starter-tomcat'
     }

@@ -14,4 +14,9 @@ repositories {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":application"))
+
+    implementation('org.springframework.boot:spring-boot-starter-web:3.1.4') {
+        exclude module: 'spring-boot-starter-tomcat'
+    }
+    implementation 'org.springframework.boot:spring-boot-starter-undertow:3.1.4'
 }

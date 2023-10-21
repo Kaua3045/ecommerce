@@ -7,6 +7,7 @@ import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerjpaReposit
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class CustomerMySQLGateway implements CustomerGateway {
@@ -25,5 +26,15 @@ public class CustomerMySQLGateway implements CustomerGateway {
     @Override
     public boolean existsByAccountId(String accountId) {
         return this.customerRepository.existsByAccountId(accountId);
+    }
+
+    @Override
+    public Optional<Customer> findByAccountId(String aAccountId) {
+        return this.customerRepository.findByAccountId(aAccountId).map(CustomerJpaEntity::toDomain);
+    }
+
+    @Override
+    public Customer update(Customer aCustomer) {
+        return this.customerRepository.save(CustomerJpaEntity.toEntity(aCustomer)).toDomain();
     }
 }

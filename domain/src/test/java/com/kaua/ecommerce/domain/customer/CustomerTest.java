@@ -2,6 +2,7 @@ package com.kaua.ecommerce.domain.customer;
 
 import com.kaua.ecommerce.domain.TestValidationHandler;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
+import com.kaua.ecommerce.domain.utils.CpfValidator;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
@@ -330,6 +331,7 @@ public class CustomerTest {
         Assertions.assertEquals(aCustomer.getCreatedAt(), aCustomerWithCpf.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(aCustomerWithCpf.getUpdatedAt()));
 
+        Assertions.assertTrue(CpfValidator.validateCpf(aCustomerWithCpf.getCpf()));
         Assertions.assertDoesNotThrow(() -> aCustomerWithCpf.validate(new ThrowsValidationHandler()));
     }
 }

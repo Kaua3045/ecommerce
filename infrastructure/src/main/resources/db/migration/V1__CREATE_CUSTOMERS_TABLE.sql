@@ -4,6 +4,7 @@ CREATE TABLE customers (
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
+    cpf VARCHAR(12) UNIQUE,
     created_at DATETIME(6) NOT NULL,
     updated_at DATETIME(6) NOT NULL
 );

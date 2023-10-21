@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface CustomerAPI {
 
     @PatchMapping(
-            value = "{accountId}",
+            value = "{accountId}/cpf",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )

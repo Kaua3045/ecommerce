@@ -33,6 +33,7 @@ public class UpdateCustomerCpfUseCaseTest {
         final var aLastName = "Testes";
         final var aEmail = "teste.testes@fakte.com";
         final var aCpf = "502.123.670-99";
+        final var aCleanedCpf = "50212367099";
 
         final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
@@ -53,7 +54,7 @@ public class UpdateCustomerCpfUseCaseTest {
                 && Objects.equals(aFirstName, aCmd.getFirstName())
                 && Objects.equals(aLastName, aCmd.getLastName())
                 && Objects.equals(aEmail, aCmd.getEmail())
-                && Objects.equals(aCpf, aCmd.getCpf())
+                && Objects.equals(aCleanedCpf, aCmd.getCpf())
                 && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
                 && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
     }

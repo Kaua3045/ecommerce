@@ -6,7 +6,9 @@ import com.kaua.ecommerce.infrastructure.api.CustomerAPI;
 import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerCpfInput;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class CustomerController implements CustomerAPI {
 
     private final UpdateCustomerCpfUseCase updateCustomerCpfUseCase;

@@ -7,7 +7,7 @@ public final class CpfValidator {
 
     public static boolean validateCpf(final String aRawCpf) {
         if (aRawCpf == null || aRawCpf.isBlank()) return false;
-        final var aCpf = aRawCpf.replaceAll("[^\\d]", "").trim();
+        final var aCpf = cleanCpf(aRawCpf);
 
         if (cpfLengthIsNotValid(aCpf)) return false;
         if (areAllDigitsTheRepeated(aCpf)) return false;
@@ -17,6 +17,10 @@ public final class CpfValidator {
         final var actualDigit = extractDigits(aCpf);
         final var validatedDigit = digit1 + "" + digit2;
         return actualDigit.equals(validatedDigit);
+    }
+
+    public static String cleanCpf(final String rawCpf) {
+        return rawCpf.replaceAll("[^\\d]", "").trim();
     }
 
     private static String extractDigits(final String aCpf) {

@@ -27,7 +27,7 @@ public class DefaultUpdateCustomerCpfUseCase extends UpdateCustomerCpfUseCase {
             return Either.left(NotificationHandler.create(new Error("'cpf' invalid")));
         }
 
-        final var aCustomerWithCpf = aCustomer.changeCpf(input.cpf());
+        final var aCustomerWithCpf = aCustomer.changeCpf(CpfValidator.cleanCpf(input.cpf()));
         this.customerGateway.update(aCustomerWithCpf);
 
         return Either.right(UpdateCustomerCpfOutput.from(aCustomerWithCpf));

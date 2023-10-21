@@ -190,4 +190,28 @@ public class CustomerJpaRepositoryTest {
 
         Assertions.assertEquals(expectedErrorMessage, actualCause.getMessage());
     }
+
+    @Test
+    void givenAValidNullCpf_whenCallSave_shouldReturnCustomer() {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "teste",
+                "testes",
+                "teste@teste.com"
+        );
+
+        final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
+        aEntity.setCpf("50212367099");
+
+        final var actualResult = Assertions.assertDoesNotThrow(() -> customerRepository.save(aEntity));
+
+        Assertions.assertEquals(aEntity.getId(), actualResult.getId());
+        Assertions.assertEquals(aEntity.getAccountId(), actualResult.getAccountId());
+        Assertions.assertEquals(aEntity.getFirstName(), actualResult.getFirstName());
+        Assertions.assertEquals(aEntity.getLastName(), actualResult.getLastName());
+        Assertions.assertEquals(aEntity.getEmail(), actualResult.getEmail());
+        Assertions.assertEquals(aEntity.getCpf(), actualResult.getCpf());
+        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
+        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+    }
 }

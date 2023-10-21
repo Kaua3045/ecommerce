@@ -8,38 +8,46 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class CpfValidatorTest {
 
     @Test
-    void givenAValidCpf_whenCallIsCpf_shouldReturnTrue() {
+    void givenAValidCpf_whenCallValidateCpf_shouldReturnTrue() {
         final var aCpf = "815.959.150-01";
         final var aResult = CpfValidator.validateCpf(aCpf);
         Assertions.assertTrue(aResult);
     }
 
     @Test
-    void givenAnInvalidNullCpf_whenCallIsCpf_shouldReturnFalse() {
+    void givenAnInvalidNullCpf_whenCallValidateCpf_shouldReturnFalse() {
         final String aCpf = null;
         final var aResult = CpfValidator.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
     }
 
     @Test
-    void givenAnInvalidBlankCpf_whenCallIsCpf_shouldReturnFalse() {
+    void givenAnInvalidBlankCpf_whenCallValidateCpf_shouldReturnFalse() {
         final var aCpf = " ";
         final var aResult = CpfValidator.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
     }
 
     @Test
-    void givenAnInvalidCpfLengthLessThan11_whenCallIsCpf_shouldReturnFalse() {
+    void givenAnInvalidCpfLengthLessThan11_whenCallValidateCpf_shouldReturnFalse() {
         final var aCpf = "815.959.150";
         final var aResult = CpfValidator.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
     }
 
     @Test
-    void givenAnInvalidCpfLengthMoreThan14_whenCallIsCpf_shouldReturnFalse() {
+    void givenAnInvalidCpfLengthMoreThan14_whenCallValidateCpf_shouldReturnFalse() {
         final var aCpf = "815.959.150-011";
         final var aResult = CpfValidator.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
+    }
+
+    @Test
+    void givenAValidRawCpf_whenCallCleanCpf_shouldReturnCleanedCpf() {
+        final var aRawCpf = "815.959.150-01";
+        final var cleanedCpf = "81595915001";
+        final var aResult = CpfValidator.cleanCpf(aRawCpf);
+        Assertions.assertEquals(cleanedCpf, aResult);
     }
 
     @ParameterizedTest
@@ -55,7 +63,7 @@ public class CpfValidatorTest {
             "88888888888",
             "99999999999",
     })
-    void givenAnInvalidRepeatedFirstNumberCpf_whenCallIsCpf_shouldReturnFalse(
+    void givenAnInvalidRepeatedFirstNumberCpf_whenCallValidateCpf_shouldReturnFalse(
             final String aCpf
     ) {
         final var aResult = CpfValidator.validateCpf(aCpf);
@@ -76,7 +84,7 @@ public class CpfValidatorTest {
             "87878787878",
             "98989898989",
     })
-    void givenAnInvalidRepeatedNumberCpf_whenCallIsCpf_shouldReturnFalse(
+    void givenAnInvalidRepeatedNumberCpf_whenCallValidateCpf_shouldReturnFalse(
             final String aCpf
     ) {
         final var aResult = CpfValidator.validateCpf(aCpf);

@@ -1,8 +1,8 @@
 package com.kaua.ecommerce.domain.utils;
 
-public final class CpfValidator {
+public final class CpfUtils {
 
-    private CpfValidator() {
+    private CpfUtils() {
     }
 
     public static boolean validateCpf(final String aRawCpf) {
@@ -17,6 +17,14 @@ public final class CpfValidator {
         final var actualDigit = extractDigits(aCpf);
         final var validatedDigit = digit1 + "" + digit2;
         return actualDigit.equals(validatedDigit);
+    }
+
+    public static String formatCpf(final String aCpf) {
+        final var aCleanedCpf = cleanCpf(aCpf);
+        return aCleanedCpf.substring(0, 3) + "." +
+                aCleanedCpf.substring(3, 6) + "." +
+                aCleanedCpf.substring(6, 9) + "-" +
+                aCleanedCpf.substring(9);
     }
 
     public static String cleanCpf(final String rawCpf) {

@@ -1,8 +1,8 @@
 package com.kaua.ecommerce.domain.customer;
 
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
-import com.kaua.ecommerce.domain.utils.CpfValidator;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
@@ -281,7 +281,7 @@ public class CustomerTest {
         final var aFirstName = "Teste";
         final var aLastName = "Testes";
         final var aEmail = "teste.testes@tessss.com";
-        final var aCpf = "12345678901";
+        final var aCpf = "50212367099";
         final var aCreatedAt = InstantUtils.now();
         final var aUpdatedAt = InstantUtils.now();
 
@@ -302,7 +302,7 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
         Assertions.assertEquals(aLastName, aCustomer.getLastName());
         Assertions.assertEquals(aEmail, aCustomer.getEmail());
-        Assertions.assertEquals(aCpf, aCustomer.getCpf());
+        Assertions.assertEquals(aCpf, aCustomer.getCpf().getValue());
         Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
@@ -314,7 +314,8 @@ public class CustomerTest {
         final var aFirstName = "Teste";
         final var aLastName = "Testes";
         final var aEmail = "teste.testes@fakte.com";
-        final var aCpf = "502.123.670-99";
+
+        final var aCpf = Assertions.assertDoesNotThrow(() -> Cpf.newCpf("502.123.670-99"));
 
         final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
         final var aCustomerUpdatedAt = aCustomer.getUpdatedAt();
@@ -328,10 +329,23 @@ public class CustomerTest {
         Assertions.assertEquals(aLastName, aCustomerWithCpf.getLastName());
         Assertions.assertEquals(aEmail, aCustomerWithCpf.getEmail());
         Assertions.assertEquals(aCpf, aCustomerWithCpf.getCpf());
+        Assertions.assertEquals(aCpf.getValue(), aCustomerWithCpf.getCpf().getValue());
+        Assertions.assertEquals(aCpf.getFormattedCpf(), aCustomerWithCpf.getCpf().getFormattedCpf());
         Assertions.assertEquals(aCustomer.getCreatedAt(), aCustomerWithCpf.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(aCustomerWithCpf.getUpdatedAt()));
 
-        Assertions.assertTrue(CpfValidator.validateCpf(aCustomerWithCpf.getCpf()));
         Assertions.assertDoesNotThrow(() -> aCustomerWithCpf.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAnInvalidCpf_whenCallNewCpf_shouldThrowsDomainException() {
+        final var expectedErrorMessage = "'cpf' invalid";
+        final var expectedErrorCount = 1;
+
+        final var aException = Assertions.assertThrows(DomainException.class,
+                () -> Cpf.newCpf("502.123.670-10"));
+
+        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
     }
 }

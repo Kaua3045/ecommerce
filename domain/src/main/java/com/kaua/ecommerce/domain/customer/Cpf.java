@@ -7,10 +7,10 @@ import com.kaua.ecommerce.domain.validation.Error;
 
 public class Cpf extends ValueObject {
 
-    private String cpf;
+    private String value;
 
-    private Cpf(final String aCpf) {
-        this.cpf = CpfUtils.cleanCpf(aCpf);
+    private Cpf(final String value) {
+        this.value = CpfUtils.cleanCpf(value);
         selfValidation();
     }
 
@@ -19,17 +19,17 @@ public class Cpf extends ValueObject {
     }
 
     private void selfValidation() {
-        final var isValid = CpfUtils.validateCpf(cpf);
+        final var isValid = CpfUtils.validateCpf(value);
         if (!isValid) {
             throw DomainException.with(new Error("'cpf' invalid"));
         }
     }
 
-    public String getCpf() {
-        return cpf;
+    public String getValue() {
+        return value;
     }
 
     public String getFormattedCpf() {
-        return CpfUtils.formatCpf(cpf);
+        return CpfUtils.formatCpf(value);
     }
 }

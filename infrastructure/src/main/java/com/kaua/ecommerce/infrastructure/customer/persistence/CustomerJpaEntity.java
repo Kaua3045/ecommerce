@@ -66,7 +66,7 @@ public class CustomerJpaEntity {
                 aCustomer.getFirstName(),
                 aCustomer.getLastName(),
                 aCustomer.getEmail(),
-                aCustomer.getCpf(),
+                aCustomer.getCpf() == null ? null : aCustomer.getCpf().getValue(),
                 aCustomer.getCreatedAt(),
                 aCustomer.getUpdatedAt()
         );

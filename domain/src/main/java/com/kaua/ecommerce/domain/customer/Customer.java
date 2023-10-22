@@ -78,7 +78,7 @@ public class Customer extends AggregateRoot<CustomerID> {
                 aFirstName,
                 aLastName,
                 aEmail,
-                Cpf.newCpf(aCpf),
+                aCpf == null ? null : Cpf.newCpf(aCpf),
                 aCreatedAt,
                 aUpdatedAt
         );

@@ -12,7 +12,7 @@ public class Customer extends AggregateRoot<CustomerID> {
     private String firstName;
     private String lastName;
     private String email;
-    private String cpf;
+    private Cpf cpf;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -22,7 +22,7 @@ public class Customer extends AggregateRoot<CustomerID> {
             final String aFirstName,
             final String aLastName,
             final String aEmail,
-            final String aCpf,
+            final Cpf aCpf,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
     ) {
@@ -56,7 +56,7 @@ public class Customer extends AggregateRoot<CustomerID> {
         );
     }
 
-    public Customer changeCpf(final String aCpf) {
+    public Customer changeCpf(final Cpf aCpf) {
         this.cpf = aCpf;
         this.updatedAt = InstantUtils.now();
         return this;
@@ -78,7 +78,7 @@ public class Customer extends AggregateRoot<CustomerID> {
                 aFirstName,
                 aLastName,
                 aEmail,
-                aCpf,
+                Cpf.newCpf(aCpf),
                 aCreatedAt,
                 aUpdatedAt
         );
@@ -105,7 +105,7 @@ public class Customer extends AggregateRoot<CustomerID> {
         return email;
     }
 
-    public String getCpf() {
+    public Cpf getCpf() {
         return cpf;
     }
 

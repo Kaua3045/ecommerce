@@ -5,40 +5,40 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class CpfValidatorTest {
+public class CpfUtilsTest {
 
     @Test
     void givenAValidCpf_whenCallValidateCpf_shouldReturnTrue() {
         final var aCpf = "815.959.150-01";
-        final var aResult = CpfValidator.validateCpf(aCpf);
+        final var aResult = CpfUtils.validateCpf(aCpf);
         Assertions.assertTrue(aResult);
     }
 
     @Test
     void givenAnInvalidNullCpf_whenCallValidateCpf_shouldReturnFalse() {
         final String aCpf = null;
-        final var aResult = CpfValidator.validateCpf(aCpf);
+        final var aResult = CpfUtils.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
     }
 
     @Test
     void givenAnInvalidBlankCpf_whenCallValidateCpf_shouldReturnFalse() {
         final var aCpf = " ";
-        final var aResult = CpfValidator.validateCpf(aCpf);
+        final var aResult = CpfUtils.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
     }
 
     @Test
     void givenAnInvalidCpfLengthLessThan11_whenCallValidateCpf_shouldReturnFalse() {
         final var aCpf = "815.959.150";
-        final var aResult = CpfValidator.validateCpf(aCpf);
+        final var aResult = CpfUtils.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
     }
 
     @Test
     void givenAnInvalidCpfLengthMoreThan14_whenCallValidateCpf_shouldReturnFalse() {
         final var aCpf = "815.959.150-011";
-        final var aResult = CpfValidator.validateCpf(aCpf);
+        final var aResult = CpfUtils.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
     }
 
@@ -46,8 +46,24 @@ public class CpfValidatorTest {
     void givenAValidRawCpf_whenCallCleanCpf_shouldReturnCleanedCpf() {
         final var aRawCpf = "815.959.150-01";
         final var cleanedCpf = "81595915001";
-        final var aResult = CpfValidator.cleanCpf(aRawCpf);
+        final var aResult = CpfUtils.cleanCpf(aRawCpf);
         Assertions.assertEquals(cleanedCpf, aResult);
+    }
+
+    @Test
+    void givenAValidCleanedCpf_whenCallFormatCpf_shouldReturnFormattedCpf() {
+        final var cleanedCpf = "81595915001";
+        final var aFormattedCpf = "815.959.150-01";
+        final var aResult = CpfUtils.formatCpf(cleanedCpf);
+        Assertions.assertEquals(aFormattedCpf, aResult);
+    }
+
+    @Test
+    void givenAnInvalidFormattedCpf_whenCallFormatCpf_shouldReturnFormattedCpf() {
+        final var cleanedCpf = "81595915001";
+        final var aFormattedCpf = "815.959.150-01";
+        final var aResult = CpfUtils.formatCpf(cleanedCpf);
+        Assertions.assertEquals(aFormattedCpf, aResult);
     }
 
     @ParameterizedTest
@@ -66,7 +82,7 @@ public class CpfValidatorTest {
     void givenAnInvalidRepeatedFirstNumberCpf_whenCallValidateCpf_shouldReturnFalse(
             final String aCpf
     ) {
-        final var aResult = CpfValidator.validateCpf(aCpf);
+        final var aResult = CpfUtils.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
     }
 
@@ -87,7 +103,7 @@ public class CpfValidatorTest {
     void givenAnInvalidRepeatedNumberCpf_whenCallValidateCpf_shouldReturnFalse(
             final String aCpf
     ) {
-        final var aResult = CpfValidator.validateCpf(aCpf);
+        final var aResult = CpfUtils.validateCpf(aCpf);
         Assertions.assertFalse(aResult);
     }
 }

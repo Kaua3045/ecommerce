@@ -275,7 +275,7 @@ public class CustomerTest {
     }
 
     @Test
-    void givenAValidValues_whenCallWith_shouldReturnCustomerObject() {
+    void givenAValidValuesWithCpf_whenCallWith_shouldReturnCustomerObject() {
         final var aId = "123456789";
         final var aAccountId = "10102012012010";
         final var aFirstName = "Teste";
@@ -303,6 +303,40 @@ public class CustomerTest {
         Assertions.assertEquals(aLastName, aCustomer.getLastName());
         Assertions.assertEquals(aEmail, aCustomer.getEmail());
         Assertions.assertEquals(aCpf, aCustomer.getCpf().getValue());
+        Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
+        Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
+        Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAValidValuesWithNullCpf_whenCallWith_shouldReturnCustomerObject() {
+        final var aId = "123456789";
+        final var aAccountId = "10102012012010";
+        final var aFirstName = "Teste";
+        final var aLastName = "Testes";
+        final var aEmail = "teste.testes@tessss.com";
+        final String aCpf = null;
+        final var aCreatedAt = InstantUtils.now();
+        final var aUpdatedAt = InstantUtils.now();
+
+        final var aCustomer = Customer.with(
+                aId,
+                aAccountId,
+                aFirstName,
+                aLastName,
+                aEmail,
+                aCpf,
+                aCreatedAt,
+                aUpdatedAt
+        );
+
+        Assertions.assertNotNull(aCustomer);
+        Assertions.assertEquals(aId, aCustomer.getId().getValue());
+        Assertions.assertEquals(aAccountId, aCustomer.getAccountId());
+        Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
+        Assertions.assertEquals(aLastName, aCustomer.getLastName());
+        Assertions.assertEquals(aEmail, aCustomer.getEmail());
+        Assertions.assertNull(aCustomer.getCpf());
         Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));

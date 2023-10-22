@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.infrastructure.costumer;
 
+import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.CustomerMySQLGateway;
@@ -86,7 +87,7 @@ public class CustomerGatewayTest {
         final var aFirstName = "Teste";
         final var aLastName = "Testes";
         final var aEmail = "teste.testes@fakte.com";
-        final var aCleanCpf = "50212367099";
+        final var aCleanCpf = Cpf.newCpf("50212367099");
 
         final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
@@ -104,7 +105,7 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomer.getFirstName(), actualCustomer.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualCustomer.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualCustomer.getEmail());
-        Assertions.assertEquals(aCleanCpf, actualCustomer.getCpf());
+        Assertions.assertEquals(aCleanCpf.getValue(), actualCustomer.getCpf().getValue());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(actualCustomer.getUpdatedAt()));
 
@@ -115,7 +116,7 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomerWithCpf.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomerWithCpf.getLastName(), actualEntity.getLastName());
         Assertions.assertEquals(aCustomerWithCpf.getEmail(), actualEntity.getEmail());
-        Assertions.assertEquals(aCustomerWithCpf.getCpf(), actualEntity.getCpf());
+        Assertions.assertEquals(aCustomerWithCpf.getCpf().getValue(), actualEntity.getCpf());
         Assertions.assertEquals(aCustomerWithCpf.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomerWithCpf.getUpdatedAt(), actualEntity.getUpdatedAt());
     }
@@ -126,7 +127,7 @@ public class CustomerGatewayTest {
         final var aFirstName = "Teste";
         final var aLastName = "Testes";
         final var aEmail = "teste.testes@fakte.com";
-        final var aCleanCpf = "50212367099";
+        final var aCleanCpf = Cpf.newCpf("50212367099");
 
         final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail)
                 .changeCpf(aCleanCpf);
@@ -142,7 +143,7 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomer.getFirstName(), actualCustomer.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualCustomer.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualCustomer.getEmail());
-        Assertions.assertEquals(aCleanCpf, actualCustomer.getCpf());
+        Assertions.assertEquals(aCleanCpf.getValue(), actualCustomer.getCpf().getValue());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), actualCustomer.getUpdatedAt());
 
@@ -153,7 +154,7 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomer.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualEntity.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualEntity.getEmail());
-        Assertions.assertEquals(aCustomer.getCpf(), actualEntity.getCpf());
+        Assertions.assertEquals(aCustomer.getCpf().getValue(), actualEntity.getCpf());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), actualEntity.getUpdatedAt());
     }

@@ -2,6 +2,7 @@ package com.kaua.ecommerce.application.usecases.customer.update.cpf;
 
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.customer.Customer;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ public class UpdateCustomerCpfUseCaseTest {
                 && Objects.equals(aFirstName, aCmd.getFirstName())
                 && Objects.equals(aLastName, aCmd.getLastName())
                 && Objects.equals(aEmail, aCmd.getEmail())
-                && Objects.equals(aCleanedCpf, aCmd.getCpf())
+                && Objects.equals(aCleanedCpf, aCmd.getCpf().getValue())
                 && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
                 && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
     }
@@ -80,7 +81,7 @@ public class UpdateCustomerCpfUseCaseTest {
     }
 
     @Test
-    void givenAnInvalidCpf_whenCallChangeCpf_shouldReturnDomainException() {
+    void givenAnInvalidCpf_whenCallChangeCpf_shouldThrowDomainException() {
         final var aAccountId = "123456789";
         final var aFirstName = "Teste";
         final var aLastName = "Testes";
@@ -96,7 +97,8 @@ public class UpdateCustomerCpfUseCaseTest {
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
 
-        final var aResult = useCase.execute(aCommand).getLeft();
+        final var aResult = Assertions.assertThrows(DomainException.class, () ->
+                useCase.execute(aCommand));
 
         Assertions.assertEquals(expectedErrorMessage, aResult.getErrors().get(0).message());
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());

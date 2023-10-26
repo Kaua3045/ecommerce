@@ -61,6 +61,4 @@ public class CustomerValidation extends Validator {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("email")));
         }
     }
-
-    // TODO: check CPF constraints after add update method with cpf or changeCpf method
 }

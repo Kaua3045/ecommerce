@@ -28,6 +28,9 @@ public class CustomerJpaEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "cpf", unique = true)
+    private String cpf;
+
     @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant createdAt;
 
@@ -42,6 +45,7 @@ public class CustomerJpaEntity {
             final String firstName,
             final String lastName,
             final String email,
+            final String cpf,
             final Instant createdAt,
             final Instant updatedAt
     ) {
@@ -50,6 +54,7 @@ public class CustomerJpaEntity {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.cpf = cpf;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -61,6 +66,7 @@ public class CustomerJpaEntity {
                 aCustomer.getFirstName(),
                 aCustomer.getLastName(),
                 aCustomer.getEmail(),
+                aCustomer.getCpf() == null ? null : aCustomer.getCpf().getValue(),
                 aCustomer.getCreatedAt(),
                 aCustomer.getUpdatedAt()
         );
@@ -73,7 +79,7 @@ public class CustomerJpaEntity {
                 getFirstName(),
                 getLastName(),
                 getEmail(),
-                null,
+                getCpf(),
                 getCreatedAt(),
                 getUpdatedAt()
         );
@@ -117,6 +123,14 @@ public class CustomerJpaEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public Instant getCreatedAt() {

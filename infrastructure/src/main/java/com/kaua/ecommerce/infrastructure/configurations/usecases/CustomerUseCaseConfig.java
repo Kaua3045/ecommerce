@@ -3,6 +3,8 @@ package com.kaua.ecommerce.infrastructure.configurations.usecases;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.application.usecases.customer.create.CreateCustomerUseCase;
 import com.kaua.ecommerce.application.usecases.customer.create.DefaultCreateCustomerUseCase;
+import com.kaua.ecommerce.application.usecases.customer.update.cpf.DefaultUpdateCustomerCpfUseCase;
+import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,5 +22,10 @@ public class CustomerUseCaseConfig {
     @Bean
     public CreateCustomerUseCase createCustomerUseCase() {
         return new DefaultCreateCustomerUseCase(customerGateway);
+    }
+
+    @Bean
+    public UpdateCustomerCpfUseCase updateCustomerCpfUseCase() {
+        return new DefaultUpdateCustomerCpfUseCase(customerGateway);
     }
 }

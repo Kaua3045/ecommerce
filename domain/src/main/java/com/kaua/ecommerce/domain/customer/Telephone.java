@@ -19,7 +19,7 @@ public class Telephone extends ValueObject {
     }
 
     private void selfValidation() {
-        if (this.value == null || this.value.isEmpty()) {
+        if (this.value == null || this.value.isBlank()) {
             throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("telephone")));
         }
     }

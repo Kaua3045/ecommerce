@@ -28,14 +28,15 @@ public class DefaultUpdateCustomerTelephoneUseCase extends UpdateCustomerTelepho
     public Either<NotificationHandler, UpdateCustomerTelephoneOutput> execute(final UpdateCustomerTelephoneCommand input) {
         final var aCustomer = this.customerGateway.findByAccountId(input.accountId())
                 .orElseThrow(NotFoundException.with(Customer.class, input.accountId()));
+        final var aFormattedTelephone = this.telephoneAdapter.formatInternational(input.telephone());
 
-        final var aTelephoneValidation = this.telephoneAdapter.validate(input.telephone());
+        final var aTelephoneValidation = this.telephoneAdapter.validate(aFormattedTelephone);
 
         if (!aTelephoneValidation) {
             return Either.left(NotificationHandler.create(new Error("'telephone' invalid")));
         }
 
-        aCustomer.changeTelephone(Telephone.newTelephone(input.telephone()));
+        aCustomer.changeTelephone(Telephone.newTelephone(aFormattedTelephone));
 
         this.customerGateway.update(aCustomer);
 

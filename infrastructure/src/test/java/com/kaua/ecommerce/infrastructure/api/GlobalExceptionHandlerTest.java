@@ -3,6 +3,7 @@ package com.kaua.ecommerce.infrastructure.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
+import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneUseCase;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
@@ -34,6 +35,9 @@ public class GlobalExceptionHandlerTest {
 
     @MockBean
     private UpdateCustomerCpfUseCase updateCustomerCpfUseCase;
+
+    @MockBean
+    private UpdateCustomerTelephoneUseCase updateCustomerTelephoneUseCase;
 
     @Test
     void testThrowDomainException() throws Exception {

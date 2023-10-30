@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.configurations;
 
 import com.kaua.ecommerce.infrastructure.configurations.annotations.AccountCreatedEvent;
+import com.kaua.ecommerce.infrastructure.configurations.annotations.AccountDeletedEvent;
 import com.kaua.ecommerce.infrastructure.configurations.properties.amqp.QueueProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,13 @@ public class AmqpConfig {
     @ConfigurationProperties("amqp.queues.account-created")
     @AccountCreatedEvent
     public QueueProperties accountCreatedQueueProperties() {
+        return new QueueProperties();
+    }
+
+    @Bean
+    @ConfigurationProperties("amqp.queues.account-deleted")
+    @AccountDeletedEvent
+    public QueueProperties accountDeletedQueueProperties() {
         return new QueueProperties();
     }
 

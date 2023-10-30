@@ -13,4 +13,6 @@ public interface CustomerGateway {
     Optional<Customer> findByAccountId(String aAccountId);
 
     Customer update(Customer aCustomer);
+
+    void deleteById(String aAccountId);
 }

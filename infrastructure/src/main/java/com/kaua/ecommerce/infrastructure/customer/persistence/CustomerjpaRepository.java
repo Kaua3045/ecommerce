@@ -9,4 +9,6 @@ public interface CustomerjpaRepository extends JpaRepository<CustomerJpaEntity, 
     boolean existsByAccountId(String accountId);
 
     Optional<CustomerJpaEntity> findByAccountId(String accountId);
+
+    void deleteByAccountId(String accountId);
 }

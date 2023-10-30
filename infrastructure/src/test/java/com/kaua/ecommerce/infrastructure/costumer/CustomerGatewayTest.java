@@ -163,4 +163,32 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), actualEntity.getUpdatedAt());
     }
+
+    @Test
+    void givenAValidAccountId_whenCallDeleteById_shouldBeOk() {
+        final var aCustomer = Customer.newCustomer(
+                "123456789",
+                "Teste",
+                "Testes",
+                "teste.testes@fakte.com");
+
+        Assertions.assertEquals(0, customerRepository.count());
+        customerRepository.save(CustomerJpaEntity.toEntity(aCustomer));
+        Assertions.assertEquals(1, customerRepository.count());
+
+        customerGateway.deleteById(aCustomer.getAccountId());
+
+        Assertions.assertEquals(0, customerRepository.count());
+    }
+
+    @Test
+    void givenAnInvalidAccountId_whenCallDeleteById_shouldBeOk() {
+        final var aAccountId = "123";
+
+        Assertions.assertEquals(0, customerRepository.count());
+
+        customerGateway.deleteById(aAccountId);
+
+        Assertions.assertEquals(0, customerRepository.count());
+    }
 }

@@ -53,6 +53,33 @@ public class GetCustomerByAccountIdUseCaseTest {
     }
 
     @Test
+    void givenAValidAccountIdWithNullCpfAndTelephone_whenCallGetCustomerByAccountId_shouldReturnCustomer() {
+        final var aCustomer = Customer.newCustomer(
+                        "123",
+                        "Test",
+                        "Testes",
+                        "tes.testes@tsss.com"
+                );
+
+        Mockito.when(customerGateway.findByAccountId(aCustomer.getAccountId()))
+                .thenReturn(Optional.of(aCustomer));
+
+        final var output = useCase.execute(aCustomer.getAccountId());
+
+        Assertions.assertEquals(aCustomer.getId().getValue(), output.id());
+        Assertions.assertEquals(aCustomer.getAccountId(), output.accountId());
+        Assertions.assertEquals(aCustomer.getFirstName(), output.firstName());
+        Assertions.assertEquals(aCustomer.getLastName(), output.lastName());
+        Assertions.assertEquals(aCustomer.getEmail(), output.email());
+        Assertions.assertNull(output.cpf());
+        Assertions.assertNull(output.telephone());
+        Assertions.assertEquals(aCustomer.getCreatedAt(), output.createdAt());
+        Assertions.assertEquals(aCustomer.getUpdatedAt(), output.updatedAt());
+
+        Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aCustomer.getAccountId());
+    }
+
+    @Test
     void givenAnInvalidAccountId_whenCallGetCustomerByAccountId_shouldThrowNotFoundException() {
         final var aAccountId = "123";
         final var expectedErrorMessage = "Customer with id 123 was not found";

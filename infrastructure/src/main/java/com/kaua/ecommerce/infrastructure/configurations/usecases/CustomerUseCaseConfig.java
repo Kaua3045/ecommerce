@@ -6,6 +6,8 @@ import com.kaua.ecommerce.application.usecases.customer.create.CreateCustomerUse
 import com.kaua.ecommerce.application.usecases.customer.create.DefaultCreateCustomerUseCase;
 import com.kaua.ecommerce.application.usecases.customer.delete.DefaultDeleteCustomerUseCase;
 import com.kaua.ecommerce.application.usecases.customer.delete.DeleteCustomerUseCase;
+import com.kaua.ecommerce.application.usecases.customer.retrieve.get.DefaultGetCustomerByAccountIdUseCase;
+import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.DefaultUpdateCustomerCpfUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.DefaultUpdateCustomerTelephoneUseCase;
@@ -39,6 +41,11 @@ public class CustomerUseCaseConfig {
     @Bean
     public UpdateCustomerTelephoneUseCase updateCustomerTelephoneUseCase() {
         return new DefaultUpdateCustomerTelephoneUseCase(customerGateway, telephoneAdapter);
+    }
+
+    @Bean
+    public GetCustomerByAccountIdUseCase getCustomerByAccountIdUseCase() {
+        return new DefaultGetCustomerByAccountIdUseCase(customerGateway);
     }
 
     @Bean

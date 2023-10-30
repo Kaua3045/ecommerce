@@ -38,4 +38,19 @@ public class TelephoneAdapterImpl implements TelephoneAdapter {
             throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("telephone")));
         }
     }
+
+    @Override
+    public String formatToCountry(String aTelephone, String aRegion) {
+        if (aTelephone == null || aTelephone.isBlank()) {
+            return null;
+        }
+
+        try {
+            final var parsedTelephone = this.phoneNumberUtil.parse(aTelephone, aRegion);
+
+            return this.phoneNumberUtil.format(parsedTelephone, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+        } catch (NumberParseException e) {
+            throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("telephone")));
+        }
+    }
 }

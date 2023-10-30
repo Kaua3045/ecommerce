@@ -292,6 +292,7 @@ public class CustomerTest {
                 aLastName,
                 aEmail,
                 aCpf,
+                null,
                 aCreatedAt,
                 aUpdatedAt
         );
@@ -326,6 +327,7 @@ public class CustomerTest {
                 aLastName,
                 aEmail,
                 aCpf,
+                null,
                 aCreatedAt,
                 aUpdatedAt
         );
@@ -378,6 +380,133 @@ public class CustomerTest {
 
         final var aException = Assertions.assertThrows(DomainException.class,
                 () -> Cpf.newCpf("502.123.670-10"));
+
+        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
+    }
+
+    @Test
+    void givenAValidValuesWithTelephone_whenCallWith_shouldReturnCustomerObject() {
+        final var aId = "123456789";
+        final var aAccountId = "10102012012010";
+        final var aFirstName = "Teste";
+        final var aLastName = "Testes";
+        final var aEmail = "teste.testes@tessss.com";
+        final var aCpf = "50212367099";
+        final var aTelephone = "+11234567890";
+        final var aCreatedAt = InstantUtils.now();
+        final var aUpdatedAt = InstantUtils.now();
+
+        final var aCustomer = Customer.with(
+                aId,
+                aAccountId,
+                aFirstName,
+                aLastName,
+                aEmail,
+                aCpf,
+                aTelephone,
+                aCreatedAt,
+                aUpdatedAt
+        );
+
+        Assertions.assertNotNull(aCustomer);
+        Assertions.assertEquals(aId, aCustomer.getId().getValue());
+        Assertions.assertEquals(aAccountId, aCustomer.getAccountId());
+        Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
+        Assertions.assertEquals(aLastName, aCustomer.getLastName());
+        Assertions.assertEquals(aEmail, aCustomer.getEmail());
+        Assertions.assertEquals(aCpf, aCustomer.getCpf().getValue());
+        Assertions.assertEquals(aTelephone, aCustomer.getTelephone().getValue());
+        Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
+        Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
+        Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAValidValuesWithNullTelephone_whenCallWith_shouldReturnCustomerObject() {
+        final var aId = "123456789";
+        final var aAccountId = "10102012012010";
+        final var aFirstName = "Teste";
+        final var aLastName = "Testes";
+        final var aEmail = "teste.testes@tessss.com";
+        final var aCpf = "50212367099";
+        final String aTelephone = null;
+        final var aCreatedAt = InstantUtils.now();
+        final var aUpdatedAt = InstantUtils.now();
+
+        final var aCustomer = Customer.with(
+                aId,
+                aAccountId,
+                aFirstName,
+                aLastName,
+                aEmail,
+                aCpf,
+                aTelephone,
+                aCreatedAt,
+                aUpdatedAt
+        );
+
+        Assertions.assertNotNull(aCustomer);
+        Assertions.assertEquals(aId, aCustomer.getId().getValue());
+        Assertions.assertEquals(aAccountId, aCustomer.getAccountId());
+        Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
+        Assertions.assertEquals(aLastName, aCustomer.getLastName());
+        Assertions.assertEquals(aEmail, aCustomer.getEmail());
+        Assertions.assertEquals(aCpf, aCustomer.getCpf().getValue());
+        Assertions.assertNull(aCustomer.getTelephone());
+        Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
+        Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
+        Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAValidTelephone_whenCallChangeTelephone_shouldReturnACustomerWithTelephone() {
+        final var aAccountId = "123456789";
+        final var aFirstName = "Teste";
+        final var aLastName = "Testes";
+        final var aEmail = "teste.testes@fakte.com";
+
+        final var aTelephone = Assertions.assertDoesNotThrow(() -> Telephone.newTelephone("+11234567890"));
+
+        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
+        final var aCustomerUpdatedAt = aCustomer.getUpdatedAt();
+
+        final var aCustomerWithTelephone = aCustomer.changeTelephone(aTelephone);
+
+        Assertions.assertNotNull(aCustomerWithTelephone);
+        Assertions.assertEquals(aCustomerWithTelephone.getId(), aCustomer.getId());
+        Assertions.assertEquals(aAccountId, aCustomerWithTelephone.getAccountId());
+        Assertions.assertEquals(aFirstName, aCustomerWithTelephone.getFirstName());
+        Assertions.assertEquals(aLastName, aCustomerWithTelephone.getLastName());
+        Assertions.assertEquals(aEmail, aCustomerWithTelephone.getEmail());
+        Assertions.assertNull(aCustomerWithTelephone.getCpf());
+        Assertions.assertEquals(aTelephone, aCustomerWithTelephone.getTelephone());
+        Assertions.assertEquals(aTelephone.getValue(), aCustomerWithTelephone.getTelephone().getValue());
+        Assertions.assertEquals(aCustomer.getCreatedAt(), aCustomerWithTelephone.getCreatedAt());
+        Assertions.assertTrue(aCustomerUpdatedAt.isBefore(aCustomerWithTelephone.getUpdatedAt()));
+
+        Assertions.assertDoesNotThrow(() -> aCustomerWithTelephone.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAnInvalidNullTelephone_whenCallNewTelephone_shouldThrowsDomainException() {
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("telephone");
+        final var expectedErrorCount = 1;
+
+        final var aException = Assertions.assertThrows(DomainException.class,
+                () -> Telephone.newTelephone(null));
+
+        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
+    }
+
+    @Test
+    void givenAnInvalidBlankTelephone_whenCallNewTelephone_shouldThrowsDomainException() {
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("telephone");
+        final var expectedErrorCount = 1;
+
+        final var aException = Assertions.assertThrows(DomainException.class,
+                () -> Telephone.newTelephone(" "));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
         Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());

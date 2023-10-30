@@ -2,6 +2,7 @@ package com.kaua.ecommerce.infrastructure.costumer;
 
 import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
+import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.CustomerMySQLGateway;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
@@ -88,6 +89,7 @@ public class CustomerGatewayTest {
         final var aLastName = "Testes";
         final var aEmail = "teste.testes@fakte.com";
         final var aCleanCpf = Cpf.newCpf("50212367099");
+        final var aTelephone = Telephone.newTelephone("+11234567890");
 
         final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
@@ -98,7 +100,8 @@ public class CustomerGatewayTest {
         final var aCustomerUpdatedAt = aCustomer.getUpdatedAt();
 
         final var aCustomerWithCpf = aCustomer.changeCpf(aCleanCpf);
-        final var actualCustomer = customerGateway.update(aCustomerWithCpf);
+        final var aCustomerWithTelephoneAndCpf = aCustomerWithCpf.changeTelephone(aTelephone);
+        final var actualCustomer = customerGateway.update(aCustomerWithTelephoneAndCpf);
 
         Assertions.assertEquals(aCustomer.getId().getValue(), actualCustomer.getId().getValue());
         Assertions.assertEquals(aCustomer.getAccountId(), actualCustomer.getAccountId());
@@ -106,6 +109,7 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomer.getLastName(), actualCustomer.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualCustomer.getEmail());
         Assertions.assertEquals(aCleanCpf.getValue(), actualCustomer.getCpf().getValue());
+        Assertions.assertEquals(aTelephone.getValue(), actualCustomer.getTelephone().getValue());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(actualCustomer.getUpdatedAt()));
 
@@ -117,6 +121,7 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomerWithCpf.getLastName(), actualEntity.getLastName());
         Assertions.assertEquals(aCustomerWithCpf.getEmail(), actualEntity.getEmail());
         Assertions.assertEquals(aCustomerWithCpf.getCpf().getValue(), actualEntity.getCpf());
+        Assertions.assertEquals(aCustomerWithCpf.getTelephone().getValue(), actualEntity.getTelephone());
         Assertions.assertEquals(aCustomerWithCpf.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomerWithCpf.getUpdatedAt(), actualEntity.getUpdatedAt());
     }

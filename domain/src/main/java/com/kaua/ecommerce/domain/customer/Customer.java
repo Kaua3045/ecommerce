@@ -13,6 +13,7 @@ public class Customer extends AggregateRoot<CustomerID> {
     private String lastName;
     private String email;
     private Cpf cpf;
+    private Telephone telephone;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -23,6 +24,7 @@ public class Customer extends AggregateRoot<CustomerID> {
             final String aLastName,
             final String aEmail,
             final Cpf aCpf,
+            final Telephone aTelephone,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
     ) {
@@ -32,6 +34,7 @@ public class Customer extends AggregateRoot<CustomerID> {
         this.lastName = aLastName;
         this.email = aEmail;
         this.cpf = aCpf;
+        this.telephone = aTelephone;
         this.createdAt = aCreatedAt;
         this.updatedAt = aUpdatedAt;
     }
@@ -51,6 +54,7 @@ public class Customer extends AggregateRoot<CustomerID> {
                 aLastName,
                 aEmail,
                 null,
+                null,
                 aNow,
                 aNow
         );
@@ -62,6 +66,12 @@ public class Customer extends AggregateRoot<CustomerID> {
         return this;
     }
 
+    public Customer changeTelephone(final Telephone aTelephone) {
+        this.telephone = aTelephone;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
     public static Customer with(
             final String aId,
             final String aAccountId,
@@ -69,6 +79,7 @@ public class Customer extends AggregateRoot<CustomerID> {
             final String aLastName,
             final String aEmail,
             final String aCpf,
+            final String aTelephone,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
     ) {
@@ -79,6 +90,7 @@ public class Customer extends AggregateRoot<CustomerID> {
                 aLastName,
                 aEmail,
                 aCpf == null ? null : Cpf.newCpf(aCpf),
+                aTelephone == null ? null : Telephone.newTelephone(aTelephone),
                 aCreatedAt,
                 aUpdatedAt
         );
@@ -107,6 +119,10 @@ public class Customer extends AggregateRoot<CustomerID> {
 
     public Cpf getCpf() {
         return cpf;
+    }
+
+    public Telephone getTelephone() {
+        return telephone;
     }
 
     public Instant getCreatedAt() {

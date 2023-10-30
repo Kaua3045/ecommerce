@@ -5,12 +5,17 @@ import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfOutput;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
+import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneCommand;
+import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneOutput;
+import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneUseCase;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import com.kaua.ecommerce.infrastructure.ControllerTest;
 import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerCpfInput;
+import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerTelephoneInput;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -37,6 +42,9 @@ public class CustomerAPITest {
 
     @MockBean
     private UpdateCustomerCpfUseCase updateCustomerCpfUseCase;
+
+    @MockBean
+    private UpdateCustomerTelephoneUseCase updateCustomerTelephoneUseCase;
 
     @Test
     void givenAValidInput_whenCallUpdateCpf_thenReturnStatusOkAndAccountId() throws Exception {
@@ -145,5 +153,114 @@ public class CustomerAPITest {
 
         Assertions.assertEquals(aAccountId, actualCmd.accountId());
         Assertions.assertEquals(aCleanCpf, actualCmd.cpf());
+    }
+
+    @Test
+    void givenAValidInput_whenCallUpdateTelephone_thenReturnStatusOkAndAccountId() throws Exception {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "test",
+                "Testes",
+                "test.testes@tss.com"
+        );
+
+        final var aTelephone = "+11234567890";
+        final var aAccountId = aCustomer.getAccountId();
+
+        final var aInput = new UpdateCustomerTelephoneInput(aTelephone);
+
+        Mockito.when(updateCustomerTelephoneUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(UpdateCustomerTelephoneOutput.from(aCustomer)));
+
+        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/telephone", aAccountId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accountId", equalTo(aAccountId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCustomerTelephoneCommand.class);
+
+        Mockito.verify(updateCustomerTelephoneUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aAccountId, actualCmd.accountId());
+        Assertions.assertEquals(aTelephone, actualCmd.telephone());
+    }
+
+    @Test
+    void givenAnInvalidAccountId_whenCallUpdateTelephone_thenThrowsNotFoundException() throws Exception {
+        final var aTelephone = "+11234567890";
+        final var aAccountId = "123";
+
+        final var expectedErrorMessage = "Customer with id 123 was not found";
+
+        final var aInput = new UpdateCustomerTelephoneInput(aTelephone);
+
+        Mockito.when(updateCustomerTelephoneUseCase.execute(Mockito.any()))
+                .thenThrow(NotFoundException.with(Customer.class, aAccountId).get());
+
+        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/telephone", aAccountId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCustomerTelephoneCommand.class);
+
+        Mockito.verify(updateCustomerTelephoneUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aAccountId, actualCmd.accountId());
+        Assertions.assertEquals(aTelephone, actualCmd.telephone());
+    }
+
+    @Test
+    void givenAnInvalidTelephone_whenCallUpdateTelephone_thenReturnDomainException() throws Exception {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "test",
+                "Testes",
+                "test.testes@tss.com"
+        );
+
+        final var aTelephone = " ";
+        final var aAccountId = aCustomer.getAccountId();
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("telephone");
+
+        final var aInput = new UpdateCustomerTelephoneInput(aTelephone);
+
+        Mockito.when(updateCustomerTelephoneUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/telephone", aAccountId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCustomerTelephoneCommand.class);
+
+        Mockito.verify(updateCustomerTelephoneUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aAccountId, actualCmd.accountId());
+        Assertions.assertEquals(aTelephone, actualCmd.telephone());
     }
 }

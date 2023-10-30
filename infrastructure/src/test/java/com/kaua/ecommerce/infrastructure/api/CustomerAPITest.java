@@ -2,6 +2,8 @@ package com.kaua.ecommerce.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
+import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdOutput;
+import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfOutput;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
@@ -45,6 +47,9 @@ public class CustomerAPITest {
 
     @MockBean
     private UpdateCustomerTelephoneUseCase updateCustomerTelephoneUseCase;
+
+    @MockBean
+    private GetCustomerByAccountIdUseCase getCustomerByAccountIdUseCase;
 
     @Test
     void givenAValidInput_whenCallUpdateCpf_thenReturnStatusOkAndAccountId() throws Exception {
@@ -262,5 +267,52 @@ public class CustomerAPITest {
 
         Assertions.assertEquals(aAccountId, actualCmd.accountId());
         Assertions.assertEquals(aTelephone, actualCmd.telephone());
+    }
+
+    @Test
+    void givenAValidAccountId_whenCallGetCustomer_shouldReturnStatusOkAndCustomer() throws Exception {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "test",
+                "Testes",
+                "test.testes@tss.com");
+
+        final var aAccountId = aCustomer.getAccountId();
+
+        Mockito.when(getCustomerByAccountIdUseCase.execute(Mockito.any()))
+                .thenReturn(GetCustomerByAccountIdOutput.from(aCustomer));
+
+        final var request = MockMvcRequestBuilders.get("/customers/{accountId}", aAccountId)
+                .accept(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aCustomer.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.account_id", equalTo(aCustomer.getAccountId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.first_name", equalTo(aCustomer.getFirstName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.last_name", equalTo(aCustomer.getLastName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email", equalTo(aCustomer.getEmail())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.cpf", equalTo(aCustomer.getCpf())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.telephone", equalTo(aCustomer.getTelephone())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.created_at", equalTo(aCustomer.getCreatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.updated_at", equalTo(aCustomer.getUpdatedAt().toString())));
+    }
+
+    @Test
+    void givenAnInvalidAccountId_whenCallGetCustomer_shouldThrowNotFoundException() throws Exception {
+        final var aAccountId = "123";
+        final var expectedErrorMessage = "Customer with id 123 was not found";
+
+        Mockito.when(getCustomerByAccountIdUseCase.execute(Mockito.any()))
+                .thenThrow(NotFoundException.with(Customer.class, aAccountId).get());
+
+        final var request = MockMvcRequestBuilders.get("/customers/{accountId}", aAccountId)
+                .accept(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
     }
 }

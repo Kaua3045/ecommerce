@@ -6,5 +6,5 @@ public interface TelephoneAdapter {
 
     String formatInternational(String aTelephone);
 
-    String formatToCountry(String aTelephone);
+    String formatToCountry(String aTelephone, String aRegion);
 }

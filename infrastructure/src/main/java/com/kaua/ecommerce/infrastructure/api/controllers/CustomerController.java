@@ -31,9 +31,9 @@ public class CustomerController implements CustomerAPI {
     }
 
     @Override
-    public ResponseEntity<?> getCustomer(String accountId) {
+    public ResponseEntity<?> getCustomer(String accountId, String locale) {
         return ResponseEntity.ok(CustomerApiPresenter.present(this.getCustomerByAccountIdUseCase
-                .execute(accountId)));
+                .execute(accountId), locale));
     }
 
     @Override

@@ -7,8 +7,8 @@ public final class CustomerApiPresenter {
 
     private CustomerApiPresenter() {}
 
-    public static GetCustomerByAccountIdResponse present(final GetCustomerByAccountIdOutput aOutput) {
-        return new GetCustomerByAccountIdResponse(
+    public static GetCustomerByAccountIdResponse present(final GetCustomerByAccountIdOutput aOutput, final String aLocale) {
+        return GetCustomerByAccountIdResponse.with(
                 aOutput.id(),
                 aOutput.accountId(),
                 aOutput.firstName(),
@@ -17,7 +17,8 @@ public final class CustomerApiPresenter {
                 aOutput.cpf(),
                 aOutput.telephone(),
                 aOutput.createdAt().toString(),
-                aOutput.updatedAt().toString()
+                aOutput.updatedAt().toString(),
+                aLocale
         );
     }
 }

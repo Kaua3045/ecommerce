@@ -23,8 +23,8 @@ public record GetCustomerByAccountIdOutput(
                 aCustomer.getFirstName(),
                 aCustomer.getLastName(),
                 aCustomer.getEmail(),
-                aCustomer.getCpf().getFormattedCpf(),
-                aCustomer.getTelephone().getValue(),
+                aCustomer.getCpf() == null ? null : aCustomer.getCpf().getFormattedCpf(),
+                aCustomer.getTelephone() == null ? null : aCustomer.getTelephone().getValue(),
                 aCustomer.getCreatedAt(),
                 aCustomer.getUpdatedAt()
         );

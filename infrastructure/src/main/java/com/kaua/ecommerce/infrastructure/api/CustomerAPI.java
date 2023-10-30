@@ -13,7 +13,9 @@ public interface CustomerAPI {
             value = "{accountId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    ResponseEntity<?> getCustomer(@PathVariable String accountId);
+    ResponseEntity<?> getCustomer(
+            @PathVariable String accountId,
+            @RequestParam(name = "locale", defaultValue = "BR") String locale);
 
     @PatchMapping(
             value = "{accountId}/cpf",

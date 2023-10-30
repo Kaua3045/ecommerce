@@ -3,6 +3,9 @@ package com.kaua.ecommerce.infrastructure.adapters;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.kaua.ecommerce.application.adapters.TelephoneAdapter;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
+import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
+import com.kaua.ecommerce.domain.validation.Error;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +24,7 @@ public class TelephoneAdapterImpl implements TelephoneAdapter {
 
             return this.phoneNumberUtil.isValidNumber(parsedTelephone);
         } catch (NumberParseException e) {
-            throw new RuntimeException(e);
+            throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("telephone")));
         }
     }
 
@@ -32,7 +35,7 @@ public class TelephoneAdapterImpl implements TelephoneAdapter {
 
             return this.phoneNumberUtil.format(parsedTelephone, PhoneNumberUtil.PhoneNumberFormat.E164);
         } catch (NumberParseException e) {
-            throw new RuntimeException(e);
+            throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("telephone")));
         }
     }
 }

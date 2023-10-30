@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.infrastructure.adapters;
 
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,10 +31,10 @@ public class TelephoneAdapterImplTest {
     }
 
     @Test
-    void givenAInvalidNullTelephone_whenCallValidate_shouldThrowRuntimeException() {
+    void givenAInvalidNullTelephone_whenCallValidate_shouldThrowDomainException() {
         final String aTelephone = null;
 
-        Assertions.assertThrows(RuntimeException.class, () -> telephoneAdapter.validate(aTelephone));
+        Assertions.assertThrows(DomainException.class, () -> telephoneAdapter.validate(aTelephone));
     }
 
     @Test
@@ -47,9 +48,9 @@ public class TelephoneAdapterImplTest {
     }
 
     @Test
-    void givenAInvalidNullTelephone_whenCallFormatInternational_shouldThrowRuntimeException() {
+    void givenAInvalidNullTelephone_whenCallFormatInternational_shouldThrowDomainException() {
         final String aTelephone = null;
 
-        Assertions.assertThrows(RuntimeException.class, () -> telephoneAdapter.formatInternational(aTelephone));
+        Assertions.assertThrows(DomainException.class, () -> telephoneAdapter.formatInternational(aTelephone));
     }
 }

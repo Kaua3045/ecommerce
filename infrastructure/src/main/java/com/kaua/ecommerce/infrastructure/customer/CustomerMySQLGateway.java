@@ -5,6 +5,7 @@ import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerjpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -38,9 +39,11 @@ public class CustomerMySQLGateway implements CustomerGateway {
         return this.customerRepository.save(CustomerJpaEntity.toEntity(aCustomer)).toDomain();
     }
 
+    @Transactional
     @Override
     public void deleteById(String aAccountId) {
-        if (this.customerRepository.existsByAccountId(aAccountId))
+        if (this.customerRepository.existsByAccountId(aAccountId)){
             this.customerRepository.deleteByAccountId(aAccountId);
+        }
     }
 }

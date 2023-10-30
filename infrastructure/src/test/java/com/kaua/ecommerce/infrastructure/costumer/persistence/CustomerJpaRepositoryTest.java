@@ -192,7 +192,7 @@ public class CustomerJpaRepositoryTest {
     }
 
     @Test
-    void givenAValidNullCpf_whenCallSave_shouldReturnCustomer() {
+    void givenAValidCpf_whenCallSave_shouldReturnCustomer() {
         final var aCustomer = Customer.newCustomer(
                 "123",
                 "teste",
@@ -211,6 +211,82 @@ public class CustomerJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getLastName(), actualResult.getLastName());
         Assertions.assertEquals(aEntity.getEmail(), actualResult.getEmail());
         Assertions.assertEquals(aEntity.getCpf(), actualResult.getCpf());
+        Assertions.assertEquals(aEntity.getTelephone(), actualResult.getTelephone());
+        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
+        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidNullCpf_whenCallSave_shouldReturnCustomer() {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "teste",
+                "testes",
+                "teste@teste.com"
+        );
+
+        final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
+        aEntity.setCpf(null);
+
+        final var actualResult = Assertions.assertDoesNotThrow(() -> customerRepository.save(aEntity));
+
+        Assertions.assertEquals(aEntity.getId(), actualResult.getId());
+        Assertions.assertEquals(aEntity.getAccountId(), actualResult.getAccountId());
+        Assertions.assertEquals(aEntity.getFirstName(), actualResult.getFirstName());
+        Assertions.assertEquals(aEntity.getLastName(), actualResult.getLastName());
+        Assertions.assertEquals(aEntity.getEmail(), actualResult.getEmail());
+        Assertions.assertEquals(aEntity.getCpf(), actualResult.getCpf());
+        Assertions.assertEquals(aEntity.getTelephone(), actualResult.getTelephone());
+        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
+        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidTelephone_whenCallSave_shouldReturnCustomer() {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "teste",
+                "testes",
+                "teste@teste.com"
+        );
+
+        final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
+        aEntity.setTelephone("+11234567890");
+
+        final var actualResult = Assertions.assertDoesNotThrow(() -> customerRepository.save(aEntity));
+
+        Assertions.assertEquals(aEntity.getId(), actualResult.getId());
+        Assertions.assertEquals(aEntity.getAccountId(), actualResult.getAccountId());
+        Assertions.assertEquals(aEntity.getFirstName(), actualResult.getFirstName());
+        Assertions.assertEquals(aEntity.getLastName(), actualResult.getLastName());
+        Assertions.assertEquals(aEntity.getEmail(), actualResult.getEmail());
+        Assertions.assertEquals(aEntity.getCpf(), actualResult.getCpf());
+        Assertions.assertEquals(aEntity.getTelephone(), actualResult.getTelephone());
+        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
+        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidNullTelephone_whenCallSave_shouldReturnCustomer() {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "teste",
+                "testes",
+                "teste@teste.com"
+        );
+
+        final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
+        aEntity.setTelephone("+11234567890");
+
+        final var actualResult = Assertions.assertDoesNotThrow(() -> customerRepository.save(aEntity));
+
+        Assertions.assertEquals(aEntity.getId(), actualResult.getId());
+        Assertions.assertEquals(aEntity.getAccountId(), actualResult.getAccountId());
+        Assertions.assertEquals(aEntity.getFirstName(), actualResult.getFirstName());
+        Assertions.assertEquals(aEntity.getLastName(), actualResult.getLastName());
+        Assertions.assertEquals(aEntity.getEmail(), actualResult.getEmail());
+        Assertions.assertEquals(aEntity.getCpf(), actualResult.getCpf());
+        Assertions.assertEquals(aEntity.getTelephone(), actualResult.getTelephone());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
         Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
     }

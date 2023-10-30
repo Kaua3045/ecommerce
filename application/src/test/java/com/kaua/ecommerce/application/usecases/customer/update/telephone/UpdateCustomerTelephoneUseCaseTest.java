@@ -45,6 +45,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         final var aCommand = UpdateCustomerTelephoneCommand.with(aAccountId, aTelephone);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
+        Mockito.when(telephoneAdapter.formatInternational(aTelephone)).thenReturn(aTelephone);
         Mockito.when(telephoneAdapter.validate(aTelephone)).thenReturn(true);
         Mockito.when(customerGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
 
@@ -54,6 +55,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Assertions.assertEquals(aAccountId, aResult.accountId());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
+        Mockito.verify(telephoneAdapter, Mockito.times(1)).formatInternational(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aAccountId, aCmd.getAccountId())
@@ -83,6 +85,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Assertions.assertEquals(expectedErrorMessage, aResult.getMessage());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
+        Mockito.verify(telephoneAdapter, Mockito.times(0)).formatInternational(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(0)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
     }
@@ -103,6 +106,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         final var aCommand = UpdateCustomerTelephoneCommand.with(aAccountId, aTelephone);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
+        Mockito.when(telephoneAdapter.formatInternational(aTelephone)).thenReturn(aTelephone);
         Mockito.when(telephoneAdapter.validate(aTelephone)).thenReturn(true);
 
         final var aResult = Assertions.assertThrows(DomainException.class, () ->
@@ -112,6 +116,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
+        Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
     }
@@ -132,6 +137,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         final var aCommand = UpdateCustomerTelephoneCommand.with(aAccountId, aTelephone);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
+        Mockito.when(telephoneAdapter.formatInternational(aTelephone)).thenReturn(aTelephone);
         Mockito.when(telephoneAdapter.validate(aTelephone)).thenReturn(false);
 
         final var aResult = useCase.execute(aCommand).getLeft();
@@ -140,6 +146,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
+        Mockito.verify(telephoneAdapter, Mockito.times(1)).formatInternational(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
     }

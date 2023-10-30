@@ -37,4 +37,10 @@ public class CustomerMySQLGateway implements CustomerGateway {
     public Customer update(Customer aCustomer) {
         return this.customerRepository.save(CustomerJpaEntity.toEntity(aCustomer)).toDomain();
     }
+
+    @Override
+    public void deleteById(String aAccountId) {
+        if (this.customerRepository.existsByAccountId(aAccountId))
+            this.customerRepository.deleteByAccountId(aAccountId);
+    }
 }

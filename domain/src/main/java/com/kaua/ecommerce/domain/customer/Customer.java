@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.domain.customer;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
+import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 

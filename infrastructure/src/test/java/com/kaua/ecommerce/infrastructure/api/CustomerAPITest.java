@@ -11,6 +11,7 @@ import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateC
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneOutput;
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneUseCase;
 import com.kaua.ecommerce.domain.customer.Customer;
+import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
@@ -275,14 +276,17 @@ public class CustomerAPITest {
                 "123",
                 "test",
                 "Testes",
-                "test.testes@tss.com");
+                "test.testes@tss.com")
+                .changeTelephone(Telephone.newTelephone("+15551234567"));
 
         final var aAccountId = aCustomer.getAccountId();
+        final var expectedTelephone = "+1 555-123-4567";
 
         Mockito.when(getCustomerByAccountIdUseCase.execute(Mockito.any()))
                 .thenReturn(GetCustomerByAccountIdOutput.from(aCustomer));
 
         final var request = MockMvcRequestBuilders.get("/customers/{accountId}", aAccountId)
+                .param("locale", "US")
                 .accept(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
@@ -294,7 +298,7 @@ public class CustomerAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.last_name", equalTo(aCustomer.getLastName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email", equalTo(aCustomer.getEmail())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cpf", equalTo(aCustomer.getCpf())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.telephone", equalTo(aCustomer.getTelephone())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.telephone", equalTo(expectedTelephone)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.created_at", equalTo(aCustomer.getCreatedAt().toString())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.updated_at", equalTo(aCustomer.getUpdatedAt().toString())));
     }

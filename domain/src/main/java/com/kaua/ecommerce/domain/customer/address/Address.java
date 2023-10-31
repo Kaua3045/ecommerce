@@ -52,6 +52,26 @@ public class Address extends AggregateRoot<AddressID> {
         );
     }
 
+    public static Address with(
+            final String aAddressID,
+            final String aStreet,
+            final String aNumber,
+            final String aComplement,
+            final String aZipCode,
+            final Instant aCreatedAt,
+            final Instant aUpdatedAt
+    ) {
+        return new Address(
+                AddressID.from(aAddressID),
+                aStreet,
+                aNumber,
+                aComplement,
+                aZipCode,
+                aCreatedAt,
+                aUpdatedAt
+        );
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new AddressValidation(this, handler).validate();

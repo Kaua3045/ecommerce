@@ -1,33 +1,39 @@
 package com.kaua.ecommerce.domain.customer;
 
-import com.kaua.ecommerce.domain.ValueObject;
+import com.kaua.ecommerce.domain.AggregateRoot;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
+import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.Error;
+import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
-public class Address extends ValueObject {
+import java.time.Instant;
+
+public class Address extends AggregateRoot<AddressID> {
 
     private String street;
     private String number;
     private String complement;
-    private String city;
-    private String state;
     private String zipCode;
+    private Instant createdAt;
+    private Instant updatedAt;
 
-    public Address(
+    private Address(
+            final AddressID aAddressID,
             final String aStreet,
             final String aNumber,
             final String aComplement,
-            final String aCity,
-            final String aState,
-            final String aZipCode
+            final String aZipCode,
+            final Instant aCreatedAt,
+            final Instant aUpdatedAt
     ) {
+        super(aAddressID);
         this.street = aStreet;
         this.number = aNumber;
         this.complement = aComplement;
-        this.city = aCity;
-        this.state = aState;
         this.zipCode = aZipCode;
+        this.createdAt = aCreatedAt;
+        this.updatedAt = aUpdatedAt;
         selfValidation();
     }
 
@@ -35,17 +41,18 @@ public class Address extends ValueObject {
             final String aStreet,
             final String aNumber,
             final String aComplement,
-            final String aCity,
-            final String aState,
             final String aZipCode
     ) {
+        final var aId = AddressID.unique();
+        final var aNow = InstantUtils.now();
         return new Address(
+                aId,
                 aStreet,
                 aNumber,
                 aComplement,
-                aCity,
-                aState,
-                aZipCode
+                aZipCode,
+                aNow,
+                aNow
         );
     }
 
@@ -93,5 +100,10 @@ public class Address extends ValueObject {
 
     public String getZipCode() {
         return zipCode;
+    }
+
+    @Override
+    public void validate(ValidationHandler handler) {
+
     }
 }

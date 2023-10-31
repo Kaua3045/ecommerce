@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.infrastructure.api.controllers;
 
+import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneCommand;
@@ -7,6 +8,7 @@ import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateC
 import com.kaua.ecommerce.infrastructure.api.CustomerAPI;
 import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerCpfInput;
 import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerTelephoneInput;
+import com.kaua.ecommerce.infrastructure.customer.presenter.CustomerApiPresenter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,13 +18,22 @@ public class CustomerController implements CustomerAPI {
 
     private final UpdateCustomerCpfUseCase updateCustomerCpfUseCase;
     private final UpdateCustomerTelephoneUseCase updateCustomerTelephoneUseCase;
+    private final GetCustomerByAccountIdUseCase getCustomerByAccountIdUseCase;
 
     public CustomerController(
             final UpdateCustomerCpfUseCase updateCustomerCpfUseCase,
-            final UpdateCustomerTelephoneUseCase updateCustomerTelephoneUseCase
+            final UpdateCustomerTelephoneUseCase updateCustomerTelephoneUseCase,
+            final GetCustomerByAccountIdUseCase getCustomerByAccountIdUseCase
     ) {
         this.updateCustomerCpfUseCase = updateCustomerCpfUseCase;
         this.updateCustomerTelephoneUseCase = updateCustomerTelephoneUseCase;
+        this.getCustomerByAccountIdUseCase = getCustomerByAccountIdUseCase;
+    }
+
+    @Override
+    public ResponseEntity<?> getCustomer(String accountId, String locale) {
+        return ResponseEntity.ok(CustomerApiPresenter.present(this.getCustomerByAccountIdUseCase
+                .execute(accountId), locale));
     }
 
     @Override

@@ -4,13 +4,18 @@ import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerCpfInput;
 import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerTelephoneInput;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping(value = "customers")
 public interface CustomerAPI {
+
+    @GetMapping(
+            value = "{accountId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    ResponseEntity<?> getCustomer(
+            @PathVariable String accountId,
+            @RequestParam(name = "locale", defaultValue = "BR") String locale);
 
     @PatchMapping(
             value = "{accountId}/cpf",

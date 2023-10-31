@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.adapters;
 
 import com.kaua.ecommerce.domain.exceptions.DomainException;
+import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -52,5 +53,44 @@ public class TelephoneAdapterImplTest {
         final String aTelephone = null;
 
         Assertions.assertThrows(DomainException.class, () -> telephoneAdapter.formatInternational(aTelephone));
+    }
+
+    @Test
+    void givenAValidTelephone_whenCallFormatToCountry_shouldReturnFormattedTelephone() {
+        final var aRawTelephone = "+15551234567";
+        final var aTelephone = "+1 555-123-4567";
+
+        final var actual = telephoneAdapter.formatToCountry(aRawTelephone, "US");
+
+        Assertions.assertEquals(aTelephone, actual);
+    }
+
+    @Test
+    void givenAnInvalidNullTelephone_whenCallFormatToCountry_shouldReturnNull() {
+        final String aRawTelephone = null;
+
+        final var actual = telephoneAdapter.formatToCountry(aRawTelephone, "US");
+
+        Assertions.assertNull(actual);
+    }
+
+    @Test
+    void givenAnInvalidBlankTelephone_whenCallFormatToCountry_shouldReturnNull() {
+        final var aRawTelephone = " ";
+
+        final var actual = telephoneAdapter.formatToCountry(aRawTelephone, "US");
+
+        Assertions.assertNull(actual);
+    }
+
+    @Test
+    void givenAnInvalidTelephone_whenCallFormatToCountry_shouldThrowDomainException() {
+        final var aRawTelephone = "NAN";
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("telephone");
+
+        final var actual = Assertions.assertThrows(DomainException.class,
+                () -> telephoneAdapter.formatToCountry(aRawTelephone, "US"));
+
+        Assertions.assertEquals(expectedErrorMessage, actual.getErrors().get(0).message());
     }
 }

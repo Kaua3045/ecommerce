@@ -1,10 +1,7 @@
-package com.kaua.ecommerce.domain.customer;
+package com.kaua.ecommerce.domain.customer.address;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
-import com.kaua.ecommerce.domain.exceptions.DomainException;
-import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
-import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
 import java.time.Instant;
@@ -34,7 +31,6 @@ public class Address extends AggregateRoot<AddressID> {
         this.zipCode = aZipCode;
         this.createdAt = aCreatedAt;
         this.updatedAt = aUpdatedAt;
-        selfValidation();
     }
 
     public static Address newAddress(
@@ -56,26 +52,9 @@ public class Address extends AggregateRoot<AddressID> {
         );
     }
 
-    private void selfValidation() {
-        if (this.street == null || this.street.isBlank()) {
-            throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("street")));
-        }
-
-        if (this.number == null || this.number.isBlank()) {
-            throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("number")));
-        }
-
-        if (this.city == null || this.city.isBlank()) {
-            throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("city")));
-        }
-
-        if (this.state == null || this.state.isBlank()) {
-            throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("state")));
-        }
-
-        if (this.zipCode == null || this.zipCode.isBlank()) {
-            throw DomainException.with(new Error(CommonErrorMessage.nullOrBlank("zipCode")));
-        }
+    @Override
+    public void validate(ValidationHandler handler) {
+        new AddressValidation(this, handler).validate();
     }
 
     public String getStreet() {
@@ -90,20 +69,15 @@ public class Address extends AggregateRoot<AddressID> {
         return complement;
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
     public String getZipCode() {
         return zipCode;
     }
 
-    @Override
-    public void validate(ValidationHandler handler) {
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

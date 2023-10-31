@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.application.usecases.customer.update.address;
 
 public record UpdateCustomerAddressCommand(
+        String accountId,
         String street,
         String number,
         String complement,
@@ -10,6 +11,7 @@ public record UpdateCustomerAddressCommand(
 ) {
 
     public static UpdateCustomerAddressCommand with(
+            final String aAccountId,
             final String aStreet,
             final String aNumber,
             final String aComplement,
@@ -18,6 +20,7 @@ public record UpdateCustomerAddressCommand(
             final String aZipCode
     ) {
         return new UpdateCustomerAddressCommand(
+                aAccountId,
                 aStreet,
                 aNumber,
                 aComplement,

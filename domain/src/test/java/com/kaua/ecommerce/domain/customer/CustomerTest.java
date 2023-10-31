@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.domain.customer;
 
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
@@ -527,8 +528,6 @@ public class CustomerTest {
                 "Rua Teste",
                 "123",
                 "Apto 123",
-                "Teste",
-                "Teste",
                 "12345678"
         ));
 
@@ -549,8 +548,6 @@ public class CustomerTest {
         Assertions.assertEquals(aAddress.getStreet(), aCustomerWithAddress.getAddress().getStreet());
         Assertions.assertEquals(aAddress.getNumber(), aCustomerWithAddress.getAddress().getNumber());
         Assertions.assertEquals(aAddress.getComplement(), aCustomerWithAddress.getAddress().getComplement());
-        Assertions.assertEquals(aAddress.getCity(), aCustomerWithAddress.getAddress().getCity());
-        Assertions.assertEquals(aAddress.getState(), aCustomerWithAddress.getAddress().getState());
         Assertions.assertEquals(aAddress.getZipCode(), aCustomerWithAddress.getAddress().getZipCode());
 
         Assertions.assertEquals(aCustomer.getCreatedAt(), aCustomerWithAddress.getCreatedAt());
@@ -572,8 +569,6 @@ public class CustomerTest {
                 "Rua Teste",
                 "123",
                 "Apto 123",
-                "Teste",
-                "Teste",
                 "12345678"
         );
         final var aCreatedAt = InstantUtils.now();
@@ -606,190 +601,8 @@ public class CustomerTest {
         Assertions.assertEquals(aAddress.getStreet(), aCustomer.getAddress().getStreet());
         Assertions.assertEquals(aAddress.getNumber(), aCustomer.getAddress().getNumber());
         Assertions.assertEquals(aAddress.getComplement(), aCustomer.getAddress().getComplement());
-        Assertions.assertEquals(aAddress.getCity(), aCustomer.getAddress().getCity());
-        Assertions.assertEquals(aAddress.getState(), aCustomer.getAddress().getState());
         Assertions.assertEquals(aAddress.getZipCode(), aCustomer.getAddress().getZipCode());
 
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
-    }
-
-    @Test
-    void givenAnInvalidNullStreet_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("street");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        null,
-                        "123",
-                        null,
-                        "city",
-                        "state",
-                        "12345678"));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
-    }
-
-    @Test
-    void givenAnInvalidBlankStreet_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("street");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        " ",
-                        "123",
-                        null,
-                        "city",
-                        "state",
-                        "12345678"));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
-    }
-
-    @Test
-    void givenAnInvalidNullNumber_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("number");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        "street",
-                        null,
-                        null,
-                        "city",
-                        "state",
-                        "12345678"));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
-    }
-
-    @Test
-    void givenAnInvalidBlankNumber_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("number");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        "street",
-                        " ",
-                        null,
-                        "city",
-                        "state",
-                        "12345678"));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
-    }
-
-    @Test
-    void givenAnInvalidNullCity_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("city");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        "street",
-                        "123",
-                        null,
-                        null,
-                        "state",
-                        "12345678"));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
-    }
-
-    @Test
-    void givenAnInvalidBlankCity_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("city");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        "street",
-                        "123",
-                        null,
-                        " ",
-                        "state",
-                        "12345678"));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
-    }
-
-    @Test
-    void givenAnInvalidNullState_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("state");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        "street",
-                        "123",
-                        null,
-                        "city",
-                        null,
-                        "12345678"));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
-    }
-
-    @Test
-    void givenAnInvalidBlankState_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("state");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        "street",
-                        "123",
-                        null,
-                        "city",
-                        " ",
-                        "12345678"));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
-    }
-
-    @Test
-    void givenAnInvalidNullZipCode_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("zipCode");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        "street",
-                        "123",
-                        null,
-                        "city",
-                        "state",
-                        null));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
-    }
-
-    @Test
-    void givenAnInvalidBlankZipCode_whenCallNewAddress_shouldThrowsDomainException() {
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("zipCode");
-        final var expectedErrorCount = 1;
-
-        final var aException = Assertions.assertThrows(DomainException.class,
-                () -> Address.newAddress(
-                        "street",
-                        "123",
-                        null,
-                        "city",
-                        "state",
-                        " "));
-
-        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorCount, aException.getErrors().size());
     }
 }

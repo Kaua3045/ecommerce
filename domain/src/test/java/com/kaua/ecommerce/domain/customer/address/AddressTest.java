@@ -168,4 +168,16 @@ public class AddressTest {
 
         Assertions.assertDoesNotThrow(() -> aAddress.validate(new ThrowsValidationHandler()));
     }
+
+    @Test
+    void testAddressIdEqualsAndHashCode() {
+        final var aAddressId = AddressID.from("123456789");
+        final var anotherAddressId = AddressID.from("123456789");
+
+        Assertions.assertTrue(aAddressId.equals(anotherAddressId));
+        Assertions.assertTrue(aAddressId.equals(aAddressId));
+        Assertions.assertFalse(aAddressId.equals(null));
+        Assertions.assertFalse(aAddressId.equals(""));
+        Assertions.assertEquals(aAddressId.hashCode(), anotherAddressId.hashCode());
+    }
 }

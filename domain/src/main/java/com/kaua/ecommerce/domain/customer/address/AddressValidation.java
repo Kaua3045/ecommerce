@@ -24,6 +24,10 @@ public class AddressValidation extends Validator {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("number")));
         }
 
+        if (this.address.getDistrict() == null || this.address.getDistrict().isBlank()) {
+            this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("district")));
+        }
+
         if (this.address.getZipCode() == null || this.address.getZipCode().isBlank()) {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("zipCode")));
         }

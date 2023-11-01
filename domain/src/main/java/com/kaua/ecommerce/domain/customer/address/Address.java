@@ -12,6 +12,8 @@ public class Address extends AggregateRoot<AddressID> {
     private String number;
     private String complement;
     private String district;
+    private String city;
+    private String state;
     private String zipCode;
     private Instant createdAt;
     private Instant updatedAt;
@@ -22,6 +24,8 @@ public class Address extends AggregateRoot<AddressID> {
             final String aNumber,
             final String aComplement,
             final String aDistrict,
+            final String aCity,
+            final String aState,
             final String aZipCode,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
@@ -31,6 +35,8 @@ public class Address extends AggregateRoot<AddressID> {
         this.number = aNumber;
         this.complement = aComplement;
         this.district = aDistrict;
+        this.city = aCity;
+        this.state = aState;
         this.zipCode = aZipCode;
         this.createdAt = aCreatedAt;
         this.updatedAt = aUpdatedAt;
@@ -41,6 +47,8 @@ public class Address extends AggregateRoot<AddressID> {
             final String aNumber,
             final String aComplement,
             final String aDistrict,
+            final String aCity,
+            final String aState,
             final String aZipCode
     ) {
         final var aId = AddressID.unique();
@@ -51,6 +59,8 @@ public class Address extends AggregateRoot<AddressID> {
                 aNumber,
                 aComplement,
                 aDistrict,
+                aCity,
+                aState,
                 aZipCode,
                 aNow,
                 aNow
@@ -63,6 +73,8 @@ public class Address extends AggregateRoot<AddressID> {
             final String aNumber,
             final String aComplement,
             final String aDistrict,
+            final String aCity,
+            final String aState,
             final String aZipCode,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
@@ -73,6 +85,8 @@ public class Address extends AggregateRoot<AddressID> {
                 aNumber,
                 aComplement,
                 aDistrict,
+                aCity,
+                aState,
                 aZipCode,
                 aCreatedAt,
                 aUpdatedAt
@@ -98,6 +112,14 @@ public class Address extends AggregateRoot<AddressID> {
 
     public String getDistrict() {
         return district;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getState() {
+        return state;
     }
 
     public String getZipCode() {

@@ -6,6 +6,8 @@ public record UpdateCustomerAddressCommand(
         String number,
         String complement,
         String district,
+        String city,
+        String state,
         String zipCode
 ) {
 
@@ -15,6 +17,8 @@ public record UpdateCustomerAddressCommand(
             final String aNumber,
             final String aComplement,
             final String aDistrict,
+            final String aCity,
+            final String aState,
             final String aZipCode
     ) {
         return new UpdateCustomerAddressCommand(
@@ -23,6 +27,8 @@ public record UpdateCustomerAddressCommand(
                 aNumber,
                 aComplement,
                 aDistrict,
+                aCity,
+                aState,
                 aZipCode
         );
     }

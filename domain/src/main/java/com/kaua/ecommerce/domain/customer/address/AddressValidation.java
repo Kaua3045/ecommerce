@@ -28,6 +28,14 @@ public class AddressValidation extends Validator {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("district")));
         }
 
+        if (this.address.getCity() == null || this.address.getCity().isBlank()) {
+            this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("city")));
+        }
+
+        if (this.address.getState() == null || this.address.getState().isBlank()) {
+            this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("state")));
+        }
+
         if (this.address.getZipCode() == null || this.address.getZipCode().isBlank()) {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("zipCode")));
         }

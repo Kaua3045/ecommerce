@@ -529,6 +529,8 @@ public class CustomerTest {
                 "123",
                 "Apto 123",
                 "Bairro",
+                "city",
+                "state",
                 "12345678"
         ));
 
@@ -550,6 +552,8 @@ public class CustomerTest {
         Assertions.assertEquals(aAddress.getNumber(), aCustomerWithAddress.getAddress().getNumber());
         Assertions.assertEquals(aAddress.getComplement(), aCustomerWithAddress.getAddress().getComplement());
         Assertions.assertEquals(aAddress.getDistrict(), aCustomerWithAddress.getAddress().getDistrict());
+        Assertions.assertEquals(aAddress.getCity(), aCustomerWithAddress.getAddress().getCity());
+        Assertions.assertEquals(aAddress.getState(), aCustomerWithAddress.getAddress().getState());
         Assertions.assertEquals(aAddress.getZipCode(), aCustomerWithAddress.getAddress().getZipCode());
 
         Assertions.assertEquals(aCustomer.getCreatedAt(), aCustomerWithAddress.getCreatedAt());
@@ -572,6 +576,8 @@ public class CustomerTest {
                 "123",
                 "Apto 123",
                 "Bairro",
+                "city",
+                "state",
                 "12345678"
         );
         final var aCreatedAt = InstantUtils.now();
@@ -605,6 +611,8 @@ public class CustomerTest {
         Assertions.assertEquals(aAddress.getNumber(), aCustomer.getAddress().getNumber());
         Assertions.assertEquals(aAddress.getComplement(), aCustomer.getAddress().getComplement());
         Assertions.assertEquals(aAddress.getDistrict(), aCustomer.getAddress().getDistrict());
+        Assertions.assertEquals(aAddress.getCity(), aCustomer.getAddress().getCity());
+        Assertions.assertEquals(aAddress.getState(), aCustomer.getAddress().getState());
         Assertions.assertEquals(aAddress.getZipCode(), aCustomer.getAddress().getZipCode());
 
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));

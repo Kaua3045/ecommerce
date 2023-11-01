@@ -15,6 +15,8 @@ public class AddressTest {
         final var aNumber = "123";
         final var aComplement = "complement";
         final var aDistrict = "Bairro";
+        final var aCity = "city";
+        final var aState = "state";
         final var aZipCode = "12345678";
 
         final var aAddress = Address.newAddress(
@@ -22,6 +24,8 @@ public class AddressTest {
                 aNumber,
                 aComplement,
                 aDistrict,
+                aCity,
+                aState,
                 aZipCode);
 
         Assertions.assertNotNull(aAddress.getId());
@@ -44,6 +48,8 @@ public class AddressTest {
                 "123",
                 null,
                 "Bairro",
+                "city",
+                "state",
                 "12345678");
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -63,6 +69,8 @@ public class AddressTest {
                 "123",
                 null,
                 "Bairro",
+                "city",
+                "state",
                 "12345678");
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -82,6 +90,8 @@ public class AddressTest {
                 null,
                 null,
                 "Bairro",
+                "city",
+                "state",
                 "12345678");
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -101,6 +111,8 @@ public class AddressTest {
                 " ",
                 null,
                 "Bairro",
+                "city",
+                "state",
                 "12345678");
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -120,6 +132,8 @@ public class AddressTest {
                 "123",
                 null,
                 null,
+                "city",
+                "state",
                 "12345678");
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -138,6 +152,92 @@ public class AddressTest {
                 "street",
                 "123",
                 null,
+                " ",
+                "city",
+                "state",
+                "12345678");
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aAddress.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+    }
+
+    @Test
+    void givenAnInvalidNullCity_whenCallNewAddress_shouldReturnDomainException() {
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("city");
+        final var expectedErrorCount = 1;
+
+        final var aAddress = Address.newAddress(
+                "street",
+                "123",
+                null,
+                "Bairro",
+                null,
+                "state",
+                "12345678");
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aAddress.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+    }
+
+    @Test
+    void givenAnInvalidBlankCity_whenCallNewAddress_shouldReturnDomainException() {
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("city");
+        final var expectedErrorCount = 1;
+
+        final var aAddress = Address.newAddress(
+                "street",
+                "123",
+                null,
+                "Bairro",
+                " ",
+                "state",
+                "12345678");
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aAddress.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+    }
+
+    @Test
+    void givenAnInvalidNullState_whenCallNewAddress_shouldReturnDomainException() {
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("state");
+        final var expectedErrorCount = 1;
+
+        final var aAddress = Address.newAddress(
+                "street",
+                "123",
+                null,
+                "Bairro",
+                "city",
+                null,
+                "12345678");
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aAddress.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+    }
+
+    @Test
+    void givenAnInvalidBlankState_whenCallNewAddress_shouldReturnDomainException() {
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("state");
+        final var expectedErrorCount = 1;
+
+        final var aAddress = Address.newAddress(
+                "street",
+                "123",
+                null,
+                "Bairro",
+                "city",
                 " ",
                 "12345678");
 
@@ -158,6 +258,8 @@ public class AddressTest {
                 "123",
                 null,
                 "Bairro",
+                "city",
+                "state",
                 null);
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -177,6 +279,8 @@ public class AddressTest {
                 "123",
                 null,
                 "Bairro",
+                "city",
+                "state",
                 " ");
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -193,6 +297,8 @@ public class AddressTest {
         final var aNumber = "123";
         final var aComplement = "complement";
         final var aDistrict = "Bairro";
+        final var aCity = "city";
+        final var aState = "state";
         final var aZipCode = "12345678";
         final var aNow = InstantUtils.now();
 
@@ -202,6 +308,8 @@ public class AddressTest {
                 aNumber,
                 aComplement,
                 aDistrict,
+                aCity,
+                aState,
                 aZipCode,
                 aNow,
                 aNow

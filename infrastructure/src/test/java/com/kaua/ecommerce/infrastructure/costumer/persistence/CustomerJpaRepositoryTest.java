@@ -1,7 +1,9 @@
 package com.kaua.ecommerce.infrastructure.costumer.persistence;
 
 import com.kaua.ecommerce.domain.customer.Customer;
+import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
+import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerjpaRepository;
 import org.hibernate.PropertyValueException;
@@ -287,6 +289,41 @@ public class CustomerJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getEmail(), actualResult.getEmail());
         Assertions.assertEquals(aEntity.getCpf(), actualResult.getCpf());
         Assertions.assertEquals(aEntity.getTelephone(), actualResult.getTelephone());
+        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
+        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidNullAddress_whenCallSave_shouldReturnCustomer() {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "teste",
+                "testes",
+                "teste@teste.com"
+        );
+        final var aAddress = Address.newAddress(
+                "Rua Teste",
+                "123",
+                "Complemento",
+                "Bairro Teste",
+                "Cidade Teste",
+                "Estado Teste",
+                "12345678"
+        );
+
+        final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
+        aEntity.setAddress(AddressJpaEntity.toEntity(aAddress));
+
+        final var actualResult = Assertions.assertDoesNotThrow(() -> customerRepository.save(aEntity));
+
+        Assertions.assertEquals(aEntity.getId(), actualResult.getId());
+        Assertions.assertEquals(aEntity.getAccountId(), actualResult.getAccountId());
+        Assertions.assertEquals(aEntity.getFirstName(), actualResult.getFirstName());
+        Assertions.assertEquals(aEntity.getLastName(), actualResult.getLastName());
+        Assertions.assertEquals(aEntity.getEmail(), actualResult.getEmail());
+        Assertions.assertEquals(aEntity.getCpf(), actualResult.getCpf());
+        Assertions.assertEquals(aEntity.getTelephone(), actualResult.getTelephone());
+        Assertions.assertEquals(aEntity.getAddress().getId(), actualResult.getAddress().getId());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
         Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
     }

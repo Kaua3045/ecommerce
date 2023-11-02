@@ -9,7 +9,7 @@ public interface CustomerjpaRepository extends JpaRepository<CustomerJpaEntity, 
 
     boolean existsByAccountId(String accountId);
 
-    @Query("SELECT c FROM Customer c JOIN FETCH c.address WHERE c.accountId = :accountId")
+    @Query("SELECT c FROM Customer c LEFT JOIN FETCH c.address WHERE c.accountId = :accountId")
     Optional<CustomerJpaEntity> findByAccountId(String accountId);
 
     void deleteByAccountId(String accountId);

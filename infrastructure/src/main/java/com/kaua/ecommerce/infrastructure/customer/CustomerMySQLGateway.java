@@ -29,7 +29,6 @@ public class CustomerMySQLGateway implements CustomerGateway {
         return this.customerRepository.existsByAccountId(accountId);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Optional<Customer> findByAccountId(String aAccountId) {
         return this.customerRepository.findByAccountId(aAccountId).map(CustomerJpaEntity::toDomain);

@@ -61,7 +61,10 @@ public class DefaultUpdateCustomerAddressUseCase extends UpdateCustomerAddressUs
 
         final var aCustomerWithAddress = aCustomer.changeAddress(aAddress);
         this.customerGateway.update(aCustomerWithAddress);
-        this.addressGateway.deleteById(aOldAddressId);
+
+        if (aOldAddressId != null) {
+            this.addressGateway.deleteById(aOldAddressId);
+        }
 
         return Either.right(UpdateCustomerAddressOutput.from(aCustomerWithAddress));
     }

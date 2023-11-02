@@ -1,10 +1,8 @@
 package com.kaua.ecommerce.infrastructure.customer.persistence;
 
 import com.kaua.ecommerce.domain.customer.Customer;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 
@@ -34,6 +32,10 @@ public class CustomerJpaEntity {
     @Column(name = "telephone", unique = true)
     private String telephone;
 
+    @JoinColumn(name = "address_id", referencedColumnName = "address_id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private AddressJpaEntity address;
+
     @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant createdAt;
 
@@ -50,6 +52,7 @@ public class CustomerJpaEntity {
             final String email,
             final String cpf,
             final String telephone,
+            final AddressJpaEntity address,
             final Instant createdAt,
             final Instant updatedAt
     ) {
@@ -60,6 +63,7 @@ public class CustomerJpaEntity {
         this.email = email;
         this.cpf = cpf;
         this.telephone = telephone;
+        this.address = address;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -73,6 +77,7 @@ public class CustomerJpaEntity {
                 aCustomer.getEmail(),
                 aCustomer.getCpf() == null ? null : aCustomer.getCpf().getValue(),
                 aCustomer.getTelephone() == null ? null : aCustomer.getTelephone().getValue(),
+                aCustomer.getAddress() == null ? null : AddressJpaEntity.toEntity(aCustomer.getAddress()),
                 aCustomer.getCreatedAt(),
                 aCustomer.getUpdatedAt()
         );
@@ -87,6 +92,7 @@ public class CustomerJpaEntity {
                 getEmail(),
                 getCpf(),
                 getTelephone(),
+                getAddress() == null ? null : getAddress().toDomain(),
                 getCreatedAt(),
                 getUpdatedAt()
         );
@@ -146,6 +152,14 @@ public class CustomerJpaEntity {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public AddressJpaEntity getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressJpaEntity address) {
+        this.address = address;
     }
 
     public Instant getCreatedAt() {

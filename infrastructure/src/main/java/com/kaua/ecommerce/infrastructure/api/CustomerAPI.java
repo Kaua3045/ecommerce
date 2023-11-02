@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.infrastructure.api;
 
+import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerAddressInput;
 import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerCpfInput;
 import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerTelephoneInput;
 import org.springframework.http.MediaType;
@@ -30,4 +31,11 @@ public interface CustomerAPI {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     ResponseEntity<?> updateCustomerTelephone(@PathVariable String accountId, @RequestBody UpdateCustomerTelephoneInput body);
+
+    @PatchMapping(
+            value = "{accountId}/address",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    ResponseEntity<?> updateCustomerAddress(@PathVariable String accountId, @RequestBody UpdateCustomerAddressInput body);
 }

@@ -1,9 +1,14 @@
 package com.kaua.ecommerce.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kaua.ecommerce.application.adapters.AddressAdapter;
+import com.kaua.ecommerce.application.adapters.responses.AddressResponse;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdOutput;
 import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdUseCase;
+import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCustomerAddressCommand;
+import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCustomerAddressOutput;
+import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCustomerAddressUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfOutput;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
@@ -17,6 +22,7 @@ import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import com.kaua.ecommerce.infrastructure.ControllerTest;
+import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerAddressInput;
 import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerCpfInput;
 import com.kaua.ecommerce.infrastructure.customer.models.UpdateCustomerTelephoneInput;
 import org.junit.jupiter.api.Assertions;
@@ -31,6 +37,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -44,6 +52,9 @@ public class CustomerAPITest {
     private ObjectMapper mapper;
 
     @MockBean
+    private AddressAdapter addressAdapter;
+
+    @MockBean
     private UpdateCustomerCpfUseCase updateCustomerCpfUseCase;
 
     @MockBean
@@ -51,6 +62,9 @@ public class CustomerAPITest {
 
     @MockBean
     private GetCustomerByAccountIdUseCase getCustomerByAccountIdUseCase;
+
+    @MockBean
+    private UpdateCustomerAddressUseCase updateCustomerAddressUseCase;
 
     @Test
     void givenAValidInput_whenCallUpdateCpf_thenReturnStatusOkAndAccountId() throws Exception {
@@ -318,5 +332,189 @@ public class CustomerAPITest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+    }
+
+    @Test
+    void givenAValidInput_whenCallUpdateAddress_thenReturnStatusOkAndAccountId() throws Exception {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "test",
+                "Testes",
+                "test.testes@tss.com"
+        );
+
+        final var aAccountId = aCustomer.getAccountId();
+        final var aInput = getUpdateCustomerAddressInput();
+
+        Mockito.when(addressAdapter.findAddressByZipCode(Mockito.any()))
+                        .thenReturn(Optional.of(getAddressResponse()));
+        Mockito.when(updateCustomerAddressUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(UpdateCustomerAddressOutput.from(aCustomer)));
+
+        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/address", aAccountId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accountId", equalTo(aAccountId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCustomerAddressCommand.class);
+
+        Mockito.verify(updateCustomerAddressUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aAccountId, actualCmd.accountId());
+        Assertions.assertEquals(aInput.street(), actualCmd.street());
+        Assertions.assertEquals(aInput.number(), actualCmd.number());
+        Assertions.assertEquals(aInput.complement(), actualCmd.complement());
+        Assertions.assertEquals(aInput.district(), actualCmd.district());
+        Assertions.assertEquals(aInput.city(), actualCmd.city());
+        Assertions.assertEquals(aInput.state(), actualCmd.state());
+        Assertions.assertEquals(aInput.zipCode(), actualCmd.zipCode());
+    }
+
+    @Test
+    void givenAnInvalidAccountId_whenCallUpdateAddress_thenThrowsNotFoundException() throws Exception {
+        final var aAccountId = "123";
+
+        final var expectedErrorMessage = "Customer with id 123 was not found";
+
+        final var aInput = getUpdateCustomerAddressInput();
+
+        Mockito.when(updateCustomerAddressUseCase.execute(Mockito.any()))
+                .thenThrow(NotFoundException.with(Customer.class, aAccountId).get());
+
+        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/address", aAccountId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCustomerAddressCommand.class);
+
+        Mockito.verify(updateCustomerAddressUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aAccountId, actualCmd.accountId());
+        Assertions.assertEquals(aInput.street(), actualCmd.street());
+        Assertions.assertEquals(aInput.number(), actualCmd.number());
+        Assertions.assertEquals(aInput.complement(), actualCmd.complement());
+        Assertions.assertEquals(aInput.district(), actualCmd.district());
+        Assertions.assertEquals(aInput.city(), actualCmd.city());
+        Assertions.assertEquals(aInput.state(), actualCmd.state());
+        Assertions.assertEquals(aInput.zipCode(), actualCmd.zipCode());
+    }
+
+    @Test
+    void givenAnInvalidAddress_whenCallUpdateAddress_thenReturnDomainException() throws Exception {
+        final var aCustomer = Customer.newCustomer(
+                "123",
+                "test",
+                "Testes",
+                "test.testes@tss.com"
+        );
+
+        final var aAccountId = aCustomer.getAccountId();
+        final var aStreet = " ";
+        final var aNumber = "0";
+        final var aComplement = "Casa";
+        final var aDistrict = "Centro";
+        final var aCity = "São Paulo";
+        final var aState = "SP";
+        final var aZipCode = "12345678";
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("street");
+
+        final var aInput = new UpdateCustomerAddressInput(
+                aStreet,
+                aNumber,
+                aComplement,
+                aDistrict,
+                aCity,
+                aState,
+                aZipCode
+
+        );
+
+        Mockito.when(addressAdapter.findAddressByZipCode(Mockito.any()))
+                .thenReturn(Optional.of(getAddressResponse()));
+        Mockito.when(updateCustomerAddressUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/address", aAccountId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCustomerAddressCommand.class);
+
+        Mockito.verify(updateCustomerAddressUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aAccountId, actualCmd.accountId());
+        Assertions.assertEquals(aInput.street(), actualCmd.street());
+        Assertions.assertEquals(aInput.number(), actualCmd.number());
+        Assertions.assertEquals(aInput.complement(), actualCmd.complement());
+        Assertions.assertEquals(aInput.district(), actualCmd.district());
+        Assertions.assertEquals(aInput.city(), actualCmd.city());
+        Assertions.assertEquals(aInput.state(), actualCmd.state());
+        Assertions.assertEquals(aInput.zipCode(), actualCmd.zipCode());
+    }
+
+    private UpdateCustomerAddressInput getUpdateCustomerAddressInput() {
+        final var aStreet = "Rua dos Bobos";
+        final var aNumber = "0";
+        final var aComplement = "Casa";
+        final var aDistrict = "Centro";
+        final var aCity = "São Paulo";
+        final var aState = "SP";
+        final var aZipCode = "12345678";
+
+        final var aInput = new UpdateCustomerAddressInput(
+                aStreet,
+                aNumber,
+                aComplement,
+                aDistrict,
+                aCity,
+                aState,
+                aZipCode
+
+        );
+        return aInput;
+    }
+
+    private AddressResponse getAddressResponse() {
+        final var aStreet = "Rua dos Bobos";
+        final var aComplement = "Casa";
+        final var aDistrict = "Centro";
+        final var aCity = "São Paulo";
+        final var aState = "SP";
+        final var aZipCode = "12345678";
+
+        return new AddressResponse(
+                aZipCode,
+                aStreet,
+                aComplement,
+                aDistrict,
+                aCity,
+                aState
+
+        );
     }
 }

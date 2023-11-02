@@ -76,7 +76,7 @@ public class UpdateCustomerAddressUseCaseTest {
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
         Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(1)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aAccountId, aCmd.getAccountId())
                 && Objects.equals(aCustomer.getId(), aCmd.getId())

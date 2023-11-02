@@ -73,7 +73,7 @@ public class CustomerController implements CustomerAPI {
                         body.district(),
                         body.city(),
                         body.state(),
-                        body.zipCode()
+                        body.zipCode().replaceAll("[-.]", "")
                 ));
 
         return aResult.isLeft()

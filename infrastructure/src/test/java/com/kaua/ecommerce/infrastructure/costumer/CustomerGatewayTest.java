@@ -3,6 +3,7 @@ package com.kaua.ecommerce.infrastructure.costumer;
 import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.customer.Telephone;
+import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.CustomerMySQLGateway;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
@@ -124,6 +125,74 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomerWithCpf.getTelephone().getValue(), actualEntity.getTelephone());
         Assertions.assertEquals(aCustomerWithCpf.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomerWithCpf.getUpdatedAt(), actualEntity.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidCustomerWithAddress_whenCallUpdate_shouldReturnACustomerUpdated() {
+        final var aAccountId = "123456789";
+        final var aFirstName = "Teste";
+        final var aLastName = "Testes";
+        final var aEmail = "teste.testes@fakte.com";
+        final var aCleanCpf = Cpf.newCpf("50212367099");
+        final var aTelephone = Telephone.newTelephone("+11234567890");
+        final var aAddress = Address.newAddress(
+                "Rua Teste",
+                "123",
+                "Complemento",
+                "Bairro Teste",
+                "Cidade Teste",
+                "Estado Teste",
+                "12345678"
+        );
+
+        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
+
+        Assertions.assertEquals(0, customerRepository.count());
+        customerRepository.save(CustomerJpaEntity.toEntity(aCustomer));
+        Assertions.assertEquals(1, customerRepository.count());
+
+        final var aCustomerUpdatedAt = aCustomer.getUpdatedAt();
+
+        final var aCustomerWithTelephoneAndCpfAndAddress = aCustomer.changeTelephone(aTelephone)
+                .changeCpf(aCleanCpf)
+                .changeAddress(aAddress);
+        final var actualCustomer = customerGateway.update(aCustomerWithTelephoneAndCpfAndAddress);
+
+        Assertions.assertEquals(aCustomer.getId().getValue(), actualCustomer.getId().getValue());
+        Assertions.assertEquals(aCustomer.getAccountId(), actualCustomer.getAccountId());
+        Assertions.assertEquals(aCustomer.getFirstName(), actualCustomer.getFirstName());
+        Assertions.assertEquals(aCustomer.getLastName(), actualCustomer.getLastName());
+        Assertions.assertEquals(aCustomer.getEmail(), actualCustomer.getEmail());
+        Assertions.assertEquals(aCleanCpf.getValue(), actualCustomer.getCpf().getValue());
+        Assertions.assertEquals(aTelephone.getValue(), actualCustomer.getTelephone().getValue());
+        Assertions.assertEquals(aAddress.getStreet(), actualCustomer.getAddress().getStreet());
+        Assertions.assertEquals(aAddress.getNumber(), actualCustomer.getAddress().getNumber());
+        Assertions.assertEquals(aAddress.getComplement(), actualCustomer.getAddress().getComplement());
+        Assertions.assertEquals(aAddress.getDistrict(), actualCustomer.getAddress().getDistrict());
+        Assertions.assertEquals(aAddress.getCity(), actualCustomer.getAddress().getCity());
+        Assertions.assertEquals(aAddress.getState(), actualCustomer.getAddress().getState());
+        Assertions.assertEquals(aAddress.getZipCode(), actualCustomer.getAddress().getZipCode());
+        Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
+        Assertions.assertTrue(aCustomerUpdatedAt.isBefore(actualCustomer.getUpdatedAt()));
+
+        final var actualEntity = customerRepository.findById(actualCustomer.getId().getValue()).get();
+
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getId().getValue(), actualEntity.getId());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getAccountId(), actualEntity.getAccountId());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getFirstName(), actualEntity.getFirstName());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getLastName(), actualEntity.getLastName());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getEmail(), actualEntity.getEmail());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getCpf().getValue(), actualEntity.getCpf());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getTelephone().getValue(), actualEntity.getTelephone());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getAddress().getStreet(), actualEntity.getAddress().getStreet());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getAddress().getNumber(), actualEntity.getAddress().getNumber());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getAddress().getComplement(), actualEntity.getAddress().getComplement());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getAddress().getDistrict(), actualEntity.getAddress().getDistrict());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getAddress().getCity(), actualEntity.getAddress().getCity());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getAddress().getState(), actualEntity.getAddress().getState());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getAddress().getZipCode(), actualEntity.getAddress().getZipCode());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getCreatedAt(), actualEntity.getCreatedAt());
+        Assertions.assertEquals(aCustomerWithTelephoneAndCpfAndAddress.getUpdatedAt(), actualEntity.getUpdatedAt());
     }
 
     @Test

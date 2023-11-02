@@ -1,6 +1,8 @@
 package com.kaua.ecommerce.infrastructure.configurations.usecases;
 
+import com.kaua.ecommerce.application.adapters.AddressAdapter;
 import com.kaua.ecommerce.application.adapters.TelephoneAdapter;
+import com.kaua.ecommerce.application.gateways.AddressGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.application.usecases.customer.create.CreateCustomerUseCase;
 import com.kaua.ecommerce.application.usecases.customer.create.DefaultCreateCustomerUseCase;
@@ -8,6 +10,8 @@ import com.kaua.ecommerce.application.usecases.customer.delete.DefaultDeleteCust
 import com.kaua.ecommerce.application.usecases.customer.delete.DeleteCustomerUseCase;
 import com.kaua.ecommerce.application.usecases.customer.retrieve.get.DefaultGetCustomerByAccountIdUseCase;
 import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdUseCase;
+import com.kaua.ecommerce.application.usecases.customer.update.address.DefaultUpdateCustomerAddressUseCase;
+import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCustomerAddressUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.DefaultUpdateCustomerCpfUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.DefaultUpdateCustomerTelephoneUseCase;
@@ -22,10 +26,19 @@ public class CustomerUseCaseConfig {
 
     private final CustomerGateway customerGateway;
     private final TelephoneAdapter telephoneAdapter;
+    private final AddressAdapter addressAdapter;
+    private final AddressGateway addressGateway;
 
-    public CustomerUseCaseConfig(final CustomerGateway customerGateway, final TelephoneAdapter telephoneAdapter) {
+    public CustomerUseCaseConfig(
+            final CustomerGateway customerGateway,
+            final TelephoneAdapter telephoneAdapter,
+            final AddressAdapter addressAdapter,
+            final AddressGateway addressGateway
+    ) {
         this.customerGateway = Objects.requireNonNull(customerGateway);
         this.telephoneAdapter = Objects.requireNonNull(telephoneAdapter);
+        this.addressAdapter = Objects.requireNonNull(addressAdapter);
+        this.addressGateway = Objects.requireNonNull(addressGateway);
     }
 
     @Bean
@@ -41,6 +54,11 @@ public class CustomerUseCaseConfig {
     @Bean
     public UpdateCustomerTelephoneUseCase updateCustomerTelephoneUseCase() {
         return new DefaultUpdateCustomerTelephoneUseCase(customerGateway, telephoneAdapter);
+    }
+
+    @Bean
+    public UpdateCustomerAddressUseCase updateCustomerAddressUseCase() {
+        return new DefaultUpdateCustomerAddressUseCase(customerGateway, addressGateway, addressAdapter);
     }
 
     @Bean

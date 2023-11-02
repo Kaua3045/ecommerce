@@ -2,6 +2,7 @@ package com.kaua.ecommerce.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdUseCase;
+import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCustomerAddressUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneUseCase;
@@ -42,6 +43,9 @@ public class GlobalExceptionHandlerTest {
 
     @MockBean
     private GetCustomerByAccountIdUseCase getCustomerByAccountIdUseCase;
+
+    @MockBean
+    private UpdateCustomerAddressUseCase updateCustomerAddressUseCase;
 
     @Test
     void testThrowDomainException() throws Exception {

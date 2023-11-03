@@ -4,6 +4,7 @@ import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.customer.Telephone;
+import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,15 @@ public class GetCustomerByAccountIdUseCaseTest {
                 "Testes",
                 "tes.testes@tsss.com"
         ).changeCpf(Cpf.newCpf("50212367099"))
-                .changeTelephone(Telephone.newTelephone("5511999999999"));
+                .changeTelephone(Telephone.newTelephone("5511999999999"))
+                .changeAddress(Address.newAddress(
+                        "Rua dos Testes",
+                        "123",
+                        "Teste",
+                        "Teste",
+                        "Teste",
+                        "Teste",
+                        "123456789"));
 
         Mockito.when(customerGateway.findByAccountId(aCustomer.getAccountId()))
                 .thenReturn(Optional.of(aCustomer));
@@ -46,6 +55,13 @@ public class GetCustomerByAccountIdUseCaseTest {
         Assertions.assertEquals(aCustomer.getEmail(), output.email());
         Assertions.assertEquals(aCustomer.getCpf().getFormattedCpf(), output.cpf());
         Assertions.assertEquals(aCustomer.getTelephone().getValue(), output.telephone());
+        Assertions.assertEquals(aCustomer.getAddress().getStreet(), output.address().street());
+        Assertions.assertEquals(aCustomer.getAddress().getNumber(), output.address().number());
+        Assertions.assertEquals(aCustomer.getAddress().getComplement(), output.address().complement());
+        Assertions.assertEquals(aCustomer.getAddress().getDistrict(), output.address().district());
+        Assertions.assertEquals(aCustomer.getAddress().getCity(), output.address().city());
+        Assertions.assertEquals(aCustomer.getAddress().getState(), output.address().state());
+        Assertions.assertEquals(aCustomer.getAddress().getZipCode(), output.address().zipCode());
         Assertions.assertEquals(aCustomer.getCreatedAt(), output.createdAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), output.updatedAt());
 
@@ -53,7 +69,7 @@ public class GetCustomerByAccountIdUseCaseTest {
     }
 
     @Test
-    void givenAValidAccountIdWithNullCpfAndTelephone_whenCallGetCustomerByAccountId_shouldReturnCustomer() {
+    void givenAValidAccountIdWithNullCpfAndTelephoneAndAddress_whenCallGetCustomerByAccountId_shouldReturnCustomer() {
         final var aCustomer = Customer.newCustomer(
                         "123",
                         "Test",
@@ -73,6 +89,7 @@ public class GetCustomerByAccountIdUseCaseTest {
         Assertions.assertEquals(aCustomer.getEmail(), output.email());
         Assertions.assertNull(output.cpf());
         Assertions.assertNull(output.telephone());
+        Assertions.assertNull(output.address());
         Assertions.assertEquals(aCustomer.getCreatedAt(), output.createdAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), output.updatedAt());
 

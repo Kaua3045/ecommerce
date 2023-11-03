@@ -2,6 +2,7 @@ package com.kaua.ecommerce.infrastructure.customer.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerAddressOutput;
 import com.kaua.ecommerce.infrastructure.adapters.TelephoneAdapterImpl;
 
 public record GetCustomerByAccountIdResponse(
@@ -12,6 +13,7 @@ public record GetCustomerByAccountIdResponse(
         @JsonProperty("email") String email,
         @JsonProperty("cpf") String cpf,
         @JsonProperty("telephone") String telephone,
+        @JsonProperty("address") GetCustomerAddressOutput address,
         @JsonProperty("created_at") String createdAt,
         @JsonProperty("updated_at") String updatedAt
 ) {
@@ -27,6 +29,7 @@ public record GetCustomerByAccountIdResponse(
             final String email,
             final String cpf,
             final String telephone,
+            final GetCustomerAddressOutput address,
             final String createdAt,
             final String updatedAt,
             final String locale
@@ -39,6 +42,7 @@ public record GetCustomerByAccountIdResponse(
                 email,
                 cpf,
                 telephoneAdapter.formatToCountry(telephone, locale),
+                address,
                 createdAt,
                 updatedAt
         );

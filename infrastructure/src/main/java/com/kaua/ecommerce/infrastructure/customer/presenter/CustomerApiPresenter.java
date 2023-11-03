@@ -16,6 +16,7 @@ public final class CustomerApiPresenter {
                 aOutput.email(),
                 aOutput.cpf(),
                 aOutput.telephone(),
+                aOutput.address(),
                 aOutput.createdAt().toString(),
                 aOutput.updatedAt().toString(),
                 aLocale

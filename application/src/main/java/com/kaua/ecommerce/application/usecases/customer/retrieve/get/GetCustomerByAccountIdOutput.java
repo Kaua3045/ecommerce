@@ -12,6 +12,7 @@ public record GetCustomerByAccountIdOutput(
         String email,
         String cpf,
         String telephone,
+        GetCustomerAddressOutput address,
         Instant createdAt,
         Instant updatedAt
 ) {
@@ -25,6 +26,7 @@ public record GetCustomerByAccountIdOutput(
                 aCustomer.getEmail(),
                 aCustomer.getCpf() == null ? null : aCustomer.getCpf().getFormattedCpf(),
                 aCustomer.getTelephone() == null ? null : aCustomer.getTelephone().getValue(),
+                aCustomer.getAddress() == null ? null : GetCustomerAddressOutput.from(aCustomer.getAddress()),
                 aCustomer.getCreatedAt(),
                 aCustomer.getUpdatedAt()
         );

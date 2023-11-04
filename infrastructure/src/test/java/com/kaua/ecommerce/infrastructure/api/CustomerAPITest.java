@@ -15,10 +15,8 @@ import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustome
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneOutput;
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneUseCase;
-import com.kaua.ecommerce.domain.customer.Cpf;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Customer;
-import com.kaua.ecommerce.domain.customer.Telephone;
-import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
@@ -70,13 +68,7 @@ public class CustomerAPITest {
 
     @Test
     void givenAValidInput_whenCallUpdateCpf_thenReturnStatusOkAndAccountId() throws Exception {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "test",
-                "Testes",
-                "test.testes@tss.com"
-        );
-
+        final var aCustomer = Fixture.Customers.customerDefault;
         final var aCleanCpf = "81595915001";
         final var aAccountId = aCustomer.getAccountId();
 
@@ -110,7 +102,7 @@ public class CustomerAPITest {
         final var aCleanCpf = "81595915001";
         final var aAccountId = "123";
 
-        final var expectedErrorMessage = "Customer with id 123 was not found";
+        final var expectedErrorMessage = Fixture.notFoundMessage(Customer.class, aAccountId);
 
         final var aInput = new UpdateCustomerCpfInput(aCleanCpf);
 
@@ -139,13 +131,7 @@ public class CustomerAPITest {
 
     @Test
     void givenAnInvalidCpf_whenCallUpdateCpf_thenReturnDomainException() throws Exception {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "test",
-                "Testes",
-                "test.testes@tss.com"
-        );
-
+        final var aCustomer = Fixture.Customers.customerDefault;
         final var aCleanCpf = "815959150011";
         final var aAccountId = aCustomer.getAccountId();
 
@@ -179,13 +165,7 @@ public class CustomerAPITest {
 
     @Test
     void givenAValidInput_whenCallUpdateTelephone_thenReturnStatusOkAndAccountId() throws Exception {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "test",
-                "Testes",
-                "test.testes@tss.com"
-        );
-
+        final var aCustomer = Fixture.Customers.customerDefault;
         final var aTelephone = "+11234567890";
         final var aAccountId = aCustomer.getAccountId();
 
@@ -219,7 +199,7 @@ public class CustomerAPITest {
         final var aTelephone = "+11234567890";
         final var aAccountId = "123";
 
-        final var expectedErrorMessage = "Customer with id 123 was not found";
+        final var expectedErrorMessage = Fixture.notFoundMessage(Customer.class, aAccountId);
 
         final var aInput = new UpdateCustomerTelephoneInput(aTelephone);
 
@@ -248,13 +228,7 @@ public class CustomerAPITest {
 
     @Test
     void givenAnInvalidTelephone_whenCallUpdateTelephone_thenReturnDomainException() throws Exception {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "test",
-                "Testes",
-                "test.testes@tss.com"
-        );
-
+        final var aCustomer = Fixture.Customers.customerDefault;
         final var aTelephone = " ";
         final var aAccountId = aCustomer.getAccountId();
 
@@ -288,22 +262,7 @@ public class CustomerAPITest {
 
     @Test
     void givenAValidAccountId_whenCallGetCustomer_shouldReturnStatusOkAndCustomer() throws Exception {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "test",
-                "Testes",
-                "test.testes@tss.com")
-                .changeTelephone(Telephone.newTelephone("+15551234567"))
-                .changeCpf(Cpf.newCpf("50212367099"))
-                .changeAddress(Address.newAddress(
-                        "Rua dos Testes",
-                        "123",
-                        "Teste",
-                        "Teste",
-                        "Teste",
-                        "Teste",
-                        "123456789"
-                ));
+        final var aCustomer = Fixture.Customers.customerWithAllParams;
 
         final var aAccountId = aCustomer.getAccountId();
         final var expectedTelephone = "+1 555-123-4567";
@@ -340,7 +299,7 @@ public class CustomerAPITest {
     @Test
     void givenAnInvalidAccountId_whenCallGetCustomer_shouldThrowNotFoundException() throws Exception {
         final var aAccountId = "123";
-        final var expectedErrorMessage = "Customer with id 123 was not found";
+        final var expectedErrorMessage = Fixture.notFoundMessage(Customer.class, aAccountId);
 
         Mockito.when(getCustomerByAccountIdUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Customer.class, aAccountId).get());
@@ -356,13 +315,7 @@ public class CustomerAPITest {
 
     @Test
     void givenAValidInput_whenCallUpdateAddress_thenReturnStatusOkAndAccountId() throws Exception {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "test",
-                "Testes",
-                "test.testes@tss.com"
-        );
-
+        final var aCustomer = Fixture.Customers.customerDefault;
         final var aAccountId = aCustomer.getAccountId();
         final var aInput = getUpdateCustomerAddressInput();
 
@@ -401,7 +354,7 @@ public class CustomerAPITest {
     void givenAnInvalidAccountId_whenCallUpdateAddress_thenThrowsNotFoundException() throws Exception {
         final var aAccountId = "123";
 
-        final var expectedErrorMessage = "Customer with id 123 was not found";
+        final var expectedErrorMessage = Fixture.notFoundMessage(Customer.class, aAccountId);
 
         final var aInput = getUpdateCustomerAddressInput();
 
@@ -436,12 +389,7 @@ public class CustomerAPITest {
 
     @Test
     void givenAnInvalidAddress_whenCallUpdateAddress_thenReturnDomainException() throws Exception {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "test",
-                "Testes",
-                "test.testes@tss.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aAccountId = aCustomer.getAccountId();
         final var aStreet = " ";
@@ -506,7 +454,7 @@ public class CustomerAPITest {
         final var aState = "SP";
         final var aZipCode = "12345678";
 
-        final var aInput = new UpdateCustomerAddressInput(
+        return new UpdateCustomerAddressInput(
                 aStreet,
                 aNumber,
                 aComplement,
@@ -516,7 +464,6 @@ public class CustomerAPITest {
                 aZipCode
 
         );
-        return aInput;
     }
 
     private AddressResponse getAddressResponse() {

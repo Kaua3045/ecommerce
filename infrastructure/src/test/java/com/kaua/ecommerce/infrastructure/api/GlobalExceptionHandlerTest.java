@@ -6,6 +6,7 @@ import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCus
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.cpf.UpdateCustomerCpfUseCase;
 import com.kaua.ecommerce.application.usecases.customer.update.telephone.UpdateCustomerTelephoneUseCase;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
@@ -84,7 +85,7 @@ public class GlobalExceptionHandlerTest {
         final var aCleanCpf = "81595915001";
         final var aAccountId = "123";
 
-        final var expectedErrorMessage = "Customer with id 123 was not found";
+        final var expectedErrorMessage = Fixture.notFoundMessage(Customer.class, aAccountId);
 
         final var aInput = new UpdateCustomerCpfInput(aCleanCpf);
 

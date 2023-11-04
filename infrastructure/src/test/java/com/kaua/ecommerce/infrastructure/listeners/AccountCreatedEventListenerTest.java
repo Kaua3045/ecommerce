@@ -4,7 +4,7 @@ import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.customer.create.CreateCustomerCommand;
 import com.kaua.ecommerce.application.usecases.customer.create.CreateCustomerOutput;
 import com.kaua.ecommerce.application.usecases.customer.create.CreateCustomerUseCase;
-import com.kaua.ecommerce.domain.customer.Customer;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.Error;
@@ -52,12 +52,7 @@ public class AccountCreatedEventListenerTest {
                 "teste.testes@tesss.com",
                 InstantUtils.now()
         );
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "Testes",
-                "teste.testes@tess.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var expectedMessage = Json.writeValueAsString(aAccountCreatedEvent);
 

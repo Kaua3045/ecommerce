@@ -41,6 +41,8 @@ dependencies {
     testImplementation 'org.springframework.amqp:spring-rabbit-test:3.0.10'
 
     testRuntimeOnly 'com.h2database:h2'
+
+    testImplementation(project(path: ':domain', configuration: 'testClasses'))
 }
 
 flyway {

@@ -1,10 +1,7 @@
 package com.kaua.ecommerce.application.usecases.customer.retrieve.get;
 
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
-import com.kaua.ecommerce.domain.customer.Cpf;
-import com.kaua.ecommerce.domain.customer.Customer;
-import com.kaua.ecommerce.domain.customer.Telephone;
-import com.kaua.ecommerce.domain.customer.address.Address;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,21 +24,7 @@ public class GetCustomerByAccountIdUseCaseTest {
 
     @Test
     void givenAValidAccountId_whenCallGetCustomerByAccountId_shouldReturnCustomer() {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "Test",
-                "Testes",
-                "tes.testes@tsss.com"
-        ).changeCpf(Cpf.newCpf("50212367099"))
-                .changeTelephone(Telephone.newTelephone("5511999999999"))
-                .changeAddress(Address.newAddress(
-                        "Rua dos Testes",
-                        "123",
-                        "Teste",
-                        "Teste",
-                        "Teste",
-                        "Teste",
-                        "123456789"));
+        final var aCustomer = Fixture.Customers.customerWithAllParams;
 
         Mockito.when(customerGateway.findByAccountId(aCustomer.getAccountId()))
                 .thenReturn(Optional.of(aCustomer));
@@ -70,12 +53,7 @@ public class GetCustomerByAccountIdUseCaseTest {
 
     @Test
     void givenAValidAccountIdWithNullCpfAndTelephoneAndAddress_whenCallGetCustomerByAccountId_shouldReturnCustomer() {
-        final var aCustomer = Customer.newCustomer(
-                        "123",
-                        "Test",
-                        "Testes",
-                        "tes.testes@tsss.com"
-                );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         Mockito.when(customerGateway.findByAccountId(aCustomer.getAccountId()))
                 .thenReturn(Optional.of(aCustomer));

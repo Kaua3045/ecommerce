@@ -4,8 +4,8 @@ import com.kaua.ecommerce.application.adapters.AddressAdapter;
 import com.kaua.ecommerce.application.adapters.responses.AddressResponse;
 import com.kaua.ecommerce.application.gateways.AddressGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Customer;
-import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import org.junit.jupiter.api.Assertions;
@@ -39,10 +39,8 @@ public class UpdateCustomerAddressUseCaseTest {
 
     @Test
     void givenAValidCommand_whenCallChangeAddress_shouldReturnAnAccountId() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
 
         final var aStreet = "Rua Teste";
         final var aNumber = "123";
@@ -51,8 +49,6 @@ public class UpdateCustomerAddressUseCaseTest {
         final var aCity = "Cidade Teste";
         final var aState = "Estado Teste";
         final var aZipCode = "12345678";
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,
@@ -80,9 +76,9 @@ public class UpdateCustomerAddressUseCaseTest {
         Mockito.verify(customerGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aAccountId, aCmd.getAccountId())
                 && Objects.equals(aCustomer.getId(), aCmd.getId())
-                && Objects.equals(aFirstName, aCmd.getFirstName())
-                && Objects.equals(aLastName, aCmd.getLastName())
-                && Objects.equals(aEmail, aCmd.getEmail())
+                && Objects.equals(aCustomer.getFirstName(), aCmd.getFirstName())
+                && Objects.equals(aCustomer.getLastName(), aCmd.getLastName())
+                && Objects.equals(aCustomer.getEmail(), aCmd.getEmail())
                 && Objects.isNull(aCmd.getCpf())
                 && Objects.isNull(aCmd.getTelephone())
                 && Objects.equals(aStreet, aCmd.getAddress().getStreet())
@@ -98,20 +94,8 @@ public class UpdateCustomerAddressUseCaseTest {
 
     @Test
     void givenAValidCommandAndCustomerWithAddress_whenCallChangeAddress_shouldReturnAnAccountId() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
-
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento Teste",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aCustomer = Fixture.Customers.customerWithAllParams;
+        final var aAccountId = aCustomer.getAccountId();
 
         final var aStreet = "Rua Teste";
         final var aNumber = "123";
@@ -120,9 +104,6 @@ public class UpdateCustomerAddressUseCaseTest {
         final var aCity = "Cidade Teste";
         final var aState = "Estado Teste";
         final var aZipCode = "12345678";
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail)
-                .changeAddress(aAddress);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,
@@ -151,11 +132,11 @@ public class UpdateCustomerAddressUseCaseTest {
         Mockito.verify(customerGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aAccountId, aCmd.getAccountId())
                         && Objects.equals(aCustomer.getId(), aCmd.getId())
-                        && Objects.equals(aFirstName, aCmd.getFirstName())
-                        && Objects.equals(aLastName, aCmd.getLastName())
-                        && Objects.equals(aEmail, aCmd.getEmail())
-                        && Objects.isNull(aCmd.getCpf())
-                        && Objects.isNull(aCmd.getTelephone())
+                        && Objects.equals(aCustomer.getFirstName(), aCmd.getFirstName())
+                        && Objects.equals(aCustomer.getLastName(), aCmd.getLastName())
+                        && Objects.equals(aCustomer.getEmail(), aCmd.getEmail())
+                        && Objects.equals(aCustomer.getCpf().getValue(), aCmd.getCpf().getValue())
+                        && Objects.equals(aCustomer.getTelephone().getValue(), aCmd.getTelephone().getValue())
                         && Objects.equals(aStreet, aCmd.getAddress().getStreet())
                         && Objects.equals(aNumber, aCmd.getAddress().getNumber())
                         && Objects.equals(aComplement, aCmd.getAddress().getComplement())
@@ -179,7 +160,7 @@ public class UpdateCustomerAddressUseCaseTest {
         final var aState = "Estado Teste";
         final var aZipCode = "12345678";
 
-        final var expectedErrorMessage = "Customer with id 123456789 was not found";
+        final var expectedErrorMessage = Fixture.notFoundMessage(Customer.class, aAccountId);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,
@@ -206,10 +187,8 @@ public class UpdateCustomerAddressUseCaseTest {
 
     @Test
     void givenAnInvalidZipCode_whenCallChangeAddress_shouldReturnDomainException() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
 
         final var aStreet = "Rua Teste";
         final var aNumber = "123";
@@ -221,8 +200,6 @@ public class UpdateCustomerAddressUseCaseTest {
 
         final var expectedErrorMessage = "'zipCode' not exists";
         final var expectedErrorCount = 1;
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,
@@ -250,10 +227,8 @@ public class UpdateCustomerAddressUseCaseTest {
 
     @Test
     void givenAnInvalidNullStreet_whenCallChangeAddress_shouldReturnDomainException() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
 
         final String aStreet = null;
         final var aNumber = "123";
@@ -265,8 +240,6 @@ public class UpdateCustomerAddressUseCaseTest {
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("street");
         final var expectedErrorCount = 1;
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,
@@ -295,10 +268,8 @@ public class UpdateCustomerAddressUseCaseTest {
 
     @Test
     void givenAnInvalidNullNumber_whenCallChangeAddress_shouldReturnDomainException() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
 
         final var aStreet = "Rua Teste";
         final String aNumber = null;
@@ -310,8 +281,6 @@ public class UpdateCustomerAddressUseCaseTest {
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("number");
         final var expectedErrorCount = 1;
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,
@@ -340,10 +309,8 @@ public class UpdateCustomerAddressUseCaseTest {
 
     @Test
     void givenAnInvalidNullDistrict_whenCallChangeAddress_shouldReturnDomainException() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
 
         final var aStreet = "Rua Teste";
         final var aNumber = "123";
@@ -355,8 +322,6 @@ public class UpdateCustomerAddressUseCaseTest {
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("district");
         final var expectedErrorCount = 1;
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,
@@ -385,10 +350,8 @@ public class UpdateCustomerAddressUseCaseTest {
 
     @Test
     void givenAnInvalidNullCity_whenCallChangeAddress_shouldReturnDomainException() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
 
         final var aStreet = "Rua Teste";
         final var aNumber = "123";
@@ -400,8 +363,6 @@ public class UpdateCustomerAddressUseCaseTest {
 
         final var expectedErrorMessage = "'city' not exists";
         final var expectedErrorCount = 1;
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,
@@ -430,10 +391,8 @@ public class UpdateCustomerAddressUseCaseTest {
 
     @Test
     void givenAnInvalidNullState_whenCallChangeAddress_shouldReturnDomainException() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
 
         final var aStreet = "Rua Teste";
         final var aNumber = "123";
@@ -445,8 +404,6 @@ public class UpdateCustomerAddressUseCaseTest {
 
         final var expectedErrorMessage = "'state' not exists";
         final var expectedErrorCount = 1;
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,
@@ -475,10 +432,8 @@ public class UpdateCustomerAddressUseCaseTest {
 
     @Test
     void givenAnInvalidNullZipCode_whenCallChangeAddress_shouldReturnDomainException() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
 
         final var aStreet = "Rua Teste";
         final var aNumber = "123";
@@ -490,8 +445,6 @@ public class UpdateCustomerAddressUseCaseTest {
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("zipCode");
         final var expectedErrorCount = 1;
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerAddressCommand.with(
                 aAccountId,

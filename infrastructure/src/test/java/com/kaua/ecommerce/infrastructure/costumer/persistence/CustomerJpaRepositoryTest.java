@@ -5,7 +5,7 @@ import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerjpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
 import org.hibernate.PropertyValueException;
 import org.hibernate.id.IdentifierGenerationException;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +18,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 public class CustomerJpaRepositoryTest {
 
     @Autowired
-    private CustomerjpaRepository customerRepository;
+    private CustomerJpaRepository customerRepository;
 
     @Test
     void givenAnInvalidNullAccountId_whenCallSave_shouldReturnAnException() {
@@ -263,7 +263,7 @@ public class CustomerJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getEmail(), actualResult.getEmail());
         Assertions.assertEquals(aEntity.getCpf(), actualResult.getCpf());
         Assertions.assertEquals(aEntity.getTelephone(), actualResult.getTelephone());
-        Assertions.assertEquals(aEntity.getAddress().getId(), actualResult.getAddress().getId());
+        Assertions.assertEquals(aEntity.getAddress().get().getId(), actualResult.getAddress().get().getId());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
         Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
     }

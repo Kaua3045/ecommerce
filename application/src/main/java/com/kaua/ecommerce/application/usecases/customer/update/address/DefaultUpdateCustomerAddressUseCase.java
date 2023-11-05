@@ -3,6 +3,7 @@ package com.kaua.ecommerce.application.usecases.customer.update.address;
 import com.kaua.ecommerce.application.adapters.AddressAdapter;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.gateways.AddressGateway;
+import com.kaua.ecommerce.application.gateways.CacheGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.customer.address.Address;
@@ -17,15 +18,18 @@ public class DefaultUpdateCustomerAddressUseCase extends UpdateCustomerAddressUs
     private final CustomerGateway customerGateway;
     private final AddressGateway addressGateway;
     private final AddressAdapter addressAdapter;
+    private final CacheGateway<Customer> customerCacheGateway;
 
     public DefaultUpdateCustomerAddressUseCase(
             final CustomerGateway customerGateway,
             final AddressGateway addressGateway,
-            final AddressAdapter addressAdapter
+            final AddressAdapter addressAdapter,
+            final CacheGateway<Customer> customerCacheGateway
     ) {
         this.customerGateway = Objects.requireNonNull(customerGateway);
         this.addressGateway = Objects.requireNonNull(addressGateway);
         this.addressAdapter = Objects.requireNonNull(addressAdapter);
+        this.customerCacheGateway = Objects.requireNonNull(customerCacheGateway);
     }
 
     @Override
@@ -55,16 +59,16 @@ public class DefaultUpdateCustomerAddressUseCase extends UpdateCustomerAddressUs
             return Either.left(aNotification);
         }
 
-        final var aOldAddressId = aCustomer.getAddress() == null
-                ? null
-                : aCustomer.getAddress().getId().getValue();
+        final var aOldAddressId = aCustomer.getAddress().map(Address::getId).orElse(null);
 
         final var aCustomerWithAddress = aCustomer.changeAddress(aAddress);
         this.customerGateway.update(aCustomerWithAddress);
 
         if (aOldAddressId != null) {
-            this.addressGateway.deleteById(aOldAddressId);
+            this.addressGateway.deleteById(aOldAddressId.getValue());
         }
+
+        this.customerCacheGateway.delete(aCustomerWithAddress.getAccountId());
 
         return Either.right(UpdateCustomerAddressOutput.from(aCustomerWithAddress));
     }

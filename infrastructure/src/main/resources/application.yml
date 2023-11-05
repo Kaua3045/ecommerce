@@ -57,3 +57,8 @@ spring:
     port: ${amqp.port}
     username: ${amqp.username}
     password: ${amqp.password}
+  data:
+    redis:
+      database: 0
+      host: ${redis.host}
+      port: ${redis.port}

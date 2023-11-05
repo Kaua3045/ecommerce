@@ -1,10 +1,13 @@
 package com.kaua.ecommerce.infrastructure.customer.persistence;
 
+import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
+import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity(name = "Customer")
 @Table(name = "customers")
@@ -75,9 +78,9 @@ public class CustomerJpaEntity {
                 aCustomer.getFirstName(),
                 aCustomer.getLastName(),
                 aCustomer.getEmail(),
-                aCustomer.getCpf() == null ? null : aCustomer.getCpf().getValue(),
-                aCustomer.getTelephone() == null ? null : aCustomer.getTelephone().getValue(),
-                aCustomer.getAddress() == null ? null : AddressJpaEntity.toEntity(aCustomer.getAddress()),
+                aCustomer.getCpf().map(Cpf::getValue).orElse(null),
+                aCustomer.getTelephone().map(Telephone::getValue).orElse(null),
+                aCustomer.getAddress().map(AddressJpaEntity::toEntity).orElse(null),
                 aCustomer.getCreatedAt(),
                 aCustomer.getUpdatedAt()
         );
@@ -92,7 +95,7 @@ public class CustomerJpaEntity {
                 getEmail(),
                 getCpf(),
                 getTelephone(),
-                getAddress() == null ? null : getAddress().toDomain(),
+                getAddress().map(AddressJpaEntity::toDomain).orElse(null),
                 getCreatedAt(),
                 getUpdatedAt()
         );
@@ -154,8 +157,8 @@ public class CustomerJpaEntity {
         this.telephone = telephone;
     }
 
-    public AddressJpaEntity getAddress() {
-        return address;
+    public Optional<AddressJpaEntity> getAddress() {
+        return Optional.ofNullable(address);
     }
 
     public void setAddress(AddressJpaEntity address) {

@@ -1,6 +1,8 @@
 package com.kaua.ecommerce.application.usecases.customer.update.telephone;
 
+import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.adapters.TelephoneAdapter;
+import com.kaua.ecommerce.application.gateways.CacheGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Customer;
@@ -9,20 +11,18 @@ import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.argThat;
 
-@ExtendWith(MockitoExtension.class)
-public class UpdateCustomerTelephoneUseCaseTest {
+public class UpdateCustomerTelephoneUseCaseTest extends UseCaseTest {
 
     @Mock
     private CustomerGateway customerGateway;
@@ -30,8 +30,16 @@ public class UpdateCustomerTelephoneUseCaseTest {
     @Mock
     private TelephoneAdapter telephoneAdapter;
 
+    @Mock
+    private CacheGateway<Customer> customerCacheGateway;
+
     @InjectMocks
     private DefaultUpdateCustomerTelephoneUseCase useCase;
+
+    @Override
+    protected List<Object> getMocks() {
+        return List.of(customerGateway, customerCacheGateway, telephoneAdapter);
+    }
 
     @Test
     void givenAValidCommand_whenCallChangeTelephone_shouldReturnAnAccountId() {
@@ -45,6 +53,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Mockito.when(telephoneAdapter.formatInternational(aTelephone)).thenReturn(aTelephone);
         Mockito.when(telephoneAdapter.validate(aTelephone)).thenReturn(true);
         Mockito.when(customerGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
+        Mockito.doNothing().when(customerCacheGateway).delete(aAccountId);
 
         final var aResult = useCase.execute(aCommand).getRight();
 
@@ -60,9 +69,10 @@ public class UpdateCustomerTelephoneUseCaseTest {
                 && Objects.equals(aCustomer.getFirstName(), aCmd.getFirstName())
                 && Objects.equals(aCustomer.getLastName(), aCmd.getLastName())
                 && Objects.equals(aCustomer.getEmail(), aCmd.getEmail())
-                && Objects.equals(aTelephone, aCmd.getTelephone().getValue())
+                && Objects.equals(aTelephone, aCmd.getTelephone().get().getValue())
                 && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
                 && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
+        Mockito.verify(customerCacheGateway, Mockito.times(1)).delete(aAccountId);
     }
 
     @Test
@@ -85,6 +95,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Mockito.verify(telephoneAdapter, Mockito.times(0)).formatInternational(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(0)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
 
     @Test
@@ -112,6 +123,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
 
     @Test
@@ -138,5 +150,6 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Mockito.verify(telephoneAdapter, Mockito.times(1)).formatInternational(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
 }

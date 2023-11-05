@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mysql:
-    container_name: ecommerce
+    container_name: ecommerce-mysql
     image: mysql:latest
     environment:
       - MYSQL_ROOT_PASSWORD=123456
@@ -11,3 +11,16 @@ services:
       - seccomp:unconfined
     ports:
       - 3307:3306
+    networks:
+      - ecommerce_network
+
+  redis:
+    container_name: ecommerce-redis
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    networks:
+      - ecommerce_network
+
+networks:
+  ecommerce_network:

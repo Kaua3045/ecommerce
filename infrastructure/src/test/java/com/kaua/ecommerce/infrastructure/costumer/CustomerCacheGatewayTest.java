@@ -1,28 +1,29 @@
 package com.kaua.ecommerce.infrastructure.costumer;
 
+import com.kaua.ecommerce.config.CacheTestConfiguration;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.customer.Telephone;
-import com.kaua.ecommerce.infrastructure.IntegrationTest;
-import com.kaua.ecommerce.infrastructure.customer.CustomerMySQLGateway;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
+import com.kaua.ecommerce.infrastructure.CacheGatewayTest;
+import com.kaua.ecommerce.infrastructure.customer.CustomerCacheGateway;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheEntity;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@IntegrationTest
-public class CustomerGatewayTest {
+@CacheGatewayTest
+public class CustomerCacheGatewayTest extends CacheTestConfiguration {
 
     @Autowired
-    private CustomerMySQLGateway customerGateway;
+    private CustomerCacheGateway customerCacheGateway;
 
     @Autowired
-    private CustomerJpaRepository customerRepository;
+    private CustomerCacheRepository customerRepository;
 
     @Test
-    void givenAValidCustomer_whenCallCreate_shouldReturnACustomerCreated() {
+    void givenAValidCustomer_whenCallSave_shouldReturnACustomerSavedInCache() {
         final var aAccountId = "123456789";
         final var aFirstName = "Teste";
         final var aLastName = "Testes";
@@ -32,9 +33,11 @@ public class CustomerGatewayTest {
 
         Assertions.assertEquals(0, customerRepository.count());
 
-        final var actualCustomer = customerGateway.create(aCustomer);
+        customerCacheGateway.save(aCustomer);
 
         Assertions.assertEquals(1, customerRepository.count());
+
+        final var actualCustomer = customerCacheGateway.get(aCustomer.getAccountId()).get();
 
         Assertions.assertEquals(aCustomer.getId().getValue(), actualCustomer.getId().getValue());
         Assertions.assertEquals(aCustomer.getAccountId(), actualCustomer.getAccountId());
@@ -45,9 +48,9 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), actualCustomer.getUpdatedAt());
 
-        final var actualEntity = customerRepository.findById(actualCustomer.getId().getValue()).get();
+        final var actualEntity = customerRepository.findById(actualCustomer.getAccountId()).get();
 
-        Assertions.assertEquals(aCustomer.getId().getValue(), actualEntity.getId());
+        Assertions.assertEquals(aCustomer.getId().getValue(), actualEntity.getCustomerId());
         Assertions.assertEquals(aCustomer.getAccountId(), actualEntity.getAccountId());
         Assertions.assertEquals(aCustomer.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualEntity.getLastName());
@@ -58,42 +61,22 @@ public class CustomerGatewayTest {
     }
 
     @Test
-    void givenAValidAccountIdButNotExists_whenCallExistsByAccountId_shouldReturnFalse() {
-        final var aAccountId = "123456789";
-
-        Assertions.assertEquals(0, customerRepository.count());
-        Assertions.assertFalse(customerGateway.existsByAccountId(aAccountId));
-    }
-
-    @Test
-    void givenAValidAccountId_whenCallExistsByAccountId_shouldReturnTrue() {
-        final var aCustomer = Fixture.Customers.customerDefault;
-        final var aAccountId = aCustomer.getAccountId();
-
-        Assertions.assertEquals(0, customerRepository.count());
-
-        customerRepository.save(CustomerJpaEntity.toEntity(aCustomer));
-
-        Assertions.assertEquals(1, customerRepository.count());
-
-        Assertions.assertTrue(customerGateway.existsByAccountId(aAccountId));
-    }
-
-    @Test
-    void givenAValidCustomer_whenCallUpdate_shouldReturnACustomerUpdated() {
+    void givenAValidCustomer_whenCallSave_shouldReturnACustomerUpdated() {
         final var aCustomer = Fixture.Customers.customerDefault;
         final var aCleanCpf = Cpf.newCpf("50212367099");
         final var aTelephone = Telephone.newTelephone("+11234567890");
 
         Assertions.assertEquals(0, customerRepository.count());
-        customerRepository.save(CustomerJpaEntity.toEntity(aCustomer));
+        customerRepository.save(CustomerCacheEntity.toEntity(aCustomer));
         Assertions.assertEquals(1, customerRepository.count());
 
         final var aCustomerUpdatedAt = aCustomer.getUpdatedAt();
 
         final var aCustomerWithCpf = aCustomer.changeCpf(aCleanCpf);
         final var aCustomerWithTelephoneAndCpf = aCustomerWithCpf.changeTelephone(aTelephone);
-        final var actualCustomer = customerGateway.update(aCustomerWithTelephoneAndCpf);
+        customerCacheGateway.save(aCustomerWithTelephoneAndCpf);
+
+        final var actualCustomer = customerCacheGateway.get(aCustomer.getAccountId()).get();
 
         Assertions.assertEquals(aCustomer.getId().getValue(), actualCustomer.getId().getValue());
         Assertions.assertEquals(aCustomer.getAccountId(), actualCustomer.getAccountId());
@@ -105,9 +88,9 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(actualCustomer.getUpdatedAt()));
 
-        final var actualEntity = customerRepository.findById(actualCustomer.getId().getValue()).get();
+        final var actualEntity = customerRepository.findById(actualCustomer.getAccountId()).get();
 
-        Assertions.assertEquals(aCustomerWithCpf.getId().getValue(), actualEntity.getId());
+        Assertions.assertEquals(aCustomerWithCpf.getId().getValue(), actualEntity.getCustomerId());
         Assertions.assertEquals(aCustomerWithCpf.getAccountId(), actualEntity.getAccountId());
         Assertions.assertEquals(aCustomerWithCpf.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomerWithCpf.getLastName(), actualEntity.getLastName());
@@ -124,13 +107,15 @@ public class CustomerGatewayTest {
         final var aAddress = Fixture.Addresses.addressDefault;
 
         Assertions.assertEquals(0, customerRepository.count());
-        customerRepository.save(CustomerJpaEntity.toEntity(aCustomer));
+        customerRepository.save(CustomerCacheEntity.toEntity(aCustomer));
         Assertions.assertEquals(1, customerRepository.count());
 
         final var aCustomerUpdatedAt = aCustomer.getUpdatedAt();
 
         final var aCustomerWithAddress = aCustomer.changeAddress(aAddress);
-        final var actualCustomer = customerGateway.update(aCustomerWithAddress);
+        customerCacheGateway.save(aCustomerWithAddress);
+
+        final var actualCustomer = customerCacheGateway.get(aCustomer.getAccountId()).get();
 
         Assertions.assertEquals(aCustomer.getId().getValue(), actualCustomer.getId().getValue());
         Assertions.assertEquals(aCustomer.getAccountId(), actualCustomer.getAccountId());
@@ -149,37 +134,37 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(actualCustomer.getUpdatedAt()));
 
-        final var actualEntity = customerRepository.findById(actualCustomer.getId().getValue()).get();
+        final var actualEntity = customerRepository.findById(actualCustomer.getAccountId()).get();
 
-        Assertions.assertEquals(aCustomerWithAddress.getId().getValue(), actualEntity.getId());
+        Assertions.assertEquals(aCustomerWithAddress.getId().getValue(), actualEntity.getCustomerId());
         Assertions.assertEquals(aCustomerWithAddress.getAccountId(), actualEntity.getAccountId());
         Assertions.assertEquals(aCustomerWithAddress.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomerWithAddress.getLastName(), actualEntity.getLastName());
         Assertions.assertEquals(aCustomerWithAddress.getEmail(), actualEntity.getEmail());
         Assertions.assertEquals(aCustomerWithAddress.getCpf().get().getValue(), actualEntity.getCpf());
         Assertions.assertEquals(aCustomerWithAddress.getTelephone().get().getValue(), actualEntity.getTelephone());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getStreet(), actualEntity.getAddress().get().getStreet());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getNumber(), actualEntity.getAddress().get().getNumber());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getComplement(), actualEntity.getAddress().get().getComplement());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getDistrict(), actualEntity.getAddress().get().getDistrict());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getCity(), actualEntity.getAddress().get().getCity());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getState(), actualEntity.getAddress().get().getState());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getZipCode(), actualEntity.getAddress().get().getZipCode());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getStreet(), actualEntity.getAddress().getStreet());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getNumber(), actualEntity.getAddress().getNumber());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getComplement(), actualEntity.getAddress().getComplement());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getDistrict(), actualEntity.getAddress().getDistrict());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getCity(), actualEntity.getAddress().getCity());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getState(), actualEntity.getAddress().getState());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getZipCode(), actualEntity.getAddress().getZipCode());
         Assertions.assertEquals(aCustomerWithAddress.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomerWithAddress.getUpdatedAt(), actualEntity.getUpdatedAt());
     }
 
     @Test
-    void givenAValidAccountId_whenCallFindByAccountId_shouldReturnACustomer() {
+    void givenAValidAccountId_whenCallFindById_shouldReturnACustomer() {
         final var aCustomer = Fixture.Customers.customerWithCpf;
         final var aAccountId = aCustomer.getAccountId();
         final var aCleanCpf = aCustomer.getCpf().get().getValue();
 
         Assertions.assertEquals(0, customerRepository.count());
-        customerRepository.save(CustomerJpaEntity.toEntity(aCustomer));
+        customerRepository.save(CustomerCacheEntity.toEntity(aCustomer));
         Assertions.assertEquals(1, customerRepository.count());
 
-        final var actualCustomer = customerGateway.findByAccountId(aAccountId).get();
+        final var actualCustomer = customerCacheGateway.get(aAccountId).get();
 
         Assertions.assertEquals(aCustomer.getId().getValue(), actualCustomer.getId().getValue());
         Assertions.assertEquals(aCustomer.getAccountId(), actualCustomer.getAccountId());
@@ -190,9 +175,9 @@ public class CustomerGatewayTest {
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), actualCustomer.getUpdatedAt());
 
-        final var actualEntity = customerRepository.findById(actualCustomer.getId().getValue()).get();
+        final var actualEntity = customerRepository.findById(actualCustomer.getAccountId()).get();
 
-        Assertions.assertEquals(aCustomer.getId().getValue(), actualEntity.getId());
+        Assertions.assertEquals(aCustomer.getId().getValue(), actualEntity.getCustomerId());
         Assertions.assertEquals(aCustomer.getAccountId(), actualEntity.getAccountId());
         Assertions.assertEquals(aCustomer.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualEntity.getLastName());
@@ -203,25 +188,36 @@ public class CustomerGatewayTest {
     }
 
     @Test
-    void givenAValidAccountId_whenCallDeleteById_shouldBeOk() {
+    void givenAValidAccountIdButNotStored_whenCallGetInCache_shouldReturnEmpty() {
+        final var aAccountId = "123";
+
+        Assertions.assertEquals(0, customerRepository.count());
+
+        final var actualCustomer = customerCacheGateway.get(aAccountId);
+
+        Assertions.assertTrue(actualCustomer.isEmpty());
+    }
+
+    @Test
+    void givenAValidAccountId_whenCallDelete_shouldBeOk() {
         final var aCustomer = Fixture.Customers.customerDefault;
 
         Assertions.assertEquals(0, customerRepository.count());
-        customerRepository.save(CustomerJpaEntity.toEntity(aCustomer));
+        customerRepository.save(CustomerCacheEntity.toEntity(aCustomer));
         Assertions.assertEquals(1, customerRepository.count());
 
-        customerGateway.deleteById(aCustomer.getAccountId());
+        customerCacheGateway.delete(aCustomer.getAccountId());
 
         Assertions.assertEquals(0, customerRepository.count());
     }
 
     @Test
-    void givenAnInvalidAccountId_whenCallDeleteById_shouldBeOk() {
+    void givenAnInvalidAccountId_whenCallDelete_shouldBeOk() {
         final var aAccountId = "123";
 
         Assertions.assertEquals(0, customerRepository.count());
 
-        customerGateway.deleteById(aAccountId);
+        customerCacheGateway.delete(aAccountId);
 
         Assertions.assertEquals(0, customerRepository.count());
     }

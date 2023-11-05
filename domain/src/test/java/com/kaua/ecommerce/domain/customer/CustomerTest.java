@@ -27,7 +27,7 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
         Assertions.assertEquals(aLastName, aCustomer.getLastName());
         Assertions.assertEquals(aEmail, aCustomer.getEmail());
-        Assertions.assertNull(aCustomer.getCpf());
+        Assertions.assertTrue(aCustomer.getCpf().isEmpty());
         Assertions.assertNotNull(aCustomer.getCreatedAt());
         Assertions.assertNotNull(aCustomer.getUpdatedAt());
 
@@ -305,7 +305,7 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
         Assertions.assertEquals(aLastName, aCustomer.getLastName());
         Assertions.assertEquals(aEmail, aCustomer.getEmail());
-        Assertions.assertEquals(aCpf, aCustomer.getCpf().getValue());
+        Assertions.assertEquals(aCpf, aCustomer.getCpf().get().getValue());
         Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
@@ -341,7 +341,7 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
         Assertions.assertEquals(aLastName, aCustomer.getLastName());
         Assertions.assertEquals(aEmail, aCustomer.getEmail());
-        Assertions.assertNull(aCustomer.getCpf());
+        Assertions.assertTrue(aCustomer.getCpf().isEmpty());
         Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
@@ -367,9 +367,9 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomerWithCpf.getFirstName());
         Assertions.assertEquals(aLastName, aCustomerWithCpf.getLastName());
         Assertions.assertEquals(aEmail, aCustomerWithCpf.getEmail());
-        Assertions.assertEquals(aCpf, aCustomerWithCpf.getCpf());
-        Assertions.assertEquals(aCpf.getValue(), aCustomerWithCpf.getCpf().getValue());
-        Assertions.assertEquals(aCpf.getFormattedCpf(), aCustomerWithCpf.getCpf().getFormattedCpf());
+        Assertions.assertEquals(aCpf, aCustomerWithCpf.getCpf().get());
+        Assertions.assertEquals(aCpf.getValue(), aCustomerWithCpf.getCpf().get().getValue());
+        Assertions.assertEquals(aCpf.getFormattedCpf(), aCustomerWithCpf.getCpf().get().getFormattedCpf());
         Assertions.assertEquals(aCustomer.getCreatedAt(), aCustomerWithCpf.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(aCustomerWithCpf.getUpdatedAt()));
 
@@ -419,8 +419,8 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
         Assertions.assertEquals(aLastName, aCustomer.getLastName());
         Assertions.assertEquals(aEmail, aCustomer.getEmail());
-        Assertions.assertEquals(aCpf, aCustomer.getCpf().getValue());
-        Assertions.assertEquals(aTelephone, aCustomer.getTelephone().getValue());
+        Assertions.assertEquals(aCpf, aCustomer.getCpf().get().getValue());
+        Assertions.assertEquals(aTelephone, aCustomer.getTelephone().get().getValue());
         Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
@@ -457,8 +457,8 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
         Assertions.assertEquals(aLastName, aCustomer.getLastName());
         Assertions.assertEquals(aEmail, aCustomer.getEmail());
-        Assertions.assertEquals(aCpf, aCustomer.getCpf().getValue());
-        Assertions.assertNull(aCustomer.getTelephone());
+        Assertions.assertEquals(aCpf, aCustomer.getCpf().get().getValue());
+        Assertions.assertTrue(aCustomer.getTelephone().isEmpty());
         Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
@@ -484,9 +484,9 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomerWithTelephone.getFirstName());
         Assertions.assertEquals(aLastName, aCustomerWithTelephone.getLastName());
         Assertions.assertEquals(aEmail, aCustomerWithTelephone.getEmail());
-        Assertions.assertNull(aCustomerWithTelephone.getCpf());
-        Assertions.assertEquals(aTelephone, aCustomerWithTelephone.getTelephone());
-        Assertions.assertEquals(aTelephone.getValue(), aCustomerWithTelephone.getTelephone().getValue());
+        Assertions.assertTrue(aCustomerWithTelephone.getCpf().isEmpty());
+        Assertions.assertEquals(aTelephone, aCustomerWithTelephone.getTelephone().get());
+        Assertions.assertEquals(aTelephone.getValue(), aCustomerWithTelephone.getTelephone().get().getValue());
         Assertions.assertEquals(aCustomer.getCreatedAt(), aCustomerWithTelephone.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(aCustomerWithTelephone.getUpdatedAt()));
 
@@ -545,16 +545,16 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomerWithAddress.getFirstName());
         Assertions.assertEquals(aLastName, aCustomerWithAddress.getLastName());
         Assertions.assertEquals(aEmail, aCustomerWithAddress.getEmail());
-        Assertions.assertNull(aCustomerWithAddress.getCpf());
-        Assertions.assertNull(aCustomerWithAddress.getTelephone());
+        Assertions.assertTrue(aCustomerWithAddress.getCpf().isEmpty());
+        Assertions.assertTrue(aCustomerWithAddress.getTelephone().isEmpty());
 
-        Assertions.assertEquals(aAddress.getStreet(), aCustomerWithAddress.getAddress().getStreet());
-        Assertions.assertEquals(aAddress.getNumber(), aCustomerWithAddress.getAddress().getNumber());
-        Assertions.assertEquals(aAddress.getComplement(), aCustomerWithAddress.getAddress().getComplement());
-        Assertions.assertEquals(aAddress.getDistrict(), aCustomerWithAddress.getAddress().getDistrict());
-        Assertions.assertEquals(aAddress.getCity(), aCustomerWithAddress.getAddress().getCity());
-        Assertions.assertEquals(aAddress.getState(), aCustomerWithAddress.getAddress().getState());
-        Assertions.assertEquals(aAddress.getZipCode(), aCustomerWithAddress.getAddress().getZipCode());
+        Assertions.assertEquals(aAddress.getStreet(), aCustomerWithAddress.getAddress().get().getStreet());
+        Assertions.assertEquals(aAddress.getNumber(), aCustomerWithAddress.getAddress().get().getNumber());
+        Assertions.assertEquals(aAddress.getComplement(), aCustomerWithAddress.getAddress().get().getComplement());
+        Assertions.assertEquals(aAddress.getDistrict(), aCustomerWithAddress.getAddress().get().getDistrict());
+        Assertions.assertEquals(aAddress.getCity(), aCustomerWithAddress.getAddress().get().getCity());
+        Assertions.assertEquals(aAddress.getState(), aCustomerWithAddress.getAddress().get().getState());
+        Assertions.assertEquals(aAddress.getZipCode(), aCustomerWithAddress.getAddress().get().getZipCode());
 
         Assertions.assertEquals(aCustomer.getCreatedAt(), aCustomerWithAddress.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(aCustomerWithAddress.getUpdatedAt()));
@@ -602,18 +602,18 @@ public class CustomerTest {
         Assertions.assertEquals(aFirstName, aCustomer.getFirstName());
         Assertions.assertEquals(aLastName, aCustomer.getLastName());
         Assertions.assertEquals(aEmail, aCustomer.getEmail());
-        Assertions.assertEquals(aCpf, aCustomer.getCpf().getValue());
-        Assertions.assertEquals(aTelephone, aCustomer.getTelephone().getValue());
+        Assertions.assertEquals(aCpf, aCustomer.getCpf().get().getValue());
+        Assertions.assertEquals(aTelephone, aCustomer.getTelephone().get().getValue());
         Assertions.assertEquals(aCreatedAt, aCustomer.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aCustomer.getUpdatedAt());
 
-        Assertions.assertEquals(aAddress.getStreet(), aCustomer.getAddress().getStreet());
-        Assertions.assertEquals(aAddress.getNumber(), aCustomer.getAddress().getNumber());
-        Assertions.assertEquals(aAddress.getComplement(), aCustomer.getAddress().getComplement());
-        Assertions.assertEquals(aAddress.getDistrict(), aCustomer.getAddress().getDistrict());
-        Assertions.assertEquals(aAddress.getCity(), aCustomer.getAddress().getCity());
-        Assertions.assertEquals(aAddress.getState(), aCustomer.getAddress().getState());
-        Assertions.assertEquals(aAddress.getZipCode(), aCustomer.getAddress().getZipCode());
+        Assertions.assertEquals(aAddress.getStreet(), aCustomer.getAddress().get().getStreet());
+        Assertions.assertEquals(aAddress.getNumber(), aCustomer.getAddress().get().getNumber());
+        Assertions.assertEquals(aAddress.getComplement(), aCustomer.getAddress().get().getComplement());
+        Assertions.assertEquals(aAddress.getDistrict(), aCustomer.getAddress().get().getDistrict());
+        Assertions.assertEquals(aAddress.getCity(), aCustomer.getAddress().get().getCity());
+        Assertions.assertEquals(aAddress.getState(), aCustomer.getAddress().get().getState());
+        Assertions.assertEquals(aAddress.getZipCode(), aCustomer.getAddress().get().getZipCode());
 
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
     }

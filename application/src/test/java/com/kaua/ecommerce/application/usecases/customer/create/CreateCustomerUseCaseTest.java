@@ -1,29 +1,33 @@
 package com.kaua.ecommerce.application.usecases.customer.create;
 
+import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Objects;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.argThat;
 
-@ExtendWith(MockitoExtension.class)
-public class CreateCustomerUseCaseTest {
+public class CreateCustomerUseCaseTest extends UseCaseTest {
 
     @Mock
     private CustomerGateway customerGateway;
 
     @InjectMocks
     private DefaultCreateCustomerUseCase useCase;
+
+    @Override
+    protected List<Object> getMocks() {
+        return List.of(customerGateway);
+    }
 
     @Test
     void givenAValidCommand_whenCallCreateCustomer_shouldReturnACustomerIdCreated() {

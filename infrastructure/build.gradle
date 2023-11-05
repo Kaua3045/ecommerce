@@ -44,6 +44,9 @@ dependencies {
     testRuntimeOnly 'com.h2database:h2'
 
     testImplementation(project(path: ':domain', configuration: 'testClasses'))
+
+    testImplementation 'org.testcontainers:testcontainers-bom:1.18.3'
+    testImplementation 'org.testcontainers:junit-jupiter:1.18.3'
 }
 
 flyway {

@@ -6,6 +6,7 @@ import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public class Customer extends AggregateRoot<CustomerID> {
 
@@ -130,16 +131,16 @@ public class Customer extends AggregateRoot<CustomerID> {
         return email;
     }
 
-    public Cpf getCpf() {
-        return cpf;
+    public Optional<Cpf> getCpf() {
+        return Optional.ofNullable(cpf);
     }
 
-    public Telephone getTelephone() {
-        return telephone;
+    public Optional<Telephone> getTelephone() {
+        return Optional.ofNullable(telephone);
     }
 
-    public Address getAddress() {
-        return address;
+    public Optional<Address> getAddress() {
+        return Optional.ofNullable(address);
     }
 
     public Instant getCreatedAt() {

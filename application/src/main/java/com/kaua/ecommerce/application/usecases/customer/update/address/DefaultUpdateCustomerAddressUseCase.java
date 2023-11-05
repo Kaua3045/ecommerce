@@ -59,15 +59,13 @@ public class DefaultUpdateCustomerAddressUseCase extends UpdateCustomerAddressUs
             return Either.left(aNotification);
         }
 
-        final var aOldAddressId = aCustomer.getAddress() == null
-                ? null
-                : aCustomer.getAddress().getId().getValue();
+        final var aOldAddressId = aCustomer.getAddress().map(Address::getId).orElse(null);
 
         final var aCustomerWithAddress = aCustomer.changeAddress(aAddress);
         this.customerGateway.update(aCustomerWithAddress);
 
         if (aOldAddressId != null) {
-            this.addressGateway.deleteById(aOldAddressId);
+            this.addressGateway.deleteById(aOldAddressId.getValue());
         }
 
         this.customerCacheGateway.delete(aCustomerWithAddress.getAccountId());

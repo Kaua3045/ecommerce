@@ -1,6 +1,8 @@
 package com.kaua.ecommerce.infrastructure.customer.persistence;
 
+import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
+import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressCacheEntity;
 import jakarta.persistence.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -56,9 +58,9 @@ public class CustomerCacheEntity {
                 aCustomer.getFirstName(),
                 aCustomer.getLastName(),
                 aCustomer.getEmail(),
-                aCustomer.getCpf() == null ? null : aCustomer.getCpf().getValue(),
-                aCustomer.getTelephone() == null ? null : aCustomer.getTelephone().getValue(),
-                aCustomer.getAddress() == null ? null : AddressCacheEntity.toEntity(aCustomer.getAddress()),
+                aCustomer.getCpf().map(Cpf::getValue).orElse(null),
+                aCustomer.getTelephone().map(Telephone::getValue).orElse(null),
+                aCustomer.getAddress().map(AddressCacheEntity::toEntity).orElse(null),
                 aCustomer.getCreatedAt(),
                 aCustomer.getUpdatedAt()
         );

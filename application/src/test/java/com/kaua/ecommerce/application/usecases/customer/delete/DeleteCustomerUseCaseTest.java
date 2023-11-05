@@ -1,18 +1,18 @@
 package com.kaua.ecommerce.application.usecases.customer.delete;
 
+import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.gateways.CacheGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.customer.Customer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
-public class DeleteCustomerUseCaseTest {
+import java.util.List;
+
+public class DeleteCustomerUseCaseTest extends UseCaseTest {
 
     @Mock
     private CustomerGateway customerGateway;
@@ -22,6 +22,12 @@ public class DeleteCustomerUseCaseTest {
 
     @InjectMocks
     private DefaultDeleteCustomerUseCase useCase;
+
+    @Override
+    protected List<Object> getMocks() {
+        return List.of(customerGateway, customerCacheGateway);
+    }
+
 
     @Test
     void givenAValidAccountId_whenCallDeleteCustomer_shouldBeOk() {

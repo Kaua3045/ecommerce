@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.application.usecases.customer.update.cpf;
 
+import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.gateways.CacheGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.Fixture;
@@ -8,20 +9,18 @@ import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.argThat;
 
-@ExtendWith(MockitoExtension.class)
-public class UpdateCustomerCpfUseCaseTest {
+public class UpdateCustomerCpfUseCaseTest extends UseCaseTest {
 
     @Mock
     private CustomerGateway customerGateway;
@@ -31,6 +30,11 @@ public class UpdateCustomerCpfUseCaseTest {
 
     @InjectMocks
     private DefaultUpdateCustomerCpfUseCase useCase;
+
+    @Override
+    protected List<Object> getMocks() {
+        return List.of(customerGateway, customerCacheGateway);
+    }
 
     @Test
     void givenAValidCommand_whenCallChangeCpf_shouldReturnAnAccountId() {
@@ -57,7 +61,7 @@ public class UpdateCustomerCpfUseCaseTest {
                 && Objects.equals(aCustomer.getFirstName(), aCmd.getFirstName())
                 && Objects.equals(aCustomer.getLastName(), aCmd.getLastName())
                 && Objects.equals(aCustomer.getEmail(), aCmd.getEmail())
-                && Objects.equals(aCleanedCpf, aCmd.getCpf().getValue())
+                && Objects.equals(aCleanedCpf, aCmd.getCpf().get().getValue())
                 && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
                 && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
         Mockito.verify(customerCacheGateway, Mockito.times(1)).delete(aAccountId);

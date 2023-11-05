@@ -2,6 +2,7 @@ package com.kaua.ecommerce.application.usecases.customer.update.telephone;
 
 import com.kaua.ecommerce.application.adapters.TelephoneAdapter;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
@@ -34,13 +35,9 @@ public class UpdateCustomerTelephoneUseCaseTest {
 
     @Test
     void givenAValidCommand_whenCallChangeTelephone_shouldReturnAnAccountId() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
         final var aTelephone = "+11234567890";
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerTelephoneCommand.with(aAccountId, aTelephone);
 
@@ -60,9 +57,9 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Mockito.verify(customerGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aAccountId, aCmd.getAccountId())
                 && Objects.equals(aCustomer.getId(), aCmd.getId())
-                && Objects.equals(aFirstName, aCmd.getFirstName())
-                && Objects.equals(aLastName, aCmd.getLastName())
-                && Objects.equals(aEmail, aCmd.getEmail())
+                && Objects.equals(aCustomer.getFirstName(), aCmd.getFirstName())
+                && Objects.equals(aCustomer.getLastName(), aCmd.getLastName())
+                && Objects.equals(aCustomer.getEmail(), aCmd.getEmail())
                 && Objects.equals(aTelephone, aCmd.getTelephone().getValue())
                 && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
                 && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
@@ -73,7 +70,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         final var aAccountId = "123456789";
         final var aTelephone = "+11234567890";
 
-        final var expectedErrorMessage = "Customer with id 123456789 was not found";
+        final var expectedErrorMessage = Fixture.notFoundMessage(Customer.class, aAccountId);
 
         final var aCommand = UpdateCustomerTelephoneCommand.with(aAccountId, aTelephone);
 
@@ -92,13 +89,9 @@ public class UpdateCustomerTelephoneUseCaseTest {
 
     @Test
     void givenAnInvalidNullTelephone_whenCallChangeTelephone_shouldThrowDomainException() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
         final String aTelephone = null;
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("telephone");
         final var expectedErrorCount = 1;
@@ -123,13 +116,9 @@ public class UpdateCustomerTelephoneUseCaseTest {
 
     @Test
     void givenAnInvalidTelephone_whenCallChangeTelephone_shouldReturnDomainException() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
         final var aTelephone = "123456789";
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var expectedErrorMessage = "'telephone' invalid";
         final var expectedErrorCount = 1;

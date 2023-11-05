@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.costumer.address;
 
-import com.kaua.ecommerce.domain.customer.address.Address;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.address.AddressMySQLGateway;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
@@ -20,15 +20,7 @@ public class AddressGatewayTest {
 
     @Test
     void givenAValidAddressId_whenCallDeleteById_shouldBeOk() {
-        final var aAddress = Address.newAddress(
-                "Rua dos Bobos",
-                "0",
-                "Casa",
-                "Centro",
-                "São Paulo",
-                "SP",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         Assertions.assertEquals(0, addressRepository.count());
         addressRepository.save(AddressJpaEntity.toEntity(aAddress));

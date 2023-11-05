@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.costumer.persistence;
 
-import com.kaua.ecommerce.domain.customer.Customer;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
@@ -25,12 +25,7 @@ public class CustomerJpaRepositoryTest {
         final var expectedPropertyName = "accountId";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity.accountId";
 
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setAccountId(null);
@@ -50,12 +45,7 @@ public class CustomerJpaRepositoryTest {
         final var expectedPropertyName = "firstName";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity.firstName";
 
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setFirstName(null);
@@ -75,12 +65,7 @@ public class CustomerJpaRepositoryTest {
         final var expectedPropertyName = "lastName";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity.lastName";
 
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setLastName(null);
@@ -100,12 +85,7 @@ public class CustomerJpaRepositoryTest {
         final var expectedPropertyName = "email";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity.email";
 
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setEmail(null);
@@ -125,12 +105,7 @@ public class CustomerJpaRepositoryTest {
         final var expectedPropertyName = "createdAt";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity.createdAt";
 
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setCreatedAt(null);
@@ -150,12 +125,7 @@ public class CustomerJpaRepositoryTest {
         final var expectedPropertyName = "updatedAt";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity.updatedAt";
 
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setUpdatedAt(null);
@@ -174,12 +144,7 @@ public class CustomerJpaRepositoryTest {
     void givenAnInvalidNullId_whenCallSave_shouldReturnAnException() {
         final var expectedErrorMessage = "ids for this class must be manually assigned before calling save(): com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity";
 
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setId(null);
@@ -195,12 +160,7 @@ public class CustomerJpaRepositoryTest {
 
     @Test
     void givenAValidCpf_whenCallSave_shouldReturnCustomer() {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setCpf("50212367099");
@@ -220,12 +180,7 @@ public class CustomerJpaRepositoryTest {
 
     @Test
     void givenAValidNullCpf_whenCallSave_shouldReturnCustomer() {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setCpf(null);
@@ -245,12 +200,7 @@ public class CustomerJpaRepositoryTest {
 
     @Test
     void givenAValidTelephone_whenCallSave_shouldReturnCustomer() {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setTelephone("+11234567890");
@@ -270,12 +220,7 @@ public class CustomerJpaRepositoryTest {
 
     @Test
     void givenAValidNullTelephone_whenCallSave_shouldReturnCustomer() {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);
         aEntity.setTelephone("+11234567890");
@@ -295,12 +240,7 @@ public class CustomerJpaRepositoryTest {
 
     @Test
     void givenAValidNullAddress_whenCallSave_shouldReturnCustomer() {
-        final var aCustomer = Customer.newCustomer(
-                "123",
-                "teste",
-                "testes",
-                "teste@teste.com"
-        );
+        final var aCustomer = Fixture.Customers.customerDefault;
         final var aAddress = Address.newAddress(
                 "Rua Teste",
                 "123",

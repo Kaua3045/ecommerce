@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.costumer.address.persistence;
 
-import com.kaua.ecommerce.domain.customer.address.Address;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaRepository;
@@ -23,15 +23,7 @@ public class AddressJpaRepositoryTest {
         final var expectedPropertyName = "street";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.street";
 
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setStreet(null);
@@ -51,15 +43,7 @@ public class AddressJpaRepositoryTest {
         final var expectedPropertyName = "number";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.number";
 
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setNumber(null);
@@ -79,15 +63,7 @@ public class AddressJpaRepositoryTest {
         final var expectedPropertyName = "zipCode";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.zipCode";
 
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setZipCode(null);
@@ -107,15 +83,7 @@ public class AddressJpaRepositoryTest {
         final var expectedPropertyName = "createdAt";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.createdAt";
 
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setCreatedAt(null);
@@ -135,15 +103,7 @@ public class AddressJpaRepositoryTest {
         final var expectedPropertyName = "updatedAt";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.updatedAt";
 
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setUpdatedAt(null);
@@ -162,15 +122,7 @@ public class AddressJpaRepositoryTest {
     void givenAnInvalidNullId_whenCallSave_shouldReturnAnException() {
         final var expectedErrorMessage = "ids for this class must be manually assigned before calling save(): com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity";
 
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setId(null);
@@ -186,15 +138,7 @@ public class AddressJpaRepositoryTest {
 
     @Test
     void givenAValidComplement_whenCallSave_shouldReturnAddress() {
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setComplement("Ap 01");
@@ -212,15 +156,7 @@ public class AddressJpaRepositoryTest {
 
     @Test
     void givenAValidNullComplement_whenCallSave_shouldReturnAddress() {
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setComplement(null);
@@ -241,15 +177,7 @@ public class AddressJpaRepositoryTest {
         final var expectedPropertyName = "district";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.district";
 
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setDistrict(null);
@@ -269,15 +197,7 @@ public class AddressJpaRepositoryTest {
         final var expectedPropertyName = "city";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.city";
 
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setCity(null);
@@ -297,15 +217,7 @@ public class AddressJpaRepositoryTest {
         final var expectedPropertyName = "state";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.state";
 
-        final var aAddress = Address.newAddress(
-                "Rua Teste",
-                "123",
-                "Complemento",
-                "Bairro Teste",
-                "Cidade Teste",
-                "Estado Teste",
-                "12345678"
-        );
+        final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
         aEntity.setState(null);

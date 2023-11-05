@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.application.usecases.customer.update.cpf;
 
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
@@ -29,14 +30,10 @@ public class UpdateCustomerCpfUseCaseTest {
 
     @Test
     void givenAValidCommand_whenCallChangeCpf_shouldReturnAnAccountId() {
-        final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
+        final var aCustomer = Fixture.Customers.customerDefault;
+        final var aAccountId = aCustomer.getAccountId();
         final var aCpf = "502.123.670-99";
         final var aCleanedCpf = "50212367099";
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var aCommand = UpdateCustomerCpfCommand.with(aAccountId, aCpf);
 
@@ -52,9 +49,9 @@ public class UpdateCustomerCpfUseCaseTest {
         Mockito.verify(customerGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aAccountId, aCmd.getAccountId())
                 && Objects.equals(aCustomer.getId(), aCmd.getId())
-                && Objects.equals(aFirstName, aCmd.getFirstName())
-                && Objects.equals(aLastName, aCmd.getLastName())
-                && Objects.equals(aEmail, aCmd.getEmail())
+                && Objects.equals(aCustomer.getFirstName(), aCmd.getFirstName())
+                && Objects.equals(aCustomer.getLastName(), aCmd.getLastName())
+                && Objects.equals(aCustomer.getEmail(), aCmd.getEmail())
                 && Objects.equals(aCleanedCpf, aCmd.getCpf().getValue())
                 && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
                 && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
@@ -65,7 +62,7 @@ public class UpdateCustomerCpfUseCaseTest {
         final var aAccountId = "123456789";
         final var aCpf = "502.123.670-99";
 
-        final var expectedErrorMessage = "Customer with id 123456789 was not found";
+        final var expectedErrorMessage = Fixture.notFoundMessage(Customer.class, aAccountId);
 
         final var aCommand = UpdateCustomerCpfCommand.with(aAccountId, aCpf);
 
@@ -82,13 +79,9 @@ public class UpdateCustomerCpfUseCaseTest {
 
     @Test
     void givenAnInvalidCpf_whenCallChangeCpf_shouldThrowDomainException() {
+        final var aCustomer = Fixture.Customers.customerDefault;
         final var aAccountId = "123456789";
-        final var aFirstName = "Teste";
-        final var aLastName = "Testes";
-        final var aEmail = "teste.testes@fakte.com";
         final var aCpf = "502.123.670-10";
-
-        final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
 
         final var expectedErrorMessage = "'cpf' invalid";
         final var expectedErrorCount = 1;

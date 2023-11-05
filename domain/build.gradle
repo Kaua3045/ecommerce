@@ -7,3 +7,18 @@ group = 'com.kaua.ecommerce.domain'
 
 dependencies {
 }
+
+configurations {
+    testClasses {
+        extendsFrom(testImplementation)
+    }
+}
+
+tasks.register('testJar', Jar) {
+    archiveClassifier.set('test')
+    from sourceSets.test.output
+}
+
+artifacts {
+    testClasses testJar
+}

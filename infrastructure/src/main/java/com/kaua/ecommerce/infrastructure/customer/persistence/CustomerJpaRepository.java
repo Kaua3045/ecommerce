@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface CustomerjpaRepository extends JpaRepository<CustomerJpaEntity, String> {
+public interface CustomerJpaRepository extends JpaRepository<CustomerJpaEntity, String> {
 
     boolean existsByAccountId(String accountId);
 

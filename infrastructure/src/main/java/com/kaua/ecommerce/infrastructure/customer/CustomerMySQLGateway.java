@@ -3,7 +3,7 @@ package com.kaua.ecommerce.infrastructure.customer;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerjpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +13,9 @@ import java.util.Optional;
 @Component
 public class CustomerMySQLGateway implements CustomerGateway {
 
-    private final CustomerjpaRepository customerRepository;
+    private final CustomerJpaRepository customerRepository;
 
-    public CustomerMySQLGateway(final CustomerjpaRepository customerRepository) {
+    public CustomerMySQLGateway(final CustomerJpaRepository customerRepository) {
         this.customerRepository = Objects.requireNonNull(customerRepository);
     }
 

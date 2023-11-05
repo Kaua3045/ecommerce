@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.application.usecases.customer.update.cpf;
 
+import com.kaua.ecommerce.application.gateways.CacheGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Customer;
@@ -25,6 +26,9 @@ public class UpdateCustomerCpfUseCaseTest {
     @Mock
     private CustomerGateway customerGateway;
 
+    @Mock
+    private CacheGateway<Customer> customerCacheGateway;
+
     @InjectMocks
     private DefaultUpdateCustomerCpfUseCase useCase;
 
@@ -39,6 +43,7 @@ public class UpdateCustomerCpfUseCaseTest {
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
         Mockito.when(customerGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
+        Mockito.doNothing().when(customerCacheGateway).delete(aAccountId);
 
         final var aResult = useCase.execute(aCommand).getRight();
 
@@ -55,6 +60,7 @@ public class UpdateCustomerCpfUseCaseTest {
                 && Objects.equals(aCleanedCpf, aCmd.getCpf().getValue())
                 && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
                 && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
+        Mockito.verify(customerCacheGateway, Mockito.times(1)).delete(aAccountId);
     }
 
     @Test
@@ -75,6 +81,7 @@ public class UpdateCustomerCpfUseCaseTest {
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
 
     @Test
@@ -98,5 +105,6 @@ public class UpdateCustomerCpfUseCaseTest {
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
 }

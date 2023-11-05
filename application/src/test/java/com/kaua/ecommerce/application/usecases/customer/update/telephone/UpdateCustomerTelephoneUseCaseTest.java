@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.application.usecases.customer.update.telephone;
 
 import com.kaua.ecommerce.application.adapters.TelephoneAdapter;
+import com.kaua.ecommerce.application.gateways.CacheGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Customer;
@@ -30,6 +31,9 @@ public class UpdateCustomerTelephoneUseCaseTest {
     @Mock
     private TelephoneAdapter telephoneAdapter;
 
+    @Mock
+    private CacheGateway<Customer> customerCacheGateway;
+
     @InjectMocks
     private DefaultUpdateCustomerTelephoneUseCase useCase;
 
@@ -45,6 +49,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Mockito.when(telephoneAdapter.formatInternational(aTelephone)).thenReturn(aTelephone);
         Mockito.when(telephoneAdapter.validate(aTelephone)).thenReturn(true);
         Mockito.when(customerGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
+        Mockito.doNothing().when(customerCacheGateway).delete(aAccountId);
 
         final var aResult = useCase.execute(aCommand).getRight();
 
@@ -63,6 +68,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
                 && Objects.equals(aTelephone, aCmd.getTelephone().getValue())
                 && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
                 && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
+        Mockito.verify(customerCacheGateway, Mockito.times(1)).delete(aAccountId);
     }
 
     @Test
@@ -85,6 +91,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Mockito.verify(telephoneAdapter, Mockito.times(0)).formatInternational(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(0)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
 
     @Test
@@ -112,6 +119,7 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
 
     @Test
@@ -138,5 +146,6 @@ public class UpdateCustomerTelephoneUseCaseTest {
         Mockito.verify(telephoneAdapter, Mockito.times(1)).formatInternational(aTelephone);
         Mockito.verify(telephoneAdapter, Mockito.times(1)).validate(aTelephone);
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
 }

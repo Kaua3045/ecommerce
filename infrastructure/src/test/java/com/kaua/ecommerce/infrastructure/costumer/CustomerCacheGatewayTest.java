@@ -44,7 +44,7 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
         Assertions.assertEquals(aCustomer.getFirstName(), actualCustomer.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualCustomer.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualCustomer.getEmail());
-        Assertions.assertNull(actualCustomer.getCpf());
+        Assertions.assertTrue(actualCustomer.getCpf().isEmpty());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), actualCustomer.getUpdatedAt());
 
@@ -55,7 +55,7 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
         Assertions.assertEquals(aCustomer.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualEntity.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualEntity.getEmail());
-        Assertions.assertNull(actualCustomer.getCpf());
+        Assertions.assertTrue(actualCustomer.getCpf().isEmpty());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), actualEntity.getUpdatedAt());
     }
@@ -83,8 +83,8 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
         Assertions.assertEquals(aCustomer.getFirstName(), actualCustomer.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualCustomer.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualCustomer.getEmail());
-        Assertions.assertEquals(aCleanCpf.getValue(), actualCustomer.getCpf().getValue());
-        Assertions.assertEquals(aTelephone.getValue(), actualCustomer.getTelephone().getValue());
+        Assertions.assertEquals(aCleanCpf.getValue(), actualCustomer.getCpf().get().getValue());
+        Assertions.assertEquals(aTelephone.getValue(), actualCustomer.getTelephone().get().getValue());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(actualCustomer.getUpdatedAt()));
 
@@ -95,8 +95,8 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
         Assertions.assertEquals(aCustomerWithCpf.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomerWithCpf.getLastName(), actualEntity.getLastName());
         Assertions.assertEquals(aCustomerWithCpf.getEmail(), actualEntity.getEmail());
-        Assertions.assertEquals(aCustomerWithCpf.getCpf().getValue(), actualEntity.getCpf());
-        Assertions.assertEquals(aCustomerWithCpf.getTelephone().getValue(), actualEntity.getTelephone());
+        Assertions.assertEquals(aCustomerWithCpf.getCpf().get().getValue(), actualEntity.getCpf());
+        Assertions.assertEquals(aCustomerWithCpf.getTelephone().get().getValue(), actualEntity.getTelephone());
         Assertions.assertEquals(aCustomerWithCpf.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomerWithCpf.getUpdatedAt(), actualEntity.getUpdatedAt());
     }
@@ -122,15 +122,15 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
         Assertions.assertEquals(aCustomer.getFirstName(), actualCustomer.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualCustomer.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualCustomer.getEmail());
-        Assertions.assertEquals(aCustomer.getCpf().getValue(), actualCustomer.getCpf().getValue());
-        Assertions.assertEquals(aCustomer.getTelephone().getValue(), actualCustomer.getTelephone().getValue());
-        Assertions.assertEquals(aAddress.getStreet(), actualCustomer.getAddress().getStreet());
-        Assertions.assertEquals(aAddress.getNumber(), actualCustomer.getAddress().getNumber());
-        Assertions.assertEquals(aAddress.getComplement(), actualCustomer.getAddress().getComplement());
-        Assertions.assertEquals(aAddress.getDistrict(), actualCustomer.getAddress().getDistrict());
-        Assertions.assertEquals(aAddress.getCity(), actualCustomer.getAddress().getCity());
-        Assertions.assertEquals(aAddress.getState(), actualCustomer.getAddress().getState());
-        Assertions.assertEquals(aAddress.getZipCode(), actualCustomer.getAddress().getZipCode());
+        Assertions.assertEquals(aCustomer.getCpf().get().getValue(), actualCustomer.getCpf().get().getValue());
+        Assertions.assertEquals(aCustomer.getTelephone().get().getValue(), actualCustomer.getTelephone().get().getValue());
+        Assertions.assertEquals(aAddress.getStreet(), actualCustomer.getAddress().get().getStreet());
+        Assertions.assertEquals(aAddress.getNumber(), actualCustomer.getAddress().get().getNumber());
+        Assertions.assertEquals(aAddress.getComplement(), actualCustomer.getAddress().get().getComplement());
+        Assertions.assertEquals(aAddress.getDistrict(), actualCustomer.getAddress().get().getDistrict());
+        Assertions.assertEquals(aAddress.getCity(), actualCustomer.getAddress().get().getCity());
+        Assertions.assertEquals(aAddress.getState(), actualCustomer.getAddress().get().getState());
+        Assertions.assertEquals(aAddress.getZipCode(), actualCustomer.getAddress().get().getZipCode());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertTrue(aCustomerUpdatedAt.isBefore(actualCustomer.getUpdatedAt()));
 
@@ -141,15 +141,15 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
         Assertions.assertEquals(aCustomerWithAddress.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomerWithAddress.getLastName(), actualEntity.getLastName());
         Assertions.assertEquals(aCustomerWithAddress.getEmail(), actualEntity.getEmail());
-        Assertions.assertEquals(aCustomerWithAddress.getCpf().getValue(), actualEntity.getCpf());
-        Assertions.assertEquals(aCustomerWithAddress.getTelephone().getValue(), actualEntity.getTelephone());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().getStreet(), actualEntity.getAddress().getStreet());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().getNumber(), actualEntity.getAddress().getNumber());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().getComplement(), actualEntity.getAddress().getComplement());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().getDistrict(), actualEntity.getAddress().getDistrict());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().getCity(), actualEntity.getAddress().getCity());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().getState(), actualEntity.getAddress().getState());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().getZipCode(), actualEntity.getAddress().getZipCode());
+        Assertions.assertEquals(aCustomerWithAddress.getCpf().get().getValue(), actualEntity.getCpf());
+        Assertions.assertEquals(aCustomerWithAddress.getTelephone().get().getValue(), actualEntity.getTelephone());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getStreet(), actualEntity.getAddress().getStreet());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getNumber(), actualEntity.getAddress().getNumber());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getComplement(), actualEntity.getAddress().getComplement());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getDistrict(), actualEntity.getAddress().getDistrict());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getCity(), actualEntity.getAddress().getCity());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getState(), actualEntity.getAddress().getState());
+        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getZipCode(), actualEntity.getAddress().getZipCode());
         Assertions.assertEquals(aCustomerWithAddress.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomerWithAddress.getUpdatedAt(), actualEntity.getUpdatedAt());
     }
@@ -158,7 +158,7 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
     void givenAValidAccountId_whenCallFindById_shouldReturnACustomer() {
         final var aCustomer = Fixture.Customers.customerWithCpf;
         final var aAccountId = aCustomer.getAccountId();
-        final var aCleanCpf = aCustomer.getCpf().getValue();
+        final var aCleanCpf = aCustomer.getCpf().get().getValue();
 
         Assertions.assertEquals(0, customerRepository.count());
         customerRepository.save(CustomerCacheEntity.toEntity(aCustomer));
@@ -171,7 +171,7 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
         Assertions.assertEquals(aCustomer.getFirstName(), actualCustomer.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualCustomer.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualCustomer.getEmail());
-        Assertions.assertEquals(aCleanCpf, actualCustomer.getCpf().getValue());
+        Assertions.assertEquals(aCleanCpf, actualCustomer.getCpf().get().getValue());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), actualCustomer.getUpdatedAt());
 
@@ -182,7 +182,7 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
         Assertions.assertEquals(aCustomer.getFirstName(), actualEntity.getFirstName());
         Assertions.assertEquals(aCustomer.getLastName(), actualEntity.getLastName());
         Assertions.assertEquals(aCustomer.getEmail(), actualEntity.getEmail());
-        Assertions.assertEquals(aCustomer.getCpf().getValue(), actualEntity.getCpf());
+        Assertions.assertEquals(aCustomer.getCpf().get().getValue(), actualEntity.getCpf());
         Assertions.assertEquals(aCustomer.getCreatedAt(), actualEntity.getCreatedAt());
         Assertions.assertEquals(aCustomer.getUpdatedAt(), actualEntity.getUpdatedAt());
     }

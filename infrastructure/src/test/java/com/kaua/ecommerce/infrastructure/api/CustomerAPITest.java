@@ -266,7 +266,7 @@ public class CustomerAPITest {
 
         final var aAccountId = aCustomer.getAccountId();
         final var expectedTelephone = "+1 555-123-4567";
-        final var expectedCpf = aCustomer.getCpf().getFormattedCpf();
+        final var expectedCpf = aCustomer.getCpf().get().getFormattedCpf();
 
         Mockito.when(getCustomerByAccountIdUseCase.execute(Mockito.any()))
                 .thenReturn(GetCustomerByAccountIdOutput.from(aCustomer));
@@ -285,13 +285,13 @@ public class CustomerAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email", equalTo(aCustomer.getEmail())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cpf", equalTo(expectedCpf)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.telephone", equalTo(expectedTelephone)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address.street", equalTo(aCustomer.getAddress().getStreet())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address.number", equalTo(aCustomer.getAddress().getNumber())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address.complement", equalTo(aCustomer.getAddress().getComplement())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address.district", equalTo(aCustomer.getAddress().getDistrict())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address.city", equalTo(aCustomer.getAddress().getCity())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address.state", equalTo(aCustomer.getAddress().getState())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address.zipCode", equalTo(aCustomer.getAddress().getZipCode())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address.street", equalTo(aCustomer.getAddress().get().getStreet())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address.number", equalTo(aCustomer.getAddress().get().getNumber())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address.complement", equalTo(aCustomer.getAddress().get().getComplement())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address.district", equalTo(aCustomer.getAddress().get().getDistrict())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address.city", equalTo(aCustomer.getAddress().get().getCity())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address.state", equalTo(aCustomer.getAddress().get().getState())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address.zipCode", equalTo(aCustomer.getAddress().get().getZipCode())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.created_at", equalTo(aCustomer.getCreatedAt().toString())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.updated_at", equalTo(aCustomer.getUpdatedAt().toString())));
     }

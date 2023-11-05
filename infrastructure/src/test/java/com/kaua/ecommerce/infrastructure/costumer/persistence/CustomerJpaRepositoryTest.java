@@ -263,7 +263,7 @@ public class CustomerJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getEmail(), actualResult.getEmail());
         Assertions.assertEquals(aEntity.getCpf(), actualResult.getCpf());
         Assertions.assertEquals(aEntity.getTelephone(), actualResult.getTelephone());
-        Assertions.assertEquals(aEntity.getAddress().getId(), actualResult.getAddress().getId());
+        Assertions.assertEquals(aEntity.getAddress().get().getId(), actualResult.getAddress().get().getId());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
         Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
     }

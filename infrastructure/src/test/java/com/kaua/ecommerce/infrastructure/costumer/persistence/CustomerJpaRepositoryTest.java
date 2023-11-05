@@ -5,7 +5,7 @@ import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerjpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
 import org.hibernate.PropertyValueException;
 import org.hibernate.id.IdentifierGenerationException;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +18,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 public class CustomerJpaRepositoryTest {
 
     @Autowired
-    private CustomerjpaRepository customerRepository;
+    private CustomerJpaRepository customerRepository;
 
     @Test
     void givenAnInvalidNullAccountId_whenCallSave_shouldReturnAnException() {

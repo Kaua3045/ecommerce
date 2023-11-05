@@ -96,7 +96,6 @@ public class CustomerJpaEntity {
                 getCpf(),
                 getTelephone(),
                 getAddress().map(AddressJpaEntity::toDomain).orElse(null),
-//                getAddress() == null ? null : getAddress().toDomain(),
                 getCreatedAt(),
                 getUpdatedAt()
         );

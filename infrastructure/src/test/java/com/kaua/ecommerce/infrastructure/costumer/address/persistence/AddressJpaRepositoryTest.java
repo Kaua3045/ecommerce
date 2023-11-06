@@ -79,34 +79,14 @@ public class AddressJpaRepositoryTest {
     }
 
     @Test
-    void givenAnInvalidNullCreatedAt_whenCallSave_shouldReturnAnException() {
-        final var expectedPropertyName = "createdAt";
-        final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.createdAt";
+    void givenAnInvalidNullCustomerId_whenCallSave_shouldReturnAnException() {
+        final var expectedPropertyName = "customerId";
+        final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.customerId";
 
         final var aAddress = Fixture.Addresses.addressDefault;
 
         final var aEntity = AddressJpaEntity.toEntity(aAddress);
-        aEntity.setCreatedAt(null);
-
-        final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
-                () -> addressRepository.save(aEntity));
-
-        final var actualCause = Assertions.assertInstanceOf(PropertyValueException.class,
-                actualException.getCause());
-
-        Assertions.assertEquals(expectedPropertyName, actualCause.getPropertyName());
-        Assertions.assertEquals(expectedErrorMessage, actualCause.getMessage());
-    }
-
-    @Test
-    void givenAnInvalidNullUpdatedAt_whenCallSave_shouldReturnAnException() {
-        final var expectedPropertyName = "updatedAt";
-        final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity.updatedAt";
-
-        final var aAddress = Fixture.Addresses.addressDefault;
-
-        final var aEntity = AddressJpaEntity.toEntity(aAddress);
-        aEntity.setUpdatedAt(null);
+        aEntity.setCustomerId(null);
 
         final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
                 () -> addressRepository.save(aEntity));
@@ -150,8 +130,7 @@ public class AddressJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getNumber(), actualResult.getNumber());
         Assertions.assertEquals(aEntity.getComplement(), actualResult.getComplement());
         Assertions.assertEquals(aEntity.getZipCode(), actualResult.getZipCode());
-        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
-        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+        Assertions.assertEquals(aEntity.getCustomerId(), aAddress.getCustomerID().getValue());
     }
 
     @Test
@@ -168,8 +147,7 @@ public class AddressJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getNumber(), actualResult.getNumber());
         Assertions.assertNull(actualResult.getComplement());
         Assertions.assertEquals(aEntity.getZipCode(), actualResult.getZipCode());
-        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
-        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+        Assertions.assertEquals(aEntity.getCustomerId(), aAddress.getCustomerID().getValue());
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.customer.Telephone;
+import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.CustomerMySQLGateway;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
@@ -121,7 +122,16 @@ public class CustomerGatewayTest {
     @Test
     void givenAValidCustomerWithAddress_whenCallUpdate_shouldReturnACustomerUpdated() {
         final var aCustomer = Fixture.Customers.customerWithTelephoneAndCpf;
-        final var aAddress = Fixture.Addresses.addressDefault;
+        final var aAddress = Address.newAddress(
+                "Rua Teste",
+                "270",
+                "apt 123",
+                "Bairro",
+                "Cidade",
+                "Estado",
+                "12345678",
+                aCustomer.getId()
+        );
 
         Assertions.assertEquals(0, customerRepository.count());
         customerRepository.save(CustomerJpaEntity.toEntity(aCustomer));

@@ -51,7 +51,8 @@ public class DefaultUpdateCustomerAddressUseCase extends UpdateCustomerAddressUs
                 input.district(),
                 input.city(),
                 input.state(),
-                input.zipCode()
+                input.zipCode(),
+                aCustomer.getId()
         );
         aAddress.validate(aNotification);
 

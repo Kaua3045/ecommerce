@@ -326,6 +326,27 @@ public class AddressTest {
     }
 
     @Test
+    void givenAnInvalidNullCustomerId_whenCallNewAddress_shouldReturnDomainException() {
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("customerID");
+        final var expectedErrorCount = 1;
+
+        final var aAddress = Address.newAddress(
+                "street",
+                "123",
+                null,
+                "Bairro",
+                "city",
+                "state",
+                "1234567899", null);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aAddress.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+    }
+
+    @Test
     void testAddressIdEqualsAndHashCode() {
         final var aAddressId = AddressID.from("123456789");
         final var anotherAddressId = AddressID.from("123456789");

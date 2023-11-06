@@ -7,8 +7,7 @@ CREATE TABLE addresses (
     city VARCHAR(255) NOT NULL,
     state VARCHAR(255) NOT NULL,
     zip_code VARCHAR(50) NOT NULL,
-    created_at DATETIME(6) NOT NULL,
-    updated_at DATETIME(6) NOT NULL
+    customer_id VARCHAR(36) NOT NULL
 );
 
 ALTER TABLE customers ADD COLUMN address_id VARCHAR(36);

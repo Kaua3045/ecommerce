@@ -2,6 +2,7 @@ package com.kaua.ecommerce.domain;
 
 import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
+import com.kaua.ecommerce.domain.customer.CustomerID;
 import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
@@ -60,7 +61,8 @@ public final class Fixture {
                                 "Bairro",
                                 "Cidade",
                                 "Estado",
-                                "12345678"));
+                                "12345678",
+                                CustomerID.unique()));
     }
 
     public static final class Addresses {
@@ -72,7 +74,8 @@ public final class Fixture {
                 "Bairro Teste",
                 "Cidade Teste",
                 "Estado Teste",
-                "12345678"
+                "12345678",
+                CustomerID.unique()
         );
     }
 }

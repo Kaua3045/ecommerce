@@ -39,5 +39,9 @@ public class AddressValidation extends Validator {
         if (this.address.getZipCode() == null || this.address.getZipCode().isBlank()) {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("zipCode")));
         }
+
+        if (this.address.getCustomerID() == null) {
+            this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("customerID")));
+        }
     }
 }

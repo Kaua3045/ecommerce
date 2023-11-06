@@ -1,11 +1,8 @@
 package com.kaua.ecommerce.infrastructure.customer.address.persistence;
 
-import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import jakarta.persistence.Id;
 import org.springframework.data.redis.core.RedisHash;
-
-import java.time.Instant;
 
 @RedisHash(value = "address", timeToLive = 60 * 60 * 24) // 1 day
 public class AddressCacheEntity {
@@ -20,8 +17,7 @@ public class AddressCacheEntity {
     private String city;
     private String state;
     private String zipCode;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private String customerId;
 
     public AddressCacheEntity() {}
 
@@ -34,8 +30,7 @@ public class AddressCacheEntity {
             final String city,
             final String state,
             final String zipCode,
-            final Instant createdAt,
-            final Instant updatedAt
+            final String customerId
     ) {
         this.id = id;
         this.street = street;
@@ -45,8 +40,7 @@ public class AddressCacheEntity {
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.customerId = customerId;
     }
 
     public static AddressCacheEntity toEntity(final Address aAddress) {
@@ -59,8 +53,7 @@ public class AddressCacheEntity {
                 aAddress.getCity(),
                 aAddress.getState(),
                 aAddress.getZipCode(),
-                aAddress.getCreatedAt(),
-                aAddress.getUpdatedAt()
+                aAddress.getCustomerID().getValue()
         );
     }
 
@@ -74,8 +67,7 @@ public class AddressCacheEntity {
                 getCity(),
                 getState(),
                 getZipCode(),
-                getCreatedAt(),
-                getUpdatedAt()
+                getCustomerId()
         );
     }
 
@@ -111,11 +103,7 @@ public class AddressCacheEntity {
         return zipCode;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
+    public String getCustomerId() {
+        return customerId;
     }
 }

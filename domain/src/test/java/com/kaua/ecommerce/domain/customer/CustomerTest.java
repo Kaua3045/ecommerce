@@ -531,7 +531,7 @@ public class CustomerTest {
                 "Bairro",
                 "city",
                 "state",
-                "12345678"
+                "12345678", CustomerID.unique()
         ));
 
         final var aCustomer = Customer.newCustomer(aAccountId, aFirstName, aLastName, aEmail);
@@ -578,7 +578,7 @@ public class CustomerTest {
                 "Bairro",
                 "city",
                 "state",
-                "12345678"
+                "12345678", CustomerID.unique()
         );
         final var aCreatedAt = InstantUtils.now();
         final var aUpdatedAt = InstantUtils.now();

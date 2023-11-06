@@ -6,8 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.time.Instant;
-
 @Entity(name = "Address")
 @Table(name = "addresses")
 public class AddressJpaEntity {
@@ -37,11 +35,8 @@ public class AddressJpaEntity {
     @Column(name = "zip_code", nullable = false)
     private String zipCode;
 
-    @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME(6)")
-    private Instant createdAt;
-
-    @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME(6)")
-    private Instant updatedAt;
+    @Column(name = "customer_id", nullable = false)
+    private String customerId;
 
     public AddressJpaEntity() {}
 
@@ -54,8 +49,7 @@ public class AddressJpaEntity {
             final String city,
             final String state,
             final String zipCode,
-            final Instant createdAt,
-            final Instant updatedAt
+            final String customerId
     ) {
         this.id = id;
         this.street = street;
@@ -65,8 +59,7 @@ public class AddressJpaEntity {
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.customerId = customerId;
     }
 
     public static AddressJpaEntity toEntity(final Address aAddress) {
@@ -79,8 +72,7 @@ public class AddressJpaEntity {
                 aAddress.getCity(),
                 aAddress.getState(),
                 aAddress.getZipCode(),
-                aAddress.getCreatedAt(),
-                aAddress.getUpdatedAt()
+                aAddress.getCustomerID().getValue()
         );
     }
 
@@ -94,8 +86,7 @@ public class AddressJpaEntity {
                 getCity(),
                 getState(),
                 getZipCode(),
-                getCreatedAt(),
-                getUpdatedAt()
+                getCustomerId()
         );
     }
 
@@ -163,19 +154,11 @@ public class AddressJpaEntity {
         this.zipCode = zipCode;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }

@@ -1,10 +1,8 @@
 package com.kaua.ecommerce.domain.customer.address;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
-import com.kaua.ecommerce.domain.utils.InstantUtils;
+import com.kaua.ecommerce.domain.customer.CustomerID;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
-
-import java.time.Instant;
 
 public class Address extends AggregateRoot<AddressID> {
 
@@ -15,8 +13,7 @@ public class Address extends AggregateRoot<AddressID> {
     private String city;
     private String state;
     private String zipCode;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private CustomerID customerID;
 
     private Address(
             final AddressID aAddressID,
@@ -27,8 +24,7 @@ public class Address extends AggregateRoot<AddressID> {
             final String aCity,
             final String aState,
             final String aZipCode,
-            final Instant aCreatedAt,
-            final Instant aUpdatedAt
+            final CustomerID aCustomerID
     ) {
         super(aAddressID);
         this.street = aStreet;
@@ -38,8 +34,7 @@ public class Address extends AggregateRoot<AddressID> {
         this.city = aCity;
         this.state = aState;
         this.zipCode = aZipCode;
-        this.createdAt = aCreatedAt;
-        this.updatedAt = aUpdatedAt;
+        this.customerID = aCustomerID;
     }
 
     public static Address newAddress(
@@ -49,10 +44,10 @@ public class Address extends AggregateRoot<AddressID> {
             final String aDistrict,
             final String aCity,
             final String aState,
-            final String aZipCode
+            final String aZipCode,
+            final CustomerID aCustomerID
     ) {
         final var aId = AddressID.unique();
-        final var aNow = InstantUtils.now();
         return new Address(
                 aId,
                 aStreet,
@@ -62,8 +57,7 @@ public class Address extends AggregateRoot<AddressID> {
                 aCity,
                 aState,
                 aZipCode,
-                aNow,
-                aNow
+                aCustomerID
         );
     }
 
@@ -76,8 +70,7 @@ public class Address extends AggregateRoot<AddressID> {
             final String aCity,
             final String aState,
             final String aZipCode,
-            final Instant aCreatedAt,
-            final Instant aUpdatedAt
+            final String aCustomerID
     ) {
         return new Address(
                 AddressID.from(aAddressID),
@@ -88,8 +81,7 @@ public class Address extends AggregateRoot<AddressID> {
                 aCity,
                 aState,
                 aZipCode,
-                aCreatedAt,
-                aUpdatedAt
+                CustomerID.from(aCustomerID)
         );
     }
 
@@ -126,11 +118,7 @@ public class Address extends AggregateRoot<AddressID> {
         return zipCode;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
+    public CustomerID getCustomerID() {
+        return customerID;
     }
 }

@@ -239,7 +239,7 @@ public class CustomerJpaRepositoryTest {
     }
 
     @Test
-    void givenAValidNullAddress_whenCallSave_shouldReturnCustomer() {
+    void givenAValidAddress_whenCallSave_shouldReturnCustomer() {
         final var aCustomer = Fixture.Customers.customerDefault;
         final var aAddress = Address.newAddress(
                 "Rua Teste",
@@ -248,7 +248,7 @@ public class CustomerJpaRepositoryTest {
                 "Bairro Teste",
                 "Cidade Teste",
                 "Estado Teste",
-                "12345678"
+                "12345678", aCustomer.getId()
         );
 
         final var aEntity = CustomerJpaEntity.toEntity(aCustomer);

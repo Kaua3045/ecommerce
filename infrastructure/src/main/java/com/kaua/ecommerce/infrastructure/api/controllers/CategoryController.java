@@ -30,8 +30,8 @@ public class CategoryController {
     public ResponseEntity<?> createCategory() {
         final var id = categoryRepository.save(new CategoryEntity(
                 IdUtils.generate(),
-                "Vestuario",
-                "Roupas e acessórios",
+                "Console",
+                "Video games",
                 true,
                 null,
                 InstantUtils.now(),
@@ -54,75 +54,75 @@ public class CategoryController {
     @PostMapping("/sub")
     public ResponseEntity<?> subCategory() {
         // principal category (console)
-        var ab = this.categoryRepository.findById("6a72fde8-7c0f-48c0-92a1-bac6bd97dbc6").get();
+        var ab = this.categoryRepository.findById("5f5e0e8d-2ca1-45d3-b12c-ef33f41e4479").get();
 
-        ab.getSubCategories().add(new CategoryEntity(
-                IdUtils.generate(),
-                "Blusas",
-                null,
-                false,
-                null,
-                InstantUtils.now(),
-                InstantUtils.now()
-        ));
+//        ab.getSubCategories().add(new CategoryEntity(
+//                IdUtils.generate(),
+//                "Blusas",
+//                null,
+//                false,
+//                null,
+//                InstantUtils.now(),
+//                InstantUtils.now()
+//        ));
 
         // playstation category
-//        final var playCategory = new CategoryEntity(
-//                IdUtils.generate(),
-//                "Playstation",
-//                "video games",
-//                false,
-//                Set.of(
-//                        new CategoryEntity(
-//                                IdUtils.generate(),
-//                                "Playstation5",
-//                                null,
-//                                false,
-//                                null,
-//                                InstantUtils.now(),
-//                                InstantUtils.now()
-//                        ),
-//                        new CategoryEntity(
-//                                IdUtils.generate(),
-//                                "Playstation4",
-//                                null,
-//                                false,
-//                                null,
-//                                InstantUtils.now(),
-//                                InstantUtils.now()
-//                        )),
-//                InstantUtils.now(),
-//                InstantUtils.now());
-//
-//        // xbox category
-//        final var xboxCategory = new CategoryEntity(
-//                IdUtils.generate(),
-//                "Xbox",
-//                "video games",
-//                false,
-//                Set.of(
-//                        new CategoryEntity(
-//                                IdUtils.generate(),
-//                                "XboxOne",
-//                                null,
-//                                false,
-//                                null,
-//                                InstantUtils.now(),
-//                                InstantUtils.now()
-//                        ),
-//                        new CategoryEntity(
-//                                IdUtils.generate(),
-//                                "XboxSeries",
-//                                null,
-//                                false,
-//                                null,
-//                                InstantUtils.now(),
-//                                InstantUtils.now()
-//                        )),
-//                InstantUtils.now(),
-//                InstantUtils.now());
+        final var playCategory = new CategoryEntity(
+                IdUtils.generate(),
+                "Playstation",
+                "video games",
+                false,
+                Set.of(
+                        new CategoryEntity(
+                                IdUtils.generate(),
+                                "Playstation5",
+                                null,
+                                false,
+                                null,
+                                InstantUtils.now(),
+                                InstantUtils.now()
+                        ),
+                        new CategoryEntity(
+                                IdUtils.generate(),
+                                "Playstation4",
+                                null,
+                                false,
+                                null,
+                                InstantUtils.now(),
+                                InstantUtils.now()
+                        )),
+                InstantUtils.now(),
+                InstantUtils.now());
 
-//        ab.getSubCategories().addAll(Set.of(playCategory, xboxCategory));
+        // xbox category
+        final var xboxCategory = new CategoryEntity(
+                IdUtils.generate(),
+                "Xbox",
+                "video games",
+                false,
+                Set.of(
+                        new CategoryEntity(
+                                IdUtils.generate(),
+                                "XboxOne",
+                                null,
+                                false,
+                                null,
+                                InstantUtils.now(),
+                                InstantUtils.now()
+                        ),
+                        new CategoryEntity(
+                                IdUtils.generate(),
+                                "XboxSeries",
+                                null,
+                                false,
+                                null,
+                                InstantUtils.now(),
+                                InstantUtils.now()
+                        )),
+                InstantUtils.now(),
+                InstantUtils.now());
+
+        ab.getSubCategories().addAll(Set.of(playCategory, xboxCategory));
         this.categoryRepository.save(ab);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -130,21 +130,23 @@ public class CategoryController {
     @PatchMapping("/sub/{id}")
     public ResponseEntity<?> subCategory(@PathVariable String id) {
         Set<CategoryEntity> sub = new HashSet<>();
-//        sub.add(new CategoryEntity(
-//                IdUtils.generate(),
-//                "Controles",
-//                "controle de video games",
-//                Set.of(
-//                        new CategoryEntity(
-//                                IdUtils.generate(),
-//                                "ControlePlaystation4",
-//                                null,
-//                                null,
-//                                InstantUtils.now(),
-//                                InstantUtils.now()
-//                        )),
-//                InstantUtils.now(),
-//                InstantUtils.now()));
+        sub.add(new CategoryEntity(
+                IdUtils.generate(),
+                "Controles",
+                "controle de video games",
+                false,
+                Set.of(
+                        new CategoryEntity(
+                                IdUtils.generate(),
+                                "ControlePlaystation4",
+                                null,
+                                false,
+                                null,
+                                InstantUtils.now(),
+                                InstantUtils.now()
+                        )),
+                InstantUtils.now(),
+                InstantUtils.now()));
 
         var ab = this.categoryRepository.findById(id).get();
         ab.getSubCategories().addAll(sub);

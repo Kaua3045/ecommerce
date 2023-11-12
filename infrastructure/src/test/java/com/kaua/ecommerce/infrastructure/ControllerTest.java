@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j;
 import org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,6 +19,7 @@ import java.lang.annotation.*;
 @AutoConfigureMockMvc(addFilters = false)
 @Import(ObjectMapper.class)
 @AutoConfigureDataRedis
+@AutoConfigureDataNeo4j
 public @interface ControllerTest {
 
     @AliasFor(annotation = WebMvcTest.class, attribute = "controllers")

@@ -30,6 +30,7 @@ public class CategoryValidation extends Validator {
     private void checkNameConstraints() {
         if (category.getName() == null || category.getName().isBlank()) {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("name")));
+            return;
         }
         if (category.getName().trim().length() < MINIMUM_LENGTH ||
                 category.getName().trim().length() > MAXIMUM_LENGTH) {
@@ -40,6 +41,7 @@ public class CategoryValidation extends Validator {
     private void checkDescriptionConstraints() {
         if (category.getDescription() != null && category.getDescription().isBlank()) {
             this.validationHandler().append(new Error("'description' should not be blank"));
+            return;
         }
         if (category.getDescription() != null && category.getDescription().trim().length() > MAXIMUM_LENGTH) {
             this.validationHandler().append(new Error(lengthBetween("description", 0, MAXIMUM_LENGTH)));
@@ -49,6 +51,7 @@ public class CategoryValidation extends Validator {
     private void checkSlugConstraints() {
         if (category.getSlug() == null || category.getSlug().isBlank()) {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("slug")));
+            return;
         }
         if (category.getSlug().trim().length() < MINIMUM_LENGTH ||
                 category.getSlug().trim().length() > MAXIMUM_LENGTH) {

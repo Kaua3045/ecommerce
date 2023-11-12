@@ -26,6 +26,10 @@ server:
       worker: 64
       io: 4
 
+logging:
+  level:
+    org.springframework.data.neo4j: DEBUG
+
 spring:
   flyway:
     enabled: false
@@ -62,3 +66,8 @@ spring:
       database: 0
       host: ${redis.host}
       port: ${redis.port}
+  neo4j:
+    uri: bolt://${neo4j.host}:${neo4j.port}
+    authentication:
+      username: ${neo4j.username}
+      password: ${neo4j.password}

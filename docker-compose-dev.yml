@@ -22,5 +22,16 @@ services:
     networks:
       - ecommerce_network
 
+  neo4j:
+    container_name: ecommerce-neo4j
+    image: neo4j:latest
+    environment:
+      - NEO4J_AUTH=neo4j/123456789
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    networks:
+      - ecommerce_network
+
 networks:
   ecommerce_network:

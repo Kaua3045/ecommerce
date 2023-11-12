@@ -10,6 +10,12 @@ redis:
   host: localhost
   port: 6380
 
+neo4j:
+  host: localhost
+  port: 7687
+  username: neo4j
+  password: 123456789
+
 logging:
   level:
     com.kaua.ecommerce.infrastructure: DEBUG

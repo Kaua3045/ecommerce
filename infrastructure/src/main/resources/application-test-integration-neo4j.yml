@@ -1,12 +1,12 @@
 redis:
-  host: ${redis.hosts}
-  port: ${redis.ports}
+  host: localhost
+  port: 6381
 
 neo4j:
-  host: localhost
-  port: 7475
-  username: neo4j
-  password: 123456789
+  host: ${neo4j.urls}
+  port: ${neo4j.ports}
+  username: ${neo4j.usernames}
+  password: ${neo4j.passwords}
 
 spring:
   autoconfigure:

@@ -2,6 +2,12 @@ redis:
   host: localhost
   port: 6381
 
+neo4j:
+  host: localhost
+  port: 7475
+  username: neo4j
+  password: 123456789
+
 spring:
   autoconfigure:
     exclude:

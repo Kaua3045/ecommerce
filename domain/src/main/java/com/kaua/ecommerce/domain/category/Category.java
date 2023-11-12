@@ -59,6 +59,10 @@ public class Category extends AggregateRoot<CategoryID> {
         );
     }
 
+    public void addSubCategories(final Set<Category> aSubCategory) {
+        this.subCategories.addAll(aSubCategory);
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new CategoryValidation(this, handler).validate();

@@ -1,4 +1,4 @@
-package com.kaua.ecommerce.application.usecases.category;
+package com.kaua.ecommerce.application.usecases.category.create;
 
 import com.kaua.ecommerce.domain.category.Category;
 

@@ -1,4 +1,4 @@
-package com.kaua.ecommerce.application.usecases.category;
+package com.kaua.ecommerce.application.usecases.category.create;
 
 public record CreateCategoryCommand(
         String name,

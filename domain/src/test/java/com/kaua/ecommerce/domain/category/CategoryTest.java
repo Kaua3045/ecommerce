@@ -1,14 +1,12 @@
 package com.kaua.ecommerce.domain.category;
 
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class CategoryTest {
 
@@ -334,7 +332,7 @@ public class CategoryTest {
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
         final var aIsRoot = true;
-        final var aSubCategories = makeSubCategories(6);
+        final var aSubCategories = Fixture.Categories.makeSubCategories(6);
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("subCategories", 0, 5);
@@ -361,7 +359,7 @@ public class CategoryTest {
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
         final var aIsRoot = true;
-        final var aSubCategories = makeSubCategories(5);
+        final var aSubCategories = Fixture.Categories.makeSubCategories(5);
 
         final var aCategory = Category.newCategory(
                 aName,
@@ -382,19 +380,5 @@ public class CategoryTest {
         Assertions.assertNotNull(aCategory.getUpdatedAt());
 
         Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
-    }
-
-    private Set<Category> makeSubCategories(final int size) {
-        var subCategories = new HashSet<Category>();
-
-        for (int i = 0; i < size; i++) {
-            subCategories.add(Category.newCategory(
-                    "Category Name " + i,
-                    "Category Description " + i,
-                    "category-name-" + i,
-                    false
-            ));
-        }
-        return subCategories;
     }
 }

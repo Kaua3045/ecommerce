@@ -59,6 +59,28 @@ public class Category extends AggregateRoot<CategoryID> {
         );
     }
 
+    public static Category with(
+            final String aId,
+            final String aName,
+            final String aDescription,
+            final String aSlug,
+            final boolean aIsRoot,
+            final Set<Category> aSubCategories,
+            final Instant aCreatedAt,
+            final Instant aUpdatedAt
+    ) {
+        return new Category(
+                CategoryID.from(aId),
+                aName,
+                aDescription,
+                aSlug,
+                aIsRoot,
+                aSubCategories,
+                aCreatedAt,
+                aUpdatedAt
+        );
+    }
+
     public void addSubCategories(final Set<Category> aSubCategory) {
         this.subCategories.addAll(aSubCategory);
     }

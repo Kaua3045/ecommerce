@@ -2,7 +2,10 @@ package com.kaua.ecommerce.domain.category;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
+import com.kaua.ecommerce.domain.utils.IdUtils;
+import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
@@ -379,6 +382,40 @@ public class CategoryTest {
         Assertions.assertNotNull(aCategory.getCreatedAt());
         Assertions.assertNotNull(aCategory.getUpdatedAt());
 
+        Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAValidValues_whenCallWith_shouldReturnCategoryObject() {
+        final var aId = IdUtils.generate();
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+        final var aIsRoot = true;
+        final var aSubCategories = Fixture.Categories.makeSubCategories(5);
+        final var aCreatedAt = InstantUtils.now();
+        final var aUpdatedAt = InstantUtils.now();
+
+        final var aCategory = Category.with(
+                aId,
+                aName,
+                aDescription,
+                aSlug,
+                aIsRoot,
+                aSubCategories,
+                aCreatedAt,
+                aUpdatedAt
+        );
+
+        Assertions.assertNotNull(aCategory);
+        Assertions.assertEquals(aId, aCategory.getId().getValue());
+        Assertions.assertEquals(aName, aCategory.getName());
+        Assertions.assertEquals(aDescription, aCategory.getDescription());
+        Assertions.assertEquals(aSlug, aCategory.getSlug());
+        Assertions.assertEquals(aIsRoot, aCategory.isRoot());
+        Assertions.assertEquals(5, aCategory.getSubCategories().size());
+        Assertions.assertEquals(aCreatedAt, aCategory.getCreatedAt());
+        Assertions.assertEquals(aUpdatedAt, aCategory.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
     }
 }

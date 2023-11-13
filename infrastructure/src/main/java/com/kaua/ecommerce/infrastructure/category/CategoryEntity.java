@@ -25,7 +25,7 @@ public class CategoryEntity {
     private boolean isPrimary;
 
     @Relationship(type = "HAS_SUBCATEGORY", direction = Relationship.Direction.OUTGOING)
-    private Set<CategoryEntity> subCategories;
+    private Set<String> subCategoriesIds;
 
     @Property(name = "created_at")
     private Instant createdAt;
@@ -36,12 +36,12 @@ public class CategoryEntity {
     public CategoryEntity() {
     }
 
-    public CategoryEntity(String id, String name, String description, boolean isPrimary, Set<CategoryEntity> subCategories, Instant createdAt, Instant updatedAt) {
+    public CategoryEntity(String id, String name, String description, boolean isPrimary, Set<String> subCategoriesIds, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.isPrimary = isPrimary;
-        this.subCategories = subCategories == null ? new HashSet<>() : subCategories;
+        this.subCategoriesIds = subCategoriesIds == null ? new HashSet<>() : subCategoriesIds;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -78,12 +78,12 @@ public class CategoryEntity {
         isPrimary = primary;
     }
 
-    public Set<CategoryEntity> getSubCategories() {
-        return subCategories;
+    public Set<String> getSubCategoriesIds() {
+        return subCategoriesIds;
     }
 
-    public void setSubCategories(Set<CategoryEntity> subCategories) {
-        this.subCategories = subCategories;
+    public void setSubCategories(Set<String> subCategories) {
+        this.subCategoriesIds = subCategories;
     }
 
     public Instant getCreatedAt() {

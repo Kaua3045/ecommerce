@@ -1,6 +1,5 @@
 package com.kaua.ecommerce.domain.category;
 
-import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
@@ -60,7 +59,7 @@ public class CategoryValidation extends Validator {
     }
 
     private void checkSubCategoriesConstraints() {
-        if (category.getSubCategories() != null && category.getSubCategories().size() > 5) {
+        if (category.getSubCategories().size() > 5) {
             this.validationHandler().append(new Error(lengthBetween("subCategories", 0, 5)));
         }
     }

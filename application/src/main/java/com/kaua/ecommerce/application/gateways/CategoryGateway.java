@@ -8,5 +8,5 @@ public interface CategoryGateway {
 
     Category create(Category aCategory);
 
-    Optional<Category> findByName(String aName);
+    boolean existsByName(String aName);
 }

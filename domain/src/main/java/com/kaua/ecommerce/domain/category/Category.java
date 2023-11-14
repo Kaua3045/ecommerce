@@ -1,7 +1,10 @@
 package com.kaua.ecommerce.domain.category;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
+import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
+import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
 import java.time.Instant;
@@ -16,6 +19,7 @@ public class Category extends AggregateRoot<CategoryID> {
     private String slug;
     private Category parent;
     private Set<Category> subCategories;
+    private int level;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -26,6 +30,7 @@ public class Category extends AggregateRoot<CategoryID> {
             final String aSlug,
             final Category aParent,
             final Set<Category> aSubCategories,
+            final int aLevel,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
     ) {
@@ -35,6 +40,7 @@ public class Category extends AggregateRoot<CategoryID> {
         this.slug = aSlug;
         this.parent = aParent;
         this.subCategories = aSubCategories;
+        this.level = aLevel;
         this.createdAt = aCreatedAt;
         this.updatedAt = aUpdatedAt;
     }
@@ -54,6 +60,7 @@ public class Category extends AggregateRoot<CategoryID> {
                 aSlug,
                 aParent,
                 new HashSet<>(),
+                0,
                 aNow,
                 aNow
         );
@@ -66,6 +73,7 @@ public class Category extends AggregateRoot<CategoryID> {
             final String aSlug,
             final Category aParent,
             final Set<Category> aSubCategories,
+            final int aLevel,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
     ) {
@@ -76,13 +84,18 @@ public class Category extends AggregateRoot<CategoryID> {
                 aSlug,
                 aParent,
                 aSubCategories,
+                aLevel,
                 aCreatedAt,
                 aUpdatedAt
         );
     }
 
     public void addSubCategories(final Set<Category> aSubCategory) {
+        if (this.level == 5 || this.level + aSubCategory.size() > 5) {
+            throw DomainException.with(new Error(CommonErrorMessage.lengthBetween("subCategories", 0, 5)));
+        }
         this.subCategories.addAll(aSubCategory);
+        this.level += aSubCategory.size();
     }
 
     @Override
@@ -108,6 +121,10 @@ public class Category extends AggregateRoot<CategoryID> {
 
     public Set<Category> getSubCategories() {
         return Collections.unmodifiableSet(subCategories);
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public Instant getCreatedAt() {

@@ -2,10 +2,7 @@ package com.kaua.ecommerce.domain.category;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
-import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
-import com.kaua.ecommerce.domain.utils.IdUtils;
-import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
@@ -18,13 +15,13 @@ public class CategoryTest {
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var aCategory = Category.newCategory(
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         Assertions.assertNotNull(aCategory);
@@ -32,7 +29,7 @@ public class CategoryTest {
         Assertions.assertEquals(aName, aCategory.getName());
         Assertions.assertEquals(aDescription, aCategory.getDescription());
         Assertions.assertEquals(aSlug, aCategory.getSlug());
-        Assertions.assertEquals(aIsRoot, aCategory.isRoot());
+        Assertions.assertNull(aCategory.getParent());
         Assertions.assertEquals(0, aCategory.getSubCategories().size());
         Assertions.assertNotNull(aCategory.getCreatedAt());
         Assertions.assertNotNull(aCategory.getUpdatedAt());
@@ -45,13 +42,13 @@ public class CategoryTest {
         final var aName = "Category Name";
         final String aDescription = null;
         final var aSlug = "category-name";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var aCategory = Category.newCategory(
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         Assertions.assertNotNull(aCategory);
@@ -59,7 +56,7 @@ public class CategoryTest {
         Assertions.assertEquals(aName, aCategory.getName());
         Assertions.assertNull(aCategory.getDescription());
         Assertions.assertEquals(aSlug, aCategory.getSlug());
-        Assertions.assertEquals(aIsRoot, aCategory.isRoot());
+        Assertions.assertNull(aCategory.getParent());
         Assertions.assertEquals(0, aCategory.getSubCategories().size());
         Assertions.assertNotNull(aCategory.getCreatedAt());
         Assertions.assertNotNull(aCategory.getUpdatedAt());
@@ -84,7 +81,7 @@ public class CategoryTest {
         final String aName = null;
         final String aDescription = null;
         final var aSlug = "category-name";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
@@ -93,7 +90,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -109,7 +106,7 @@ public class CategoryTest {
         final var aName = " ";
         final String aDescription = null;
         final var aSlug = "category-name";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
@@ -118,7 +115,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -134,7 +131,7 @@ public class CategoryTest {
         final var aName = "ca ";
         final String aDescription = null;
         final var aSlug = "category-name";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
@@ -143,7 +140,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -159,7 +156,7 @@ public class CategoryTest {
         final var aName = RandomStringUtils.generateValue(256);
         final String aDescription = null;
         final var aSlug = "category-name";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
@@ -168,7 +165,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -184,7 +181,7 @@ public class CategoryTest {
         final var aName = "Category Name";
         final var aDescription = " ";
         final var aSlug = "category-name";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "'description' should not be blank";
@@ -193,7 +190,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -209,7 +206,7 @@ public class CategoryTest {
         final var aName = "Category Name";
         final var aDescription = RandomStringUtils.generateValue(256);
         final var aSlug = "category-name";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
@@ -218,7 +215,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -234,7 +231,7 @@ public class CategoryTest {
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final var aSlug = " ";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("slug");
@@ -243,7 +240,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -259,7 +256,7 @@ public class CategoryTest {
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final String aSlug = null;
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("slug");
@@ -268,7 +265,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -284,7 +281,7 @@ public class CategoryTest {
         final var aName = "Category Name";
         final String aDescription = null;
         final var aSlug = "ca ";
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("slug", 3, 255);
@@ -293,7 +290,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -309,7 +306,7 @@ public class CategoryTest {
         final var aName = "Category Name";
         final String aDescription = null;
         final var aSlug = RandomStringUtils.generateValue(256);
-        final var aIsRoot = true;
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("slug", 3, 255);
@@ -318,7 +315,7 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -334,8 +331,7 @@ public class CategoryTest {
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
-        final var aIsRoot = true;
-        final var aSubCategories = Fixture.Categories.makeSubCategories(6);
+        final Category aParent = null;
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("subCategories", 0, 5);
@@ -344,8 +340,10 @@ public class CategoryTest {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
+        final var aSubCategories = Fixture.Categories.makeSubCategories(6, aCategory);
+
         aCategory.addSubCategories(aSubCategories);
 
         final var aTestValidationHandler = new TestValidationHandler();
@@ -361,15 +359,16 @@ public class CategoryTest {
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
-        final var aIsRoot = true;
-        final var aSubCategories = Fixture.Categories.makeSubCategories(5);
+        final Category aParent = null;
 
         final var aCategory = Category.newCategory(
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot
+                aParent
         );
+        final var aSubCategories = Fixture.Categories.makeSubCategories(5, aCategory);
+
         aCategory.addSubCategories(aSubCategories);
 
         Assertions.assertNotNull(aCategory);
@@ -377,7 +376,7 @@ public class CategoryTest {
         Assertions.assertEquals(aName, aCategory.getName());
         Assertions.assertEquals(aDescription, aCategory.getDescription());
         Assertions.assertEquals(aSlug, aCategory.getSlug());
-        Assertions.assertEquals(aIsRoot, aCategory.isRoot());
+        Assertions.assertNull(aCategory.getParent());
         Assertions.assertEquals(5, aCategory.getSubCategories().size());
         Assertions.assertNotNull(aCategory.getCreatedAt());
         Assertions.assertNotNull(aCategory.getUpdatedAt());
@@ -387,35 +386,39 @@ public class CategoryTest {
 
     @Test
     void givenAValidValues_whenCallWith_shouldReturnCategoryObject() {
-        final var aId = IdUtils.generate();
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
-        final var aIsRoot = true;
-        final var aSubCategories = Fixture.Categories.makeSubCategories(5);
-        final var aCreatedAt = InstantUtils.now();
-        final var aUpdatedAt = InstantUtils.now();
+        final Category aParent = null;
 
-        final var aCategory = Category.with(
-                aId,
+        final var aCategory = Category.newCategory(
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot,
+                aParent
+        );
+        final var aSubCategories = Fixture.Categories.makeSubCategories(5, aCategory);
+
+        final var aCategoryWith = Category.with(
+                aCategory.getId().getValue(),
+                aName,
+                aDescription,
+                aSlug,
+                aParent,
                 aSubCategories,
-                aCreatedAt,
-                aUpdatedAt
+                aCategory.getCreatedAt(),
+                aCategory.getUpdatedAt()
         );
 
         Assertions.assertNotNull(aCategory);
-        Assertions.assertEquals(aId, aCategory.getId().getValue());
-        Assertions.assertEquals(aName, aCategory.getName());
-        Assertions.assertEquals(aDescription, aCategory.getDescription());
-        Assertions.assertEquals(aSlug, aCategory.getSlug());
-        Assertions.assertEquals(aIsRoot, aCategory.isRoot());
-        Assertions.assertEquals(5, aCategory.getSubCategories().size());
-        Assertions.assertEquals(aCreatedAt, aCategory.getCreatedAt());
-        Assertions.assertEquals(aUpdatedAt, aCategory.getUpdatedAt());
+        Assertions.assertEquals(aCategory.getId().getValue(), aCategoryWith.getId().getValue());
+        Assertions.assertEquals(aCategory.getName(), aCategoryWith.getName());
+        Assertions.assertEquals(aCategory.getDescription(), aCategoryWith.getDescription());
+        Assertions.assertEquals(aCategory.getSlug(), aCategoryWith.getSlug());
+        Assertions.assertNull(aCategoryWith.getParent());
+        Assertions.assertEquals(5, aCategoryWith.getSubCategories().size());
+        Assertions.assertEquals(aCategory.getCreatedAt(), aCategoryWith.getCreatedAt());
+        Assertions.assertEquals(aCategory.getUpdatedAt(), aCategoryWith.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
     }
 }

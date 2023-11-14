@@ -23,7 +23,6 @@ public class CategoryValidation extends Validator {
         checkNameConstraints();
         checkDescriptionConstraints();
         checkSlugConstraints();
-        checkSubCategoriesConstraints();
     }
 
     private void checkNameConstraints() {
@@ -55,12 +54,6 @@ public class CategoryValidation extends Validator {
         if (category.getSlug().trim().length() < MINIMUM_LENGTH ||
                 category.getSlug().trim().length() > MAXIMUM_LENGTH) {
             this.validationHandler().append(new Error(lengthBetween("slug", MINIMUM_LENGTH, MAXIMUM_LENGTH)));
-        }
-    }
-
-    private void checkSubCategoriesConstraints() {
-        if (category.getSubCategories().size() > 5) {
-            this.validationHandler().append(new Error(lengthBetween("subCategories", 0, 5)));
         }
     }
 }

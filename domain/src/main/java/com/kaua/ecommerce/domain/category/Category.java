@@ -14,7 +14,7 @@ public class Category extends AggregateRoot<CategoryID> {
     private String name;
     private String description;
     private String slug;
-    private boolean isRoot;
+    private Category parent;
     private Set<Category> subCategories;
     private Instant createdAt;
     private Instant updatedAt;
@@ -24,7 +24,7 @@ public class Category extends AggregateRoot<CategoryID> {
             final String aName,
             final String aDescription,
             final String aSlug,
-            final boolean aIsRoot,
+            final Category aParent,
             final Set<Category> aSubCategories,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
@@ -33,7 +33,7 @@ public class Category extends AggregateRoot<CategoryID> {
         this.name = aName;
         this.description = aDescription;
         this.slug = aSlug;
-        this.isRoot = aIsRoot;
+        this.parent = aParent;
         this.subCategories = aSubCategories;
         this.createdAt = aCreatedAt;
         this.updatedAt = aUpdatedAt;
@@ -43,7 +43,7 @@ public class Category extends AggregateRoot<CategoryID> {
             final String aName,
             final String aDescription,
             final String aSlug,
-            final boolean aIsRoot
+            final Category aParent
     ) {
         final var aId = CategoryID.unique();
         final var aNow = InstantUtils.now();
@@ -52,7 +52,7 @@ public class Category extends AggregateRoot<CategoryID> {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot,
+                aParent,
                 new HashSet<>(),
                 aNow,
                 aNow
@@ -64,7 +64,7 @@ public class Category extends AggregateRoot<CategoryID> {
             final String aName,
             final String aDescription,
             final String aSlug,
-            final boolean aIsRoot,
+            final Category aParent,
             final Set<Category> aSubCategories,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
@@ -74,7 +74,7 @@ public class Category extends AggregateRoot<CategoryID> {
                 aName,
                 aDescription,
                 aSlug,
-                aIsRoot,
+                aParent,
                 aSubCategories,
                 aCreatedAt,
                 aUpdatedAt
@@ -102,8 +102,8 @@ public class Category extends AggregateRoot<CategoryID> {
         return slug;
     }
 
-    public boolean isRoot() {
-        return isRoot;
+    public Category getParent() {
+        return parent;
     }
 
     public Set<Category> getSubCategories() {

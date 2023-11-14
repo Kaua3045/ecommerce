@@ -85,7 +85,7 @@ public final class Fixture {
 
     public static final class Categories {
 
-        public static Set<Category> makeSubCategories(final int size) {
+        public static Set<Category> makeSubCategories(final int size, final Category parent) {
             var subCategories = new HashSet<Category>();
 
             for (int i = 0; i < size; i++) {
@@ -93,7 +93,7 @@ public final class Fixture {
                         "Category Name " + i,
                         "Category Description " + i,
                         "category-name-" + i,
-                        false
+                        parent
                 ));
             }
             return subCategories;

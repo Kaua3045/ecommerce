@@ -2,10 +2,7 @@ package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
-import com.kaua.ecommerce.infrastructure.category.CategoryEntity;
-import com.kaua.ecommerce.infrastructure.category.CategoryGetDTO;
-import com.kaua.ecommerce.infrastructure.category.CategoryRepository;
-import org.springframework.data.domain.Example;
+import com.kaua.ecommerce.infrastructure.category.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -13,7 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -21,9 +19,11 @@ import java.util.Set;
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryElasticRepository categoryElasticRepository;
 
-    public CategoryController(CategoryRepository categoryRepository) {
+    public CategoryController(CategoryRepository categoryRepository, CategoryElasticRepository categoryElasticRepository) {
         this.categoryRepository = categoryRepository;
+        this.categoryElasticRepository = categoryElasticRepository;
     }
 
     @PostMapping
@@ -32,8 +32,8 @@ public class CategoryController {
                 IdUtils.generate(),
                 "Console",
                 "Video games",
-                true,
                 null,
+                new ArrayList<>(),
                 InstantUtils.now(),
                 InstantUtils.now()
         ));
@@ -51,10 +51,10 @@ public class CategoryController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/sub")
-    public ResponseEntity<?> subCategory() {
+    @PostMapping("/sub/{id}")
+    public ResponseEntity<?> subCategory(@PathVariable String id) {
         // principal category (console)
-        var ab = this.categoryRepository.findById("5f5e0e8d-2ca1-45d3-b12c-ef33f41e4479").get();
+        var ab = this.categoryRepository.findById(id).get();
 
 //        ab.getSubCategories().add(new CategoryEntity(
 //                IdUtils.generate(),
@@ -67,129 +67,139 @@ public class CategoryController {
 //        ));
 
         // playstation category
-        final var aPlay4Id = this.categoryRepository.save(new CategoryEntity(
-                IdUtils.generate(),
-                "Playstation4",
-                null,
-                false,
-                null,
-                InstantUtils.now(),
-                InstantUtils.now()
-        ));
-        final var aPlay5Id = this.categoryRepository.save(
-                new CategoryEntity(
-                        IdUtils.generate(),
-                        "Playstation5",
-                        null,
-                        false,
-                        null,
-                        InstantUtils.now(),
-                        InstantUtils.now()
-                ));
-
-        final var playCategory = new CategoryEntity(
-                IdUtils.generate(),
-                "Playstation",
-                "video games",
-                false,
-                Set.of(aPlay4Id.getId(), aPlay5Id.getId()),
-                InstantUtils.now(),
-                InstantUtils.now());
+//        final var playCategory = new CategoryEntity(
+//                IdUtils.generate(),
+//                "Playstation",
+//                "video games",
+//                ab,
+//                new ArrayList<>(),
+//                InstantUtils.now(),
+//                InstantUtils.now());
+//
+//        final var aPlay4Id = this.categoryRepository.save(new CategoryEntity(
+//                IdUtils.generate(),
+//                "Playstation4",
+//                null,
+//                playCategory,
+//                new ArrayList<>(),
+//                InstantUtils.now(),
+//                InstantUtils.now()
+//        ));
+//        final var aPlay5Id = this.categoryRepository.save(
+//                new CategoryEntity(
+//                        IdUtils.generate(),
+//                        "Playstation5",
+//                        null,
+//                        playCategory,
+//                        new ArrayList<>(),
+//                        InstantUtils.now(),
+//                        InstantUtils.now()
+//                ));
+//
+//        playCategory.setSubcategories(List.of(aPlay4Id, aPlay5Id));
 
         // xbox category
-        final var aXboxOneId = this.categoryRepository.save(new CategoryEntity(
+        final var xboxCategory = this.categoryRepository.save(new CategoryEntity(
+                        IdUtils.generate(),
+                        "Xbox",
+                        "video games",
+                        ab,
+                        new ArrayList<>(),
+                        InstantUtils.now(),
+                        InstantUtils.now())
+        );
+
+        final var aXboxOneId = new CategoryEntity(
                 IdUtils.generate(),
                 "XboxOne",
                 null,
-                false,
-                null,
+                xboxCategory,
+                new ArrayList<>(),
                 InstantUtils.now(),
                 InstantUtils.now()
-        ));
-        final var aXboxSeriesId = this.categoryRepository.save(new CategoryEntity(
-                        IdUtils.generate(),
-                        "XboxSeries",
-                        null,
-                        false,
-                        null,
-                        InstantUtils.now(),
-                        InstantUtils.now()
-                ));
-        final var xboxCategory = new CategoryEntity(
+        );
+        final var aXboxSeriesId = new CategoryEntity(
                 IdUtils.generate(),
-                "Xbox",
-                "video games",
-                false,
-                Set.of(aXboxOneId.getId(), aXboxSeriesId.getId()),
+                "XboxSeries",
+                null,
+                xboxCategory,
+                new ArrayList<>(),
                 InstantUtils.now(),
-                InstantUtils.now());
+                InstantUtils.now()
+        );
 
-        ab.getSubCategoriesIds().addAll(Set.of(playCategory.getId(), xboxCategory.getId()));
-        this.categoryRepository.save(ab);
+        xboxCategory.setSubcategories(List.of(aXboxOneId, aXboxSeriesId));
+
+        this.categoryRepository.saveAll(Set.of(
+                xboxCategory
+        ));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/sub/{id}")
-    public ResponseEntity<?> subCategory(@PathVariable String id) {
-//        Set<CategoryEntity> sub = new HashSet<>();
-//        sub.add(new CategoryEntity(
-//                IdUtils.generate(),
-//                "Controles",
-//                "controle de video games",
-//                false,
-//                Set.of(
-//                        new CategoryEntity(
-//                                IdUtils.generate(),
-//                                "ControlePlaystation4",
-//                                null,
-//                                false,
-//                                null,
-//                                InstantUtils.now(),
-//                                InstantUtils.now()
-//                        )),
-//                InstantUtils.now(),
-//                InstantUtils.now()));
+    @PostMapping("sync")
+    public void sync() {
+        List<CategoryEntity> jpaCategories = categoryRepository.findAll();
+        List<CategoryEntityElastic> elasticsearchCategories = jpaCategories.stream()
+                .map(category -> {
+                    final var categoryElastic = new CategoryEntityElastic();
+                    categoryElastic.setId(category.getId());
+                    categoryElastic.setName(category.getName());
+                    categoryElastic.setDescription(category.getDescription());
+                    categoryElastic.setParentId(category.getParent() != null ? category.getParent().getId() : null);
+                    categoryElastic.setCreatedAt(category.getCreatedAt());
+                    return categoryElastic;
+                })
+                .toList();
+
+        categoryElasticRepository.saveAll(elasticsearchCategories);
+    }
+
+//    public CategoriesResponse getHierarchicalCategories() {
+//        List<CategoryEntityElastic> topLevelCategories = categoryElasticRepository.findByParentCategoryIdIsNull();
 //
-//        var ab = this.categoryRepository.findById(id).get();
-//        ab.getSubCategories().addAll(sub);
-//        this.categoryRepository.save(ab);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
+//        CategoriesResponse response = new CategoriesResponse();
+//        response.setCategories(buildHierarchy(topLevelCategories));
+//        return response;
+//    }
+//
+//    private List<CategoryGetDTO> buildHierarchy(List<CategoryEntityElastic> categories) {
+//        return categories.stream()
+//                .map(category -> {
+//                    category.setSubCategories(buildHierarchy(
+//                            categoryElasticRepository.findByParentCategoryId(category.getId())));
+//                    return category;
+//                })
+//                .toList();
+//    }
 
     @Transactional
     @GetMapping
-    public ResponseEntity<?> getCategoriesWithSubCategories() {
-        final var a = new CategoryEntity(
-                null,
-                null,
-                null,
-                true,
-                null,
-                null,
-                null
-        );
-        final var ar = categoryRepository.findAll(Example.of(a),
-                        PageRequest.of(0, 2, Sort.by("createdAt").ascending()))
+    public ResponseEntity<?> getCategoriesWithSubCategories(
+            @RequestParam(value = "page", defaultValue = "0") String page
+    ) {
+        final var ar = categoryRepository.findByParentIsNull(
+                        PageRequest.of(Integer.parseInt(page), 1, Sort.by("createdAt").ascending()))
                 .stream().map(CategoryGetDTO::from);
         return new ResponseEntity<>(ar, HttpStatus.OK);
     }
 
     @GetMapping("{name}")
     public ResponseEntity<?> getCategoryWithSubCategories(@PathVariable String name) {
-        final var aResult = categoryRepository.findCategoryByName(name).map(CategoryGetDTO::from);
+        final var aResult = categoryElasticRepository.findByName(name);
 
         return aResult.map(categoryGetDTO -> new ResponseEntity<>(categoryGetDTO, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//        return null;
     }
 
     @GetMapping("/sub/{name}")
     public ResponseEntity<?> getSubCategoryToFather(@PathVariable String name) {
-        final var result = categoryRepository.findPathToCategory(name);
-        if (!result.isEmpty()) {
-            CategoryEntity category = result.get(result.size() - 1);
-
-        return new ResponseEntity<>(CategoryGetDTO.from(category), HttpStatus.OK);
-        }
+//        final var result = categoryRepository.findPathToCategory(name);
+//        if (!result.isEmpty()) {
+//            CategoryEntity category = result.get(result.size() - 1);
+//
+//        return new ResponseEntity<>(CategoryGetDTO.from(category), HttpStatus.OK);
+//        }
 
         return null;
     }

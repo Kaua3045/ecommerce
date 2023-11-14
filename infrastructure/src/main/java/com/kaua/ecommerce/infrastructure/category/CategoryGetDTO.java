@@ -7,8 +7,7 @@ public record CategoryGetDTO(
         String id,
         String name,
         String description,
-        Set<String> subCategoriesIds,
-        boolean isPrimary
+        Set<CategoryGetDTO> subCategories
 ) {
 
     public static CategoryGetDTO from(final CategoryEntity categoryEntity) {
@@ -16,8 +15,7 @@ public record CategoryGetDTO(
                 categoryEntity.getId(),
                 categoryEntity.getName(),
                 categoryEntity.getDescription(),
-                categoryEntity.getSubCategoriesIds(),
-                categoryEntity.isPrimary()
+                categoryEntity.getSubcategories().stream().map(CategoryGetDTO::from).collect(Collectors.toSet())
         );
     }
 }

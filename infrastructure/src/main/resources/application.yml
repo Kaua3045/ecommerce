@@ -66,6 +66,12 @@ spring:
       database: 0
       host: ${redis.host}
       port: ${redis.port}
+    elasticsearch:
+      uris: http://localhost:9200
+      username: elastic
+      password: elastic
+      connect-timeout: 250
+      socket-timeout: 1_000
   neo4j:
     uri: bolt://${neo4j.host}:${neo4j.port}
     authentication:

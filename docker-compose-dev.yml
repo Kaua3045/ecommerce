@@ -22,16 +22,31 @@ services:
     networks:
       - ecommerce_network
 
-  neo4j:
-    container_name: ecommerce-neo4j
-    image: neo4j:latest
+  elasticsearch:
+    container_name: ecommerce-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
     environment:
-      - NEO4J_AUTH=neo4j/123456789
+      - discovery.type=single-node
+      - "bootstrap.memory_lock=true"
+      - "cluster.name=ecommerce"
+      - "node.name=es01"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx512m"
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "9200:9200"
+      - "9300:9300"
     networks:
       - ecommerce_network
+
+#  neo4j:
+#    container_name: ecommerce-neo4j
+#    image: neo4j:latest
+#    environment:
+#      - NEO4J_AUTH=neo4j/123456789
+#    ports:
+#      - "7474:7474"
+#      - "7687:7687"
+#    networks:
+#      - ecommerce_network
 
 networks:
   ecommerce_network:

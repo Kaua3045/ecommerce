@@ -99,6 +99,10 @@ public class Category extends AggregateRoot<CategoryID> {
         return this;
     }
 
+    public void addSubCategory(final Category aSubCategory) {
+        this.subCategories.add(aSubCategory);
+    }
+
     public void addSubCategories(final Set<Category> aSubCategory) {
         this.subCategories.addAll(aSubCategory);
     }

@@ -10,6 +10,7 @@ import com.kaua.ecommerce.domain.validation.ValidationHandler;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class Category extends AggregateRoot<CategoryID> {
@@ -119,8 +120,8 @@ public class Category extends AggregateRoot<CategoryID> {
         return slug;
     }
 
-    public Category getParent() {
-        return parent;
+    public Optional<Category> getParent() {
+        return Optional.ofNullable(parent);
     }
 
     public Set<Category> getSubCategories() {

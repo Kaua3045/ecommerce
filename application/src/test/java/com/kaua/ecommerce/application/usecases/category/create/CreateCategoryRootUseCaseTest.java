@@ -16,13 +16,13 @@ import java.util.Objects;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.argThat;
 
-public class CreateCategoryUseCaseTest extends UseCaseTest {
+public class CreateCategoryRootUseCaseTest extends UseCaseTest {
 
     @Mock
     private CategoryGateway categoryGateway;
 
     @InjectMocks
-    private DefaultCreateCategoryUseCase useCase;
+    private DefaultCreateCategoryRootUseCase useCase;
 
     @Override
     protected List<Object> getMocks() {
@@ -34,9 +34,8 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
         final var aName = "Category Test";
         final var aDescription = "Category Test Description";
         final var aSlug = "category-test";
-        final var aIsRoot = true;
 
-        final var aCommand = CreateCategoryCommand.with(aName, aDescription, aIsRoot);
+        final var aCommand = CreateCategoryRootCommand.with(aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.create(Mockito.any())).thenAnswer(returnsFirstArg());
@@ -52,7 +51,7 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
                 Objects.equals(aName, aCategory.getName()) &&
                 Objects.equals(aDescription, aCategory.getDescription()) &&
                 Objects.equals(aSlug, aCategory.getSlug()) &&
-                Objects.equals(aIsRoot, aCategory.isRoot()) &&
+                Objects.isNull(aCategory.getParent()) &&
                 Objects.equals(0, aCategory.getSubCategories().size()) &&
                 Objects.nonNull(aCategory.getCreatedAt()) &&
                 Objects.nonNull(aCategory.getUpdatedAt())));
@@ -63,9 +62,8 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
         final var aName = "Category Test";
         final String aDescription = null;
         final var aSlug = "category-test";
-        final var aIsRoot = true;
 
-        final var aCommand = CreateCategoryCommand.with(aName, aDescription, aIsRoot);
+        final var aCommand = CreateCategoryRootCommand.with(aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.create(Mockito.any())).thenAnswer(returnsFirstArg());
@@ -81,7 +79,7 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
                         Objects.equals(aName, aCategory.getName()) &&
                         Objects.isNull(aCategory.getDescription()) &&
                         Objects.equals(aSlug, aCategory.getSlug()) &&
-                        Objects.equals(aIsRoot, aCategory.isRoot()) &&
+                        Objects.isNull(aCategory.getParent()) &&
                         Objects.equals(0, aCategory.getSubCategories().size()) &&
                         Objects.nonNull(aCategory.getCreatedAt()) &&
                         Objects.nonNull(aCategory.getUpdatedAt())));
@@ -91,12 +89,11 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
     void givenAnExistsName_whenCallCreateCategory_shouldReturnAnDomainException() {
         final var aName = "Category Test";
         final var aDescription = "Category Test Description";
-        final var aIsRoot = true;
 
         final var expectedErrorMessage = "Category already exists";
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateCategoryCommand.with(aName, aDescription, aIsRoot);
+        final var aCommand = CreateCategoryRootCommand.with(aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(true);
 
@@ -113,13 +110,12 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
     void givenAnInvalidNullNameAndNullSlug_whenCallCreateCategory_shouldReturnAnDomainException() {
         final String aName = null;
         final var aDescription = "Category Test Description";
-        final var aIsRoot = true;
 
         final var expectedErrorMessageOne = CommonErrorMessage.nullOrBlank("name");
         final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
         final var expectedErrorCount = 2;
 
-        final var aCommand = CreateCategoryCommand.with(aName, aDescription, aIsRoot);
+        final var aCommand = CreateCategoryRootCommand.with(aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
 
@@ -137,13 +133,12 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
     void givenAnInvalidBlankNameAndResultInBlankSlug_whenCallCreateCategory_shouldReturnAnDomainException() {
         final var aName = " ";
         final var aDescription = "Category Test Description";
-        final var aIsRoot = true;
 
         final var expectedErrorMessageOne = CommonErrorMessage.nullOrBlank("name");
         final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
         final var expectedErrorCount = 2;
 
-        final var aCommand = CreateCategoryCommand.with(aName, aDescription, aIsRoot);
+        final var aCommand = CreateCategoryRootCommand.with(aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
 
@@ -161,13 +156,12 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
     void givenAnInvalidNameLengthLessThan3AndResultInSlugLengthInvalid_whenCallCreateCategory_shouldReturnAnDomainException() {
         final var aName = "Ca ";
         final var aDescription = "Category Test Description";
-        final var aIsRoot = true;
 
         final var expectedErrorMessageOne = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorMessageTwo = CommonErrorMessage.lengthBetween("slug", 3, 255);
         final var expectedErrorCount = 2;
 
-        final var aCommand = CreateCategoryCommand.with(aName, aDescription, aIsRoot);
+        final var aCommand = CreateCategoryRootCommand.with(aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
 
@@ -185,13 +179,12 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
     void givenAnInvalidNameLengthMoreThan255AndResultInSlugLengthInvalid_whenCallCreateCategory_shouldReturnAnDomainException() {
         final var aName = RandomStringUtils.generateValue(256);
         final var aDescription = "Category Test Description";
-        final var aIsRoot = true;
 
         final var expectedErrorMessageOne = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorMessageTwo = CommonErrorMessage.lengthBetween("slug", 3, 255);
         final var expectedErrorCount = 2;
 
-        final var aCommand = CreateCategoryCommand.with(aName, aDescription, aIsRoot);
+        final var aCommand = CreateCategoryRootCommand.with(aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
 
@@ -209,12 +202,11 @@ public class CreateCategoryUseCaseTest extends UseCaseTest {
     void givenAnInvalidDescriptionLengthMoreThan255_whenCallCreateCategory_shouldReturnAnDomainException() {
         final var aName = "Category Test";
         final var aDescription = RandomStringUtils.generateValue(256);
-        final var aIsRoot = true;
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateCategoryCommand.with(aName, aDescription, aIsRoot);
+        final var aCommand = CreateCategoryRootCommand.with(aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
 

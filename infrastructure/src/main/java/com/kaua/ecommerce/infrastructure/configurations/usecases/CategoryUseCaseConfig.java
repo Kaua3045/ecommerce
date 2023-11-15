@@ -1,8 +1,8 @@
 package com.kaua.ecommerce.infrastructure.configurations.usecases;
 
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
-import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryUseCase;
-import com.kaua.ecommerce.application.usecases.category.create.DefaultCreateCategoryUseCase;
+import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
+import com.kaua.ecommerce.application.usecases.category.create.DefaultCreateCategoryRootUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +18,7 @@ public class CategoryUseCaseConfig {
     }
 
     @Bean
-    public CreateCategoryUseCase createCategoryUseCase() {
-        return new DefaultCreateCategoryUseCase(categoryGateway);
+    public CreateCategoryRootUseCase createCategoryUseCase() {
+        return new DefaultCreateCategoryRootUseCase(categoryGateway);
     }
 }

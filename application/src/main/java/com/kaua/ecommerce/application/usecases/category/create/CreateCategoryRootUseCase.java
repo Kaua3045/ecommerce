@@ -4,6 +4,6 @@ import com.kaua.ecommerce.application.UseCase;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 
-public abstract class CreateCategoryUseCase extends
-        UseCase<Either<NotificationHandler, CreateCategoryOutput>, CreateCategoryCommand> {
+public abstract class CreateCategoryRootUseCase extends
+        UseCase<Either<NotificationHandler, CreateCategoryRootOutput>, CreateCategoryRootCommand> {
 }

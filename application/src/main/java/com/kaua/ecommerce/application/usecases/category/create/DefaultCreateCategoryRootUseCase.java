@@ -9,16 +9,16 @@ import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 
 import java.util.Objects;
 
-public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
+public class DefaultCreateCategoryRootUseCase extends CreateCategoryRootUseCase {
 
     private final CategoryGateway categoryGateway;
 
-    public DefaultCreateCategoryUseCase(final CategoryGateway categoryGateway) {
+    public DefaultCreateCategoryRootUseCase(final CategoryGateway categoryGateway) {
         this.categoryGateway = Objects.requireNonNull(categoryGateway);
     }
 
     @Override
-    public Either<NotificationHandler, CreateCategoryOutput> execute(CreateCategoryCommand input) {
+    public Either<NotificationHandler, CreateCategoryRootOutput> execute(CreateCategoryRootCommand input) {
         final var aNotification = NotificationHandler.create();
 
         if (this.categoryGateway.existsByName(input.name())) {
@@ -31,7 +31,7 @@ public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
                 input.name(),
                 input.description(),
                 aSlug,
-                input.isRoot()
+                null
         );
         aCategory.validate(aNotification);
 
@@ -39,7 +39,7 @@ public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
             return Either.left(aNotification);
         }
 
-        return Either.right(CreateCategoryOutput.from(this.categoryGateway.create(aCategory)));
+        return Either.right(CreateCategoryRootOutput.from(this.categoryGateway.create(aCategory)));
     }
 
     private String nameToSlug(final String aName) {

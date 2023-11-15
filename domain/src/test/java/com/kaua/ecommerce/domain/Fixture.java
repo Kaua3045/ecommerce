@@ -92,6 +92,15 @@ public final class Fixture {
                 null
         );
 
+        public static Category categoryDefaultRootTwo() {
+            return Category.newCategory(
+                    "Category Name Two",
+                    "Category Description Two",
+                    "category-name-two",
+                    null
+            );
+        }
+
         public static Set<Category> makeSubCategories(final int size, final Category parent) {
             var subCategories = new HashSet<Category>();
 

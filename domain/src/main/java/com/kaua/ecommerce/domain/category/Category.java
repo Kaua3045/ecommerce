@@ -18,7 +18,7 @@ public class Category extends AggregateRoot<CategoryID> {
     private String name;
     private String description;
     private String slug;
-    private Category parent;
+    private CategoryID parentId;
     private Set<Category> subCategories;
     private int level;
     private Instant createdAt;
@@ -29,7 +29,7 @@ public class Category extends AggregateRoot<CategoryID> {
             final String aName,
             final String aDescription,
             final String aSlug,
-            final Category aParent,
+            final CategoryID aParentId,
             final Set<Category> aSubCategories,
             final int aLevel,
             final Instant aCreatedAt,
@@ -39,7 +39,7 @@ public class Category extends AggregateRoot<CategoryID> {
         this.name = aName;
         this.description = aDescription;
         this.slug = aSlug;
-        this.parent = aParent;
+        this.parentId = aParentId;
         this.subCategories = aSubCategories;
         this.level = aLevel;
         this.createdAt = aCreatedAt;
@@ -50,7 +50,7 @@ public class Category extends AggregateRoot<CategoryID> {
             final String aName,
             final String aDescription,
             final String aSlug,
-            final Category aParent
+            final CategoryID aParentId
     ) {
         final var aId = CategoryID.unique();
         final var aNow = InstantUtils.now();
@@ -59,7 +59,7 @@ public class Category extends AggregateRoot<CategoryID> {
                 aName,
                 aDescription,
                 aSlug,
-                aParent,
+                aParentId,
                 new HashSet<>(),
                 0,
                 aNow,
@@ -72,7 +72,7 @@ public class Category extends AggregateRoot<CategoryID> {
             final String aName,
             final String aDescription,
             final String aSlug,
-            final Category aParent,
+            final String aParentId,
             final Set<Category> aSubCategories,
             final int aLevel,
             final Instant aCreatedAt,
@@ -83,7 +83,7 @@ public class Category extends AggregateRoot<CategoryID> {
                 aName,
                 aDescription,
                 aSlug,
-                aParent,
+                aParentId == null ? null : CategoryID.from(aParentId),
                 new HashSet<>(aSubCategories == null ? Collections.emptySet() : aSubCategories),
                 aLevel,
                 aCreatedAt,
@@ -91,12 +91,11 @@ public class Category extends AggregateRoot<CategoryID> {
         );
     }
 
-    public Category updateSubCategoriesLevel() {
+    public void updateSubCategoriesLevel() {
         if (this.level == 5 || this.level + this.subCategories.size() > 5) {
             throw DomainException.with(new Error(CommonErrorMessage.lengthBetween("subCategories", 0, 5)));
         }
         this.level = this.subCategories.size();
-        return this;
     }
 
     public void addSubCategory(final Category aSubCategory) {
@@ -124,8 +123,8 @@ public class Category extends AggregateRoot<CategoryID> {
         return slug;
     }
 
-    public Optional<Category> getParent() {
-        return Optional.ofNullable(parent);
+    public Optional<CategoryID> getParentId() {
+        return Optional.ofNullable(parentId);
     }
 
     public Set<Category> getSubCategories() {

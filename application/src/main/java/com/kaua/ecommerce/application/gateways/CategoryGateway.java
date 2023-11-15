@@ -9,4 +9,8 @@ public interface CategoryGateway {
     Category create(Category aCategory);
 
     boolean existsByName(String aName);
+
+    Optional<Category> findById(String aId);
+
+    Category update(Category aCategory);
 }

@@ -2,6 +2,7 @@ package com.kaua.ecommerce.domain.category;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
@@ -327,13 +328,12 @@ public class CategoryTest {
     }
 
     @Test
-    void givenAnInvalidSubCategoriesLengthMoreThan5_whenCallAddCategory_shouldReturnDomainException() {
+    void givenAnInvalidSubCategoriesLengthMoreThan5_whenCallAddCategory_shouldThrowDomainException() {
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
         final Category aParent = null;
 
-        final var expectedErrorCount = 1;
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("subCategories", 0, 5);
 
         final var aCategory = Category.newCategory(
@@ -343,15 +343,42 @@ public class CategoryTest {
                 aParent
         );
         final var aSubCategories = Fixture.Categories.makeSubCategories(6, aCategory);
-
         aCategory.addSubCategories(aSubCategories);
 
-        final var aTestValidationHandler = new TestValidationHandler();
-        aCategory.validate(aTestValidationHandler);
+        final var aExpectedException = Assertions.assertThrows(DomainException.class,
+                aCategory::updateSubCategoriesLevel);
 
-        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
-        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
-        Assertions.assertTrue(aTestValidationHandler.hasError());
+        Assertions.assertEquals(expectedErrorMessage, aExpectedException.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenACategoryWith5SubCategories_whenCallAddCategory_shouldThrowDomainException() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+        final Category aParent = null;
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("subCategories", 0, 5);
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                aParent
+        );
+        aCategory.addSubCategories(Fixture.Categories.makeSubCategories(5, aCategory));
+        Assertions.assertDoesNotThrow(aCategory::updateSubCategoriesLevel);
+        System.out.println(aCategory.getLevel());
+
+        final var aSubCategories = Fixture.Categories.makeSubCategories(6, aCategory);
+        aCategory.addSubCategories(aSubCategories);
+
+        System.out.println(aCategory.getLevel());
+
+        final var aExpectedException = Assertions.assertThrows(DomainException.class,
+                aCategory::updateSubCategoriesLevel);
+
+        Assertions.assertEquals(expectedErrorMessage, aExpectedException.getErrors().get(0).message());
     }
 
     @Test
@@ -371,6 +398,7 @@ public class CategoryTest {
 
         aCategory.addSubCategories(aSubCategories);
 
+        Assertions.assertDoesNotThrow(aCategory::updateSubCategoriesLevel);
         Assertions.assertNotNull(aCategory);
         Assertions.assertNotNull(aCategory.getId());
         Assertions.assertEquals(aName, aCategory.getName());
@@ -406,6 +434,7 @@ public class CategoryTest {
                 aSlug,
                 aParent,
                 aSubCategories,
+                aCategory.getLevel(),
                 aCategory.getCreatedAt(),
                 aCategory.getUpdatedAt()
         );
@@ -417,6 +446,7 @@ public class CategoryTest {
         Assertions.assertEquals(aCategory.getSlug(), aCategoryWith.getSlug());
         Assertions.assertNull(aCategoryWith.getParent());
         Assertions.assertEquals(5, aCategoryWith.getSubCategories().size());
+        Assertions.assertEquals(aCategory.getLevel(), aCategoryWith.getLevel());
         Assertions.assertEquals(aCategory.getCreatedAt(), aCategoryWith.getCreatedAt());
         Assertions.assertEquals(aCategory.getUpdatedAt(), aCategoryWith.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));

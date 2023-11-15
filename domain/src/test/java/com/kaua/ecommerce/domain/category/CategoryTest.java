@@ -30,7 +30,7 @@ public class CategoryTest {
         Assertions.assertEquals(aName, aCategory.getName());
         Assertions.assertEquals(aDescription, aCategory.getDescription());
         Assertions.assertEquals(aSlug, aCategory.getSlug());
-        Assertions.assertNull(aCategory.getParent());
+        Assertions.assertTrue(aCategory.getParent().isEmpty());
         Assertions.assertEquals(0, aCategory.getSubCategories().size());
         Assertions.assertNotNull(aCategory.getCreatedAt());
         Assertions.assertNotNull(aCategory.getUpdatedAt());
@@ -57,7 +57,7 @@ public class CategoryTest {
         Assertions.assertEquals(aName, aCategory.getName());
         Assertions.assertNull(aCategory.getDescription());
         Assertions.assertEquals(aSlug, aCategory.getSlug());
-        Assertions.assertNull(aCategory.getParent());
+        Assertions.assertTrue(aCategory.getParent().isEmpty());
         Assertions.assertEquals(0, aCategory.getSubCategories().size());
         Assertions.assertNotNull(aCategory.getCreatedAt());
         Assertions.assertNotNull(aCategory.getUpdatedAt());
@@ -368,12 +368,9 @@ public class CategoryTest {
         );
         aCategory.addSubCategories(Fixture.Categories.makeSubCategories(5, aCategory));
         Assertions.assertDoesNotThrow(aCategory::updateSubCategoriesLevel);
-        System.out.println(aCategory.getLevel());
 
         final var aSubCategories = Fixture.Categories.makeSubCategories(6, aCategory);
         aCategory.addSubCategories(aSubCategories);
-
-        System.out.println(aCategory.getLevel());
 
         final var aExpectedException = Assertions.assertThrows(DomainException.class,
                 aCategory::updateSubCategoriesLevel);
@@ -404,7 +401,7 @@ public class CategoryTest {
         Assertions.assertEquals(aName, aCategory.getName());
         Assertions.assertEquals(aDescription, aCategory.getDescription());
         Assertions.assertEquals(aSlug, aCategory.getSlug());
-        Assertions.assertNull(aCategory.getParent());
+        Assertions.assertTrue(aCategory.getParent().isEmpty());
         Assertions.assertEquals(5, aCategory.getSubCategories().size());
         Assertions.assertNotNull(aCategory.getCreatedAt());
         Assertions.assertNotNull(aCategory.getUpdatedAt());
@@ -444,7 +441,7 @@ public class CategoryTest {
         Assertions.assertEquals(aCategory.getName(), aCategoryWith.getName());
         Assertions.assertEquals(aCategory.getDescription(), aCategoryWith.getDescription());
         Assertions.assertEquals(aCategory.getSlug(), aCategoryWith.getSlug());
-        Assertions.assertNull(aCategoryWith.getParent());
+        Assertions.assertTrue(aCategoryWith.getParent().isEmpty());
         Assertions.assertEquals(5, aCategoryWith.getSubCategories().size());
         Assertions.assertEquals(aCategory.getLevel(), aCategoryWith.getLevel());
         Assertions.assertEquals(aCategory.getCreatedAt(), aCategoryWith.getCreatedAt());

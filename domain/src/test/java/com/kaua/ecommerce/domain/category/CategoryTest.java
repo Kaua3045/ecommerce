@@ -330,7 +330,7 @@ public class CategoryTest {
     }
 
     @Test
-    void givenAnInvalidSubCategoriesLengthMoreThan5_whenCallAddCategory_shouldThrowDomainException() {
+    void givenAnInvalidSubCategoriesLengthMoreThan5_whenCallAddCategories_shouldThrowDomainException() {
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
@@ -354,7 +354,7 @@ public class CategoryTest {
     }
 
     @Test
-    void givenACategoryWith5SubCategories_whenCallAddCategory_shouldThrowDomainException() {
+    void givenACategoryWith5SubCategories_whenCallAddCategories_shouldThrowDomainException() {
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
@@ -381,7 +381,7 @@ public class CategoryTest {
     }
 
     @Test
-    void givenAValidSubCategories_whenCallAddCategory_shouldReturnACategoryWithSubCategories() {
+    void givenAValidSubCategories_whenCallAddCategories_shouldReturnACategoryWithSubCategories() {
         final var aName = "Category Name";
         final var aDescription = "Category Description";
         final var aSlug = "category-name";
@@ -488,6 +488,88 @@ public class CategoryTest {
         Assertions.assertEquals(aCategory.getLevel(), aCategoryWith.getLevel());
         Assertions.assertEquals(aCategory.getCreatedAt(), aCategoryWith.getCreatedAt());
         Assertions.assertEquals(aCategory.getUpdatedAt(), aCategoryWith.getUpdatedAt());
+        Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAnInvalidSubCategoryLengthMoreThan5_whenCallAddCategory_shouldThrowDomainException() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+        final Category aParent = null;
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("subCategories", 0, 5);
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                aParent
+        );
+        final var aSubCategories = Fixture.Categories.makeSubCategories(6, aCategory);
+        aSubCategories.forEach(aCategory::addSubCategory);
+
+        final var aExpectedException = Assertions.assertThrows(DomainException.class,
+                aCategory::updateSubCategoriesLevel);
+
+        Assertions.assertEquals(expectedErrorMessage, aExpectedException.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenACategoryWith5SubCategory_whenCallAddCategory_shouldThrowDomainException() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+        final Category aParent = null;
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("subCategories", 0, 5);
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                aParent
+        );
+        Fixture.Categories.makeSubCategories(5, aCategory).forEach(aCategory::addSubCategory);
+        Assertions.assertDoesNotThrow(aCategory::updateSubCategoriesLevel);
+
+        final var aSubCategories = Fixture.Categories.makeSubCategories(6, aCategory);
+        aSubCategories.forEach(aCategory::addSubCategory);
+
+        final var aExpectedException = Assertions.assertThrows(DomainException.class,
+                aCategory::updateSubCategoriesLevel);
+
+        Assertions.assertEquals(expectedErrorMessage, aExpectedException.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenAValidSubCategory_whenCallAddCategory_shouldReturnACategoryWithSubCategories() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+        final Category aParent = null;
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                aParent
+        );
+        final var aSubCategories = Fixture.Categories.makeSubCategories(5, aCategory);
+
+        aSubCategories.forEach(aCategory::addSubCategory);
+
+        Assertions.assertDoesNotThrow(aCategory::updateSubCategoriesLevel);
+        Assertions.assertNotNull(aCategory);
+        Assertions.assertNotNull(aCategory.getId());
+        Assertions.assertEquals(aName, aCategory.getName());
+        Assertions.assertEquals(aDescription, aCategory.getDescription());
+        Assertions.assertEquals(aSlug, aCategory.getSlug());
+        Assertions.assertTrue(aCategory.getParent().isEmpty());
+        Assertions.assertEquals(5, aCategory.getSubCategories().size());
+        Assertions.assertNotNull(aCategory.getCreatedAt());
+        Assertions.assertNotNull(aCategory.getUpdatedAt());
+
         Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
     }
 }

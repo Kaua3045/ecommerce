@@ -90,12 +90,16 @@ public class Category extends AggregateRoot<CategoryID> {
         );
     }
 
-    public void addSubCategories(final Set<Category> aSubCategory) {
-        if (this.level == 5 || this.level + aSubCategory.size() > 5) {
+    public Category updateSubCategoriesLevel() {
+        if (this.level == 5 || this.level + this.subCategories.size() > 5) {
             throw DomainException.with(new Error(CommonErrorMessage.lengthBetween("subCategories", 0, 5)));
         }
+        this.level = this.subCategories.size();
+        return this;
+    }
+
+    public void addSubCategories(final Set<Category> aSubCategory) {
         this.subCategories.addAll(aSubCategory);
-        this.level += aSubCategory.size();
     }
 
     @Override

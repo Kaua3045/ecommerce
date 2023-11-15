@@ -9,6 +9,8 @@ import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 public class CategoryTest {
 
     @Test
@@ -443,6 +445,46 @@ public class CategoryTest {
         Assertions.assertEquals(aCategory.getSlug(), aCategoryWith.getSlug());
         Assertions.assertTrue(aCategoryWith.getParent().isEmpty());
         Assertions.assertEquals(5, aCategoryWith.getSubCategories().size());
+        Assertions.assertEquals(aCategory.getLevel(), aCategoryWith.getLevel());
+        Assertions.assertEquals(aCategory.getCreatedAt(), aCategoryWith.getCreatedAt());
+        Assertions.assertEquals(aCategory.getUpdatedAt(), aCategoryWith.getUpdatedAt());
+        Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAValidValuesButNullSubCategories_whenCallWith_shouldReturnCategoryObject() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+        final Category aParent = null;
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                aParent
+        );
+        final Set<Category> aSubCategories = null;
+
+        final var aCategoryWith = Category.with(
+                aCategory.getId().getValue(),
+                aName,
+                aDescription,
+                aSlug,
+                aParent,
+                aSubCategories,
+                aCategory.getLevel(),
+                aCategory.getCreatedAt(),
+                aCategory.getUpdatedAt()
+        );
+
+        Assertions.assertNotNull(aCategory);
+        Assertions.assertEquals(aCategory.getId().getValue(), aCategoryWith.getId().getValue());
+        Assertions.assertEquals(aCategory.getName(), aCategoryWith.getName());
+        Assertions.assertEquals(aCategory.getDescription(), aCategoryWith.getDescription());
+        Assertions.assertEquals(aCategory.getSlug(), aCategoryWith.getSlug());
+        Assertions.assertTrue(aCategoryWith.getParent().isEmpty());
+        Assertions.assertEquals(0, aCategoryWith.getSubCategories().size());
         Assertions.assertEquals(aCategory.getLevel(), aCategoryWith.getLevel());
         Assertions.assertEquals(aCategory.getCreatedAt(), aCategoryWith.getCreatedAt());
         Assertions.assertEquals(aCategory.getUpdatedAt(), aCategoryWith.getUpdatedAt());

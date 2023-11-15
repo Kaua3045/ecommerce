@@ -100,7 +100,7 @@ public final class Fixture {
                         "Category Name " + i,
                         "Category Description " + i,
                         "category-name-" + i,
-                        parent
+                        parent.getId()
                 ));
             }
             return subCategories;

@@ -51,7 +51,7 @@ public class CreateCategoryRootUseCaseTest extends UseCaseTest {
                 Objects.equals(aName, aCategory.getName()) &&
                 Objects.equals(aDescription, aCategory.getDescription()) &&
                 Objects.equals(aSlug, aCategory.getSlug()) &&
-                Objects.isNull(aCategory.getParent()) &&
+                aCategory.getParent().isEmpty() &&
                 Objects.equals(0, aCategory.getSubCategories().size()) &&
                 Objects.nonNull(aCategory.getCreatedAt()) &&
                 Objects.nonNull(aCategory.getUpdatedAt())));
@@ -79,7 +79,7 @@ public class CreateCategoryRootUseCaseTest extends UseCaseTest {
                         Objects.equals(aName, aCategory.getName()) &&
                         Objects.isNull(aCategory.getDescription()) &&
                         Objects.equals(aSlug, aCategory.getSlug()) &&
-                        Objects.isNull(aCategory.getParent()) &&
+                        aCategory.getParent().isEmpty() &&
                         Objects.equals(0, aCategory.getSubCategories().size()) &&
                         Objects.nonNull(aCategory.getCreatedAt()) &&
                         Objects.nonNull(aCategory.getUpdatedAt())));

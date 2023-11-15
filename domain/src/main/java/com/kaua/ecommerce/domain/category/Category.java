@@ -84,7 +84,7 @@ public class Category extends AggregateRoot<CategoryID> {
                 aDescription,
                 aSlug,
                 aParent,
-                aSubCategories,
+                new HashSet<>(aSubCategories == null ? Collections.emptySet() : aSubCategories),
                 aLevel,
                 aCreatedAt,
                 aUpdatedAt

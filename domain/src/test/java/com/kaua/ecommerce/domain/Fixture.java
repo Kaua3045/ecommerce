@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.domain;
 
+import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.customer.CustomerID;
@@ -7,6 +8,9 @@ import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.IdUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public final class Fixture {
 
@@ -77,5 +81,29 @@ public final class Fixture {
                 "12345678",
                 CustomerID.unique()
         );
+    }
+
+    public static final class Categories {
+
+        public static final Category categoryDefaultRoot = Category.newCategory(
+                "Category Name",
+                "Category Description",
+                "category-name",
+                null
+        );
+
+        public static Set<Category> makeSubCategories(final int size, final Category parent) {
+            var subCategories = new HashSet<Category>();
+
+            for (int i = 0; i < size; i++) {
+                subCategories.add(Category.newCategory(
+                        "Category Name " + i,
+                        "Category Description " + i,
+                        "category-name-" + i,
+                        parent
+                ));
+            }
+            return subCategories;
+        }
     }
 }

@@ -76,7 +76,7 @@ public class CategoryAPITest {
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
 
         final var cmdCaptor = ArgumentCaptor.forClass(CreateCategoryRootCommand.class);
@@ -109,7 +109,7 @@ public class CategoryAPITest {
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
 
         final var cmdCaptor = ArgumentCaptor.forClass(CreateCategoryRootCommand.class);

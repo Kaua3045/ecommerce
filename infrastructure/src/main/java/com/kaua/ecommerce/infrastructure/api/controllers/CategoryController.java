@@ -2,8 +2,11 @@ package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootCommand;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
+import com.kaua.ecommerce.application.usecases.category.update.subcategories.UpdateSubCategoriesCommand;
+import com.kaua.ecommerce.application.usecases.category.update.subcategories.UpdateSubCategoriesUseCase;
 import com.kaua.ecommerce.infrastructure.api.CategoryAPI;
 import com.kaua.ecommerce.infrastructure.category.models.CreateCategoryInput;
+import com.kaua.ecommerce.infrastructure.category.models.UpdateSubCategoriesInput;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,15 +14,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryController implements CategoryAPI {
 
     private final CreateCategoryRootUseCase createCategoryRootUseCase;
+    private final UpdateSubCategoriesUseCase updateSubCategoriesUseCase;
 
-    public CategoryController(final CreateCategoryRootUseCase createCategoryRootUseCase) {
+    public CategoryController(
+            final CreateCategoryRootUseCase createCategoryRootUseCase,
+            final UpdateSubCategoriesUseCase updateSubCategoriesUseCase
+    ) {
         this.createCategoryRootUseCase = createCategoryRootUseCase;
+        this.updateSubCategoriesUseCase = updateSubCategoriesUseCase;
     }
 
     @Override
     public ResponseEntity<?> createCategory(CreateCategoryInput body) {
         final var aResult = this.createCategoryRootUseCase.execute(
                 CreateCategoryRootCommand.with(body.name(), body.description()));
+
+        return aResult.isLeft()
+                ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
+                : ResponseEntity.ok().body(aResult.getRight());
+    }
+
+    @Override
+    public ResponseEntity<?> updateSubCategories(String id, UpdateSubCategoriesInput body) {
+        final var aResult = this.updateSubCategoriesUseCase.execute(
+                UpdateSubCategoriesCommand.with(id, body.name(), body.description()));
 
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())

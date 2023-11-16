@@ -85,18 +85,20 @@ public final class Fixture {
 
     public static final class Categories {
 
-        public static final Category categoryDefaultRoot = Category.newCategory(
-                "Category Name",
-                "Category Description",
-                "category-name",
-                null
-        );
-
-        public static Category categoryDefaultRootTwo() {
+        public static Category home() {
             return Category.newCategory(
-                    "Category Name Two",
-                    "Category Description Two",
-                    "category-name-two",
+                    "Home Cosmetics",
+                    "Home category",
+                    "home-cosmetics",
+                    null
+            );
+        }
+
+        public static Category tech() {
+            return Category.newCategory(
+                    "Tech",
+                    "Tech category",
+                    "tech",
                     null
             );
         }

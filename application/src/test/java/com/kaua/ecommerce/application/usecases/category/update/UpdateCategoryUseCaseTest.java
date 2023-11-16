@@ -149,33 +149,38 @@ public class UpdateCategoryUseCaseTest extends UseCaseTest {
     }
 
     @Test
-    void givenAnInvalidNullNameAndNullSlug_whenCallUpdateCategory_shouldReturnAnDomainException() {
+    void givenANullNameAndSlug_whenCallUpdateCategory_shouldReturnOldNameAndOldSlug() {
         final var aCategory = Fixture.Categories.tech();
 
         final var aId = aCategory.getId().getValue();
         final String aName = null;
         final var aDescription = "Category Test Description";
 
-        final var expectedErrorMessageOne = CommonErrorMessage.nullOrBlank("name");
-        final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
-        final var expectedErrorCount = 2;
+        final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
 
         final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
+        Mockito.when(categoryGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
 
-        final var aOutput = useCase.execute(aCommand).getLeft();
+        final var aOutput = useCase.execute(aCommand).getRight();
 
-        System.out.println(aOutput.getErrors().get(0).message());
-
-        Assertions.assertEquals(expectedErrorCount, aOutput.getErrors().size());
-        Assertions.assertEquals(expectedErrorMessageOne, aOutput.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorMessageTwo, aOutput.getErrors().get(1).message());
+        Assertions.assertNotNull(aOutput);
+        Assertions.assertNotNull(aOutput.id());
 
         Mockito.verify(categoryGateway, Mockito.times(1)).existsByName(aName);
         Mockito.verify(categoryGateway, Mockito.times(1)).findById(aId);
-        Mockito.verify(categoryGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(categoryGateway, Mockito.times(1)).update(argThat(aCategoryUpdated ->
+                Objects.equals(aId, aCategoryUpdated.getId().getValue()) &&
+                        Objects.equals(aCategory.getName(), aCategoryUpdated.getName()) &&
+                        Objects.equals(aDescription, aCategoryUpdated.getDescription()) &&
+                        Objects.equals(aCategory.getSlug(), aCategoryUpdated.getSlug()) &&
+                        aCategoryUpdated.getParentId().isEmpty() &&
+                        Objects.equals(0, aCategoryUpdated.getSubCategories().size()) &&
+                        Objects.equals(0, aCategoryUpdated.getLevel()) &&
+                        Objects.equals(aCategory.getCreatedAt(), aCategoryUpdated.getCreatedAt()) &&
+                        aCategoryUpdatedAt.isBefore(aCategoryUpdated.getUpdatedAt())));
     }
 
     @Test
@@ -186,24 +191,31 @@ public class UpdateCategoryUseCaseTest extends UseCaseTest {
         final var aName = " ";
         final var aDescription = "Category Test Description";
 
-        final var expectedErrorMessageOne = CommonErrorMessage.nullOrBlank("name");
-        final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
-        final var expectedErrorCount = 2;
+        final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
 
         final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
+        Mockito.when(categoryGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
 
-        final var aOutput = useCase.execute(aCommand).getLeft();
+        final var aOutput = useCase.execute(aCommand).getRight();
 
-        Assertions.assertEquals(expectedErrorCount, aOutput.getErrors().size());
-        Assertions.assertEquals(expectedErrorMessageOne, aOutput.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorMessageTwo, aOutput.getErrors().get(1).message());
+        Assertions.assertNotNull(aOutput);
+        Assertions.assertNotNull(aOutput.id());
 
         Mockito.verify(categoryGateway, Mockito.times(1)).existsByName(aName);
         Mockito.verify(categoryGateway, Mockito.times(1)).findById(aId);
-        Mockito.verify(categoryGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(categoryGateway, Mockito.times(1)).update(argThat(aCategoryUpdated ->
+                Objects.equals(aId, aCategoryUpdated.getId().getValue()) &&
+                        Objects.equals(aCategory.getName(), aCategoryUpdated.getName()) &&
+                        Objects.equals(aDescription, aCategoryUpdated.getDescription()) &&
+                        Objects.equals(aCategory.getSlug(), aCategoryUpdated.getSlug()) &&
+                        aCategoryUpdated.getParentId().isEmpty() &&
+                        Objects.equals(0, aCategoryUpdated.getSubCategories().size()) &&
+                        Objects.equals(0, aCategoryUpdated.getLevel()) &&
+                        Objects.equals(aCategory.getCreatedAt(), aCategoryUpdated.getCreatedAt()) &&
+                        aCategoryUpdatedAt.isBefore(aCategoryUpdated.getUpdatedAt())));
     }
 
     @Test

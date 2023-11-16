@@ -106,12 +106,22 @@ public class Category extends AggregateRoot<CategoryID> {
         this.level = this.subCategories.size();
     }
 
+    public void updateRemoveSubCategoriesLevel() {
+        if (this.level != 0) {
+            this.level = this.level - 1;
+        }
+    }
+
     public void addSubCategory(final Category aSubCategory) {
         this.subCategories.add(aSubCategory);
     }
 
     public void addSubCategories(final Set<Category> aSubCategory) {
         this.subCategories.addAll(aSubCategory);
+    }
+
+    public void removeSubCategory(final Category aSubCategory) {
+        this.subCategories.remove(aSubCategory);
     }
 
     @Override

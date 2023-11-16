@@ -851,4 +851,46 @@ public class CategoryTest {
         Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
         Assertions.assertTrue(aTestValidationHandler.hasError());
     }
+
+    @Test
+    void givenAValidSubCategory_whenCallRemoveSubCategory_shouldReturnACategoryWithoutSubCategories() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+        final CategoryID aParent = null;
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                aParent
+        );
+        final var aSubCategory = Category.newCategory(
+                "Sub Category Name",
+                "Sub Category Description",
+                "sub-category-name",
+                aCategory.getId());
+        aCategory.addSubCategory(aSubCategory);
+        aCategory.updateSubCategoriesLevel();
+
+        Assertions.assertEquals(1, aCategory.getSubCategories().size());
+        Assertions.assertEquals(1, aCategory.getLevel());
+
+        aCategory.removeSubCategory(aSubCategory);
+        aCategory.updateRemoveSubCategoriesLevel();
+
+        Assertions.assertDoesNotThrow(aCategory::updateSubCategoriesLevel);
+        Assertions.assertNotNull(aCategory);
+        Assertions.assertNotNull(aCategory.getId());
+        Assertions.assertEquals(aName, aCategory.getName());
+        Assertions.assertEquals(aDescription, aCategory.getDescription());
+        Assertions.assertEquals(aSlug, aCategory.getSlug());
+        Assertions.assertTrue(aCategory.getParentId().isEmpty());
+        Assertions.assertEquals(0, aCategory.getLevel());
+        Assertions.assertEquals(0, aCategory.getSubCategories().size());
+        Assertions.assertNotNull(aCategory.getCreatedAt());
+        Assertions.assertNotNull(aCategory.getUpdatedAt());
+
+        Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
+    }
 }

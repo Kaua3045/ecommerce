@@ -5,6 +5,7 @@ import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootCommand;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootOutput;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
+import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryOutput;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryUseCase;
@@ -55,6 +56,9 @@ public class CategoryAPITest {
 
     @MockBean
     private UpdateCategoryUseCase updateCategoryUseCase;
+
+    @MockBean
+    private DeleteCategoryUseCase deleteCategoryUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateCategory_thenReturnStatusOkAndCategoryId() throws Exception {
@@ -933,5 +937,36 @@ public class CategoryAPITest {
         Assertions.assertEquals(aId, actualCmd.id());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAValidCategoryId_whenCallDeleteCategory_shouldBeOk() throws Exception {
+        final var aCategory = Fixture.Categories.tech();
+        final var aId = aCategory.getId().getValue();
+
+        Mockito.doNothing().when(deleteCategoryUseCase).execute(aId);
+
+        final var request = MockMvcRequestBuilders.delete("/categories/{id}", aId);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(deleteCategoryUseCase, Mockito.times(1)).execute(aId);
+    }
+
+    @Test
+    void givenAnInvalidCategoryId_whenCallDeleteCategory_shouldBeOk() throws Exception {
+        final var aId = "123";
+
+        Mockito.doNothing().when(deleteCategoryUseCase).execute(aId);
+
+        final var request = MockMvcRequestBuilders.delete("/categories/{id}", aId);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(deleteCategoryUseCase, Mockito.times(1)).execute(aId);
     }
 }

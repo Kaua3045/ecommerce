@@ -13,4 +13,6 @@ public interface CategoryGateway {
     Optional<Category> findById(String aId);
 
     Category update(Category aCategory);
+
+    void deleteById(String aId);
 }

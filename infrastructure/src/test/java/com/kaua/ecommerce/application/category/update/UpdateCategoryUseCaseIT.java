@@ -126,7 +126,7 @@ public class UpdateCategoryUseCaseIT {
     }
 
     @Test
-    void givenAnInvalidNullNameAndNullSlug_whenCallsUpdateCategoryUseCase_shouldReturnDomainException() {
+    void givenAnInvalidNullNameAndNullSlug_whenCallsUpdateCategoryUseCase_shouldReturnOldNameAndOldSlugCategory() {
         final var aCategory = Fixture.Categories.tech();
         this.categoryRepository.save(CategoryJpaEntity.toEntity(aCategory));
 
@@ -134,22 +134,31 @@ public class UpdateCategoryUseCaseIT {
         final String aName = null;
         final var aDescription = "Category Test Description";
 
-        final var expectedErrorMessageOne = CommonErrorMessage.nullOrBlank("name");
-        final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
-        final var expectedErrorCount = 2;
+        final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
 
         final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
 
-        final var aResult = this.updateCategoryUseCase.execute(aCommand).getLeft();
+        final var aResult = this.updateCategoryUseCase.execute(aCommand).getRight();
 
-        Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
-        Assertions.assertEquals(expectedErrorMessageOne, aResult.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorMessageTwo, aResult.getErrors().get(1).message());
+        Assertions.assertNotNull(aResult);
+        Assertions.assertNotNull(aResult.id());
+
+        final var aCategoryWithSub = this.categoryRepository.findById(aResult.id()).get();
+
+        Assertions.assertEquals(aId, aCategoryWithSub.getId());
+        Assertions.assertEquals(aCategory.getName(), aCategoryWithSub.getName());
+        Assertions.assertEquals(aDescription, aCategoryWithSub.getDescription());
+        Assertions.assertEquals(aCategory.getSlug(), aCategoryWithSub.getSlug());
+        Assertions.assertNull(aCategoryWithSub.getParentId());
+        Assertions.assertEquals(0, aCategoryWithSub.getSubCategoriesLevel());
+        Assertions.assertEquals(0, aCategoryWithSub.getSubCategories().size());
+        Assertions.assertNotNull(aCategoryWithSub.getCreatedAt());
+        Assertions.assertTrue(aCategoryUpdatedAt.isBefore(aCategoryWithSub.getUpdatedAt()));
         Assertions.assertEquals(1, this.categoryRepository.count());
     }
 
     @Test
-    void givenAnInvalidBlankNameAndBlankSlug_whenCallsUpdateCategoryUseCase_shouldReturnDomainException() {
+    void givenAnInvalidBlankNameAndBlankSlug_whenCallsUpdateCategoryUseCase_shouldReturnOldNameAndOldSlugCategory() {
         final var aCategory = Fixture.Categories.tech();
         this.categoryRepository.save(CategoryJpaEntity.toEntity(aCategory));
 
@@ -157,17 +166,26 @@ public class UpdateCategoryUseCaseIT {
         final var aName = " ";
         final var aDescription = "Category Test Description";
 
-        final var expectedErrorMessageOne = CommonErrorMessage.nullOrBlank("name");
-        final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
-        final var expectedErrorCount = 2;
+        final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
 
         final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
 
-        final var aResult = this.updateCategoryUseCase.execute(aCommand).getLeft();
+        final var aResult = this.updateCategoryUseCase.execute(aCommand).getRight();
 
-        Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
-        Assertions.assertEquals(expectedErrorMessageOne, aResult.getErrors().get(0).message());
-        Assertions.assertEquals(expectedErrorMessageTwo, aResult.getErrors().get(1).message());
+        Assertions.assertNotNull(aResult);
+        Assertions.assertNotNull(aResult.id());
+
+        final var aCategoryWithSub = this.categoryRepository.findById(aResult.id()).get();
+
+        Assertions.assertEquals(aId, aCategoryWithSub.getId());
+        Assertions.assertEquals(aCategory.getName(), aCategoryWithSub.getName());
+        Assertions.assertEquals(aDescription, aCategoryWithSub.getDescription());
+        Assertions.assertEquals(aCategory.getSlug(), aCategoryWithSub.getSlug());
+        Assertions.assertNull(aCategoryWithSub.getParentId());
+        Assertions.assertEquals(0, aCategoryWithSub.getSubCategoriesLevel());
+        Assertions.assertEquals(0, aCategoryWithSub.getSubCategories().size());
+        Assertions.assertNotNull(aCategoryWithSub.getCreatedAt());
+        Assertions.assertTrue(aCategoryUpdatedAt.isBefore(aCategoryWithSub.getUpdatedAt()));
         Assertions.assertEquals(1, this.categoryRepository.count());
     }
 

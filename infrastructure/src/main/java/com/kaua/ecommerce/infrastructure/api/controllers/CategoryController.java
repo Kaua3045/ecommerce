@@ -2,6 +2,7 @@ package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootCommand;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
+import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.subcategories.UpdateSubCategoriesCommand;
@@ -20,15 +21,18 @@ public class CategoryController implements CategoryAPI {
     private final CreateCategoryRootUseCase createCategoryRootUseCase;
     private final UpdateSubCategoriesUseCase updateSubCategoriesUseCase;
     private final UpdateCategoryUseCase updateCategoryUseCase;
+    private final DeleteCategoryUseCase deleteCategoryUseCase;
 
     public CategoryController(
             final CreateCategoryRootUseCase createCategoryRootUseCase,
             final UpdateSubCategoriesUseCase updateSubCategoriesUseCase,
-            final UpdateCategoryUseCase updateCategoryUseCase
+            final UpdateCategoryUseCase updateCategoryUseCase,
+            final DeleteCategoryUseCase deleteCategoryUseCase
     ) {
         this.createCategoryRootUseCase = createCategoryRootUseCase;
         this.updateSubCategoriesUseCase = updateSubCategoriesUseCase;
         this.updateCategoryUseCase = updateCategoryUseCase;
+        this.deleteCategoryUseCase = deleteCategoryUseCase;
     }
 
     @Override
@@ -59,5 +63,10 @@ public class CategoryController implements CategoryAPI {
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.ok().body(aResult.getRight());
+    }
+
+    @Override
+    public void deleteCategory(String id) {
+        this.deleteCategoryUseCase.execute(id);
     }
 }

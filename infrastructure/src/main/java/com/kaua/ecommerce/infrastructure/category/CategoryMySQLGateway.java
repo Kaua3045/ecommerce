@@ -39,4 +39,11 @@ public class CategoryMySQLGateway implements CategoryGateway {
         this.categoryJpaRepository.save(CategoryJpaEntity.toEntity(aCategory));
         return aCategory;
     }
+
+    @Override
+    public void deleteById(String aId) {
+        if (this.categoryJpaRepository.existsById(aId)) {
+            this.categoryJpaRepository.deleteById(aId);
+        }
+    }
 }

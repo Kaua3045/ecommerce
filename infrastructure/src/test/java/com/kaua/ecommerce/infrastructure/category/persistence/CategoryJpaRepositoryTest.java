@@ -24,7 +24,7 @@ public class CategoryJpaRepositoryTest {
         final var expectedPropertyName = "name";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity.name";
 
-        final var aCategory = Fixture.Categories.categoryDefaultRoot;
+        final var aCategory = Fixture.Categories.tech();
 
         final var aEntity = CategoryJpaEntity.toEntity(aCategory);
         aEntity.setName(null);
@@ -41,7 +41,7 @@ public class CategoryJpaRepositoryTest {
 
     @Test
     void givenAValidNullDescription_whenCallSave_shouldReturnACategory() {
-        final var aCategory = Fixture.Categories.categoryDefaultRoot;
+        final var aCategory = Fixture.Categories.home();
 
         final var aEntity = CategoryJpaEntity.toEntity(aCategory);
         aEntity.setDescription(null);
@@ -53,7 +53,7 @@ public class CategoryJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getName(), actualOutput.getName());
         Assertions.assertNull(actualOutput.getDescription());
         Assertions.assertEquals(aEntity.getSlug(), actualOutput.getSlug());
-        Assertions.assertTrue(actualOutput.getParent().isEmpty());
+        Assertions.assertTrue(actualOutput.getParentId().isEmpty());
         Assertions.assertEquals(aEntity.getSubCategoriesLevel(), actualOutput.getLevel());
         Assertions.assertEquals(0, aEntity.getSubCategories().size());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualOutput.getCreatedAt());
@@ -65,7 +65,7 @@ public class CategoryJpaRepositoryTest {
         final var expectedPropertyName = "slug";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity.slug";
 
-        final var aCategory = Fixture.Categories.categoryDefaultRoot;
+        final var aCategory = Fixture.Categories.home();
 
         final var aEntity = CategoryJpaEntity.toEntity(aCategory);
         aEntity.setSlug(null);
@@ -82,7 +82,7 @@ public class CategoryJpaRepositoryTest {
 
     @Test
     void givenAValidParentId_whenCallSave_shouldReturnACategory() {
-        final var aCategory = Fixture.Categories.categoryDefaultRoot;
+        final var aCategory = Fixture.Categories.tech();
         categoryRepository.save(CategoryJpaEntity.toEntity(aCategory));
 
         final var aSubCategory = Category.newCategory(
@@ -93,7 +93,7 @@ public class CategoryJpaRepositoryTest {
         );
 
         final var aEntity = CategoryJpaEntity.toEntity(aSubCategory);
-        aEntity.setParent(CategoryJpaEntity.toEntity(aCategory));
+        aEntity.setParentId(aCategory.getId().getValue());
         aCategory.addSubCategories(Set.of(aSubCategory));
         aCategory.updateSubCategoriesLevel();
 
@@ -104,7 +104,7 @@ public class CategoryJpaRepositoryTest {
         Assertions.assertEquals(aCategory.getName(), actualOutput.getName());
         Assertions.assertEquals(aCategory.getDescription(), actualOutput.getDescription());
         Assertions.assertEquals(aCategory.getSlug(), actualOutput.getSlug());
-        Assertions.assertTrue(actualOutput.getParent().isEmpty());
+        Assertions.assertTrue(actualOutput.getParentId().isEmpty());
         Assertions.assertEquals(aCategory.getLevel(), actualOutput.getLevel());
         Assertions.assertEquals(1, actualOutput.getSubCategories().size());
         Assertions.assertTrue(actualOutput.getSubCategories().contains(aSubCategory));
@@ -114,7 +114,7 @@ public class CategoryJpaRepositoryTest {
 
     @Test
     void givenAValidLevelLength_whenCallSave_shouldReturnAnException() {
-        final var aCategory = Fixture.Categories.categoryDefaultRoot;
+        final var aCategory = Fixture.Categories.tech();
 
         final var aEntity = CategoryJpaEntity.toEntity(aCategory);
         aEntity.setSubCategoriesLevel(5);
@@ -126,7 +126,7 @@ public class CategoryJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getName(), actualOutput.getName());
         Assertions.assertEquals(aEntity.getDescription(), actualOutput.getDescription());
         Assertions.assertEquals(aEntity.getSlug(), actualOutput.getSlug());
-        Assertions.assertTrue(actualOutput.getParent().isEmpty());
+        Assertions.assertTrue(actualOutput.getParentId().isEmpty());
         Assertions.assertEquals(aEntity.getSubCategoriesLevel(), actualOutput.getLevel());
         Assertions.assertEquals(0, aEntity.getSubCategories().size());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualOutput.getCreatedAt());
@@ -138,7 +138,7 @@ public class CategoryJpaRepositoryTest {
         final var expectedPropertyName = "createdAt";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity.createdAt";
 
-        final var aCategory = Fixture.Categories.categoryDefaultRoot;
+        final var aCategory = Fixture.Categories.home();
 
         final var aEntity = CategoryJpaEntity.toEntity(aCategory);
         aEntity.setCreatedAt(null);
@@ -158,7 +158,7 @@ public class CategoryJpaRepositoryTest {
         final var expectedPropertyName = "updatedAt";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity.updatedAt";
 
-        final var aCategory = Fixture.Categories.categoryDefaultRoot;
+        final var aCategory = Fixture.Categories.tech();
 
         final var aEntity = CategoryJpaEntity.toEntity(aCategory);
         aEntity.setUpdatedAt(null);
@@ -177,7 +177,7 @@ public class CategoryJpaRepositoryTest {
     void givenAnInvalidNullId_whenCallSave_shouldReturnAnException() {
         final var expectedErrorMessage = "ids for this class must be manually assigned before calling save(): com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity";
 
-        final var aCategory = Fixture.Categories.categoryDefaultRoot;
+        final var aCategory = Fixture.Categories.home();
 
         final var aEntity = CategoryJpaEntity.toEntity(aCategory);
         aEntity.setId(null);

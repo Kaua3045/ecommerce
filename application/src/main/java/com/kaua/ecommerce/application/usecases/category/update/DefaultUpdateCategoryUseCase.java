@@ -29,8 +29,9 @@ public class DefaultUpdateCategoryUseCase extends UpdateCategoryUseCase {
         final var aCategory = this.categoryGateway.findById(input.id())
                 .orElseThrow(NotFoundException.with(Category.class, input.id()));
 
-        final var aSlug = nameToSlug(input.name());
-        final var aCategoryUpdated = aCategory.update(input.name(), input.description(), aSlug);
+        final var aName = validateName(input, aCategory);
+        final var aSlug = nameToSlug(aName);
+        final var aCategoryUpdated = aCategory.update(aName, input.description(), aSlug);
         aCategoryUpdated.validate(aNotification);
 
         if (aNotification.hasError()) {
@@ -40,6 +41,12 @@ public class DefaultUpdateCategoryUseCase extends UpdateCategoryUseCase {
         this.categoryGateway.update(aCategoryUpdated);
 
         return Either.right(UpdateCategoryOutput.from(aCategoryUpdated));
+    }
+
+    private String validateName(final UpdateCategoryCommand input, final Category aOldCategoryName) {
+        return input.name() == null || input.name().isBlank()
+                ? aOldCategoryName.getName()
+                : input.name();
     }
 
     private String nameToSlug(final String aName) {

@@ -572,4 +572,283 @@ public class CategoryTest {
 
         Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
     }
+
+    @Test
+    void givenAValidValuesWithDescription_whenCallUpdate_shouldReturnCategoryUpdated() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        Assertions.assertNotNull(aCategoryUpdated);
+        Assertions.assertEquals(aCategory.getId().getValue(), aCategoryUpdated.getId().getValue());
+        Assertions.assertEquals(aName, aCategoryUpdated.getName());
+        Assertions.assertEquals(aDescription, aCategoryUpdated.getDescription());
+        Assertions.assertEquals(aSlug, aCategoryUpdated.getSlug());
+        Assertions.assertTrue(aCategoryUpdated.getParentId().isEmpty());
+        Assertions.assertEquals(0, aCategoryUpdated.getSubCategories().size());
+        Assertions.assertEquals(aCategory.getCreatedAt(), aCategoryUpdated.getCreatedAt());
+        Assertions.assertTrue(aCategoryUpdatedAt.isBefore(aCategoryUpdated.getUpdatedAt()));
+    }
+
+    @Test
+    void givenAValidValuesWithoutDescription_whenCallUpdate_shouldReturnCategoryUpdated() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = "Category Name";
+        final String aDescription = null;
+        final var aSlug = "category-name";
+
+        final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        Assertions.assertNotNull(aCategoryUpdated);
+        Assertions.assertEquals(aCategory.getId().getValue(), aCategoryUpdated.getId().getValue());
+        Assertions.assertEquals(aName, aCategoryUpdated.getName());
+        Assertions.assertNull(aCategoryUpdated.getDescription());
+        Assertions.assertEquals(aSlug, aCategoryUpdated.getSlug());
+        Assertions.assertTrue(aCategoryUpdated.getParentId().isEmpty());
+        Assertions.assertEquals(0, aCategoryUpdated.getSubCategories().size());
+        Assertions.assertEquals(aCategory.getCreatedAt(), aCategoryUpdated.getCreatedAt());
+        Assertions.assertTrue(aCategoryUpdatedAt.isBefore(aCategoryUpdated.getUpdatedAt()));
+    }
+
+    @Test
+    void givenAnInvalidNullName_whenCallUpdate_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final String aName = null;
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCategoryUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertTrue(aTestValidationHandler.hasError());
+    }
+
+    @Test
+    void givenAnInvalidBlankName_whenCallUpdate_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = " ";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCategoryUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertTrue(aTestValidationHandler.hasError());
+    }
+
+    @Test
+    void givenAnInvalidNameLengthLessThan3_whenCallUpdate_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = "Ca ";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCategoryUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertTrue(aTestValidationHandler.hasError());
+    }
+
+    @Test
+    void givenAnInvalidNameLengthMoreThan255_whenCallUpdate_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = RandomStringUtils.generateValue(256);
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCategoryUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertTrue(aTestValidationHandler.hasError());
+    }
+
+    @Test
+    void givenAnInvalidNullSlug_whenCallUpdate_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final String aSlug = null;
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("slug");
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCategoryUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertTrue(aTestValidationHandler.hasError());
+    }
+
+    @Test
+    void givenAnInvalidBlankSlug_whenCallUpdate_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = " ";
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("slug");
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCategoryUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertTrue(aTestValidationHandler.hasError());
+    }
+
+    @Test
+    void givenAnInvalidSlugLengthLessThan3_whenCallUpdate_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "ca ";
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("slug", 3, 255);
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCategoryUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertTrue(aTestValidationHandler.hasError());
+    }
+
+    @Test
+    void givenAnInvalidSlugLengthMoreThan255_whenCallUpdate_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = RandomStringUtils.generateValue(256);
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("slug", 3, 255);
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCategoryUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertTrue(aTestValidationHandler.hasError());
+    }
+
+    @Test
+    void givenAnInvalidDescriptionLengthMoreThan255_whenCallUpdate_shouldReturnDomainException() {
+        final var aCategory = Category.newCategory(
+                "Teste",
+                "testes",
+                "teste",
+                null);
+
+        final var aName = "Category Name";
+        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aSlug = "category-name";
+
+        final var expectedErrorCount = 1;
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+
+        final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCategoryUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+        Assertions.assertTrue(aTestValidationHandler.hasError());
+    }
 }

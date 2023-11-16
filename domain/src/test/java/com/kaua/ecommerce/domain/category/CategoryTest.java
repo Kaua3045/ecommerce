@@ -893,4 +893,34 @@ public class CategoryTest {
 
         Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
     }
+
+    @Test
+    void givenAValidCategoryWithoutSubCategories_whenCallUpdateRemoveSubCategoriesLevel_shouldReturnACategory() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+        final CategoryID aParent = null;
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                aParent
+        );
+        aCategory.updateRemoveSubCategoriesLevel();
+
+        Assertions.assertDoesNotThrow(aCategory::updateSubCategoriesLevel);
+        Assertions.assertNotNull(aCategory);
+        Assertions.assertNotNull(aCategory.getId());
+        Assertions.assertEquals(aName, aCategory.getName());
+        Assertions.assertEquals(aDescription, aCategory.getDescription());
+        Assertions.assertEquals(aSlug, aCategory.getSlug());
+        Assertions.assertTrue(aCategory.getParentId().isEmpty());
+        Assertions.assertEquals(0, aCategory.getLevel());
+        Assertions.assertEquals(0, aCategory.getSubCategories().size());
+        Assertions.assertNotNull(aCategory.getCreatedAt());
+        Assertions.assertNotNull(aCategory.getUpdatedAt());
+
+        Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
+    }
 }

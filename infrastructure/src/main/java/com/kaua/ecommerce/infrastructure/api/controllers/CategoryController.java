@@ -10,6 +10,7 @@ import com.kaua.ecommerce.infrastructure.api.CategoryAPI;
 import com.kaua.ecommerce.infrastructure.category.models.CreateCategoryInput;
 import com.kaua.ecommerce.infrastructure.category.models.UpdateCategoryInput;
 import com.kaua.ecommerce.infrastructure.category.models.UpdateSubCategoriesInput;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,7 +38,7 @@ public class CategoryController implements CategoryAPI {
 
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
-                : ResponseEntity.ok().body(aResult.getRight());
+                : ResponseEntity.status(HttpStatus.CREATED).body(aResult.getRight());
     }
 
     @Override

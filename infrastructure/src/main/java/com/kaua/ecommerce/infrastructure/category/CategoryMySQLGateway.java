@@ -5,6 +5,7 @@ import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -41,9 +42,8 @@ public class CategoryMySQLGateway implements CategoryGateway {
     }
 
     @Override
+    @Transactional
     public void deleteById(String aId) {
-        if (this.categoryJpaRepository.existsById(aId)) {
-            this.categoryJpaRepository.deleteById(aId);
-        }
+        this.categoryJpaRepository.deleteById(aId);
     }
 }

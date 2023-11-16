@@ -5,6 +5,9 @@ import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootCommand;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootOutput;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
+import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
+import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryOutput;
+import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.subcategories.UpdateSubCategoriesCommand;
 import com.kaua.ecommerce.application.usecases.category.update.subcategories.UpdateSubCategoriesOutput;
 import com.kaua.ecommerce.application.usecases.category.update.subcategories.UpdateSubCategoriesUseCase;
@@ -18,6 +21,7 @@ import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import com.kaua.ecommerce.infrastructure.ControllerTest;
 import com.kaua.ecommerce.infrastructure.category.models.CreateCategoryInput;
+import com.kaua.ecommerce.infrastructure.category.models.UpdateCategoryInput;
 import com.kaua.ecommerce.infrastructure.category.models.UpdateSubCategoriesInput;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -48,6 +52,9 @@ public class CategoryAPITest {
 
     @MockBean
     private UpdateSubCategoriesUseCase updateSubCategoriesUseCase;
+
+    @MockBean
+    private UpdateCategoryUseCase updateCategoryUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateCategory_thenReturnStatusOkAndCategoryId() throws Exception {
@@ -666,6 +673,260 @@ public class CategoryAPITest {
         final var cmdCaptor = ArgumentCaptor.forClass(UpdateSubCategoriesCommand.class);
 
         Mockito.verify(updateSubCategoriesUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAValidInputWithDescription_whenCallUpdateCategory_thenReturnStatusOkAndCategoryId() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+        final var aId = aCategory.getId().getValue();
+
+        final var aName = "Category Test";
+        final var aDescription = "Category Test Description";
+
+        final var aInput = new UpdateSubCategoriesInput(aName, aDescription);
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(UpdateCategoryOutput.from(aCategory)));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCategoryCommand.class);
+
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAnInvalidInputNameAlreadyExists_whenCallUpdateCategory_thenReturnDomainException() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+        final var aId = aCategory.getId().getValue();
+
+        final var aName = "Category Test";
+        final var aDescription = "Category Test Description";
+
+        final var expectedErrorMessage = "Category already exists";
+
+        final var aInput = new UpdateCategoryInput(aName, aDescription);
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCategoryCommand.class);
+
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAnInvalidCategoryId_whenCallUpdateCategory_thenThrowNotFoundException() throws Exception {
+        final var aId = "123";
+
+        final var aName = "Category Test";
+        final var aDescription = "Category Test Description";
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aId);
+
+        final var aInput = new UpdateCategoryInput(aName, aDescription);
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenThrow(NotFoundException.with(Category.class, aId).get());
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCategoryCommand.class);
+
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAnInvalidInputNullName_whenCallUpdateCategory_thenReturnDomainException() throws Exception {
+        final var aCategory = Fixture.Categories.tech();
+        final var aId = aCategory.getId().getValue();
+
+        final String aName = null;
+        final var aDescription = "Category Test Description";
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
+
+        final var aInput = new UpdateCategoryInput(aName, aDescription);
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCategoryCommand.class);
+
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAnInvalidInputNameLengthLessThan3_whenCallUpdateCategory_thenReturnDomainException() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+        final var aId = aCategory.getId().getValue();
+
+        final var aName = "Ca ";
+        final var aDescription = "Category Test Description";
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
+
+        final var aInput = new UpdateCategoryInput(aName, aDescription);
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCategoryCommand.class);
+
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAnInvalidInputNameLengthMoreThan255_whenCallUpdateCategory_thenReturnDomainException() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+        final var aId = aCategory.getId().getValue();
+
+        final var aName = RandomStringUtils.generateValue(256);
+        final var aDescription = "Category Test Description";
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
+
+        final var aInput = new UpdateCategoryInput(aName, aDescription);
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCategoryCommand.class);
+
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAnInvalidInputDescriptionLengthMoreThan255_whenCallUpdateCategory_thenReturnDomainException() throws Exception {
+        final var aCategory = Fixture.Categories.tech();
+        final var aId = aCategory.getId().getValue();
+
+        final var aName = "Category Test";
+        final var aDescription = RandomStringUtils.generateValue(256);
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+
+        final var aInput = new UpdateCategoryInput(aName, aDescription);
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCategoryCommand.class);
+
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
 
         final var actualCmd = cmdCaptor.getValue();
 

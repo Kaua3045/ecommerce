@@ -14,6 +14,17 @@ public class DefaultDeleteCategoryUseCase extends DeleteCategoryUseCase {
 
     @Override
     public void execute(String aId) {
-        this.categoryGateway.deleteById(aId);
+        final var aCategory = this.categoryGateway.findById(aId);
+
+        aCategory.ifPresent(category -> category.getParentId().ifPresentOrElse(aParentId -> {
+            final var aParentCategory = this.categoryGateway.findById(aParentId.getValue());
+
+            aParentCategory.ifPresent(aParent -> {
+                aParent.removeSubCategory(category);
+                aParent.updateRemoveSubCategoriesLevel();
+                this.categoryGateway.update(aParent);
+                this.categoryGateway.deleteById(aId);
+            });
+        }, () -> this.categoryGateway.deleteById(aId)));
     }
 }

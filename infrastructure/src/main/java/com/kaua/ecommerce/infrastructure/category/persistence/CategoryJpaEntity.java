@@ -2,13 +2,11 @@ package com.kaua.ecommerce.infrastructure.category.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kaua.ecommerce.domain.category.Category;
+import com.kaua.ecommerce.domain.category.CategoryID;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,12 +26,16 @@ public class CategoryJpaEntity {
     @Column(name = "slug", unique = true, nullable = false)
     private String slug;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
     @JsonIgnore
-    private CategoryJpaEntity parent;
+    @Column(name = "parent_id")
+    private String parentId;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "categories_relations",
+            joinColumns = @JoinColumn(name = "parent_id"),
+            inverseJoinColumns = @JoinColumn(name = "sub_category_id")
+    )
     private Set<CategoryJpaEntity> subCategories;
 
     @Column(name = "sub_categories_level", nullable = false)
@@ -52,7 +54,7 @@ public class CategoryJpaEntity {
             final String name,
             final String description,
             final String slug,
-            final CategoryJpaEntity parent,
+            final String parentId,
             final int subCategoriesLevel,
             final Instant createdAt,
             final Instant updatedAt
@@ -61,7 +63,7 @@ public class CategoryJpaEntity {
         this.name = name;
         this.description = description;
         this.slug = slug;
-        this.parent = parent;
+        this.parentId = parentId;
         this.subCategories = new HashSet<>();
         this.subCategoriesLevel = subCategoriesLevel;
         this.createdAt = createdAt;
@@ -74,11 +76,12 @@ public class CategoryJpaEntity {
                 aCategory.getName(),
                 aCategory.getDescription(),
                 aCategory.getSlug(),
-                aCategory.getParent().map(CategoryJpaEntity::toEntity).orElse(null),
+                aCategory.getParentId().map(CategoryID::getValue).orElse(null),
                 aCategory.getLevel(),
                 aCategory.getCreatedAt(),
                 aCategory.getUpdatedAt()
         );
+
 
         aCategory.getSubCategories().forEach(aEntity::addCategory);
 
@@ -91,7 +94,7 @@ public class CategoryJpaEntity {
                 getName(),
                 getDescription(),
                 getSlug(),
-                getParent().map(CategoryJpaEntity::toDomain).orElse(null),
+                getParentId(),
                 getSubCategories().stream().map(CategoryJpaEntity::toDomain).collect(Collectors.toSet()),
                 getSubCategoriesLevel(),
                 getCreatedAt(),
@@ -135,12 +138,12 @@ public class CategoryJpaEntity {
         this.slug = slug;
     }
 
-    public Optional<CategoryJpaEntity> getParent() {
-        return Optional.ofNullable(parent);
+    public String getParentId() {
+        return parentId;
     }
 
-    public void setParent(CategoryJpaEntity parent) {
-        this.parent = parent;
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
     public Set<CategoryJpaEntity> getSubCategories() {

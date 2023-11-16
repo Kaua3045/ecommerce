@@ -30,7 +30,7 @@ public class CategoryJpaEntity {
     @Column(name = "parent_id")
     private String parentId;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "categories_relations",
             joinColumns = @JoinColumn(name = "parent_id"),

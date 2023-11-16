@@ -7,6 +7,7 @@ import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaReposit
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class CategoryMySQLGateway implements CategoryGateway {
@@ -19,11 +20,23 @@ public class CategoryMySQLGateway implements CategoryGateway {
 
     @Override
     public Category create(Category aCategory) {
-        return this.categoryJpaRepository.save(CategoryJpaEntity.toEntity(aCategory)).toDomain();
+        this.categoryJpaRepository.save(CategoryJpaEntity.toEntity(aCategory));
+        return aCategory;
     }
 
     @Override
     public boolean existsByName(String aName) {
         return this.categoryJpaRepository.existsByName(aName);
+    }
+
+    @Override
+    public Optional<Category> findById(String aId) {
+        return this.categoryJpaRepository.findById(aId).map(CategoryJpaEntity::toDomain);
+    }
+
+    @Override
+    public Category update(Category aCategory) {
+        this.categoryJpaRepository.save(CategoryJpaEntity.toEntity(aCategory));
+        return aCategory;
     }
 }

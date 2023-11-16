@@ -85,12 +85,23 @@ public final class Fixture {
 
     public static final class Categories {
 
-        public static final Category categoryDefaultRoot = Category.newCategory(
-                "Category Name",
-                "Category Description",
-                "category-name",
-                null
-        );
+        public static Category home() {
+            return Category.newCategory(
+                    "Home Cosmetics",
+                    "Home category",
+                    "home-cosmetics",
+                    null
+            );
+        }
+
+        public static Category tech() {
+            return Category.newCategory(
+                    "Tech",
+                    "Tech category",
+                    "tech",
+                    null
+            );
+        }
 
         public static Set<Category> makeSubCategories(final int size, final Category parent) {
             var subCategories = new HashSet<Category>();
@@ -100,7 +111,7 @@ public final class Fixture {
                         "Category Name " + i,
                         "Category Description " + i,
                         "category-name-" + i,
-                        parent
+                        parent.getId()
                 ));
             }
             return subCategories;

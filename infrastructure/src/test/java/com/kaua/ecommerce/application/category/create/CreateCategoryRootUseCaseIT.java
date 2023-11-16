@@ -41,7 +41,7 @@ public class CreateCategoryRootUseCaseIT {
         Assertions.assertEquals(aName, aCategory.getName());
         Assertions.assertEquals(aDescription, aCategory.getDescription());
         Assertions.assertEquals(aExpectedSlug, aCategory.getSlug());
-        Assertions.assertTrue(aCategory.getParent().isEmpty());
+        Assertions.assertNull(aCategory.getParentId());
         Assertions.assertEquals(0, aCategory.getSubCategoriesLevel());
         Assertions.assertEquals(0, aCategory.getSubCategories().size());
         Assertions.assertNotNull(aCategory.getCreatedAt());
@@ -68,7 +68,7 @@ public class CreateCategoryRootUseCaseIT {
         Assertions.assertEquals(aName, aCategory.getName());
         Assertions.assertNull(aCategory.getDescription());
         Assertions.assertEquals(aExpectedSlug, aCategory.getSlug());
-        Assertions.assertTrue(aCategory.getParent().isEmpty());
+        Assertions.assertNull(aCategory.getParentId());
         Assertions.assertEquals(0, aCategory.getSubCategoriesLevel());
         Assertions.assertEquals(0, aCategory.getSubCategories().size());
         Assertions.assertNotNull(aCategory.getCreatedAt());

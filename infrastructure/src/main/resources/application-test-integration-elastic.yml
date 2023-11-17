@@ -1,3 +1,7 @@
+redis:
+  host: localhost
+  port: 6381
+
 elastic:
   host: http://localhost:9200
   username: elastic

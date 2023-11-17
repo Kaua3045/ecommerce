@@ -3,6 +3,7 @@ package com.kaua.ecommerce.infrastructure;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;
+import org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.test.context.ActiveProfiles;
@@ -12,6 +13,7 @@ import java.util.Collection;
 
 @ActiveProfiles("test-integration-elastic")
 @DataElasticsearchTest
+@AutoConfigureDataRedis
 @ImportTestcontainers(ElasticsearchTestContainer.class)
 @Testcontainers
 public abstract class AbstractElasticsearchTest {

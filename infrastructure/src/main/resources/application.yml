@@ -62,3 +62,9 @@ spring:
       database: 0
       host: ${redis.host}
       port: ${redis.port}
+  elasticsearch:
+    uris: ${elasticsearch.host}
+    username: ${elasticsearch.username}
+    password: ${elasticsearch.password}
+    connect-timeout: 250
+    socket-timeout: 1_0000

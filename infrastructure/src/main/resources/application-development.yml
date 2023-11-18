@@ -10,6 +10,11 @@ redis:
   host: localhost
   port: 6380
 
+elasticsearch:
+  host: http://localhost:9200
+  username: elastic
+  password: elastic
+
 logging:
   level:
     com.kaua.ecommerce.infrastructure: DEBUG

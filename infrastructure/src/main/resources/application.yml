@@ -15,6 +15,23 @@ amqp:
       routing-key: email.send
       queue: email.queue
 
+kafka:
+  auto-create-topics: true
+  bootstrap-servers: localhost:9092
+  pool-timeout: 1_000
+  consumers:
+    categories:
+      auto-offset-reset: earliest
+      concurrency: 1
+      id: kafka-listener-categories
+      topics: categories_event
+      group-id: categories-group
+
+ecommerce:
+  topics:
+    category:
+      topicName: categories_event
+
 server:
   port: 8080
   compression:

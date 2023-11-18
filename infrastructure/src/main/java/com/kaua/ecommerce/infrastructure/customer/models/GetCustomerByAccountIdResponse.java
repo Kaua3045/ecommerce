@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerAddressOutput;
 import com.kaua.ecommerce.infrastructure.adapters.TelephoneAdapterImpl;
 
+import java.time.Instant;
+
 public record GetCustomerByAccountIdResponse(
         @JsonProperty("id") String id,
         @JsonProperty("account_id") String accountId,
@@ -14,8 +16,8 @@ public record GetCustomerByAccountIdResponse(
         @JsonProperty("cpf") String cpf,
         @JsonProperty("telephone") String telephone,
         @JsonProperty("address") GetCustomerAddressOutput address,
-        @JsonProperty("created_at") String createdAt,
-        @JsonProperty("updated_at") String updatedAt
+        @JsonProperty("created_at") Instant createdAt,
+        @JsonProperty("updated_at") Instant updatedAt
 ) {
 
     @JsonIgnore
@@ -30,8 +32,8 @@ public record GetCustomerByAccountIdResponse(
             final String cpf,
             final String telephone,
             final GetCustomerAddressOutput address,
-            final String createdAt,
-            final String updatedAt,
+            final Instant createdAt,
+            final Instant updatedAt,
             final String locale
     ) {
         return new GetCustomerByAccountIdResponse(

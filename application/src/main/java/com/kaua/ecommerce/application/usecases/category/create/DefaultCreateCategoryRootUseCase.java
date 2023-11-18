@@ -3,6 +3,7 @@ package com.kaua.ecommerce.application.usecases.category.create;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
 import com.kaua.ecommerce.domain.category.Category;
+import com.kaua.ecommerce.domain.category.CategoryCreatedEvent;
 import com.kaua.ecommerce.domain.utils.SlugUtils;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
@@ -39,7 +40,10 @@ public class DefaultCreateCategoryRootUseCase extends CreateCategoryRootUseCase 
             return Either.left(aNotification);
         }
 
-        return Either.right(CreateCategoryRootOutput.from(this.categoryGateway.create(aCategory)));
+        aCategory.registerEvent(CategoryCreatedEvent.from(aCategory));
+        this.categoryGateway.create(aCategory);
+
+        return Either.right(CreateCategoryRootOutput.from(aCategory));
     }
 
     private String nameToSlug(final String aName) {

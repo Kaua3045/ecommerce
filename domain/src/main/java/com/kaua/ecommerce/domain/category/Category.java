@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.domain.category;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
+import com.kaua.ecommerce.domain.event.DomainEvent;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
@@ -8,10 +9,7 @@ import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class Category extends AggregateRoot<CategoryID> {
 
@@ -33,9 +31,10 @@ public class Category extends AggregateRoot<CategoryID> {
             final Set<Category> aSubCategories,
             final int aLevel,
             final Instant aCreatedAt,
-            final Instant aUpdatedAt
-    ) {
-        super(aCategoryID);
+            final Instant aUpdatedAt,
+            final List<DomainEvent> aDomainEvents
+            ) {
+        super(aCategoryID, aDomainEvents);
         this.name = aName;
         this.description = aDescription;
         this.slug = aSlug;
@@ -63,7 +62,8 @@ public class Category extends AggregateRoot<CategoryID> {
                 new HashSet<>(),
                 0,
                 aNow,
-                aNow
+                aNow,
+                null
         );
     }
 
@@ -84,7 +84,8 @@ public class Category extends AggregateRoot<CategoryID> {
             final Set<Category> aSubCategories,
             final int aLevel,
             final Instant aCreatedAt,
-            final Instant aUpdatedAt
+            final Instant aUpdatedAt,
+            final List<DomainEvent> aDomainEvents
     ) {
         return new Category(
                 CategoryID.from(aId),
@@ -95,7 +96,8 @@ public class Category extends AggregateRoot<CategoryID> {
                 new HashSet<>(aSubCategories == null ? Collections.emptySet() : aSubCategories),
                 aLevel,
                 aCreatedAt,
-                aUpdatedAt
+                aUpdatedAt,
+                aDomainEvents
         );
     }
 

@@ -18,8 +18,8 @@ public final class CategoryApiPresenter {
                 aOutput.parentId(),
                 aOutput.subCategories().stream()
                         .map(CategoryApiPresenter::present).collect(Collectors.toSet()),
-                aOutput.createdAt().toString(),
-                aOutput.updatedAt().toString()
+                aOutput.createdAt(),
+                aOutput.updatedAt()
         );
     }
 }

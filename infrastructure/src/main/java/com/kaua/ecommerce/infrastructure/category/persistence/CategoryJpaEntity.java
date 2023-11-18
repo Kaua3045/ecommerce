@@ -98,7 +98,8 @@ public class CategoryJpaEntity {
                 getSubCategories().stream().map(CategoryJpaEntity::toDomain).collect(Collectors.toSet()),
                 getSubCategoriesLevel(),
                 getCreatedAt(),
-                getUpdatedAt()
+                getUpdatedAt(),
+                null
         );
     }
 

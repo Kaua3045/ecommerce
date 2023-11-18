@@ -1,6 +1,8 @@
 package com.kaua.ecommerce.infrastructure.api;
 
+import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.infrastructure.category.models.CreateCategoryInput;
+import com.kaua.ecommerce.infrastructure.category.models.ListCategoriesResponse;
 import com.kaua.ecommerce.infrastructure.category.models.UpdateCategoryInput;
 import com.kaua.ecommerce.infrastructure.category.models.UpdateSubCategoriesInput;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +29,22 @@ public interface CategoryAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     ResponseEntity<?> createCategory(@RequestBody CreateCategoryInput body);
+
+    @GetMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Get all root categories with sub categories")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    Pagination<ListCategoriesResponse> listCategories(
+            @RequestParam(name = "search", required = false, defaultValue = "") final String search,
+            @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
+            @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
+            @RequestParam(name = "sort", required = false, defaultValue = "name") final String sort,
+            @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction
+    );
 
     @PatchMapping(
             value = "{id}/sub",

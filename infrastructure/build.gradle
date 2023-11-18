@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp:3.1.4'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.0.3'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.1.4'
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch:3.1.2'
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.2.0'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
@@ -43,12 +44,13 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.1.4'
     testImplementation 'org.springframework.amqp:spring-rabbit-test:3.0.10'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers:3.1.5'
 
     testRuntimeOnly 'com.h2database:h2'
 
     testImplementation(project(path: ':domain', configuration: 'testClasses'))
 
-    testImplementation 'org.testcontainers:testcontainers-bom:1.18.3'
+    testImplementation 'org.testcontainers:testcontainers:1.18.3'
     testImplementation 'org.testcontainers:junit-jupiter:1.18.3'
 }
 

@@ -22,5 +22,20 @@ services:
     networks:
       - ecommerce_network
 
+  elasticsearch:
+    container_name: ecommerce-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    environment:
+      - discovery.type=single-node
+      - "bootstrap.memory_lock=true"
+      - "cluster.name=ecommerce"
+      - "node.name=es01"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - ecommerce_network
+
 networks:
   ecommerce_network:

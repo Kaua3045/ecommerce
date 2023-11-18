@@ -2,6 +2,7 @@ package com.kaua.ecommerce.domain.category;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
@@ -435,7 +436,8 @@ public class CategoryTest {
                 aSubCategories,
                 aCategory.getLevel(),
                 aCategory.getCreatedAt(),
-                aCategory.getUpdatedAt()
+                aCategory.getUpdatedAt(),
+                null
         );
 
         Assertions.assertNotNull(aCategory);
@@ -475,7 +477,8 @@ public class CategoryTest {
                 aSubCategories,
                 aCategory.getLevel(),
                 aCategory.getCreatedAt(),
-                aCategory.getUpdatedAt()
+                aCategory.getUpdatedAt(),
+                null
         );
 
         Assertions.assertNotNull(aCategory);
@@ -922,5 +925,66 @@ public class CategoryTest {
         Assertions.assertNotNull(aCategory.getUpdatedAt());
 
         Assertions.assertDoesNotThrow(() -> aCategory.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAValidCategory_whenCallRegisterEvent_shouldReturnCategoryWithDomainEvent() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var aDomainEventType = EventsTypes.CATEGORY_CREATED;
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                null
+        );
+        final var aCategoryCreatedEvent = CategoryCreatedEvent.from(aCategory);
+        aCategory.registerEvent(aCategoryCreatedEvent);
+
+        Assertions.assertNotNull(aCategory);
+        Assertions.assertNotNull(aCategory.getId());
+        Assertions.assertEquals(aName, aCategory.getName());
+        Assertions.assertEquals(aDescription, aCategory.getDescription());
+        Assertions.assertEquals(aSlug, aCategory.getSlug());
+        Assertions.assertTrue(aCategory.getParentId().isEmpty());
+        Assertions.assertEquals(0, aCategory.getLevel());
+        Assertions.assertEquals(0, aCategory.getSubCategories().size());
+        Assertions.assertNotNull(aCategory.getCreatedAt());
+        Assertions.assertNotNull(aCategory.getUpdatedAt());
+        Assertions.assertEquals(1, aCategory.getDomainEvents().size());
+        Assertions.assertEquals(aCategoryCreatedEvent, aCategory.getDomainEvents().get(0));
+        Assertions.assertEquals(aDomainEventType, aCategory.getDomainEvents().get(0).eventType());
+        Assertions.assertNotNull(aCategory.getDomainEvents().get(0).occurredOn());
+    }
+
+    @Test
+    void givenAValidCategoryCreatedEvent_whenCallToDomain_shouldReturnCategoryDomainClass() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                null
+        );
+        final var aCategoryCreatedEvent = CategoryCreatedEvent.from(aCategory);
+        final var aCategoryDomain = aCategoryCreatedEvent.toDomain();
+
+        Assertions.assertNotNull(aCategoryDomain);
+        Assertions.assertEquals(aCategory.getId(), aCategoryDomain.getId());
+        Assertions.assertEquals(aName, aCategoryDomain.getName());
+        Assertions.assertEquals(aDescription, aCategoryDomain.getDescription());
+        Assertions.assertEquals(aSlug, aCategoryDomain.getSlug());
+        Assertions.assertTrue(aCategoryDomain.getParentId().isEmpty());
+        Assertions.assertEquals(0, aCategoryDomain.getLevel());
+        Assertions.assertEquals(0, aCategoryDomain.getSubCategories().size());
+        Assertions.assertNotNull(aCategoryDomain.getCreatedAt());
+        Assertions.assertNotNull(aCategoryDomain.getUpdatedAt());
+        Assertions.assertEquals(0, aCategoryDomain.getDomainEvents().size());
     }
 }

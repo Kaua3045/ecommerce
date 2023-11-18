@@ -2,6 +2,11 @@ redis:
   host: localhost
   port: 6381
 
+elasticsearch:
+  host: http://localhost:9200
+  username: elastic
+  password: elastic
+
 spring:
   autoconfigure:
     exclude:

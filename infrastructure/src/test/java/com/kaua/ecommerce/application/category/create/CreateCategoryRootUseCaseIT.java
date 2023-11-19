@@ -6,15 +6,14 @@ import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.domain.utils.SlugUtils;
-import com.kaua.ecommerce.infrastructure.IntegrationTest;
+import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@IntegrationTest
-public class CreateCategoryRootUseCaseIT {
+public class CreateCategoryRootUseCaseIT extends AbstractEmbeddedKafkaTest {
 
     @Autowired
     private CreateCategoryRootUseCase createCategoryRootUseCase;

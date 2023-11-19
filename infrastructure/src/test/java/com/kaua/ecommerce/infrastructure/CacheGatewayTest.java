@@ -20,6 +20,5 @@ import java.lang.annotation.*;
 @EnableAutoConfiguration(exclude = ElasticsearchRepositoriesAutoConfiguration.class)
 @SpringBootTest(classes = { Main.class, AmqpTestConfiguration.class, IntegrationTestConfiguration.class })
 @ExtendWith({ CacheCleanUpExtension.class, JpaCleanUpExtension.class })
-@Transactional
 public @interface CacheGatewayTest {
 }

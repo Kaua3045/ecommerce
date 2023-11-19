@@ -85,7 +85,7 @@ public class CustomerAPITest {
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accountId", equalTo(aAccountId)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.account_id", equalTo(aAccountId)));
 
         final var cmdCaptor = ArgumentCaptor.forClass(UpdateCustomerCpfCommand.class);
 
@@ -182,7 +182,7 @@ public class CustomerAPITest {
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accountId", equalTo(aAccountId)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.account_id", equalTo(aAccountId)));
 
         final var cmdCaptor = ArgumentCaptor.forClass(UpdateCustomerTelephoneCommand.class);
 
@@ -291,7 +291,7 @@ public class CustomerAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.address.district", equalTo(aCustomer.getAddress().get().getDistrict())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.address.city", equalTo(aCustomer.getAddress().get().getCity())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.address.state", equalTo(aCustomer.getAddress().get().getState())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.address.zipCode", equalTo(aCustomer.getAddress().get().getZipCode())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address.zip_code", equalTo(aCustomer.getAddress().get().getZipCode())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.created_at", equalTo(aCustomer.getCreatedAt().toString())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.updated_at", equalTo(aCustomer.getUpdatedAt().toString())));
     }
@@ -332,7 +332,7 @@ public class CustomerAPITest {
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.accountId", equalTo(aAccountId)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.account_id", equalTo(aAccountId)));
 
         final var cmdCaptor = ArgumentCaptor.forClass(UpdateCustomerAddressCommand.class);
 

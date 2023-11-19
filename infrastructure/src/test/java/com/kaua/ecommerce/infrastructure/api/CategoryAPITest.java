@@ -6,6 +6,8 @@ import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRoo
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootOutput;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
 import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
+import com.kaua.ecommerce.application.usecases.category.retrieve.list.ListCategoriesOutput;
+import com.kaua.ecommerce.application.usecases.category.retrieve.list.ListCategoriesUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryOutput;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryUseCase;
@@ -16,6 +18,7 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.domain.validation.Error;
@@ -36,8 +39,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
+import java.util.Objects;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.argThat;
 
 @ControllerTest(controllers = CategoryAPI.class)
 public class CategoryAPITest {
@@ -59,6 +66,9 @@ public class CategoryAPITest {
 
     @MockBean
     private DeleteCategoryUseCase deleteCategoryUseCase;
+
+    @MockBean
+    private ListCategoriesUseCase listCategoriesUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateCategory_thenReturnStatusOkAndCategoryId() throws Exception {
@@ -968,5 +978,58 @@ public class CategoryAPITest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(deleteCategoryUseCase, Mockito.times(1)).execute(aId);
+    }
+
+    @Test
+    void givenValidParams_whenCallsListCategories_shouldReturnCategories() throws Exception {
+        final var aCategory = Fixture.Categories.tech();
+
+        final var aPage = 0;
+        final var aPerPage = 10;
+        final var aTerms = "tech";
+        final var aSort = "description";
+        final var aDirection = "desc";
+        final var aItemsCount = 1;
+        final var aTotalPages = 1;
+        final var aTotal = 1;
+
+        final var aItems = List.of(ListCategoriesOutput.from(aCategory));
+
+        Mockito.when(listCategoriesUseCase.execute(Mockito.any()))
+                .thenReturn(new Pagination<>(aPage, aPerPage, aTotalPages, aTotal, aItems));
+
+        final var request = MockMvcRequestBuilders.get("/categories")
+                .queryParam("page", String.valueOf(aPage))
+                .queryParam("perPage", String.valueOf(aPerPage))
+                .queryParam("sort", aSort)
+                .queryParam("dir", aDirection)
+                .queryParam("search", aTerms)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.current_page", equalTo(aPage)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.per_page", equalTo(aPerPage)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_pages", equalTo(aTotalPages)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_items", equalTo(aTotal)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items", hasSize(aItemsCount)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id", equalTo(aCategory.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name", equalTo(aCategory.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].description", equalTo(aCategory.getDescription())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].slug", equalTo(aCategory.getSlug())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].parent_id", equalTo(null)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].sub_categories", hasSize(0)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].created_at", equalTo(aCategory.getCreatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].updated_at", equalTo(aCategory.getUpdatedAt().toString())));
+
+        Mockito.verify(listCategoriesUseCase, Mockito.times(1)).execute(argThat(query ->
+                Objects.equals(aPage, query.page())
+                        && Objects.equals(aPerPage, query.perPage())
+                        && Objects.equals(aDirection, query.direction())
+                        && Objects.equals(aSort, query.sort())
+                        && Objects.equals(aTerms, query.terms())
+        ));
     }
 }

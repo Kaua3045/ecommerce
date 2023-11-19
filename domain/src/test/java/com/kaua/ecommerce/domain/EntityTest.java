@@ -1,9 +1,14 @@
 package com.kaua.ecommerce.domain;
 
+import com.kaua.ecommerce.domain.event.DomainEvent;
+import com.kaua.ecommerce.domain.event.DomainEventPublisher;
+import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.util.Collections;
 import java.util.UUID;
 
 public class EntityTest {
@@ -51,13 +56,36 @@ public class EntityTest {
         Assertions.assertNotEquals(entity, new Object());
     }
 
-    private Entity<SampleIdentifier> createEntity(SampleIdentifier id) {
-        return new Entity<>(id) {
-            @Override
-            public void validate(ValidationHandler handler) {
-                // Do nothing
-            }
-        };
+    @Test
+    void testEntityRegisterEventAndPublishDomainEvent() {
+        final var uuid1 = UUID.randomUUID().toString();
+        SampleIdentifier id1 = new SampleIdentifier(uuid1);
+
+        Entity<SampleIdentifier> entity1 = createEntity(id1);
+
+        entity1.registerEvent(new SampleEntityEvent(uuid1));
+
+        Assertions.assertEquals(1, entity1.getDomainEvents().size());
+
+        entity1.publishDomainEvent(new SampleEntityPublisherEvent(), "topic");
+
+        Assertions.assertEquals(0, entity1.getDomainEvents().size());
+    }
+
+    @Test
+    void testEntityInvalidRegisterEventAndInvalidPublishDomainEvent() {
+        final var uuid1 = UUID.randomUUID().toString();
+        SampleIdentifier id1 = new SampleIdentifier(uuid1);
+
+        Entity<SampleIdentifier> entity1 = createEntity(id1);
+
+        entity1.registerEvent(null);
+
+        Assertions.assertEquals(0, entity1.getDomainEvents().size());
+
+        entity1.publishDomainEvent(null, null);
+
+        Assertions.assertEquals(0, entity1.getDomainEvents().size());
     }
 
     static class SampleIdentifier extends Identifier {
@@ -67,9 +95,32 @@ public class EntityTest {
             this.value = value;
         }
 
-        @Override
         public String getValue() {
             return value;
+        }
+    }
+
+    private Entity<SampleIdentifier> createEntity(SampleIdentifier id) {
+        return new Entity<>(id, Collections.emptyList()) {
+            @Override
+            public void validate(ValidationHandler handler) {
+                // Lógica de validação simulada
+            }
+        };
+    }
+
+    private record SampleEntityEvent(String id, String eventType, Instant occurredOn) implements DomainEvent {
+
+        public SampleEntityEvent(final String id) {
+            this(id, "test_created", InstantUtils.now());
+        }
+    }
+
+    private class SampleEntityPublisherEvent implements DomainEventPublisher {
+
+        @Override
+        public <T extends DomainEvent> void publish(T event, String topic) {
+            // Lógica de publicação de evento simulada
         }
     }
 }

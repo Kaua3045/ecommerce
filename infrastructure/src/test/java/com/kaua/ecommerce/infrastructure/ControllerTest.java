@@ -13,10 +13,8 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@ActiveProfiles("test")
+@ActiveProfiles("test-integration")
 @WebMvcTest
-@AutoConfigureMockMvc(addFilters = false)
-@Import(ObjectMapper.class)
 @AutoConfigureDataRedis
 public @interface ControllerTest {
 

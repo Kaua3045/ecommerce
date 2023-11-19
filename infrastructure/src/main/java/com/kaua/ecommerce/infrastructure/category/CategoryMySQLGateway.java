@@ -4,6 +4,9 @@ import com.kaua.ecommerce.application.gateways.CategoryGateway;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.configurations.annotations.CategoryEvents;
+import com.kaua.ecommerce.infrastructure.configurations.properties.kafka.KafkaTopicProperty;
+import com.kaua.ecommerce.infrastructure.service.EventService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,14 +17,24 @@ import java.util.Optional;
 public class CategoryMySQLGateway implements CategoryGateway {
 
     private final CategoryJpaRepository categoryJpaRepository;
+    private final EventService eventService;
+    private final KafkaTopicProperty categoryTopic;
 
-    public CategoryMySQLGateway(final CategoryJpaRepository categoryJpaRepository) {
+    public CategoryMySQLGateway(
+            final CategoryJpaRepository categoryJpaRepository,
+            final EventService eventService,
+            final @CategoryEvents KafkaTopicProperty categoryTopic
+    ) {
         this.categoryJpaRepository = Objects.requireNonNull(categoryJpaRepository);
+        this.eventService = Objects.requireNonNull(eventService);
+        this.categoryTopic = Objects.requireNonNull(categoryTopic);
     }
 
+    @Transactional
     @Override
     public Category create(Category aCategory) {
         this.categoryJpaRepository.save(CategoryJpaEntity.toEntity(aCategory));
+        aCategory.publishDomainEvent(this.eventService::send, categoryTopic.getTopicName());
         return aCategory;
     }
 
@@ -30,6 +43,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
         return this.categoryJpaRepository.existsByName(aName);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Category> findById(String aId) {
         return this.categoryJpaRepository.findById(aId).map(CategoryJpaEntity::toDomain);
@@ -44,6 +58,8 @@ public class CategoryMySQLGateway implements CategoryGateway {
     @Override
     @Transactional
     public void deleteById(String aId) {
-        this.categoryJpaRepository.deleteById(aId);
+        if (this.categoryJpaRepository.existsById(aId)) {
+            this.categoryJpaRepository.deleteById(aId);
+        }
     }
 }

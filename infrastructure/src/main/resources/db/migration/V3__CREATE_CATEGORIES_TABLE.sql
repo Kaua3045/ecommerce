@@ -4,7 +4,7 @@ CREATE TABLE categories (
     description VARCHAR(255),
     slug VARCHAR(255) UNIQUE NOT NULL,
     parent_id VARCHAR(36),
-    sub_categories_level INT(1) NOT NULL,
+    sub_categories_level INT NOT NULL,
     created_at DATETIME(6) NOT NULL,
     updated_at DATETIME(6) NOT NULL
 );

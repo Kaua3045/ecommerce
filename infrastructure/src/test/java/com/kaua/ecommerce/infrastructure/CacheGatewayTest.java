@@ -2,8 +2,11 @@ package com.kaua.ecommerce.infrastructure;
 
 import com.kaua.ecommerce.config.AmqpTestConfiguration;
 import com.kaua.ecommerce.config.CacheCleanUpExtension;
+import com.kaua.ecommerce.config.IntegrationTestConfiguration;
 import com.kaua.ecommerce.config.JpaCleanUpExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +17,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @ActiveProfiles("test-integration-cache")
-@SpringBootTest(classes = { Main.class, AmqpTestConfiguration.class })
+@EnableAutoConfiguration(exclude = ElasticsearchRepositoriesAutoConfiguration.class)
+@SpringBootTest(classes = { Main.class, AmqpTestConfiguration.class, IntegrationTestConfiguration.class })
 @ExtendWith({ CacheCleanUpExtension.class, JpaCleanUpExtension.class })
-@Transactional
 public @interface CacheGatewayTest {
 }

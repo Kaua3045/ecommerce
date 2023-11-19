@@ -15,6 +15,23 @@ amqp:
       routing-key: email.send
       queue: email.queue
 
+kafka:
+  auto-create-topics: true
+  bootstrap-servers: localhost:9092
+  pool-timeout: 1_000
+  consumers:
+    categories:
+      auto-offset-reset: earliest
+      concurrency: 1
+      id: kafka-listener-categories
+      topics: categories_event
+      group-id: categories-group
+
+ecommerce:
+  topics:
+    category:
+      topicName: categories_event
+
 server:
   port: 8080
   compression:
@@ -62,3 +79,9 @@ spring:
       database: 0
       host: ${redis.host}
       port: ${redis.port}
+  elasticsearch:
+    uris: ${elasticsearch.host}
+    username: ${elasticsearch.username}
+    password: ${elasticsearch.password}
+    connect-timeout: 250
+    socket-timeout: 1_0000

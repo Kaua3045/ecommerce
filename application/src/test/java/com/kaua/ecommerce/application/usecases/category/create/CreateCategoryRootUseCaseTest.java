@@ -46,15 +46,17 @@ public class CreateCategoryRootUseCaseTest extends UseCaseTest {
         Assertions.assertNotNull(aOutput.id());
 
         Mockito.verify(categoryGateway, Mockito.times(1)).existsByName(aName);
-        Mockito.verify(categoryGateway, Mockito.times(1)).create(argThat(aCategory ->
-                Objects.nonNull(aCategory.getId()) &&
-                Objects.equals(aName, aCategory.getName()) &&
-                Objects.equals(aDescription, aCategory.getDescription()) &&
-                Objects.equals(aSlug, aCategory.getSlug()) &&
-                aCategory.getParentId().isEmpty() &&
-                Objects.equals(0, aCategory.getSubCategories().size()) &&
-                Objects.nonNull(aCategory.getCreatedAt()) &&
-                Objects.nonNull(aCategory.getUpdatedAt())));
+        Mockito.verify(categoryGateway, Mockito.times(1)).create(argThat(aCmd ->
+                Objects.nonNull(aCmd.getId()) &&
+                        Objects.equals(aName, aCmd.getName()) &&
+                        Objects.equals(aDescription, aCmd.getDescription()) &&
+                        Objects.equals(aSlug, aCmd.getSlug()) &&
+                        aCmd.getParentId().isEmpty() &&
+                        Objects.equals(0, aCmd.getSubCategories().size()) &&
+                        Objects.equals(0, aCmd.getLevel()) &&
+                        Objects.equals(1, aCmd.getDomainEvents().size()) &&
+                        Objects.nonNull(aCmd.getCreatedAt()) &&
+                        Objects.nonNull(aCmd.getUpdatedAt())));
     }
 
     @Test
@@ -74,15 +76,17 @@ public class CreateCategoryRootUseCaseTest extends UseCaseTest {
         Assertions.assertNotNull(aOutput.id());
 
         Mockito.verify(categoryGateway, Mockito.times(1)).existsByName(aName);
-        Mockito.verify(categoryGateway, Mockito.times(1)).create(argThat(aCategory ->
-                Objects.nonNull(aCategory.getId()) &&
-                        Objects.equals(aName, aCategory.getName()) &&
-                        Objects.isNull(aCategory.getDescription()) &&
-                        Objects.equals(aSlug, aCategory.getSlug()) &&
-                        aCategory.getParentId().isEmpty() &&
-                        Objects.equals(0, aCategory.getSubCategories().size()) &&
-                        Objects.nonNull(aCategory.getCreatedAt()) &&
-                        Objects.nonNull(aCategory.getUpdatedAt())));
+        Mockito.verify(categoryGateway, Mockito.times(1)).create(argThat(aCmd ->
+                Objects.nonNull(aCmd.getId()) &&
+                        Objects.equals(aName, aCmd.getName()) &&
+                        Objects.isNull(aCmd.getDescription()) &&
+                        Objects.equals(aSlug, aCmd.getSlug()) &&
+                        aCmd.getParentId().isEmpty() &&
+                        Objects.equals(0, aCmd.getSubCategories().size()) &&
+                        Objects.equals(0, aCmd.getLevel()) &&
+                        Objects.equals(1, aCmd.getDomainEvents().size()) &&
+                        Objects.nonNull(aCmd.getCreatedAt()) &&
+                        Objects.nonNull(aCmd.getUpdatedAt())));
     }
 
     @Test

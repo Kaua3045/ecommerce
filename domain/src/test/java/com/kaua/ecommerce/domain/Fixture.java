@@ -103,6 +103,19 @@ public final class Fixture {
             );
         }
 
+        public static Category televisionsWithSubCategories() {
+            final var aTelevisionsCategory = Category.newCategory(
+                    "Televisions",
+                    "Televisions category",
+                    "televisions",
+                    null
+            );
+            final var subCategories = makeSubCategories(3, aTelevisionsCategory);
+            aTelevisionsCategory.addSubCategories(subCategories);
+            aTelevisionsCategory.updateSubCategoriesLevel();
+            return aTelevisionsCategory;
+        }
+
         public static Set<Category> makeSubCategories(final int size, final Category parent) {
             var subCategories = new HashSet<Category>();
 

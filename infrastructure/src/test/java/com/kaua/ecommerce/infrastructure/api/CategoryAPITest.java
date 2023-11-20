@@ -6,8 +6,8 @@ import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRoo
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootOutput;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
 import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
-import com.kaua.ecommerce.application.usecases.category.retrieve.list.ListCategoriesOutput;
-import com.kaua.ecommerce.application.usecases.category.retrieve.list.ListCategoriesUseCase;
+import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesOutput;
+import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryOutput;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryUseCase;

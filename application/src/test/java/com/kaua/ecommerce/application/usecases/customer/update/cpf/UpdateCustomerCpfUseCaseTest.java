@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,11 +29,6 @@ public class UpdateCustomerCpfUseCaseTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultUpdateCustomerCpfUseCase useCase;
-
-    @Override
-    protected List<Object> getMocks() {
-        return List.of(customerGateway, customerCacheGateway);
-    }
 
     @Test
     void givenAValidCommand_whenCallChangeCpf_shouldReturnAnAccountId() {

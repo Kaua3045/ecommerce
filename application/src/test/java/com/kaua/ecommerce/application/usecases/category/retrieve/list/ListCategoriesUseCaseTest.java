@@ -22,11 +22,6 @@ public class ListCategoriesUseCaseTest extends UseCaseTest {
     @InjectMocks
     private DefaultListCategoriesUseCase useCase;
 
-    @Override
-    protected List<Object> getMocks() {
-        return List.of(categoryGateway);
-    }
-
     @Test
     void givenAValidQuery_whenCallListCategoriesUseCase_shouldReturnACategories() {
         final var aTechCategory = Fixture.Categories.tech();

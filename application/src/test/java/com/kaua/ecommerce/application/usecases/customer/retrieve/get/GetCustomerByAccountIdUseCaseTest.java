@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.Optional;
 
 public class GetCustomerByAccountIdUseCaseTest extends UseCaseTest {
@@ -25,11 +24,6 @@ public class GetCustomerByAccountIdUseCaseTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultGetCustomerByAccountIdUseCase useCase;
-
-    @Override
-    protected List<Object> getMocks() {
-        return List.of(customerGateway, customerCacheGateway);
-    }
 
     @Test
     void givenAValidAccountId_whenCallGetCustomerByAccountIdInDatabase_shouldReturnCustomerAndSaveInCache() {

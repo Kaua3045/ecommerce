@@ -9,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -21,12 +20,6 @@ public class DeleteCategoryUseCaseTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultDeleteCategoryUseCase useCase;
-
-    @Override
-    protected List<Object> getMocks() {
-        return List.of(categoryGateway);
-    }
-
 
     @Test
     void givenAValidCategoryId_whenCallDeleteCategory_shouldBeOk() {

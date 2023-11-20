@@ -1,4 +1,4 @@
-package com.kaua.ecommerce.application.usecases.category.retrieve.list;
+package com.kaua.ecommerce.application.usecases.category.search.retrieve.list;
 
 import com.kaua.ecommerce.application.gateways.SearchGateway;
 import com.kaua.ecommerce.domain.category.Category;

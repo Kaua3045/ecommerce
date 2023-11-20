@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.category.presenter;
 
-import com.kaua.ecommerce.application.usecases.category.retrieve.list.ListCategoriesOutput;
+import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesOutput;
 import com.kaua.ecommerce.infrastructure.category.models.ListCategoriesResponse;
 
 import java.util.stream.Collectors;

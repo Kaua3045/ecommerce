@@ -3,7 +3,7 @@ package com.kaua.ecommerce.infrastructure.api.controllers;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootCommand;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
 import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
-import com.kaua.ecommerce.application.usecases.category.retrieve.list.ListCategoriesUseCase;
+import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.subcategories.UpdateSubCategoriesCommand;

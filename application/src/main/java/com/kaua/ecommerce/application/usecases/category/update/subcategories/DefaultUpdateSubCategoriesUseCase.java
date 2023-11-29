@@ -59,53 +59,6 @@ public class DefaultUpdateSubCategoriesUseCase extends UpdateSubCategoriesUseCas
         addSubCategoryAndUpdate(aCategoryRoot, aSubCategory);
 
         return Either.right(updateCategoryAndOutput(aCategoryRoot));
-
-
-//        if (input.subCategoryId().isPresent()) {
-//            aSubCategory = Category.newCategory(
-//                    input.name(),
-//                    input.description(),
-//                    aSlug,
-//                    CategoryID.from(input.subCategoryId().get())
-//            );
-//            aSubCategory.validate(aNotification);
-//
-//            if (aNotification.hasError()) {
-//                return Either.left(aNotification);
-//            }
-//            final var aSubCategoryId = input.subCategoryId().get();
-//            final var aSubCategoryUpdated = aCategoryRoot.getSubCategories().stream()
-//                    .map(aSubCategories -> {
-//                        if (aSubCategories.getId().getValue().equals(aSubCategoryId)) {
-//                            aSubCategories.addSubCategory(aSubCategory);
-//                            aSubCategories.updateSubCategoriesLevel();
-//                            return aSubCategories;
-//                        }
-//                        throw NotFoundException.with(Category.class, aSubCategoryId).get();
-//                    }).collect(Collectors.toSet());
-//
-//            aCategoryRoot.addSubCategories(aSubCategoryUpdated);
-//            aCategoryRoot.registerEvent(CategoryUpdatedEvent.from(aCategoryRoot));
-//            return Either.right(UpdateSubCategoriesOutput.from(this.categoryGateway.update(aCategoryRoot)));
-//        } else {
-//            aSubCategory = Category.newCategory(
-//                    input.name(),
-//                    input.description(),
-//                    aSlug,
-//                    aCategoryRoot.getId()
-//            );
-//            aSubCategory.validate(aNotification);
-//
-//            if (aNotification.hasError()) {
-//                return Either.left(aNotification);
-//            }
-//        }
-//
-//        aCategoryRoot.addSubCategory(aSubCategory);
-//        aCategoryRoot.updateSubCategoriesLevel();
-//        aCategoryRoot.registerEvent(CategoryUpdatedEvent.from(aCategoryRoot));
-//
-//        return Either.right(UpdateSubCategoriesOutput.from(this.categoryGateway.update(aCategoryRoot)));
     }
 
     private Category getRootCategory(final String aRootCategoryId) {

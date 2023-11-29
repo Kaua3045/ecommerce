@@ -6,6 +6,7 @@ import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRoo
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootOutput;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
 import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
+import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryCommand;
 import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesOutput;
 import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
@@ -347,7 +348,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateSubCategoriesOutput.from(aCategory)));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/{categoryId}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -363,7 +364,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -397,7 +399,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -434,26 +437,27 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
 
     @Test
     void givenAnInvalidCategoryRootId_whenCallUpdateSubCategories_thenThrowNotFoundException() throws Exception {
-        final var aId = "123";
+        final var aCategoryId = "123";
 
         final var aName = "Category Test";
         final var aDescription = "Category Test Description";
 
-        final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aId);
+        final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aCategoryId);
 
         final var aInput = new UpdateSubCategoriesInput(aName, aDescription);
 
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
-                .thenThrow(NotFoundException.with(Category.class, aId).get());
+                .thenThrow(NotFoundException.with(Category.class, aCategoryId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/{categoryId}/sub", aCategoryId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -469,7 +473,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aCategoryId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -506,7 +511,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -543,6 +549,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -579,7 +587,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -616,7 +625,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -636,7 +646,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/{categoryId}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -653,7 +663,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -690,13 +701,136 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
 
     @Test
-    void givenAValidInputWithDescription_whenCallUpdateCategory_thenReturnStatusOkAndCategoryId() throws Exception {
+    void givenAValidInputWithDescriptionAndSubCategoryId_whenCallUpdateSubCategories_thenReturnStatusOkAndCategoryId() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory).stream()
+                .findFirst().get();
+
+        final var aId = aCategory.getId().getValue();
+        final var aSubId = aSubCategory.getId().getValue();
+
+        final var aName = "Category Test";
+        final var aDescription = "Category Test Description";
+
+        final var aInput = new UpdateSubCategoriesInput(aName, aDescription);
+
+        Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(UpdateSubCategoriesOutput.from(aCategory)));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub/{subId}", aId, aSubId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateSubCategoriesCommand.class);
+
+        Mockito.verify(updateSubCategoriesUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertEquals(aSubId, actualCmd.subCategoryId().get());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAValidInputAndInvalidSubCategoryId_whenCallUpdateSubCategories_thenThrowNotFoundException() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+
+        final var aId = aCategory.getId().getValue();
+        final var aSubId = "123";
+
+        final var aName = "Category Test";
+        final var aDescription = "Category Test Description";
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aSubId);
+
+        final var aInput = new UpdateSubCategoriesInput(aName, aDescription);
+
+        Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
+                .thenThrow(NotFoundException.with(Category.class, aSubId).get());
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub/{subId}", aId, aSubId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateSubCategoriesCommand.class);
+
+        Mockito.verify(updateSubCategoriesUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertEquals(aSubId, actualCmd.subCategoryId().get());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAnInvalidInputAndValidSubCategoryId_whenCallUpdateSubCategories_thenReturnDomainException() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory).stream()
+                .findFirst().get();
+        aCategory.addSubCategory(aSubCategory);
+        aCategory.updateSubCategoriesLevel();
+
+        final var aId = aCategory.getId().getValue();
+        final var aSubId = aSubCategory.getId().getValue();
+
+        final var aName = " ";
+        final var aDescription = "Category Test Description";
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
+
+        final var aInput = new UpdateSubCategoriesInput(aName, aDescription);
+
+        Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub/{subId}", aId, aSubId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateSubCategoriesCommand.class);
+
+        Mockito.verify(updateSubCategoriesUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertEquals(aSubId, actualCmd.subCategoryId().get());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAValidInputWithDescription_whenCallUpdateRootCategory_thenReturnStatusOkAndCategoryId() throws Exception {
         final var aCategory = Fixture.Categories.home();
         final var aId = aCategory.getId().getValue();
 
@@ -708,7 +842,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateCategoryOutput.from(aCategory)));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -724,7 +858,93 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAValidInputWithDescriptionAndSubCategoryId_whenCallUpdateSubCategory_thenReturnStatusOkAndCategoryId() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory).stream()
+                .findFirst().get();
+        aCategory.addSubCategory(aSubCategory);
+        aCategory.updateSubCategoriesLevel();
+
+        final var aId = aCategory.getId().getValue();
+        final var aSubId = aSubCategory.getId().getValue();
+
+        final var aName = "Category Test";
+        final var aDescription = "Category Test Description";
+
+        final var aInput = new UpdateSubCategoriesInput(aName, aDescription);
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(UpdateCategoryOutput.from(aCategory)));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{id}/update/{subId}", aId, aSubId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCategoryCommand.class);
+
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertEquals(aSubId, actualCmd.subCategoryId().get());
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+    }
+
+    @Test
+    void givenAnInvalidInputAndValidSubCategoryId_whenCallUpdateSubCategory_thenReturnDomainException() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory).stream()
+                .findFirst().get();
+        aCategory.addSubCategory(aSubCategory);
+        aCategory.updateSubCategoriesLevel();
+
+        final var aId = aCategory.getId().getValue();
+        final var aSubId = aSubCategory.getId().getValue();
+
+        final var aName = "Ca ";
+        final var aDescription = "Category Test Description";
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
+
+        final var aInput = new UpdateCategoryInput(aName, aDescription);
+
+        Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/categories/{categoryId}/update/{subId}", aId, aSubId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCategoryCommand.class);
+
+        Mockito.verify(updateCategoryUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertEquals(aSubId, actualCmd.subCategoryId().get());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -744,7 +964,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -761,7 +981,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -780,7 +1001,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Category.class, aId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -796,7 +1017,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -816,7 +1038,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -833,7 +1055,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -853,7 +1076,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -870,7 +1093,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -890,7 +1114,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -907,7 +1131,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -927,7 +1152,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -944,7 +1169,8 @@ public class CategoryAPITest {
 
         final var actualCmd = cmdCaptor.getValue();
 
-        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aId, actualCmd.rootCategoryId());
+        Assertions.assertTrue(actualCmd.subCategoryId().isEmpty());
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
     }
@@ -954,30 +1180,73 @@ public class CategoryAPITest {
         final var aCategory = Fixture.Categories.tech();
         final var aId = aCategory.getId().getValue();
 
-        Mockito.doNothing().when(deleteCategoryUseCase).execute(aId);
+        final var aCommand = DeleteCategoryCommand.with(aId, null);
 
-        final var request = MockMvcRequestBuilders.delete("/categories/{id}", aId);
+        Mockito.doNothing().when(deleteCategoryUseCase).execute(aCommand);
+
+        final var request = MockMvcRequestBuilders.delete("/categories/delete/{id}", aId);
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(deleteCategoryUseCase, Mockito.times(1)).execute(aId);
+        Mockito.verify(deleteCategoryUseCase, Mockito.times(1)).execute(aCommand);
     }
 
     @Test
     void givenAnInvalidCategoryId_whenCallDeleteCategory_shouldBeOk() throws Exception {
         final var aId = "123";
 
-        Mockito.doNothing().when(deleteCategoryUseCase).execute(aId);
+        final var aCommand = DeleteCategoryCommand.with(aId, null);
 
-        final var request = MockMvcRequestBuilders.delete("/categories/{id}", aId);
+        Mockito.doNothing().when(deleteCategoryUseCase).execute(aCommand);
+
+        final var request = MockMvcRequestBuilders.delete("/categories/delete/{id}", aId);
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(deleteCategoryUseCase, Mockito.times(1)).execute(aId);
+        Mockito.verify(deleteCategoryUseCase, Mockito.times(1)).execute(aCommand);
+    }
+
+    @Test
+    void givenAValidSubCategoryId_whenCallDeleteCategory_shouldBeOk() throws Exception {
+        final var aCategory = Fixture.Categories.tech();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory).stream()
+                .findFirst().get();
+        final var aId = aCategory.getId().getValue();
+        final var aSubId = aSubCategory.getId().getValue();
+
+        final var aCommand = DeleteCategoryCommand.with(aId, aSubId);
+
+        Mockito.doNothing().when(deleteCategoryUseCase).execute(aCommand);
+
+        final var request = MockMvcRequestBuilders.delete("/categories/{rootCategoryId}/delete/{subCategoryId}", aId, aSubId);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(deleteCategoryUseCase, Mockito.times(1)).execute(aCommand);
+    }
+
+    @Test
+    void givenAnInvalidSubCategoryId_whenCallDeleteCategory_shouldBeOk() throws Exception {
+        final var aId = Fixture.Categories.home().getId().getValue();
+        final var aSubId = "123";
+
+        final var aCommand = DeleteCategoryCommand.with(aId, aSubId);
+
+        Mockito.doNothing().when(deleteCategoryUseCase).execute(aCommand);
+
+        final var request = MockMvcRequestBuilders.delete("/categories/{rootCategoryId}/delete/{subCategoryId}", aId, aSubId);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(deleteCategoryUseCase, Mockito.times(1)).execute(aCommand);
     }
 
     @Test

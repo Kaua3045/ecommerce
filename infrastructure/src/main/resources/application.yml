@@ -19,18 +19,14 @@ kafka:
   auto-create-topics: true
   bootstrap-servers: localhost:9092
   pool-timeout: 1_000
+  auto-commit: false
   consumers:
     categories:
       auto-offset-reset: earliest
       concurrency: 1
       id: kafka-listener-categories
-      topics: categories_event
+      topics: category-topic
       group-id: categories-group
-
-ecommerce:
-  topics:
-    category:
-      topicName: categories_event
 
 server:
   port: 8080

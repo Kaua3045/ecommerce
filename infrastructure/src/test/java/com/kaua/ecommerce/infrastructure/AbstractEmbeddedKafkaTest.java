@@ -26,7 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.Collections;
 
 @EmbeddedKafka(partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
-@ActiveProfiles("test-integration")
+@ActiveProfiles("test-integration-kafka")
 @EnableAutoConfiguration(exclude = {ElasticsearchRepositoriesAutoConfiguration.class})
 @SpringBootTest(
         classes = {Main.class, AmqpTestConfiguration.class, IntegrationTestConfiguration.class},
@@ -44,7 +44,7 @@ public abstract class AbstractEmbeddedKafkaTest {
 
     @BeforeAll
     void init() {
-        admin = AdminClient.create(Collections.singletonMap(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBroker.getBrokersAsString()));
+//        admin = AdminClient.create(Collections.singletonMap(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBroker.getBrokersAsString()));
 
         producer =
                 new DefaultKafkaProducerFactory<>(KafkaTestUtils.producerProps(kafkaBroker), new StringSerializer(), new StringSerializer())
@@ -54,7 +54,7 @@ public abstract class AbstractEmbeddedKafkaTest {
     @AfterAll
     void shutdown() {
         producer.close();
-        admin.close();
+//        admin.close();
         kafkaBroker.destroy();
     }
 

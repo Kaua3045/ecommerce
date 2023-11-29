@@ -33,7 +33,7 @@ public class UpdateSubCategoriesUseCaseIT {
         final var aName = "Sub Category Test";
         final var aDescription = "Sub Category Test Description";
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateSubCategoriesUseCase.execute(aCommand).getRight();
 
@@ -63,7 +63,7 @@ public class UpdateSubCategoriesUseCaseIT {
         final var aName = "Sub Category Test";
         final String aDescription = null;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateSubCategoriesUseCase.execute(aCommand).getRight();
 
@@ -96,7 +96,7 @@ public class UpdateSubCategoriesUseCaseIT {
         final var expectedErrorMessage = "Category already exists";
         final var expectedErrorCount = 1;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateSubCategoriesUseCase.execute(aCommand).getLeft();
 
@@ -113,7 +113,7 @@ public class UpdateSubCategoriesUseCaseIT {
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aId);
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = Assertions.assertThrows(NotFoundException.class,
                 () -> this.updateSubCategoriesUseCase.execute(aCommand));
@@ -135,7 +135,7 @@ public class UpdateSubCategoriesUseCaseIT {
         final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateSubCategoriesUseCase.execute(aCommand).getLeft();
 
@@ -158,7 +158,7 @@ public class UpdateSubCategoriesUseCaseIT {
         final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateSubCategoriesUseCase.execute(aCommand).getLeft();
 
@@ -181,7 +181,7 @@ public class UpdateSubCategoriesUseCaseIT {
         final var expectedErrorMessageTwo = CommonErrorMessage.lengthBetween("slug", 3, 255);
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateSubCategoriesUseCase.execute(aCommand).getLeft();
 
@@ -204,7 +204,7 @@ public class UpdateSubCategoriesUseCaseIT {
         final var expectedErrorMessageTwo = CommonErrorMessage.lengthBetween("slug", 3, 255);
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateSubCategoriesUseCase.execute(aCommand).getLeft();
 
@@ -226,7 +226,7 @@ public class UpdateSubCategoriesUseCaseIT {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateSubCategoriesUseCase.execute(aCommand).getLeft();
 
@@ -248,7 +248,7 @@ public class UpdateSubCategoriesUseCaseIT {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("subCategories", 0, 5);
         final var expectedErrorCount = 1;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         final var aResult = Assertions.assertThrows(DomainException.class,
                 () -> this.updateSubCategoriesUseCase.execute(aCommand));

@@ -2,6 +2,7 @@ package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootCommand;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
+import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryCommand;
 import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
@@ -61,9 +62,9 @@ public class CategoryController implements CategoryAPI {
     }
 
     @Override
-    public ResponseEntity<?> updateSubCategories(String id, UpdateSubCategoriesInput body) {
+    public ResponseEntity<?> updateSubCategories(String categoryId, UpdateSubCategoriesInput body) {
         final var aResult = this.updateSubCategoriesUseCase.execute(
-                UpdateSubCategoriesCommand.with(id, body.name(), body.description()));
+                UpdateSubCategoriesCommand.with(categoryId, null, body.name(), body.description()));
 
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
@@ -71,9 +72,19 @@ public class CategoryController implements CategoryAPI {
     }
 
     @Override
-    public ResponseEntity<?> updateCategory(String id, UpdateCategoryInput body) {
+    public ResponseEntity<?> updateSubSubCategories(String categoryId, String subCategoryId, UpdateSubCategoriesInput body) {
+        final var aResult = this.updateSubCategoriesUseCase.execute(
+                UpdateSubCategoriesCommand.with(categoryId, subCategoryId, body.name(), body.description()));
+
+        return aResult.isLeft()
+                ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
+                : ResponseEntity.ok().body(aResult.getRight());
+    }
+
+    @Override
+    public ResponseEntity<?> updateRootCategory(String id, UpdateCategoryInput body) {
         final var aResult = this.updateCategoryUseCase.execute(
-                UpdateCategoryCommand.with(id, body.name(), body.description()));
+                UpdateCategoryCommand.with(id, null, body.name(), body.description()));
 
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
@@ -81,7 +92,22 @@ public class CategoryController implements CategoryAPI {
     }
 
     @Override
-    public void deleteCategory(String id) {
-        this.deleteCategoryUseCase.execute(id);
+    public ResponseEntity<?> updateSubCategory(String categoryId, String subCategoryId, UpdateCategoryInput body) {
+        final var aResult = this.updateCategoryUseCase.execute(
+                UpdateCategoryCommand.with(categoryId, subCategoryId, body.name(), body.description()));
+
+        return aResult.isLeft()
+                ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
+                : ResponseEntity.ok().body(aResult.getRight());
+    }
+
+    @Override
+    public void deleteRootCategory(String categoryId) {
+        this.deleteCategoryUseCase.execute(DeleteCategoryCommand.with(categoryId, null));
+    }
+
+    @Override
+    public void deleteSubCategory(String categoryId, String subCategoryId) {
+        this.deleteCategoryUseCase.execute(DeleteCategoryCommand.with(categoryId, subCategoryId));
     }
 }

@@ -60,7 +60,7 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         producer().send(new ProducerRecord<>(categoryTopic, aMessage));
         producer().flush();
 
-        Assertions.assertTrue(latch.await(4, TimeUnit.MINUTES));
+        Assertions.assertTrue(latch.await(2, TimeUnit.MINUTES));
 
         // then
         Mockito.verify(saveCategoryUseCase, Mockito.times(1)).execute(eq(aCategory));
@@ -86,7 +86,7 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         producer().send(new ProducerRecord<>(categoryTopic, aMessage));
         producer().flush();
 
-        Assertions.assertTrue(latch.await(4, TimeUnit.MINUTES));
+        Assertions.assertTrue(latch.await(2, TimeUnit.MINUTES));
 
         // then
         Mockito.verify(saveCategoryUseCase, Mockito.times(1)).execute(eq(aCategory));
@@ -113,7 +113,7 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         producer().send(new ProducerRecord<>(categoryTopic, aMessage));
         producer().flush();
 
-        Assertions.assertTrue(latch.await(4, TimeUnit.MINUTES));
+        Assertions.assertTrue(latch.await(2, TimeUnit.MINUTES));
 
         // then
         Mockito.verify(removeCategoryUseCase, Mockito.times(1)).execute(Mockito.any());

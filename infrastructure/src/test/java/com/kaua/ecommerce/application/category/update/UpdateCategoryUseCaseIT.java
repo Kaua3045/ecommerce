@@ -34,7 +34,7 @@ public class UpdateCategoryUseCaseIT {
 
         final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
 
-        final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateCategoryUseCase.execute(aCommand).getRight();
 
@@ -66,7 +66,7 @@ public class UpdateCategoryUseCaseIT {
 
         final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
 
-        final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateCategoryUseCase.execute(aCommand).getRight();
 
@@ -99,7 +99,7 @@ public class UpdateCategoryUseCaseIT {
         final var expectedErrorMessage = "Category already exists";
         final var expectedErrorCount = 1;
 
-        final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateCategoryUseCase.execute(aCommand).getLeft();
 
@@ -116,7 +116,7 @@ public class UpdateCategoryUseCaseIT {
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aId);
 
-        final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);
 
         final var aResult = Assertions.assertThrows(NotFoundException.class,
                 () -> this.updateCategoryUseCase.execute(aCommand));
@@ -136,7 +136,7 @@ public class UpdateCategoryUseCaseIT {
 
         final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
 
-        final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateCategoryUseCase.execute(aCommand).getRight();
 
@@ -168,7 +168,7 @@ public class UpdateCategoryUseCaseIT {
 
         final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
 
-        final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateCategoryUseCase.execute(aCommand).getRight();
 
@@ -202,7 +202,7 @@ public class UpdateCategoryUseCaseIT {
         final var expectedErrorMessageTwo = CommonErrorMessage.lengthBetween("slug", 3, 255);
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateCategoryUseCase.execute(aCommand).getLeft();
 
@@ -225,7 +225,7 @@ public class UpdateCategoryUseCaseIT {
         final var expectedErrorMessageTwo = CommonErrorMessage.lengthBetween("slug", 3, 255);
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateCategoryUseCase.execute(aCommand).getLeft();
 
@@ -247,7 +247,7 @@ public class UpdateCategoryUseCaseIT {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = UpdateCategoryCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);
 
         final var aResult = this.updateCategoryUseCase.execute(aCommand).getLeft();
 

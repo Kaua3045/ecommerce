@@ -15,4 +15,6 @@ public interface CategoryGateway {
     Category update(Category aCategory);
 
     void deleteById(String aId);
+
+    void deleteRootCategoryById(String aId);
 }

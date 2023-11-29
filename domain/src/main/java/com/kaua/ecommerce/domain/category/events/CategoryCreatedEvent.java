@@ -18,6 +18,7 @@ public record CategoryCreatedEvent(
         int level,
         Instant createdAt,
         Instant updatedAt,
+        String aggregateName,
         String eventType,
         Instant occurredOn
 ) implements DomainEvent {
@@ -33,7 +34,20 @@ public record CategoryCreatedEvent(
             final Instant createdAt,
             final Instant updatedAt
     ) {
-        this(id, name, description, slug, parentId, subCategories, level, createdAt, updatedAt, EventsTypes.CATEGORY_CREATED, InstantUtils.now());
+        this(
+                id,
+                name,
+                description,
+                slug,
+                parentId,
+                subCategories,
+                level,
+                createdAt,
+                updatedAt,
+                Category.class.getSimpleName().toLowerCase(),
+                EventsTypes.CATEGORY_CREATED,
+                InstantUtils.now()
+        );
     }
 
     public static CategoryCreatedEvent from(final Category aCategory) {

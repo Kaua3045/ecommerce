@@ -39,6 +39,17 @@ public abstract class Entity<ID extends Identifier> {
         this.domainEvents.clear();
     }
 
+    public void publishDomainEvent(final DomainEventPublisher eventPublisher) {
+        if (eventPublisher == null) {
+            return;
+        }
+
+        // TODO: IN FUTURE REFACTOR THIS TO PUBLISH METHOD DOES NOT RECEIVE TOPIC
+        getDomainEvents().forEach(event -> eventPublisher.publish(event, null));
+
+        this.domainEvents.clear();
+    }
+
     public void registerEvent(final DomainEvent event) {
         if (event != null) {
             this.domainEvents.add(event);

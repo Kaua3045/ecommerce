@@ -33,7 +33,7 @@ public class Category extends AggregateRoot<CategoryID> {
             final Instant aCreatedAt,
             final Instant aUpdatedAt,
             final List<DomainEvent> aDomainEvents
-            ) {
+    ) {
         super(aCategoryID, aDomainEvents);
         this.name = aName;
         this.description = aDescription;
@@ -67,14 +67,6 @@ public class Category extends AggregateRoot<CategoryID> {
         );
     }
 
-    public Category update(final String aName, final String aDescription, final String aSlug) {
-        this.name = aName;
-        this.description = aDescription;
-        this.slug = aSlug;
-        this.updatedAt = InstantUtils.now();
-        return this;
-    }
-
     public static Category with(
             final String aId,
             final String aName,
@@ -99,6 +91,14 @@ public class Category extends AggregateRoot<CategoryID> {
                 aUpdatedAt,
                 aDomainEvents
         );
+    }
+
+    public Category update(final String aName, final String aDescription, final String aSlug) {
+        this.name = aName;
+        this.description = aDescription;
+        this.slug = aSlug;
+        this.updatedAt = InstantUtils.now();
+        return this;
     }
 
     public void updateSubCategoriesLevel() {
@@ -148,7 +148,7 @@ public class Category extends AggregateRoot<CategoryID> {
     }
 
     public Set<Category> getSubCategories() {
-        return Collections.unmodifiableSet(subCategories);
+        return subCategories;
     }
 
     public int getLevel() {

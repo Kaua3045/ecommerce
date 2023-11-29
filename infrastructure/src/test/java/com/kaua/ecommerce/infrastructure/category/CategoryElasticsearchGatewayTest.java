@@ -22,12 +22,6 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
     private CategoryElasticsearchRepository categoryElasticsearchRepository;
 
     @Test
-    void testInjection() {
-        Assertions.assertNotNull(this.categoryElasticsearchGateway);
-        Assertions.assertNotNull(this.categoryElasticsearchRepository);
-    }
-
-    @Test
     void givenAValidCategoryWithSubCategories_whenCallSave_shouldReturnCategorySaved() {
         final var aCategory = Fixture.Categories.tech();
         final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory);
@@ -174,8 +168,6 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
 
         final var actualOutput = this.categoryElasticsearchGateway.findAll(aQuery);
 
-        System.out.println(actualOutput.items().get(0).getName());
-
         Assertions.assertEquals(aPage, actualOutput.currentPage());
         Assertions.assertEquals(aPerPage, actualOutput.perPage());
         Assertions.assertEquals(aTotalItems, actualOutput.totalItems());
@@ -209,8 +201,6 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
 
         final var actualOutput = this.categoryElasticsearchGateway.findAll(aQuery);
 
-        System.out.println(actualOutput.items().get(0).getName());
-
         Assertions.assertEquals(aPage, actualOutput.currentPage());
         Assertions.assertEquals(aPerPage, actualOutput.perPage());
         Assertions.assertEquals(aTotalItemsCount, actualOutput.totalItems());
@@ -243,8 +233,6 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
 
         final var actualOutput = this.categoryElasticsearchGateway.findAll(aQuery);
 
-        System.out.println(actualOutput.items().get(0).getName());
-
         Assertions.assertEquals(aPage, actualOutput.currentPage());
         Assertions.assertEquals(aPerPage, actualOutput.perPage());
         Assertions.assertEquals(aTotalItemsCount, actualOutput.totalItems());
@@ -254,6 +242,36 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
         if (StringUtils.isNotEmpty(aName)) {
             Assertions.assertEquals(aName, actualOutput.items().get(0).getName());
         }
+    }
+
+    @Test
+    void givenAValidCategoryWithSubCategories_whenCallFindByIdInElasticsearch_shouldReturnACategory() {
+        final var aCategoryRoot = Category.newCategory("Root", null, "root", null);
+        final var aSubCategory = Category.newCategory("Sub", null, "sub", aCategoryRoot.getId());
+        aCategoryRoot.addSubCategory(aSubCategory);
+        aCategoryRoot.updateSubCategoriesLevel();
+        categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategoryRoot));
+
+        Assertions.assertEquals(1, categoryElasticsearchRepository.count());
+
+        final var actualCategory = categoryElasticsearchGateway.findById(aCategoryRoot.getId().getValue()).get();
+
+        Assertions.assertEquals(aCategoryRoot.getId().getValue(), actualCategory.getId().getValue());
+        Assertions.assertEquals(aCategoryRoot.getName(), actualCategory.getName());
+        Assertions.assertEquals(aCategoryRoot.getDescription(), actualCategory.getDescription());
+        Assertions.assertEquals(aCategoryRoot.getSlug(), actualCategory.getSlug());
+        Assertions.assertEquals(aCategoryRoot.getParentId(), actualCategory.getParentId());
+        Assertions.assertEquals(aCategoryRoot.getLevel(), actualCategory.getLevel());
+        Assertions.assertEquals(1, actualCategory.getSubCategories().size());
+        Assertions.assertNotNull(actualCategory.getCreatedAt());
+        Assertions.assertNotNull(actualCategory.getUpdatedAt());
+    }
+
+    @Test
+    void givenAnInvalidCategoryId_whenCallFindByIdInElasticsearch_shouldReturnEmpty() {
+        final var aId = "123";
+        final var actualCategory = categoryElasticsearchGateway.findById(aId);
+        Assertions.assertTrue(actualCategory.isEmpty());
     }
 
     private void mockCategories() {

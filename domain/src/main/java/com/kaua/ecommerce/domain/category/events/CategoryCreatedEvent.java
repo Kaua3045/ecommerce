@@ -1,5 +1,7 @@
-package com.kaua.ecommerce.domain.category;
+package com.kaua.ecommerce.domain.category.events;
 
+import com.kaua.ecommerce.domain.category.Category;
+import com.kaua.ecommerce.domain.category.CategoryID;
 import com.kaua.ecommerce.domain.event.DomainEvent;
 import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.utils.InstantUtils;

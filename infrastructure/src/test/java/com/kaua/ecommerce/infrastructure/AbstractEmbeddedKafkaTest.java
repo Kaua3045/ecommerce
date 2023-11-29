@@ -32,7 +32,7 @@ import java.util.Collections;
         classes = {Main.class, AmqpTestConfiguration.class, IntegrationTestConfiguration.class},
         properties = {"kafka.bootstrap-servers=${spring.embedded.kafka.brokers}"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @ExtendWith(JpaCleanUpExtension.class)
 public abstract class AbstractEmbeddedKafkaTest {
 

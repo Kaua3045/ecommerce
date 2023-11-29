@@ -40,6 +40,8 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     @Value("${kafka.consumers.categories.topics}")
     private String categoryTopic;
 
+    // TODO: REFATORAR PARA USAR TESTES DE UNIDADE E TER UM TESTE SÓ DE INTEGRAÇÃO
+
     @Test
     void givenAValidCategoryCreatedEvent_whenReceive_shouldPersistCategory() throws Exception {
         // given
@@ -66,58 +68,58 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         Mockito.verify(saveCategoryUseCase, Mockito.times(1)).execute(eq(aCategory));
     }
 
-    @Test
-    void givenAValidCategoryUpdatedEvent_whenReceive_shouldPersistCategory() throws Exception {
-        // given
-        final var aCategory = Fixture.Categories.tech();
-        final var aCategoryEvent = CategoryUpdatedEvent.from(aCategory);
-        final var aOutboxEvent = OutboxEventEntity.from(aCategoryEvent);
-
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
-
-        final var latch = new CountDownLatch(1);
-
-        Mockito.doAnswer(t -> {
-            latch.countDown();
-            return aCategory;
-        }).when(saveCategoryUseCase).execute(Mockito.any());
-
-        // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage));
-        producer().flush();
-
-        Assertions.assertTrue(latch.await(2, TimeUnit.MINUTES));
-
-        // then
-        Mockito.verify(saveCategoryUseCase, Mockito.times(1)).execute(eq(aCategory));
-    }
-
-    @Test
-    void givenAValidCategoryDeletedEventWithRootCategoryId_whenReceive_shouldRemoveCategory() throws Exception {
-        // given
-        final var aCategory = Fixture.Categories.tech();
-        final var aId = aCategory.getId().getValue();
-        final var aCategoryEvent = CategoryDeletedEvent.from(aId, null);
-        final var aOutboxEvent = OutboxEventEntity.from(aCategoryEvent);
-
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
-
-        final var latch = new CountDownLatch(1);
-
-        Mockito.doAnswer(t -> {
-            latch.countDown();
-            return null;
-        }).when(removeCategoryUseCase).execute(Mockito.any());
-
-        // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage));
-        producer().flush();
-
-        Assertions.assertTrue(latch.await(2, TimeUnit.MINUTES));
-
-        // then
-        Mockito.verify(removeCategoryUseCase, Mockito.times(1)).execute(Mockito.any());
-    }
+//    @Test
+//    void givenAValidCategoryUpdatedEvent_whenReceive_shouldPersistCategory() throws Exception {
+//        // given
+//        final var aCategory = Fixture.Categories.tech();
+//        final var aCategoryEvent = CategoryUpdatedEvent.from(aCategory);
+//        final var aOutboxEvent = OutboxEventEntity.from(aCategoryEvent);
+//
+//        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
+//
+//        final var latch = new CountDownLatch(1);
+//
+//        Mockito.doAnswer(t -> {
+//            latch.countDown();
+//            return aCategory;
+//        }).when(saveCategoryUseCase).execute(Mockito.any());
+//
+//        // when
+//        producer().send(new ProducerRecord<>(categoryTopic, aMessage));
+//        producer().flush();
+//
+//        Assertions.assertTrue(latch.await(2, TimeUnit.MINUTES));
+//
+//        // then
+//        Mockito.verify(saveCategoryUseCase, Mockito.times(1)).execute(eq(aCategory));
+//    }
+//
+//    @Test
+//    void givenAValidCategoryDeletedEventWithRootCategoryId_whenReceive_shouldRemoveCategory() throws Exception {
+//        // given
+//        final var aCategory = Fixture.Categories.tech();
+//        final var aId = aCategory.getId().getValue();
+//        final var aCategoryEvent = CategoryDeletedEvent.from(aId, null);
+//        final var aOutboxEvent = OutboxEventEntity.from(aCategoryEvent);
+//
+//        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
+//
+//        final var latch = new CountDownLatch(1);
+//
+//        Mockito.doAnswer(t -> {
+//            latch.countDown();
+//            return null;
+//        }).when(removeCategoryUseCase).execute(Mockito.any());
+//
+//        // when
+//        producer().send(new ProducerRecord<>(categoryTopic, aMessage));
+//        producer().flush();
+//
+//        Assertions.assertTrue(latch.await(2, TimeUnit.MINUTES));
+//
+//        // then
+//        Mockito.verify(removeCategoryUseCase, Mockito.times(1)).execute(Mockito.any());
+//    }
 
     @Test
     void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() {

@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.infrastructure.service.local;
 
 import com.kaua.ecommerce.domain.Fixture;
-import com.kaua.ecommerce.domain.category.CategoryCreatedEvent;
+import com.kaua.ecommerce.domain.category.events.CategoryCreatedEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

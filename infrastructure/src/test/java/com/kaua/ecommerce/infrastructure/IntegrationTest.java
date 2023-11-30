@@ -3,6 +3,7 @@ package com.kaua.ecommerce.infrastructure;
 import com.kaua.ecommerce.config.AmqpTestConfiguration;
 import com.kaua.ecommerce.config.IntegrationTestConfiguration;
 import com.kaua.ecommerce.config.JpaCleanUpExtension;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
@@ -18,5 +19,6 @@ import java.lang.annotation.*;
 @EnableAutoConfiguration(exclude = ElasticsearchRepositoriesAutoConfiguration.class)
 @SpringBootTest(classes = { Main.class, AmqpTestConfiguration.class, IntegrationTestConfiguration.class })
 @ExtendWith(JpaCleanUpExtension.class)
+@Tag("integrationTest")
 public @interface IntegrationTest {
 }

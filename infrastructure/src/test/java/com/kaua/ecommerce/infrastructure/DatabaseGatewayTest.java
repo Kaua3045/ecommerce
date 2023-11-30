@@ -3,6 +3,7 @@ package com.kaua.ecommerce.infrastructure;
 import com.kaua.ecommerce.config.DatabaseTestConfiguration;
 import com.kaua.ecommerce.config.JpaCleanUpExtension;
 import com.kaua.ecommerce.infrastructure.service.impl.MySQLEventDatabaseServiceImpl;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -28,5 +29,6 @@ import java.lang.annotation.*;
 @ExtendWith(JpaCleanUpExtension.class)
 @Import({MySQLEventDatabaseServiceImpl.class, DatabaseTestConfiguration.class})
 @AutoConfigureDataRedis
+@Tag("integrationTest")
 public @interface DatabaseGatewayTest {
 }

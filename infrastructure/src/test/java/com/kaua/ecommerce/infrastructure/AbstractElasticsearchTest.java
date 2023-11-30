@@ -2,6 +2,7 @@ package com.kaua.ecommerce.infrastructure;
 
 import com.kaua.ecommerce.config.ElasticsearchTestContainer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;
 import org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis;
@@ -26,6 +27,7 @@ import java.util.Collection;
 @AutoConfigureDataRedis
 @ImportTestcontainers(ElasticsearchTestContainer.class)
 @Testcontainers
+@Tag("integrationTest")
 public abstract class AbstractElasticsearchTest {
 
     @Autowired

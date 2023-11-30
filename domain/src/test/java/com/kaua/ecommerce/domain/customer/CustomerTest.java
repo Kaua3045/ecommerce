@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.domain.customer;
 
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
@@ -10,7 +11,7 @@ import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CustomerTest {
+public class CustomerTest extends UnitTest {
 
     @Test
     void givenAValidValues_whenCallNewCustomer_shouldReturnACustomerCreated() {

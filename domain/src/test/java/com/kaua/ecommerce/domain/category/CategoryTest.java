@@ -2,6 +2,7 @@ package com.kaua.ecommerce.domain.category;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.category.events.CategoryCreatedEvent;
 import com.kaua.ecommerce.domain.category.events.CategoryDeletedEvent;
 import com.kaua.ecommerce.domain.category.events.CategoryUpdatedEvent;
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-public class CategoryTest {
+public class CategoryTest extends UnitTest {
 
     @Test
     void givenAValidValuesWithDescription_whenCallNewCategory_shouldReturnACategoryCreated() {

@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.UUID;
 
-public class EntityTest {
+public class EntityTest extends UnitTest {
 
     @Test
     void testValidEntityCreation() {

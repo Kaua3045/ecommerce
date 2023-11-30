@@ -1,11 +1,12 @@
 package com.kaua.ecommerce.domain.pagination;
 
+import com.kaua.ecommerce.domain.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class PaginationTest {
+public class PaginationTest extends UnitTest {
 
     @Test
     void givenAValidValues_whenCallNewPagination_thenShouldReturnAPagination() {

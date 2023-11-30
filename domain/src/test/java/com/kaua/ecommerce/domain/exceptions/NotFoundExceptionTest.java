@@ -1,10 +1,11 @@
 package com.kaua.ecommerce.domain.exceptions;
 
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.customer.Customer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class NotFoundExceptionTest {
+public class NotFoundExceptionTest extends UnitTest {
 
     @Test
     void givenAValidAggregate_whenCallNotFoundExceptionWith_ThenReturnNotFoundException() {

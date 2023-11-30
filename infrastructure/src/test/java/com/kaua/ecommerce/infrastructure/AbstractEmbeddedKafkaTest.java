@@ -10,6 +10,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,9 @@ import java.util.Collections;
         classes = {Main.class, AmqpTestConfiguration.class, IntegrationTestConfiguration.class},
         properties = {"kafka.bootstrap-servers=${spring.embedded.kafka.brokers}"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @ExtendWith(JpaCleanUpExtension.class)
+@Tag("heavyIntegrationTest")
 public abstract class AbstractEmbeddedKafkaTest {
 
     @Autowired
@@ -55,7 +57,7 @@ public abstract class AbstractEmbeddedKafkaTest {
     void shutdown() {
         producer.close();
 //        admin.close();
-        kafkaBroker.destroy();
+//        kafkaBroker.destroy();
     }
 
     protected AdminClient admin() {

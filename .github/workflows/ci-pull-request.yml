@@ -26,7 +26,9 @@ jobs:
       - name: Run tests and calculate coverage for application
         run: ./gradlew :application:test jacocoTestCoverageVerification
 
-  code-analysis-heavy-integration-tests:
+      - name: Run tests and calculate coverage for infrasctructure
+        run: ./gradlew :infrastructure:test jacocoTestCoverageVerification
+  code-analysis:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,6 +40,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Run tests and calculate coverage for domain
+        run: ./gradlew :domain:test jacocoTestCoverageVerification
+
+      - name: Run tests and calculate coverage for application
+        run: ./gradlew :application:test jacocoTestCoverageVerification
 
       - name: Run tests and calculate coverage for infrastructure
         run: ./gradlew :infrastructure:test jacocoTestCoverageVerification

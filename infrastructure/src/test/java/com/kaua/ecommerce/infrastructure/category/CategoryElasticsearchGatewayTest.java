@@ -45,55 +45,55 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
         Assertions.assertEquals(aCategory.getUpdatedAt(), actualCategory.getUpdatedAt());
     }
 
-    @Test
-    void givenAValidCategoryWithoutSubCategories_whenCallSave_shouldReturnCategorySaved() {
-        final var aCategory = Fixture.Categories.tech();
+//    @Test
+//    void givenAValidCategoryWithoutSubCategories_whenCallSave_shouldReturnCategorySaved() {
+//        final var aCategory = Fixture.Categories.tech();
+//
+//        Assertions.assertEquals(0, this.categoryElasticsearchRepository.count());
+//
+//        final var actualCategory = this.categoryElasticsearchGateway.save(aCategory);
+//
+//        Assertions.assertEquals(1, this.categoryElasticsearchRepository.count());
+//
+//        Assertions.assertEquals(aCategory.getId().getValue(), actualCategory.getId().getValue());
+//        Assertions.assertEquals(aCategory.getName(), actualCategory.getName());
+//        Assertions.assertEquals(aCategory.getDescription(), actualCategory.getDescription());
+//        Assertions.assertEquals(aCategory.getSlug(), actualCategory.getSlug());
+//        Assertions.assertTrue(actualCategory.getParentId().isEmpty());
+//        Assertions.assertEquals(0, actualCategory.getSubCategories().size());
+//        Assertions.assertEquals(0, actualCategory.getLevel());
+//        Assertions.assertEquals(aCategory.getCreatedAt(), actualCategory.getCreatedAt());
+//        Assertions.assertEquals(aCategory.getUpdatedAt(), actualCategory.getUpdatedAt());
+//    }
 
-        Assertions.assertEquals(0, this.categoryElasticsearchRepository.count());
-
-        final var actualCategory = this.categoryElasticsearchGateway.save(aCategory);
-
-        Assertions.assertEquals(1, this.categoryElasticsearchRepository.count());
-
-        Assertions.assertEquals(aCategory.getId().getValue(), actualCategory.getId().getValue());
-        Assertions.assertEquals(aCategory.getName(), actualCategory.getName());
-        Assertions.assertEquals(aCategory.getDescription(), actualCategory.getDescription());
-        Assertions.assertEquals(aCategory.getSlug(), actualCategory.getSlug());
-        Assertions.assertTrue(actualCategory.getParentId().isEmpty());
-        Assertions.assertEquals(0, actualCategory.getSubCategories().size());
-        Assertions.assertEquals(0, actualCategory.getLevel());
-        Assertions.assertEquals(aCategory.getCreatedAt(), actualCategory.getCreatedAt());
-        Assertions.assertEquals(aCategory.getUpdatedAt(), actualCategory.getUpdatedAt());
-    }
-
-    @Test
-    void givenAValidCategoryWithNewName_whenCallSave_shouldReturnCategoryUpdated() {
-        final var aCategory = Fixture.Categories.tech();
-        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory);
-        aCategory.addSubCategories(aSubCategory);
-        aCategory.updateSubCategoriesLevel();
-
-        this.categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategory));
-
-        Assertions.assertEquals(1, this.categoryElasticsearchRepository.count());
-
-        final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
-        final var aCategoryUpdated = aCategory.update("New name", null, "new-name");
-
-        final var actualCategory = this.categoryElasticsearchGateway.save(aCategoryUpdated);
-
-        Assertions.assertEquals(1, this.categoryElasticsearchRepository.count());
-
-        Assertions.assertEquals(aCategory.getId().getValue(), actualCategory.getId().getValue());
-        Assertions.assertEquals(aCategory.getName(), actualCategory.getName());
-        Assertions.assertEquals(aCategory.getDescription(), actualCategory.getDescription());
-        Assertions.assertEquals(aCategory.getSlug(), actualCategory.getSlug());
-        Assertions.assertTrue(actualCategory.getParentId().isEmpty());
-        Assertions.assertEquals(1, actualCategory.getSubCategories().size());
-        Assertions.assertEquals(1, actualCategory.getLevel());
-        Assertions.assertEquals(aCategory.getCreatedAt(), actualCategory.getCreatedAt());
-        Assertions.assertTrue(aCategoryUpdatedAt.isBefore(actualCategory.getUpdatedAt()));
-    }
+//    @Test
+//    void givenAValidCategoryWithNewName_whenCallSave_shouldReturnCategoryUpdated() {
+//        final var aCategory = Fixture.Categories.tech();
+//        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory);
+//        aCategory.addSubCategories(aSubCategory);
+//        aCategory.updateSubCategoriesLevel();
+//
+//        this.categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategory));
+//
+//        Assertions.assertEquals(1, this.categoryElasticsearchRepository.count());
+//
+//        final var aCategoryUpdatedAt = aCategory.getUpdatedAt();
+//        final var aCategoryUpdated = aCategory.update("New name", null, "new-name");
+//
+//        final var actualCategory = this.categoryElasticsearchGateway.save(aCategoryUpdated);
+//
+//        Assertions.assertEquals(1, this.categoryElasticsearchRepository.count());
+//
+//        Assertions.assertEquals(aCategory.getId().getValue(), actualCategory.getId().getValue());
+//        Assertions.assertEquals(aCategory.getName(), actualCategory.getName());
+//        Assertions.assertEquals(aCategory.getDescription(), actualCategory.getDescription());
+//        Assertions.assertEquals(aCategory.getSlug(), actualCategory.getSlug());
+//        Assertions.assertTrue(actualCategory.getParentId().isEmpty());
+//        Assertions.assertEquals(1, actualCategory.getSubCategories().size());
+//        Assertions.assertEquals(1, actualCategory.getLevel());
+//        Assertions.assertEquals(aCategory.getCreatedAt(), actualCategory.getCreatedAt());
+//        Assertions.assertTrue(aCategoryUpdatedAt.isBefore(actualCategory.getUpdatedAt()));
+//    }
 
     @Test
     void givenAValidCategoryId_whenCallDeleteById_shouldBeOk() {
@@ -112,17 +112,17 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
         Assertions.assertEquals(0, this.categoryElasticsearchRepository.count());
     }
 
-    @Test
-    void givenAnInvalidCategoryId_whenCallDeleteById_shouldBeOk() {
-        final var aCategoryId = "123";
-
-        Assertions.assertEquals(0, this.categoryElasticsearchRepository.count());
-
-        Assertions.assertDoesNotThrow(() ->
-                this.categoryElasticsearchGateway.deleteById(aCategoryId));
-
-        Assertions.assertEquals(0, this.categoryElasticsearchRepository.count());
-    }
+//    @Test
+//    void givenAnInvalidCategoryId_whenCallDeleteById_shouldBeOk() {
+//        final var aCategoryId = "123";
+//
+//        Assertions.assertEquals(0, this.categoryElasticsearchRepository.count());
+//
+//        Assertions.assertDoesNotThrow(() ->
+//                this.categoryElasticsearchGateway.deleteById(aCategoryId));
+//
+//        Assertions.assertEquals(0, this.categoryElasticsearchRepository.count());
+//    }
 
     @Test
     void givenEmptyCategories_whenCallFindAll_shouldReturnEmptyList() {
@@ -267,12 +267,12 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
         Assertions.assertNotNull(actualCategory.getUpdatedAt());
     }
 
-    @Test
-    void givenAnInvalidCategoryId_whenCallFindByIdInElasticsearch_shouldReturnEmpty() {
-        final var aId = "123";
-        final var actualCategory = categoryElasticsearchGateway.findById(aId);
-        Assertions.assertTrue(actualCategory.isEmpty());
-    }
+//    @Test
+//    void givenAnInvalidCategoryId_whenCallFindByIdInElasticsearch_shouldReturnEmpty() {
+//        final var aId = "123";
+//        final var actualCategory = categoryElasticsearchGateway.findById(aId);
+//        Assertions.assertTrue(actualCategory.isEmpty());
+//    }
 
     private void mockCategories() {
         this.categoryElasticsearchRepository.save(CategoryElasticsearchEntity

@@ -1,8 +1,6 @@
 package com.kaua.ecommerce.infrastructure;
 
-import com.kaua.ecommerce.config.AmqpTestConfiguration;
 import com.kaua.ecommerce.config.IntegrationTestConfiguration;
-import com.kaua.ecommerce.config.JpaCleanUpExtension;
 import com.kaua.ecommerce.infrastructure.listeners.models.Source;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -12,7 +10,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
@@ -30,11 +27,10 @@ import java.util.Collections;
 @ActiveProfiles("test-integration-kafka")
 @EnableAutoConfiguration(exclude = {ElasticsearchRepositoriesAutoConfiguration.class})
 @SpringBootTest(
-        classes = {Main.class, AmqpTestConfiguration.class, IntegrationTestConfiguration.class},
+        classes = {Main.class, IntegrationTestConfiguration.class},
         properties = {"kafka.bootstrap-servers=${spring.embedded.kafka.brokers}"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@ExtendWith(JpaCleanUpExtension.class)
 @Tag("heavyIntegrationTest")
 public abstract class AbstractEmbeddedKafkaTest {
 
@@ -46,11 +42,10 @@ public abstract class AbstractEmbeddedKafkaTest {
 
     @BeforeAll
     void init() {
-//        admin = AdminClient.create(Collections.singletonMap(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBroker.getBrokersAsString()));
+        admin = AdminClient.create(Collections.singletonMap(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBroker.getBrokersAsString()));
 
-        producer =
-                new DefaultKafkaProducerFactory<>(KafkaTestUtils.producerProps(kafkaBroker), new StringSerializer(), new StringSerializer())
-                        .createProducer();
+        producer = new DefaultKafkaProducerFactory<>(KafkaTestUtils.producerProps(kafkaBroker), new StringSerializer(), new StringSerializer())
+                .createProducer();
     }
 
     @AfterAll

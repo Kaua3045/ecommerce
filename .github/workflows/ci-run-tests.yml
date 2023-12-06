@@ -25,11 +25,5 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Execute unitTests
-        run: ./gradlew unitTests
-
-      - name: Execute heavyIntegrationTests
-        run: ./gradlew heavyIntegrationTests
-
-      - name: Execute IntegrationTests
-        run: ./gradlew integrationTests
+      - name: Execute tests
+        run: ./gradlew test --rerun-tasks

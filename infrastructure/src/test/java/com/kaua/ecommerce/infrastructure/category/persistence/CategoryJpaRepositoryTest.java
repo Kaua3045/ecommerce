@@ -2,7 +2,7 @@ package com.kaua.ecommerce.infrastructure.category.persistence;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
-import com.kaua.ecommerce.infrastructure.IntegrationTest;
+import com.kaua.ecommerce.infrastructure.DatabaseGatewayTest;
 import org.hibernate.PropertyValueException;
 import org.hibernate.id.IdentifierGenerationException;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +13,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 
 import java.util.Set;
 
-@IntegrationTest
+@DatabaseGatewayTest
 public class CategoryJpaRepositoryTest {
 
     @Autowired
@@ -98,7 +98,7 @@ public class CategoryJpaRepositoryTest {
         aCategory.updateSubCategoriesLevel();
 
         final var actualOutput = Assertions.assertDoesNotThrow(() ->
-                        categoryRepository.save(CategoryJpaEntity.toEntity(aCategory))).toDomain();
+                categoryRepository.save(CategoryJpaEntity.toEntity(aCategory))).toDomain();
 
         Assertions.assertEquals(aCategory.getId().getValue(), actualOutput.getId().getValue());
         Assertions.assertEquals(aCategory.getName(), actualOutput.getName());

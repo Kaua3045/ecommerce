@@ -1,12 +1,13 @@
 package com.kaua.ecommerce.domain.exceptions;
 
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.validation.Error;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class DomainExceptionTest {
+public class DomainExceptionTest extends UnitTest {
 
     @Test
     void givenAValidListOfError_whenCallDomainExceptionWith_ThenReturnDomainException() {

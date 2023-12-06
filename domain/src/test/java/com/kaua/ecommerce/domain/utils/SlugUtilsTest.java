@@ -1,11 +1,12 @@
 package com.kaua.ecommerce.domain.utils;
 
+import com.kaua.ecommerce.domain.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class SlugUtilsTest {
+public class SlugUtilsTest extends UnitTest {
 
     @ParameterizedTest
     @CsvSource({

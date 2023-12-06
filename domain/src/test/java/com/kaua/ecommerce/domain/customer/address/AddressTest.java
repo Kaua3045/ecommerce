@@ -1,13 +1,14 @@
 package com.kaua.ecommerce.domain.customer.address;
 
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.customer.CustomerID;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class AddressTest {
+public class AddressTest extends UnitTest {
 
     @Test
     void givenAValidValues_whenCallNewAddress_shouldReturnAddress() {

@@ -25,5 +25,5 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Run application tests
+      - name: Execute tests
         run: ./gradlew test --rerun-tasks

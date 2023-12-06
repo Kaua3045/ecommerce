@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.domain.exceptions;
 
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.Validation;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class NotificationHandlerTest {
+public class NotificationHandlerTest extends UnitTest {
 
     @Test
     void givenValidate_whenCallValidate_thenShouldReturnDomainException() {

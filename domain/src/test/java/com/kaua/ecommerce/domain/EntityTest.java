@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.UUID;
 
-public class EntityTest {
+public class EntityTest extends UnitTest {
 
     @Test
     void testValidEntityCreation() {
@@ -88,6 +88,47 @@ public class EntityTest {
         Assertions.assertEquals(0, entity1.getDomainEvents().size());
     }
 
+    @Test
+    void testEntityRegisterEventAndPublishDomainEventWithoutTopic() {
+        final var uuid1 = UUID.randomUUID().toString();
+        SampleIdentifier id1 = new SampleIdentifier(uuid1);
+
+        Entity<SampleIdentifier> entity1 = createEntity(id1);
+
+        entity1.registerEvent(new SampleEntityEvent(uuid1));
+
+        Assertions.assertEquals(1, entity1.getDomainEvents().size());
+
+        entity1.publishDomainEvent(new SampleEntityPublisherEvent());
+
+        Assertions.assertEquals(0, entity1.getDomainEvents().size());
+    }
+
+    @Test
+    void testEntityInvalidRegisterEventAndInvalidPublishDomainEventWithoutTopic() {
+        final var uuid1 = UUID.randomUUID().toString();
+        SampleIdentifier id1 = new SampleIdentifier(uuid1);
+
+        Entity<SampleIdentifier> entity1 = createEntity(id1);
+
+        entity1.registerEvent(null);
+
+        Assertions.assertEquals(0, entity1.getDomainEvents().size());
+
+        entity1.publishDomainEvent(null);
+
+        Assertions.assertEquals(0, entity1.getDomainEvents().size());
+    }
+
+    private Entity<SampleIdentifier> createEntity(SampleIdentifier id) {
+        return new Entity<>(id, Collections.emptyList()) {
+            @Override
+            public void validate(ValidationHandler handler) {
+                // Lógica de validação simulada
+            }
+        };
+    }
+
     static class SampleIdentifier extends Identifier {
         private final String value;
 
@@ -100,23 +141,15 @@ public class EntityTest {
         }
     }
 
-    private Entity<SampleIdentifier> createEntity(SampleIdentifier id) {
-        return new Entity<>(id, Collections.emptyList()) {
-            @Override
-            public void validate(ValidationHandler handler) {
-                // Lógica de validação simulada
-            }
-        };
-    }
-
-    private record SampleEntityEvent(String id, String eventType, Instant occurredOn) implements DomainEvent {
+    private record SampleEntityEvent(String id, String aggregateName, String eventType,
+                                     Instant occurredOn) implements DomainEvent {
 
         public SampleEntityEvent(final String id) {
-            this(id, "test_created", InstantUtils.now());
+            this(id, "test", "test_created", InstantUtils.now());
         }
     }
 
-    private class SampleEntityPublisherEvent implements DomainEventPublisher {
+    private static class SampleEntityPublisherEvent implements DomainEventPublisher {
 
         @Override
         public <T extends DomainEvent> void publish(T event, String topic) {

@@ -10,8 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.List;
-
 public class DeleteCustomerUseCaseTest extends UseCaseTest {
 
     @Mock
@@ -22,12 +20,6 @@ public class DeleteCustomerUseCaseTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultDeleteCustomerUseCase useCase;
-
-    @Override
-    protected List<Object> getMocks() {
-        return List.of(customerGateway, customerCacheGateway);
-    }
-
 
     @Test
     void givenAValidAccountId_whenCallDeleteCustomer_shouldBeOk() {

@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,11 +28,6 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
     @InjectMocks
     private DefaultUpdateSubCategoriesUseCase useCase;
 
-    @Override
-    protected List<Object> getMocks() {
-        return List.of(categoryGateway);
-    }
-
     @Test
     void givenAValidCommandWithDescription_whenCallUpdateSubCategories_shouldReturnACategoryIdUpdated() {
         final var aCategory = Fixture.Categories.tech();
@@ -42,7 +36,7 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
         final var aName = "Sub Category Test";
         final var aDescription = "Sub Category Test Description";
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
@@ -66,7 +60,46 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
                         Objects.equals(1, aCategoryUpdated.getSubCategories().size()) &&
                         Objects.equals(1, aCategoryUpdated.getLevel()) &&
                         Objects.equals(aCategory.getUpdatedAt(), aCategoryUpdated.getCreatedAt()) &&
-                        Objects.equals(aCategory.getUpdatedAt(), aCategoryUpdated.getUpdatedAt())));
+                        Objects.equals(aCategory.getUpdatedAt(), aCategoryUpdated.getUpdatedAt()) &&
+                        Objects.equals(1, aCategoryUpdated.getDomainEvents().size())));
+    }
+
+    @Test
+    void givenAValidCommandWithDescriptionWitSubCategoryId_whenCallUpdateSubCategories_shouldReturnACategoryIdUpdated() {
+        final var aCategory = Fixture.Categories.tech();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory).stream()
+                .findFirst().get();
+        aCategory.addSubCategory(aSubCategory);
+        aCategory.updateSubCategoriesLevel();
+
+        final var aId = aCategory.getId().getValue();
+        final var aName = "Sub Sub Category Test";
+        final var aDescription = "Sub Sub Category Test Description";
+
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, aSubCategory.getId().getValue(), aName, aDescription);
+
+        Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
+        Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
+        Mockito.when(categoryGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
+
+        final var aOutput = useCase.execute(aCommand).getRight();
+
+        Assertions.assertNotNull(aOutput);
+        Assertions.assertNotNull(aOutput.id());
+
+        Mockito.verify(categoryGateway, Mockito.times(1)).existsByName(aName);
+        Mockito.verify(categoryGateway, Mockito.times(1)).findById(aId);
+        Mockito.verify(categoryGateway, Mockito.times(1)).update(argThat(aCategoryUpdated ->
+                Objects.equals(aId, aCategoryUpdated.getId().getValue()) &&
+                        Objects.equals(aCategory.getName(), aCategoryUpdated.getName()) &&
+                        Objects.equals(aCategory.getDescription(), aCategoryUpdated.getDescription()) &&
+                        Objects.equals(aCategory.getSlug(), aCategoryUpdated.getSlug()) &&
+                        aCategory.getParentId().isEmpty() &&
+                        Objects.equals(1, aCategoryUpdated.getSubCategories().size()) &&
+                        Objects.equals(1, aCategoryUpdated.getLevel()) &&
+                        Objects.equals(aCategory.getUpdatedAt(), aCategoryUpdated.getCreatedAt()) &&
+                        Objects.equals(aCategory.getUpdatedAt(), aCategoryUpdated.getUpdatedAt()) &&
+                        Objects.equals(1, aCategoryUpdated.getDomainEvents().size())));
     }
 
     @Test
@@ -77,7 +110,7 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = "Category already exists";
         final var expectedErrorCount = 1;
 
-        final var aCommand = UpdateSubCategoriesCommand.with("123", aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with("123", null, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(true);
 
@@ -99,7 +132,7 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aId);
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.empty());
@@ -126,7 +159,7 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
         final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
@@ -156,7 +189,7 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
         final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
@@ -184,7 +217,7 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
         final var expectedErrorMessageTwo = CommonErrorMessage.lengthBetween("slug", 3, 255);
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
@@ -212,7 +245,7 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
         final var expectedErrorMessageTwo = CommonErrorMessage.lengthBetween("slug", 3, 255);
         final var expectedErrorCount = 2;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
@@ -239,7 +272,7 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
@@ -266,7 +299,7 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("subCategories", 0, 5);
         final var expectedErrorCount = 1;
 
-        final var aCommand = UpdateSubCategoriesCommand.with(aId, aName, aDescription);
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);
 
         Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
         Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
@@ -276,6 +309,69 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
 
         Assertions.assertEquals(expectedErrorCount, aOutput.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, aOutput.getErrors().get(0).message());
+
+        Mockito.verify(categoryGateway, Mockito.times(1)).existsByName(aName);
+        Mockito.verify(categoryGateway, Mockito.times(1)).findById(aId);
+        Mockito.verify(categoryGateway, Mockito.times(0)).update(Mockito.any());
+    }
+
+    @Test
+    void givenAnInvalidCommandWitSubCategoryId_whenCallUpdateSubCategories_shouldReturnDomainException() {
+        final var aCategory = Fixture.Categories.tech();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory).stream()
+                .findFirst().get();
+        aCategory.addSubCategory(aSubCategory);
+        aCategory.updateSubCategoriesLevel();
+
+        final var aId = aCategory.getId().getValue();
+        final var aName = " ";
+        final var aDescription = "Sub Sub Category Test Description";
+
+        final var expectedErrorMessageOne = CommonErrorMessage.nullOrBlank("name");
+        final var expectedErrorMessageTwo = CommonErrorMessage.nullOrBlank("slug");
+        final var expectedErrorCount = 2;
+
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, aSubCategory.getId().getValue(), aName, aDescription);
+
+        Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
+        Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
+
+        final var aOutput = useCase.execute(aCommand).getLeft();
+
+        Assertions.assertEquals(expectedErrorCount, aOutput.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessageOne, aOutput.getErrors().get(0).message());
+        Assertions.assertEquals(expectedErrorMessageTwo, aOutput.getErrors().get(1).message());
+
+        Mockito.verify(categoryGateway, Mockito.times(1)).existsByName(aName);
+        Mockito.verify(categoryGateway, Mockito.times(1)).findById(aId);
+        Mockito.verify(categoryGateway, Mockito.times(0)).update(Mockito.any());
+    }
+
+    @Test
+    void givenAValidCommandWitInvalidSubCategoryId_whenCallUpdateSubCategories_shouldThrowNotFoundException() {
+        final var aCategory = Fixture.Categories.tech();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory).stream()
+                .findFirst().get();
+        aCategory.addSubCategory(aSubCategory);
+        aCategory.updateSubCategoriesLevel();
+
+        final var aSubCategoryInvalidId = "123";
+
+        final var aId = aCategory.getId().getValue();
+        final var aName = "Sub Sub Category Test";
+        final var aDescription = "Sub Sub Category Test Description";
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aSubCategoryInvalidId);
+
+        final var aCommand = UpdateSubCategoriesCommand.with(aId, aSubCategoryInvalidId, aName, aDescription);
+
+        Mockito.when(categoryGateway.existsByName(aName)).thenReturn(false);
+        Mockito.when(categoryGateway.findById(aId)).thenReturn(Optional.of(aCategory));
+
+        final var aOutput = Assertions.assertThrows(NotFoundException.class,
+                () -> useCase.execute(aCommand));
+
+        Assertions.assertEquals(expectedErrorMessage, aOutput.getMessage());
 
         Mockito.verify(categoryGateway, Mockito.times(1)).existsByName(aName);
         Mockito.verify(categoryGateway, Mockito.times(1)).findById(aId);

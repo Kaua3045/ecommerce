@@ -15,6 +15,7 @@ public class KafkaProperties implements InitializingBean {
     private String bootstrapServers;
     private int poolTimeout;
     private boolean autoCreateTopics;
+    private boolean autoCommit;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -27,6 +28,7 @@ public class KafkaProperties implements InitializingBean {
                 "bootstrapServers='" + bootstrapServers + '\'' +
                 ", poolTimeout=" + poolTimeout +
                 ", autoCreateTopics=" + autoCreateTopics +
+                ", autoCommit=" + autoCommit +
                 '}';
     }
 
@@ -52,5 +54,13 @@ public class KafkaProperties implements InitializingBean {
 
     public void setAutoCreateTopics(boolean autoCreateTopics) {
         this.autoCreateTopics = autoCreateTopics;
+    }
+
+    public boolean isAutoCommit() {
+        return autoCommit;
+    }
+
+    public void setAutoCommit(boolean autoCommit) {
+        this.autoCommit = autoCommit;
     }
 }

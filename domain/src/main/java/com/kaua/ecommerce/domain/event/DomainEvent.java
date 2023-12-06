@@ -5,6 +5,7 @@ import java.time.Instant;
 
 public interface DomainEvent extends Serializable {
 
+    String aggregateName();
     String eventType();
     Instant occurredOn();
 }

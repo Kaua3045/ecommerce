@@ -17,7 +17,7 @@ public class EitherTest {
     }
 
     @Test
-    public void testRight() {
+    void testRight() {
         Either<Integer, String> either = Either.right("Hello");
         Assertions.assertFalse(either.isLeft());
         Assertions.assertTrue(either.isRight());

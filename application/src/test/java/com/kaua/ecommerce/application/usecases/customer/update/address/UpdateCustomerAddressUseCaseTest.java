@@ -16,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -39,11 +38,6 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultUpdateCustomerAddressUseCase useCase;
-
-    @Override
-    protected List<Object> getMocks() {
-        return List.of(customerGateway, customerCacheGateway, addressAdapter, addressGateway);
-    }
 
     @Test
     void givenAValidCommand_whenCallChangeAddress_shouldReturnAnAccountId() {

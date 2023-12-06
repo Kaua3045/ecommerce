@@ -172,4 +172,28 @@ public class CategoryGatewayTest {
 
         Assertions.assertEquals(0, categoryRepository.count());
     }
+
+    @Test
+    void givenAValidCategoryId_whenCallDeleteRootCategoryById_shouldBeOk() {
+        final var aCategory = Fixture.Categories.tech();
+
+        Assertions.assertEquals(0, categoryRepository.count());
+        categoryRepository.save(CategoryJpaEntity.toEntity(aCategory));
+        Assertions.assertEquals(1, categoryRepository.count());
+
+        categoryGateway.deleteRootCategoryById(aCategory.getId().getValue());
+
+        Assertions.assertEquals(0, categoryRepository.count());
+    }
+
+    @Test
+    void givenAnInvalidCategoryId_whenCallDeleteRootCategoryById_shouldBeOk() {
+        final var aCategoryId = "123";
+
+        Assertions.assertEquals(0, categoryRepository.count());
+
+        categoryGateway.deleteRootCategoryById(aCategoryId);
+
+        Assertions.assertEquals(0, categoryRepository.count());
+    }
 }

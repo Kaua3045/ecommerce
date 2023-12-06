@@ -47,39 +47,76 @@ public interface CategoryAPI {
     );
 
     @PatchMapping(
-            value = "{id}/sub",
+            value = "{categoryId}/sub",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @Operation(summary = "Update sub categories by root category id")
+    @Operation(summary = "Add sub category in root category id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated successfully"),
             @ApiResponse(responseCode = "404", description = "Root category was not found"),
             @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
-    ResponseEntity<?> updateSubCategories(@PathVariable String id, @RequestBody UpdateSubCategoriesInput body);
+    ResponseEntity<?> updateSubCategories(@PathVariable String categoryId, @RequestBody UpdateSubCategoriesInput body);
 
     @PatchMapping(
-            value = "{id}",
+            value = "{categoryId}/sub/{subCategoryId}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @Operation(summary = "Update category by it's identifier")
+    @Operation(summary = "Add sub category in sub category by root category id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Root category was not found"),
+            @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> updateSubSubCategories(@PathVariable String categoryId, @PathVariable String subCategoryId, @RequestBody UpdateSubCategoriesInput body);
+
+    @PatchMapping(
+            value = "update/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Update name and description root category by it's identifier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated successfully"),
             @ApiResponse(responseCode = "404", description = "Category was not found"),
             @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
-    ResponseEntity<?> updateCategory(@PathVariable String id, @RequestBody UpdateCategoryInput body);
+    ResponseEntity<?> updateRootCategory(@PathVariable String id, @RequestBody UpdateCategoryInput body);
 
-    @DeleteMapping(value = "{id}")
+    @PatchMapping(
+            value = "{categoryId}/update/{subCategoryId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Update sub category by it's identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Category was not found"),
+            @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> updateSubCategory(@PathVariable String categoryId, @PathVariable String subCategoryId, @RequestBody UpdateCategoryInput body);
+
+    @DeleteMapping(value = "delete/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Delete root category by it's identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    void deleteRootCategory(@PathVariable String categoryId);
+
+    @DeleteMapping(value = "{categoryId}/delete/{subCategoryId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete category by it's identifier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
-    void deleteCategory(@PathVariable String id);
+    void deleteSubCategory(@PathVariable String categoryId, @PathVariable String subCategoryId);
 }

@@ -34,3 +34,21 @@ jacocoTestCoverageVerification {
         }
     }
 }
+
+tasks.register('unitTests', Test) {
+    useJUnitPlatform {
+        includeTags("unitTest")
+    }
+}
+
+tasks.register('integrationTests', Test) {
+    useJUnitPlatform {
+        includeTags("integrationTest")
+    }
+}
+
+tasks.register('heavyIntegrationTests', Test) {
+    useJUnitPlatform {
+        includeTags("heavyIntegrationTest")
+    }
+}

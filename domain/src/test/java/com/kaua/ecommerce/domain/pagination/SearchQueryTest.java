@@ -1,9 +1,10 @@
 package com.kaua.ecommerce.domain.pagination;
 
+import com.kaua.ecommerce.domain.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class SearchQueryTest {
+public class SearchQueryTest extends UnitTest {
 
     @Test
     void givenAValidValues_whenCallNewSearchQuery_shouldReturnASearchQueryInstance() {

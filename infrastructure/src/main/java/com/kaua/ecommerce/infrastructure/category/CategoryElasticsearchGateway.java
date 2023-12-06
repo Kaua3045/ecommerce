@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class CategoryElasticsearchGateway implements SearchGateway<Category> {
@@ -75,6 +76,13 @@ public class CategoryElasticsearchGateway implements SearchGateway<Category> {
         return new Pagination<>(aCurrentPage, aPerPage, aTotalPages, aTotal, aCategories);
     }
 
+    @Override
+    public Optional<Category> findById(String id) {
+        return this.categoryElasticsearchRepository.findById(id)
+                .map(CategoryElasticsearchEntity::toDomain);
+    }
+
+    @Transactional
     @Override
     public void deleteById(String aId) {
         this.categoryElasticsearchRepository.deleteById(aId);

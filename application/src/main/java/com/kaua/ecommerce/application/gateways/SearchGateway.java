@@ -1,7 +1,6 @@
 package com.kaua.ecommerce.application.gateways;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
-import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
 
@@ -12,6 +11,8 @@ public interface SearchGateway<T extends AggregateRoot> {
     T save(T aggregateRoot);
 
     Pagination<T> findAll(SearchQuery aQuery);
+
+    Optional<T> findById(String id);
 
     void deleteById(String id);
 }

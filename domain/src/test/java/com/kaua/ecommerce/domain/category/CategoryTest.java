@@ -2,6 +2,10 @@ package com.kaua.ecommerce.domain.category;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.UnitTest;
+import com.kaua.ecommerce.domain.category.events.CategoryCreatedEvent;
+import com.kaua.ecommerce.domain.category.events.CategoryDeletedEvent;
+import com.kaua.ecommerce.domain.category.events.CategoryUpdatedEvent;
 import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
@@ -12,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-public class CategoryTest {
+public class CategoryTest extends UnitTest {
 
     @Test
     void givenAValidValuesWithDescription_whenCallNewCategory_shouldReturnACategoryCreated() {
@@ -986,5 +990,53 @@ public class CategoryTest {
         Assertions.assertNotNull(aCategoryDomain.getCreatedAt());
         Assertions.assertNotNull(aCategoryDomain.getUpdatedAt());
         Assertions.assertEquals(0, aCategoryDomain.getDomainEvents().size());
+    }
+
+    @Test
+    void givenAValidCategoryUpdatedEvent_whenCallToDomain_shouldReturnCategoryDomainClass() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                null
+        );
+        final var aCategoryUpdated = aCategory.update(aName, null, aSlug);
+        final var aCategoryUpdatedEvent = CategoryUpdatedEvent.from(aCategoryUpdated);
+        final var aCategoryDomain = aCategoryUpdatedEvent.toDomain();
+
+        Assertions.assertNotNull(aCategoryDomain);
+        Assertions.assertEquals(aCategoryUpdated.getId(), aCategoryDomain.getId());
+        Assertions.assertEquals(aName, aCategoryDomain.getName());
+        Assertions.assertNull(aCategoryDomain.getDescription());
+        Assertions.assertEquals(aSlug, aCategoryDomain.getSlug());
+        Assertions.assertTrue(aCategoryDomain.getParentId().isEmpty());
+        Assertions.assertEquals(0, aCategoryDomain.getLevel());
+        Assertions.assertEquals(0, aCategoryDomain.getSubCategories().size());
+        Assertions.assertNotNull(aCategoryDomain.getCreatedAt());
+        Assertions.assertNotNull(aCategoryDomain.getUpdatedAt());
+        Assertions.assertEquals(0, aCategoryDomain.getDomainEvents().size());
+    }
+
+    @Test
+    void givenAValidCategoryDeletedEvent_whenCallFrom_shouldReturnCategoryDeletedEvent() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                null
+        );
+        final var aCategoryDeleted = CategoryDeletedEvent.from(aCategory.getId().getValue(), null);
+
+        Assertions.assertNotNull(aCategoryDeleted);
+        Assertions.assertEquals(aCategory.getId().getValue(), aCategoryDeleted.rootCategoryId());
+        Assertions.assertTrue(aCategoryDeleted.subCategoryId().isEmpty());
     }
 }

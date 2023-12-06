@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.Objects;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -23,11 +22,6 @@ public class CreateCustomerUseCaseTest extends UseCaseTest {
 
     @InjectMocks
     private DefaultCreateCustomerUseCase useCase;
-
-    @Override
-    protected List<Object> getMocks() {
-        return List.of(customerGateway);
-    }
 
     @Test
     void givenAValidCommand_whenCallCreateCustomer_shouldReturnACustomerIdCreated() {

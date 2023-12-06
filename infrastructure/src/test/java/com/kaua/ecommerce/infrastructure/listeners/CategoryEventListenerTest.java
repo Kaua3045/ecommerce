@@ -18,7 +18,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -37,9 +36,6 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
 
     @Value("${kafka.consumers.categories.topics}")
     private String categoryTopic;
-
-    @Autowired
-    private CategoryEventListener categoryEventListener;
 
     @Test
     void givenAValidCategoryCreatedEvent_whenReceive_shouldPersistCategory() throws Exception {

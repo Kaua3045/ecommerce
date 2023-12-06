@@ -16,11 +16,9 @@ import com.kaua.ecommerce.infrastructure.listeners.models.ValuePayload;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -29,8 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.eq;
 
-@Execution(ExecutionMode.CONCURRENT)
-@Order(1)
 public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
 
     @MockBean
@@ -41,6 +37,9 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
 
     @Value("${kafka.consumers.categories.topics}")
     private String categoryTopic;
+
+    @Autowired
+    private CategoryEventListener categoryEventListener;
 
     @Test
     void givenAValidCategoryCreatedEvent_whenReceive_shouldPersistCategory() throws Exception {
@@ -134,5 +133,6 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         // then
         Mockito.verify(saveCategoryUseCase, Mockito.times(0)).execute(Mockito.any());
+        Mockito.verify(removeCategoryUseCase, Mockito.times(0)).execute(Mockito.any());
     }
 }

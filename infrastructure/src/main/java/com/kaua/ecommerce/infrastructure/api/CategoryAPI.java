@@ -1,10 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api;
 
 import com.kaua.ecommerce.domain.pagination.Pagination;
-import com.kaua.ecommerce.infrastructure.category.models.CreateCategoryInput;
-import com.kaua.ecommerce.infrastructure.category.models.ListCategoriesResponse;
-import com.kaua.ecommerce.infrastructure.category.models.UpdateCategoryInput;
-import com.kaua.ecommerce.infrastructure.category.models.UpdateSubCategoriesInput;
+import com.kaua.ecommerce.infrastructure.category.models.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -45,6 +42,18 @@ public interface CategoryAPI {
             @RequestParam(name = "sort", required = false, defaultValue = "name") final String sort,
             @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction
     );
+
+    @GetMapping(
+            value = "{categoryId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Get category by it's identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category found successfully"),
+            @ApiResponse(responseCode = "404", description = "Category was not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    GetCategoryResponse getCategory(@PathVariable String categoryId);
 
     @PatchMapping(
             value = "{categoryId}/sub",

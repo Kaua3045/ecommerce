@@ -4,6 +4,7 @@ import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRoo
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
 import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryCommand;
 import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
+import com.kaua.ecommerce.application.usecases.category.search.retrieve.get.DefaultGetCategoryByIdUseCase;
 import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryUseCase;
@@ -12,10 +13,7 @@ import com.kaua.ecommerce.application.usecases.category.update.subcategories.Upd
 import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.api.CategoryAPI;
-import com.kaua.ecommerce.infrastructure.category.models.CreateCategoryInput;
-import com.kaua.ecommerce.infrastructure.category.models.ListCategoriesResponse;
-import com.kaua.ecommerce.infrastructure.category.models.UpdateCategoryInput;
-import com.kaua.ecommerce.infrastructure.category.models.UpdateSubCategoriesInput;
+import com.kaua.ecommerce.infrastructure.category.models.*;
 import com.kaua.ecommerce.infrastructure.category.presenter.CategoryApiPresenter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,19 +27,22 @@ public class CategoryController implements CategoryAPI {
     private final UpdateCategoryUseCase updateCategoryUseCase;
     private final DeleteCategoryUseCase deleteCategoryUseCase;
     private final ListCategoriesUseCase listCategoriesUseCase;
+    private final DefaultGetCategoryByIdUseCase getCategoryByIdUseCase;
 
     public CategoryController(
             final CreateCategoryRootUseCase createCategoryRootUseCase,
             final UpdateSubCategoriesUseCase updateSubCategoriesUseCase,
             final UpdateCategoryUseCase updateCategoryUseCase,
             final DeleteCategoryUseCase deleteCategoryUseCase,
-            final ListCategoriesUseCase listCategoriesUseCase
+            final ListCategoriesUseCase listCategoriesUseCase,
+            final DefaultGetCategoryByIdUseCase getCategoryByIdUseCase
     ) {
         this.createCategoryRootUseCase = createCategoryRootUseCase;
         this.updateSubCategoriesUseCase = updateSubCategoriesUseCase;
         this.updateCategoryUseCase = updateCategoryUseCase;
         this.deleteCategoryUseCase = deleteCategoryUseCase;
         this.listCategoriesUseCase = listCategoriesUseCase;
+        this.getCategoryByIdUseCase = getCategoryByIdUseCase;
     }
 
     @Override
@@ -59,6 +60,11 @@ public class CategoryController implements CategoryAPI {
         final var aQuery = new SearchQuery(page, perPage, search, sort, direction);
         return this.listCategoriesUseCase.execute(aQuery)
                 .map(CategoryApiPresenter::present);
+    }
+
+    @Override
+    public GetCategoryResponse getCategory(String categoryId) {
+        return CategoryApiPresenter.present(this.getCategoryByIdUseCase.execute(categoryId));
     }
 
     @Override

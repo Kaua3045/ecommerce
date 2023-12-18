@@ -82,6 +82,24 @@ public class CategoryElasticsearchGateway implements SearchGateway<Category> {
                 .map(CategoryElasticsearchEntity::toDomain);
     }
 
+    @Override
+    public Optional<Category> findByIdNested(String id) {
+        final var aCategory = this.categoryElasticsearchRepository.findById(id)
+                .map(CategoryElasticsearchEntity::toDomain);
+
+        if (aCategory.isEmpty()) {
+            final var aSubCategory = this.findByIdInSubCategory(id);
+
+            if (aSubCategory.isPresent()) {
+                return aSubCategory;
+            }
+
+            return this.findByIdInSubSubCategory(id);
+        }
+
+        return aCategory;
+    }
+
     @Transactional
     @Override
     public void deleteById(String aId) {
@@ -94,5 +112,30 @@ public class CategoryElasticsearchGateway implements SearchGateway<Category> {
         } else {
             return sort;
         }
+    }
+
+    public Optional<Category> findByIdInSubCategory(final String aId) {
+        final var aResult = this.findCategoryByCriteria(Criteria.where("subCategories.id").is(aId));
+
+        return aResult.flatMap(category -> category.getSubCategories().stream()
+                .filter(aSubCategory -> aSubCategory.getId().getValue().equals(aId)).findFirst());
+    }
+
+    private Optional<Category> findByIdInSubSubCategory(final String aId) {
+        final var aResult = this.findCategoryByCriteria(Criteria.where("subCategories.subCategories.id").is(aId));
+
+        return aResult.flatMap(result -> result.getSubCategories().stream()
+                .flatMap(aSubCategory -> aSubCategory.getSubCategories().stream())
+                .filter(aSubSubCategory -> aSubSubCategory.getId().getValue().equals(aId)).findFirst());
+    }
+
+    private Optional<Category> findCategoryByCriteria(Criteria criteria) {
+        CriteriaQuery query = new CriteriaQuery(criteria);
+        Optional<CategoryElasticsearchEntity> result = this.searchOperations.search(query, CategoryElasticsearchEntity.class)
+                .stream()
+                .map(SearchHit::getContent)
+                .findFirst();
+
+        return result.map(CategoryElasticsearchEntity::toDomain);
     }
 }

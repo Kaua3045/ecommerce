@@ -71,6 +71,7 @@ testCodeCoverageReport {
                 files(classDirectories.files.collect {
                     fileTree(dir: it, exclude: [
                             'com/kaua/ecommerce/infrastructure/configurations/*',
+                            'com/kaua/ecommerce/infrastructure/initializer/*',
                             'com/kaua/ecommerce/infrastructure/Main.class'
                     ])
                 })

@@ -7,6 +7,7 @@ import com.kaua.ecommerce.application.usecases.category.create.DefaultCreateCate
 import com.kaua.ecommerce.application.usecases.category.delete.DefaultDeleteCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.search.remove.DefaultRemoveCategoryUseCase;
+import com.kaua.ecommerce.application.usecases.category.search.retrieve.get.DefaultGetCategoryByIdUseCase;
 import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.DefaultListCategoriesUseCase;
 import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesUseCase;
 import com.kaua.ecommerce.application.usecases.category.search.save.DefaultSaveCategoryUseCase;
@@ -40,11 +41,6 @@ public class CategoryUseCaseConfig {
     }
 
     @Bean
-    public ListCategoriesUseCase listCategoriesUseCase() {
-        return new DefaultListCategoriesUseCase(searchCategoryGateway);
-    }
-
-    @Bean
     public UpdateSubCategoriesUseCase updateSubCategoriesUseCase() {
         return new DefaultUpdateSubCategoriesUseCase(categoryGateway);
     }
@@ -62,6 +58,16 @@ public class CategoryUseCaseConfig {
     @Bean
     public DefaultSaveCategoryUseCase saveCategoryUseCase() {
         return new DefaultSaveCategoryUseCase(searchCategoryGateway);
+    }
+
+    @Bean
+    public ListCategoriesUseCase listCategoriesUseCase() {
+        return new DefaultListCategoriesUseCase(searchCategoryGateway);
+    }
+
+    @Bean
+    public DefaultGetCategoryByIdUseCase defaultGetCategoryByIdUseCase() {
+        return new DefaultGetCategoryByIdUseCase(searchCategoryGateway);
     }
 
     @Bean

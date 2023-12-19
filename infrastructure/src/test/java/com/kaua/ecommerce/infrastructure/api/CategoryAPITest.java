@@ -5,8 +5,10 @@ import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootCommand;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootOutput;
 import com.kaua.ecommerce.application.usecases.category.create.CreateCategoryRootUseCase;
-import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryCommand;
+import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUseCase;
+import com.kaua.ecommerce.application.usecases.category.search.retrieve.get.DefaultGetCategoryByIdUseCase;
+import com.kaua.ecommerce.application.usecases.category.search.retrieve.get.GetCategoryByIdOutput;
 import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesOutput;
 import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCommand;
@@ -70,6 +72,9 @@ public class CategoryAPITest {
 
     @MockBean
     private ListCategoriesUseCase listCategoriesUseCase;
+
+    @MockBean
+    private DefaultGetCategoryByIdUseCase getCategoryByIdUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateCategory_thenReturnStatusOkAndCategoryId() throws Exception {
@@ -1300,5 +1305,59 @@ public class CategoryAPITest {
                         && Objects.equals(aSort, query.sort())
                         && Objects.equals(aTerms, query.terms())
         ));
+    }
+
+    @Test
+    void givenAValidId_whenCallGetCategoryById_thenReturnCategory() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(1, aCategory).stream()
+                .findFirst().get();
+        aCategory.addSubCategory(aSubCategory);
+        aCategory.updateSubCategoriesLevel();
+
+        final var aId = aCategory.getId().getValue();
+
+        Mockito.when(getCategoryByIdUseCase.execute(Mockito.any()))
+                .thenReturn(GetCategoryByIdOutput.from(aCategory));
+
+        final var request = MockMvcRequestBuilders.get("/categories/{id}", aId)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", equalTo(aCategory.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description", equalTo(aCategory.getDescription())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.slug", equalTo(aCategory.getSlug())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.parent_id", equalTo(null)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.level", equalTo(aCategory.getLevel())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sub_categories[0].name", equalTo(aSubCategory.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.created_at", equalTo(aCategory.getCreatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.updated_at", equalTo(aCategory.getUpdatedAt().toString())));
+
+        Mockito.verify(getCategoryByIdUseCase, Mockito.times(1)).execute(aId);
+    }
+
+    @Test
+    void givenAnInvalidId_whenCallGetCategoryById_thenThrowNotFoundException() throws Exception {
+        final var aCategory = Fixture.Categories.home();
+
+        final var aId = aCategory.getId().getValue();
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aId);
+
+        Mockito.when(getCategoryByIdUseCase.execute(Mockito.any()))
+                .thenThrow(NotFoundException.with(Category.class, aId).get());
+
+        final var request = MockMvcRequestBuilders.get("/categories/{id}", aId)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        Mockito.verify(getCategoryByIdUseCase, Mockito.times(1)).execute(aId);
     }
 }

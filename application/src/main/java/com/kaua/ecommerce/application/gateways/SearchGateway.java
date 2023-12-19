@@ -14,5 +14,7 @@ public interface SearchGateway<T extends AggregateRoot> {
 
     Optional<T> findById(String id);
 
+    Optional<T> findByIdNested(String id);
+
     void deleteById(String id);
 }

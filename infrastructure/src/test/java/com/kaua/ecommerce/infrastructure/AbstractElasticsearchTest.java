@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure;
 
 import com.kaua.ecommerce.config.ElasticsearchTestContainer;
+import com.kaua.ecommerce.infrastructure.initializer.CategoryElasticsearchInitializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataR
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -26,6 +28,7 @@ import java.util.Collection;
 @DataElasticsearchTest
 @AutoConfigureDataRedis
 @ImportTestcontainers(ElasticsearchTestContainer.class)
+@Import(CategoryElasticsearchInitializer.class)
 @Testcontainers
 @Tag("integrationTest")
 public abstract class AbstractElasticsearchTest {
@@ -35,6 +38,10 @@ public abstract class AbstractElasticsearchTest {
 
     @BeforeEach
     void cleanUp() {
-        this.repositories.forEach(ElasticsearchRepository::deleteAll);
+        try {
+            this.repositories.forEach(ElasticsearchRepository::deleteAll);
+        } catch (Exception e) {
+            System.out.println("Error while cleaning up Elasticsearch: " + e.getMessage());
+        }
     }
 }

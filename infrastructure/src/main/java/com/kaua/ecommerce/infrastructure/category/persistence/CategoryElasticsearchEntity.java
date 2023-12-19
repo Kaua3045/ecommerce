@@ -2,6 +2,7 @@ package com.kaua.ecommerce.infrastructure.category.persistence;
 
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.category.CategoryID;
+import com.kaua.ecommerce.infrastructure.initializer.CategoryElasticsearchInitializer;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 
@@ -10,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Document(indexName = "categories")
+@Document(indexName = CategoryElasticsearchInitializer.INDEX_NAME, createIndex = false)
 public class CategoryElasticsearchEntity {
 
     @Id
@@ -31,7 +32,7 @@ public class CategoryElasticsearchEntity {
     @Field(type = FieldType.Text, name = "parent_id")
     private String parentId;
 
-    @Field(type = FieldType.Nested, ignoreFields = {"subCategories"})
+    @Field(type = FieldType.Nested)
     private Set<CategoryElasticsearchEntity> subCategories;
 
     @Field(type = FieldType.Integer, name = "sub_categories_level")
@@ -43,7 +44,8 @@ public class CategoryElasticsearchEntity {
     @Field(type = FieldType.Date, name = "updated_at")
     private Instant updatedAt;
 
-    public CategoryElasticsearchEntity() {}
+    public CategoryElasticsearchEntity() {
+    }
 
     private CategoryElasticsearchEntity(
             final String id,

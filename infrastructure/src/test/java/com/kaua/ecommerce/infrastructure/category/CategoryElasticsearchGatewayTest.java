@@ -250,11 +250,11 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
         final var aSubCategory = Category.newCategory("Sub", null, "sub", aCategoryRoot.getId());
         aCategoryRoot.addSubCategory(aSubCategory);
         aCategoryRoot.updateSubCategoriesLevel();
-        categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategoryRoot));
+        this.categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategoryRoot));
 
         Assertions.assertEquals(1, categoryElasticsearchRepository.count());
 
-        final var actualCategory = categoryElasticsearchGateway.findById(aCategoryRoot.getId().getValue()).get();
+        final var actualCategory = this.categoryElasticsearchGateway.findById(aCategoryRoot.getId().getValue()).get();
 
         Assertions.assertEquals(aCategoryRoot.getId().getValue(), actualCategory.getId().getValue());
         Assertions.assertEquals(aCategoryRoot.getName(), actualCategory.getName());
@@ -270,7 +270,91 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
     @Test
     void givenAnInvalidCategoryId_whenCallFindByIdInElasticsearch_shouldReturnEmpty() {
         final var aId = "123";
-        final var actualCategory = categoryElasticsearchGateway.findById(aId);
+        final var actualCategory = this.categoryElasticsearchGateway.findById(aId);
+        Assertions.assertTrue(actualCategory.isEmpty());
+    }
+
+    @Test
+    void givenAValidRootCategoryWithSubCategories_whenCallFindByIdNestedInElasticsearch_shouldReturnACategory() {
+        final var aCategoryRoot = Category.newCategory("Root", null, "root", null);
+        categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategoryRoot));
+
+        Assertions.assertEquals(1, categoryElasticsearchRepository.count());
+
+        final var actualCategory = categoryElasticsearchGateway.findByIdNested(aCategoryRoot.getId().getValue()).get();
+
+        Assertions.assertEquals(aCategoryRoot.getId().getValue(), actualCategory.getId().getValue());
+        Assertions.assertEquals(aCategoryRoot.getName(), actualCategory.getName());
+        Assertions.assertEquals(aCategoryRoot.getDescription(), actualCategory.getDescription());
+        Assertions.assertEquals(aCategoryRoot.getSlug(), actualCategory.getSlug());
+        Assertions.assertEquals(aCategoryRoot.getParentId(), actualCategory.getParentId());
+        Assertions.assertEquals(aCategoryRoot.getLevel(), actualCategory.getLevel());
+        Assertions.assertEquals(0, actualCategory.getSubCategories().size());
+        Assertions.assertNotNull(actualCategory.getCreatedAt());
+        Assertions.assertNotNull(actualCategory.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidSubCategoryIdWithoutSubCategories_whenCallFindByNestedInElasticsearch_shouldReturnACategory() {
+        final var aCategoryRoot = Fixture.Categories.home();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(2, aCategoryRoot)
+                .stream().findFirst().get();
+
+        aCategoryRoot.addSubCategory(aSubCategory);
+        aCategoryRoot.updateSubCategoriesLevel();
+
+        this.categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategoryRoot));
+
+        Assertions.assertEquals(1, categoryElasticsearchRepository.count());
+
+        final var actualCategory = this.categoryElasticsearchGateway.findByIdNested(aSubCategory.getId().getValue()).get();
+
+        Assertions.assertEquals(aSubCategory.getId().getValue(), actualCategory.getId().getValue());
+        Assertions.assertEquals(aSubCategory.getName(), actualCategory.getName());
+        Assertions.assertEquals(aSubCategory.getDescription(), actualCategory.getDescription());
+        Assertions.assertEquals(aSubCategory.getSlug(), actualCategory.getSlug());
+        Assertions.assertEquals(aCategoryRoot.getId().getValue(), actualCategory.getParentId().get().getValue());
+        Assertions.assertEquals(aSubCategory.getLevel(), actualCategory.getLevel());
+        Assertions.assertEquals(0, actualCategory.getSubCategories().size());
+        Assertions.assertNotNull(actualCategory.getCreatedAt());
+        Assertions.assertNotNull(actualCategory.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidSubSubCategoryId_whenCallFindByNestedInElasticsearch_shouldReturnACategory() {
+        final var aCategoryRoot = Fixture.Categories.home();
+        final var aSubCategory = Fixture.Categories.makeSubCategories(2, aCategoryRoot)
+                .stream().findFirst().get();
+        final var aSubSubCategory = Fixture.Categories.makeSubCategories(1, aSubCategory)
+                .stream().findFirst().get();
+
+        aSubCategory.addSubCategory(aSubSubCategory);
+        aSubCategory.updateSubCategoriesLevel();
+
+        aCategoryRoot.addSubCategory(aSubCategory);
+        aCategoryRoot.updateSubCategoriesLevel();
+
+        this.categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategoryRoot));
+
+        Assertions.assertEquals(1, categoryElasticsearchRepository.count());
+
+        final var actualCategory = this.categoryElasticsearchGateway.findByIdNested(aSubSubCategory.getId().getValue()).get();
+
+        Assertions.assertEquals(aSubSubCategory.getId().getValue(), actualCategory.getId().getValue());
+        Assertions.assertEquals(aSubSubCategory.getName(), actualCategory.getName());
+        Assertions.assertEquals(aSubSubCategory.getDescription(), actualCategory.getDescription());
+        Assertions.assertEquals(aSubSubCategory.getSlug(), actualCategory.getSlug());
+        Assertions.assertEquals(aSubCategory.getId().getValue(), actualCategory.getParentId().get().getValue());
+        Assertions.assertEquals(aSubSubCategory.getLevel(), actualCategory.getLevel());
+        Assertions.assertEquals(0, actualCategory.getSubCategories().size());
+        Assertions.assertNotNull(actualCategory.getCreatedAt());
+        Assertions.assertNotNull(actualCategory.getUpdatedAt());
+    }
+
+    @Test
+    void givenAnInvalidSubCategoryId_whenCallFindByNestedInElasticsearch_shouldReturnEmpty() {
+        final var aId = "123";
+        final var actualCategory = this.categoryElasticsearchGateway.findByIdNested(aId);
         Assertions.assertTrue(actualCategory.isEmpty());
     }
 

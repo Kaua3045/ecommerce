@@ -11,4 +11,8 @@ public final class CommonErrorMessage {
     public static String lengthBetween(final String fieldName, final int min, final int max) {
         return "'" + fieldName + "' must be between " + min + " and " + max + " characters";
     }
+
+    public static String greaterThan(final String fieldName, final int value) {
+        return "'" + fieldName + "' must be greater than " + value;
+    }
 }

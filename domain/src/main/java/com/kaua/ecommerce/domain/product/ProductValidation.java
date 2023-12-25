@@ -23,6 +23,7 @@ public class ProductValidation extends Validator {
         checkDescriptionConstraints();
         checkPriceConstraints();
         checkQuantityConstraints();
+        checkProductAttributesConstraints();
     }
 
     private void checkNameConstraints() {
@@ -54,5 +55,13 @@ public class ProductValidation extends Validator {
         if (product.getQuantity() < 0) {
             validationHandler().append(new Error(CommonErrorMessage.greaterThan("quantity", -1)));
         }
+    }
+
+    private void checkProductAttributesConstraints() {
+        product.getAttributes().forEach(attributes -> {
+            if (attributes == null) {
+                validationHandler().append(new Error("'attributes' must not be null"));
+            }
+        });
     }
 }

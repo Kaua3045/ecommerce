@@ -6,7 +6,10 @@ import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public class Product extends AggregateRoot<ProductID> {
 
@@ -14,8 +17,9 @@ public class Product extends AggregateRoot<ProductID> {
     private String description;
     private double price;
     private int quantity;
-    private String coverImageUrl;
+    private ProductImage coverImageUrl;
     private CategoryID categoryId;
+    private Set<ProductAttributes> attributes;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -25,8 +29,9 @@ public class Product extends AggregateRoot<ProductID> {
             final String aDescription,
             final double aPrice,
             final int aQuantity,
-            final String aCoverImageUrl,
+            final ProductImage aCoverImageUrl,
             final CategoryID aCategoryId,
+            final Set<ProductAttributes> aAttributes,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
     ) {
@@ -37,6 +42,7 @@ public class Product extends AggregateRoot<ProductID> {
         this.quantity = aQuantity;
         this.coverImageUrl = aCoverImageUrl;
         this.categoryId = aCategoryId;
+        this.attributes = aAttributes;
         this.createdAt = aCreatedAt;
         this.updatedAt = aUpdatedAt;
     }
@@ -46,11 +52,12 @@ public class Product extends AggregateRoot<ProductID> {
             final String aDescription,
             final double aPrice,
             final int aQuantity,
-            final CategoryID aCategoryId
+            final CategoryID aCategoryId,
+            final ProductAttributes aAttributes
     ) {
         final var aId = ProductID.unique();
         final var aNow = InstantUtils.now();
-        return new Product(
+        final var aProduct = new Product(
                 aId,
                 aName,
                 aDescription,
@@ -58,8 +65,53 @@ public class Product extends AggregateRoot<ProductID> {
                 aQuantity,
                 null,
                 aCategoryId,
+                new HashSet<>(),
                 aNow,
                 aNow
+        );
+
+        aProduct.attributes.add(aAttributes);
+        return aProduct;
+    }
+
+    public static Product with(
+            final String aProductID,
+            final String aName,
+            final String aDescription,
+            final double aPrice,
+            final int aQuantity,
+            final ProductImage aCoverImageUrl,
+            final String aCategoryId,
+            final Set<ProductAttributes> aAttributes,
+            final Instant aCreatedAt,
+            final Instant aUpdatedAt
+    ) {
+        return new Product(
+                ProductID.from(aProductID),
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCoverImageUrl,
+                CategoryID.from(aCategoryId),
+                new HashSet<>(aAttributes == null ? Collections.emptySet() : aAttributes),
+                aCreatedAt,
+                aUpdatedAt
+        );
+    }
+
+    public static Product with(final Product aProduct) {
+        return new Product(
+                aProduct.getId(),
+                aProduct.getName(),
+                aProduct.getDescription(),
+                aProduct.getPrice(),
+                aProduct.getQuantity(),
+                aProduct.getCoverImageUrl().orElse(null),
+                aProduct.getCategoryId(),
+                aProduct.getAttributes(),
+                aProduct.getCreatedAt(),
+                aProduct.getUpdatedAt()
         );
     }
 
@@ -84,12 +136,16 @@ public class Product extends AggregateRoot<ProductID> {
         return quantity;
     }
 
-    public Optional<String> getCoverImageUrl() {
+    public Optional<ProductImage> getCoverImageUrl() {
         return Optional.ofNullable(coverImageUrl);
     }
 
     public CategoryID getCategoryId() {
         return categoryId;
+    }
+
+    public Set<ProductAttributes> getAttributes() {
+        return Collections.unmodifiableSet(attributes);
     }
 
     public Instant getCreatedAt() {

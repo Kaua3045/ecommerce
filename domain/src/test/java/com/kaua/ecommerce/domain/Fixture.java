@@ -1,12 +1,17 @@
 package com.kaua.ecommerce.domain;
 
 import com.kaua.ecommerce.domain.category.Category;
+import com.kaua.ecommerce.domain.category.CategoryID;
 import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.customer.CustomerID;
 import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.product.Product;
+import com.kaua.ecommerce.domain.product.ProductAttributes;
+import com.kaua.ecommerce.domain.product.ProductColor;
+import com.kaua.ecommerce.domain.product.ProductSize;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 
 import java.util.HashSet;
@@ -128,6 +133,25 @@ public final class Fixture {
                 ));
             }
             return subCategories;
+        }
+    }
+
+    public static final class Products {
+
+        private static final Product tshirt = Product.newProduct(
+                "Camiseta",
+                "Camiseta de algodão",
+                10.0,
+                50,
+                CategoryID.unique(),
+                ProductAttributes.create(
+                        ProductColor.with("1", "Red"),
+                        ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
+                        "Camiseta")
+        );
+
+        public static Product tshirt() {
+            return Product.with(tshirt);
         }
     }
 }

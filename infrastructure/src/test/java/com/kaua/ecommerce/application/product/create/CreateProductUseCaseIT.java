@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
+
 @IntegrationTest
 public class CreateProductUseCaseIT {
 
@@ -32,7 +34,7 @@ public class CreateProductUseCaseIT {
 
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = new BigDecimal("10.00");
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColor = "Red";
@@ -85,7 +87,7 @@ public class CreateProductUseCaseIT {
 
         final var aName = " ";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColor = "Red";
@@ -126,7 +128,7 @@ public class CreateProductUseCaseIT {
 
         final var aName = "Pr ";
         final String aDescription = null;
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColor = "Red";
@@ -167,7 +169,7 @@ public class CreateProductUseCaseIT {
 
         final var aName = RandomStringUtils.generateValue(256);
         final String aDescription = null;
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColor = "Red";
@@ -208,7 +210,7 @@ public class CreateProductUseCaseIT {
 
         final var aName = "Product Name";
         final var aDescription = RandomStringUtils.generateValue(256);
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColor = "Red";
@@ -249,7 +251,7 @@ public class CreateProductUseCaseIT {
 
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 0.0;
+        final var aPrice = BigDecimal.valueOf(0.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColor = "Red";
@@ -290,7 +292,7 @@ public class CreateProductUseCaseIT {
 
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = -1;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColor = "Red";

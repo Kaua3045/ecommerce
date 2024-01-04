@@ -7,13 +7,15 @@ import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 public class ProductValidationTest {
 
     @Test
     void givenInvalidBlankName_whenCallNewProduct_shouldReturnDomainException() {
         final var aName = " ";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.create(
@@ -38,7 +40,7 @@ public class ProductValidationTest {
     void givenInvalidNullName_whenCallNewProduct_shouldReturnDomainException() {
         final String aName = null;
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.create(
@@ -63,7 +65,7 @@ public class ProductValidationTest {
     void givenInvalidNameLengthLessThan3_whenCallNewProduct_shouldReturnDomainException() {
         final var aName = "Ab ";
         final String aDescription = null;
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.create(
@@ -88,7 +90,7 @@ public class ProductValidationTest {
     void givenInvalidNameLengthMoreThan255_whenCallNewProduct_shouldReturnDomainException() {
         final var aName = RandomStringUtils.generateValue(256);
         final String aDescription = null;
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.create(
@@ -113,7 +115,7 @@ public class ProductValidationTest {
     void givenInvalidDescriptionLengthMoreThan255_whenCallNewProduct_shouldReturnDomainException() {
         final var aName = "Product Name";
         final var aDescription = RandomStringUtils.generateValue(256);
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.create(
@@ -135,10 +137,35 @@ public class ProductValidationTest {
     }
 
     @Test
+    void givenInvalidNullPrice_whenCallNewProduct_shouldReturnDomainException() {
+        final var aName = "Product Name";
+        final var aDescription = "Product Description";
+        final BigDecimal aPrice = null;
+        final var aQuantity = 10;
+        final var aCategoryId = CategoryID.from("1");
+        final var aAttributes = ProductAttributes.create(
+                ProductColor.with("1", "Red"),
+                ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
+                aName
+        );
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("price");
+        final var expectedErrorCount = 1;
+
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aProduct.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
     void givenInvalidPriceSmallerOrEqualZero_whenCallNewProduct_shouldReturnDomainException() {
         final var aName = "Product Name";
         final String aDescription = null;
-        final var aPrice = 0.0;
+        final var aPrice = BigDecimal.valueOf(0.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.create(
@@ -163,7 +190,7 @@ public class ProductValidationTest {
     void givenInvalidQuantityLessThanZero_whenCallNewProduct_shouldReturnDomainException() {
         final var aName = "Product Name";
         final String aDescription = null;
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = -1;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.create(
@@ -188,7 +215,7 @@ public class ProductValidationTest {
     void givenInvalidProductAttributesNull_whenCallNewProduct_shouldThrowNullPointerException() {
         final var aName = "Product Name";
         final String aDescription = null;
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final ProductAttributes aAttributes = null;

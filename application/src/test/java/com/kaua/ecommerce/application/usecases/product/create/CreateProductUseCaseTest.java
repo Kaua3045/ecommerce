@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColorName = "Red";
@@ -75,7 +76,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                         && Objects.equals(aCmd.getDescription(), aDescription)
                         && Objects.equals(aCmd.getPrice(), aPrice)
                         && Objects.equals(aCmd.getQuantity(), aQuantity)
-                        && aCmd.getCoverImageUrl().isEmpty()
+                        && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(aColorName, aCmd.getAttributes().stream().findFirst().get().color().color())
                         && Objects.equals(aSizeName, aCmd.getAttributes().stream().findFirst().get().size().size())
@@ -87,7 +88,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
     void givenAnInvalidCategoryId_whenCallExecute_shouldThrowNotFoundException() {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = "1";
         final var aColorName = "Red";
@@ -132,7 +133,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         final var aName = " ";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColorName = "Red";
@@ -176,7 +177,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         final String aName = null;
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColorName = "Red";
@@ -220,7 +221,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         final var aName = "Pr ";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColorName = "Red";
@@ -264,7 +265,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         final var aName = RandomStringUtils.generateValue(256);
         final String aDescription = null;
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColorName = "Red";
@@ -308,7 +309,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         final var aName = "Product Name";
         final var aDescription = RandomStringUtils.generateValue(256);
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColorName = "Red";
@@ -347,12 +348,56 @@ public class CreateProductUseCaseTest extends UseCaseTest {
     }
 
     @Test
+    void givenAnInvalidNullPrice_whenCallExecute_shouldReturnDomainException() {
+        final var aCategory = Fixture.Categories.tech();
+
+        final var aName = "Product Name";
+        final var aDescription = "Product Description";
+        final BigDecimal aPrice = null;
+        final var aQuantity = 10;
+        final var aCategoryId = aCategory.getId().getValue();
+        final var aColorName = "Red";
+        final var aSizeName = "M";
+        final var aWeight = 0.5;
+        final var aHeight = 0.5;
+        final var aWidth = 0.5;
+        final var aDepth = 0.5;
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("price");
+        final var expectedErrorCount = 1;
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                aColorName,
+                aSizeName,
+                aWeight,
+                aHeight,
+                aWidth,
+                aDepth
+        );
+
+        Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
+
+        final var aOutput = this.createProductUseCase.execute(aCommand).getLeft();
+
+        Assertions.assertEquals(expectedErrorCount, aOutput.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aOutput.getErrors().get(0).message());
+
+        Mockito.verify(categoryGateway, Mockito.times(1)).findById(aCategoryId);
+        Mockito.verify(productGateway, Mockito.times(0)).create(Mockito.any());
+    }
+
+    @Test
     void givenAnInvalidPriceSmallerOrEqualZero_whenCallExecute_shouldReturnDomainException() {
         final var aCategory = Fixture.Categories.tech();
 
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 00.0;
+        final var aPrice = BigDecimal.valueOf(00.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColorName = "Red";
@@ -396,7 +441,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 5.0;
+        final var aPrice = BigDecimal.valueOf(5.0);
         final var aQuantity = -1;
         final var aCategoryId = aCategory.getId().getValue();
         final var aColorName = "Red";

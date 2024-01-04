@@ -8,45 +8,41 @@ import java.util.Objects;
 public class ProductImage extends ValueObject {
 
     private final String id;
-    private final String checksum;
     private final String name;
     private final String location;
+    private final String url;
 
     private ProductImage(
             final String id,
-            final String checksum,
             final String name,
-            final String location
+            final String location,
+            final String url
     ) {
         this.id = Objects.requireNonNull(id);
-        this.checksum = Objects.requireNonNull(checksum);
         this.name = Objects.requireNonNull(name);
         this.location = Objects.requireNonNull(location);
+        this.url = Objects.requireNonNull(url);
     }
 
     public static ProductImage with(
-            final String checksum,
             final String name,
-            final String location
+            final String location,
+            final String url
     ) {
-        return new ProductImage(IdUtils.generate(), checksum, name, location);
+        return new ProductImage(IdUtils.generate(), name, location, url);
     }
 
     public static ProductImage with(
             final String id,
-            final String checksum,
             final String name,
-            final String location
+            final String location,
+            final String url
     ) {
-        return new ProductImage(id, checksum, name, location);
+        return new ProductImage(id, name, location, url);
     }
 
     public String id() {
         return id;
-    }
-
-    public String checksum() {
-        return checksum;
     }
 
     public String name() {
@@ -57,16 +53,20 @@ public class ProductImage extends ValueObject {
         return location;
     }
 
+    public String url() {
+        return url;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final ProductImage that = (ProductImage) o;
-        return Objects.equals(checksum, that.checksum) && Objects.equals(location, that.location);
+        return Objects.equals(id, that.id) && Objects.equals(location, that.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(checksum, name, location);
+        return Objects.hash(id, name, location, url);
     }
 }

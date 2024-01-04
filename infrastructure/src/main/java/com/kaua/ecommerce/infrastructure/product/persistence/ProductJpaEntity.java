@@ -1,12 +1,9 @@
 package com.kaua.ecommerce.infrastructure.product.persistence;
 
-import com.kaua.ecommerce.domain.product.Product;
-import com.kaua.ecommerce.domain.product.ProductAttributes;
-import com.kaua.ecommerce.domain.product.ProductColor;
-import com.kaua.ecommerce.domain.product.ProductSize;
-import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
+import com.kaua.ecommerce.domain.product.*;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,8 +22,8 @@ public class ProductJpaEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "price", nullable = false)
-    private double price;
+    @Column(name = "price", nullable = false, precision = 19, scale = 2)
+    private BigDecimal price;
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
@@ -36,6 +33,9 @@ public class ProductJpaEntity {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<ProductAttributesJpaEntity> attributes;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<ProductImageRelationJpaEntity> images;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant createdAt;
@@ -49,7 +49,7 @@ public class ProductJpaEntity {
             final String id,
             final String name,
             final String description,
-            final double price,
+            final BigDecimal price,
             final int quantity,
             final String categoryId,
             final Instant createdAt,
@@ -62,6 +62,7 @@ public class ProductJpaEntity {
         this.quantity = quantity;
         this.categoryId = categoryId;
         this.attributes = new HashSet<>();
+        this.images = new HashSet<>();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -79,6 +80,7 @@ public class ProductJpaEntity {
         );
 
         aProduct.getAttributes().forEach(aEntity::addAttributes);
+        aProduct.getImages().forEach(aEntity::addImages);
 
         return aEntity;
     }
@@ -90,7 +92,7 @@ public class ProductJpaEntity {
                 getDescription(),
                 getPrice(),
                 getQuantity(),
-                null,
+                getImagesToDomain(),
                 getCategoryId(),
                 getAttributesToDomain(),
                 getCreatedAt(),
@@ -101,6 +103,11 @@ public class ProductJpaEntity {
     public void addAttributes(final ProductAttributes attributes) {
         final var attributesJpaEntity = ProductAttributesJpaEntity.toEntity(attributes, this);
         this.attributes.add(attributesJpaEntity);
+    }
+
+    public void addImages(final ProductImage image) {
+        final var aImageEntity = ProductImageRelationJpaEntity.toEntity(image, this);
+        this.images.add(aImageEntity);
     }
 
     public Set<ProductAttributes> getAttributesToDomain() {
@@ -115,6 +122,16 @@ public class ProductJpaEntity {
                                 it.getSize().getWidth(),
                                 it.getSize().getDepth()
                         ), it.getSku())).collect(Collectors.toSet());
+    }
+
+    public Set<ProductImage> getImagesToDomain() {
+        return getImages().stream()
+                .map(it -> ProductImage.with(
+                        it.getImage().getId(),
+                        it.getImage().getName(),
+                        it.getImage().getLocation(),
+                        it.getImage().getUrl()
+                )).collect(Collectors.toSet());
     }
 
     public String getId() {
@@ -141,11 +158,11 @@ public class ProductJpaEntity {
         this.description = description;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -171,6 +188,14 @@ public class ProductJpaEntity {
 
     public void setAttributes(Set<ProductAttributesJpaEntity> attributes) {
         this.attributes = attributes;
+    }
+
+    public Set<ProductImageRelationJpaEntity> getImages() {
+        return images;
+    }
+
+    public void setImages(Set<ProductImageRelationJpaEntity> images) {
+        this.images = images;
     }
 
     public Instant getCreatedAt() {

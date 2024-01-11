@@ -8,6 +8,7 @@ import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaRepo
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -33,8 +34,21 @@ public class ProductMySQLGateway implements ProductGateway {
     }
 
     @Override
+    public Optional<Product> findById(String aProductID) {
+        return this.productRepository.findById(aProductID)
+                .map(ProductJpaEntity::toDomain);
+    }
+
+    @Override
     public Optional<ProductColor> findColorByName(String aColorName) {
         return this.productColorRepository.findByColorIgnoreCase(aColorName)
                 .map(ProductColorJpaEntity::toDomain);
+    }
+
+    @Transactional
+    @Override
+    public Product update(Product aProduct) {
+        this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
+        return aProduct;
     }
 }

@@ -43,6 +43,9 @@ dependencies {
 
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.12'
 
+    implementation platform('software.amazon.awssdk:bom:2.21.1')
+    implementation 'software.amazon.awssdk:s3-transfer-manager:2.21.1'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.1.4'
     testImplementation 'org.springframework.amqp:spring-rabbit-test:3.0.10'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers:3.1.5'

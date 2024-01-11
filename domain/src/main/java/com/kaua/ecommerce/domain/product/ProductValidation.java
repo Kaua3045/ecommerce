@@ -46,7 +46,12 @@ public class ProductValidation extends Validator {
     }
 
     private void checkPriceConstraints() {
-        if (product.getPrice() <= 0) {
+        if (product.getPrice() == null) {
+            validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("price")));
+            return;
+        }
+
+        if (product.getPrice().doubleValue() <= 0) {
             validationHandler().append(new Error(CommonErrorMessage.greaterThan("price", 0)));
         }
     }

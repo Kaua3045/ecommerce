@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -20,6 +21,7 @@ import java.lang.annotation.*;
 @SpringBootTest(classes = {Main.class, IntegrationTestConfiguration.class})
 @ExtendWith(JpaCleanUpExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@EnableJpaRepositories(basePackages = "com.kaua.ecommerce.infrastructure")
 @Tag("integrationTest")
 public @interface IntegrationTest {
 }

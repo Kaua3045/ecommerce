@@ -1,9 +1,11 @@
 package com.kaua.ecommerce.application.usecases.product.create;
 
+import java.math.BigDecimal;
+
 public record CreateProductCommand(
         String name,
         String description,
-        double price,
+        BigDecimal price,
         int quantity,
         String categoryId,
         String colorName,
@@ -17,7 +19,7 @@ public record CreateProductCommand(
     public static CreateProductCommand with(
             final String aName,
             final String aDescription,
-            final double aPrice,
+            final BigDecimal aPrice,
             final int aQuantity,
             final String aCategoryId,
             final String aColorName,

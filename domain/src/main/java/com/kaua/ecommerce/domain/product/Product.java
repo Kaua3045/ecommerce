@@ -5,19 +5,19 @@ import com.kaua.ecommerce.domain.category.CategoryID;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 public class Product extends AggregateRoot<ProductID> {
 
     private String name;
     private String description;
-    private double price;
+    private BigDecimal price;
     private int quantity;
-    private ProductImage coverImageUrl;
+    private Set<ProductImage> images;
     private CategoryID categoryId;
     private Set<ProductAttributes> attributes;
     private Instant createdAt;
@@ -27,9 +27,9 @@ public class Product extends AggregateRoot<ProductID> {
             final ProductID aProductID,
             final String aName,
             final String aDescription,
-            final double aPrice,
+            final BigDecimal aPrice,
             final int aQuantity,
-            final ProductImage aCoverImageUrl,
+            final Set<ProductImage> aImages,
             final CategoryID aCategoryId,
             final Set<ProductAttributes> aAttributes,
             final Instant aCreatedAt,
@@ -40,7 +40,7 @@ public class Product extends AggregateRoot<ProductID> {
         this.description = aDescription;
         this.price = aPrice;
         this.quantity = aQuantity;
-        this.coverImageUrl = aCoverImageUrl;
+        this.images = aImages;
         this.categoryId = aCategoryId;
         this.attributes = aAttributes;
         this.createdAt = aCreatedAt;
@@ -50,7 +50,7 @@ public class Product extends AggregateRoot<ProductID> {
     public static Product newProduct(
             final String aName,
             final String aDescription,
-            final double aPrice,
+            final BigDecimal aPrice,
             final int aQuantity,
             final CategoryID aCategoryId,
             final ProductAttributes aAttributes
@@ -63,7 +63,7 @@ public class Product extends AggregateRoot<ProductID> {
                 aDescription,
                 aPrice,
                 aQuantity,
-                null,
+                new HashSet<>(),
                 aCategoryId,
                 new HashSet<>(),
                 aNow,
@@ -78,9 +78,9 @@ public class Product extends AggregateRoot<ProductID> {
             final String aProductID,
             final String aName,
             final String aDescription,
-            final double aPrice,
+            final BigDecimal aPrice,
             final int aQuantity,
-            final ProductImage aCoverImageUrl,
+            final Set<ProductImage> aImages,
             final String aCategoryId,
             final Set<ProductAttributes> aAttributes,
             final Instant aCreatedAt,
@@ -92,7 +92,7 @@ public class Product extends AggregateRoot<ProductID> {
                 aDescription,
                 aPrice,
                 aQuantity,
-                aCoverImageUrl,
+                new HashSet<>(aImages == null ? Collections.emptySet() : aImages),
                 CategoryID.from(aCategoryId),
                 new HashSet<>(aAttributes == null ? Collections.emptySet() : aAttributes),
                 aCreatedAt,
@@ -107,12 +107,22 @@ public class Product extends AggregateRoot<ProductID> {
                 aProduct.getDescription(),
                 aProduct.getPrice(),
                 aProduct.getQuantity(),
-                aProduct.getCoverImageUrl().orElse(null),
+                new HashSet<>(aProduct.getImages()),
                 aProduct.getCategoryId(),
-                aProduct.getAttributes(),
+                new HashSet<>(aProduct.getAttributes()),
                 aProduct.getCreatedAt(),
                 aProduct.getUpdatedAt()
         );
+    }
+
+    public void addImage(final ProductImage aImage) {
+        if (aImage != null) {
+            this.images.add(aImage);
+        }
+    }
+
+    public void removeCoverImage() {
+        this.images.removeIf(aImage -> aImage.location().contains(ProductImageType.COVER.name()));
     }
 
     @Override
@@ -128,7 +138,7 @@ public class Product extends AggregateRoot<ProductID> {
         return description;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -136,8 +146,8 @@ public class Product extends AggregateRoot<ProductID> {
         return quantity;
     }
 
-    public Optional<ProductImage> getCoverImageUrl() {
-        return Optional.ofNullable(coverImageUrl);
+    public Set<ProductImage> getImages() {
+        return Collections.unmodifiableSet(images);
     }
 
     public CategoryID getCategoryId() {

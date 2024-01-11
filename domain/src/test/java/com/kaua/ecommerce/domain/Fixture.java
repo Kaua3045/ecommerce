@@ -8,12 +8,12 @@ import com.kaua.ecommerce.domain.customer.CustomerID;
 import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
-import com.kaua.ecommerce.domain.product.Product;
-import com.kaua.ecommerce.domain.product.ProductAttributes;
-import com.kaua.ecommerce.domain.product.ProductColor;
-import com.kaua.ecommerce.domain.product.ProductSize;
+import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.utils.IdUtils;
+import com.kaua.ecommerce.domain.utils.Resource;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -141,7 +141,7 @@ public final class Fixture {
         private static final Product tshirt = Product.newProduct(
                 "Camiseta",
                 "Camiseta de algodão",
-                10.0,
+                BigDecimal.valueOf(10.0),
                 50,
                 CategoryID.unique(),
                 ProductAttributes.create(
@@ -150,8 +150,72 @@ public final class Fixture {
                         "Camiseta")
         );
 
+        private static final ProductImage imageCoverType = ProductImage.with(
+                IdUtils.generate(),
+                "image-one.jpg",
+                "COVER-image-one.jpg",
+                "https://localhost.com/COVER-image-one.jpg"
+        );
+
+        private static final ProductImageResource imageCoverTypeResource = ProductImageResource.with(
+                Resource.with(
+                        "image-one".getBytes(),
+                        "image/png",
+                        "image-one.jpg"
+                ),
+                ProductImageType.COVER
+        );
+
+        private static final ProductImage imageGalleryType = ProductImage.with(
+                IdUtils.generate(),
+                "image-two.jpg",
+                "GALLERY-image-one.jpg",
+                "https://localhost.com/GALLERY-image-one.jpg"
+        );
+
+        private static final ProductImageResource imageGalleryTypeResource = ProductImageResource.with(
+                Resource.with(
+                        "image-two".getBytes(),
+                        "image/png",
+                        "image-two.jpg"
+                ),
+                ProductImageType.GALLERY
+        );
+
         public static Product tshirt() {
             return Product.with(tshirt);
+        }
+
+        public static ProductImage imageCoverType() {
+            return ProductImage.with(
+                    imageCoverType.id(),
+                    imageCoverType.name(),
+                    imageCoverType.location(),
+                    imageCoverType.url()
+            );
+        }
+
+        public static ProductImageResource imageCoverTypeResource() {
+            return ProductImageResource.with(
+                    imageCoverTypeResource.resource(),
+                    imageCoverTypeResource.type()
+            );
+        }
+
+        public static ProductImage imageGalleryType() {
+            return ProductImage.with(
+                    imageGalleryType.id(),
+                    imageGalleryType.name(),
+                    imageGalleryType.location(),
+                    imageGalleryType.url()
+            );
+        }
+
+        public static ProductImageResource imageGalleryTypeResource() {
+            return ProductImageResource.with(
+                    imageGalleryTypeResource.resource(),
+                    imageGalleryTypeResource.type()
+            );
         }
     }
 }

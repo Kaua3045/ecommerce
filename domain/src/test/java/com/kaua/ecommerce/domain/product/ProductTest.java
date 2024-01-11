@@ -3,11 +3,13 @@ package com.kaua.ecommerce.domain.product;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.category.CategoryID;
+import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 public class ProductTest extends UnitTest {
@@ -16,7 +18,7 @@ public class ProductTest extends UnitTest {
     void givenAValidValues_whenCallNewProduct_shouldBeInstantiateProduct() {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.create(
@@ -32,7 +34,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aDescription, aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
         Assertions.assertEquals(aQuantity, aProduct.getQuantity());
-        Assertions.assertTrue(aProduct.getCoverImageUrl().isEmpty());
+        Assertions.assertTrue(aProduct.getImages().isEmpty());
         Assertions.assertEquals(aCategoryId, aProduct.getCategoryId());
         Assertions.assertEquals(aAttributes, aProduct.getAttributes().stream().findFirst().get());
         Assertions.assertNotNull(aProduct.getCreatedAt());
@@ -44,7 +46,7 @@ public class ProductTest extends UnitTest {
     void givenAValidValuesWithoutDescription_whenCallNewProduct_shouldBeInstantiateProduct() {
         final var aName = "Product Name";
         final String aDescription = null;
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.create(
@@ -60,7 +62,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertNull(aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
         Assertions.assertEquals(aQuantity, aProduct.getQuantity());
-        Assertions.assertTrue(aProduct.getCoverImageUrl().isEmpty());
+        Assertions.assertTrue(aProduct.getImages().isEmpty());
         Assertions.assertEquals(aCategoryId, aProduct.getCategoryId());
         Assertions.assertEquals(aAttributes, aProduct.getAttributes().stream().findFirst().get());
         Assertions.assertNotNull(aProduct.getCreatedAt());
@@ -85,9 +87,9 @@ public class ProductTest extends UnitTest {
         final var aProductID = "123456789";
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
-        final var aCoverImageUrl = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
+        final var aImage = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.with(
                 ProductColor.with("1", "RED"),
@@ -103,7 +105,7 @@ public class ProductTest extends UnitTest {
                 aDescription,
                 aPrice,
                 aQuantity,
-                aCoverImageUrl,
+                Set.of(aImage),
                 aCategoryId.getValue(),
                 Set.of(aAttributes),
                 aCreatedAt,
@@ -115,7 +117,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aDescription, aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
         Assertions.assertEquals(aQuantity, aProduct.getQuantity());
-        Assertions.assertEquals(aCoverImageUrl, aProduct.getCoverImageUrl().get());
+        Assertions.assertEquals(aImage.location(), aProduct.getImages().stream().findFirst().get().location());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
         Assertions.assertEquals(aAttributes, aProduct.getAttributes().stream().findFirst().get());
         Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
@@ -133,7 +135,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aProductWith.getDescription(), aProduct.getDescription());
         Assertions.assertEquals(aProductWith.getPrice(), aProduct.getPrice());
         Assertions.assertEquals(aProductWith.getQuantity(), aProduct.getQuantity());
-        Assertions.assertTrue(aProductWith.getCoverImageUrl().isEmpty());
+        Assertions.assertTrue(aProductWith.getImages().isEmpty());
         Assertions.assertEquals(aProductWith.getCategoryId().getValue(), aProduct.getCategoryId().getValue());
         Assertions.assertEquals(aProductWith.getAttributes(), aProduct.getAttributes());
         Assertions.assertEquals(aProductWith.getCreatedAt(), aProduct.getCreatedAt());
@@ -145,9 +147,9 @@ public class ProductTest extends UnitTest {
         final var aProductID = "123456789";
         final var aName = "Product Name";
         final var aDescription = "Product Description";
-        final var aPrice = 10.0;
+        final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
-        final var aCoverImageUrl = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
+        final var aImage = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
         final var aCategoryId = CategoryID.from("1");
         final Set<ProductAttributes> aAttributes = null;
         final var aCreatedAt = InstantUtils.now();
@@ -159,7 +161,7 @@ public class ProductTest extends UnitTest {
                 aDescription,
                 aPrice,
                 aQuantity,
-                aCoverImageUrl,
+                Set.of(aImage),
                 aCategoryId.getValue(),
                 aAttributes,
                 aCreatedAt,
@@ -171,10 +173,109 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aDescription, aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
         Assertions.assertEquals(aQuantity, aProduct.getQuantity());
-        Assertions.assertEquals(aCoverImageUrl, aProduct.getCoverImageUrl().get());
+        Assertions.assertEquals(aImage.id(), aProduct.getImages().stream().findFirst().get().id());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
         Assertions.assertTrue(aProduct.getAttributes().isEmpty());
         Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aProduct.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidValuesWithNullImages_whenCallWith_shouldBeInstantiateProduct() {
+        final var aProductID = "123456789";
+        final var aName = "Product Name";
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = 10;
+        final var aCategoryId = CategoryID.from("1");
+        final Set<ProductImage> aImages = null;
+        final var aAttributes = ProductAttributes.with(
+                ProductColor.with("1", "RED"),
+                ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
+                aName
+        );
+        final var aCreatedAt = InstantUtils.now();
+        final var aUpdatedAt = InstantUtils.now();
+
+        final var aProduct = Product.with(
+                aProductID,
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aImages,
+                aCategoryId.getValue(),
+                Set.of(aAttributes),
+                aCreatedAt,
+                aUpdatedAt
+        );
+
+        Assertions.assertEquals(aProductID, aProduct.getId().getValue());
+        Assertions.assertEquals(aName, aProduct.getName());
+        Assertions.assertEquals(aDescription, aProduct.getDescription());
+        Assertions.assertEquals(aPrice, aProduct.getPrice());
+        Assertions.assertEquals(aQuantity, aProduct.getQuantity());
+        Assertions.assertTrue(aProduct.getImages().isEmpty());
+        Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
+        Assertions.assertEquals(aAttributes.sku(), aProduct.getAttributes().stream().findFirst().get().sku());
+        Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
+        Assertions.assertEquals(aUpdatedAt, aProduct.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidImage_whenCallAddImage_shouldAddImage() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aImage = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
+
+        aProduct.addImage(aImage);
+
+        Assertions.assertEquals(aImage, aProduct.getImages().stream().findFirst().get());
+    }
+
+    @Test
+    void givenAnInvalidNullImage_whenCallAddImage_shouldNotAddImage() {
+        final var aProduct = Fixture.Products.tshirt();
+        final ProductImage aImage = null;
+
+        Assertions.assertDoesNotThrow(() -> aProduct.addImage(aImage));
+        Assertions.assertTrue(aProduct.getImages().isEmpty());
+    }
+
+    @Test
+    void givenAValidImage_whenCallRemoveCoverImage_shouldRemoveImage() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aProductImageId = IdUtils.generate().replace("-", "");
+        final var aLocation = aProduct.getId().getValue() +
+                "-" +
+                aProductImageId +
+                "-" +
+                ProductImageType.COVER.name() +
+                "-" +
+                "product.jpg";
+        final var aUrl = "http://localhost:8080/images/product.jpg";
+        final var aImage = ProductImage.with("abc", "product.jpg", aLocation, aUrl);
+        aProduct.addImage(aImage);
+
+        aProduct.removeCoverImage();
+
+        Assertions.assertTrue(aProduct.getImages().isEmpty());
+    }
+
+    @Test
+    void givenAValidType_whenCallProductImageTypeOf_shouldReturnProductImageType() {
+        final var aProductImageType = ProductImageType.COVER;
+
+        final var aProductImageTypeOf = ProductImageType.of(aProductImageType.name());
+
+        Assertions.assertEquals(aProductImageType, aProductImageTypeOf.get());
+    }
+
+    @Test
+    void givenAnInvalidNullType_whenCallProductImageTypeOf_shouldReturnEmpty() {
+        final String aProductImageType = null;
+
+        final var aProductImageTypeOf = ProductImageType.of(aProductImageType);
+
+        Assertions.assertTrue(aProductImageTypeOf.isEmpty());
     }
 }

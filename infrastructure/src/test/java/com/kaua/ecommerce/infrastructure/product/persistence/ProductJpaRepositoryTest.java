@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @DatabaseGatewayTest
@@ -44,22 +45,23 @@ public class ProductJpaRepositoryTest {
     }
 
     @Test
-    void givenAValidPrice_whenCallSave_shouldReturnProduct() {
+    void givenAnInvalidPrice_whenCallSave_shouldReturnAnException() {
+        final var expectedPropertyName = "price";
+        final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity.price";
+
         final var aProduct = Fixture.Products.tshirt();
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
-        aEntity.setPrice(1);
+        aEntity.setPrice(null);
 
-        final var actualOutput = Assertions.assertDoesNotThrow(() -> productRepository.save(aEntity));
+        final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> productRepository.save(aEntity));
 
-        Assertions.assertEquals(aEntity.getId(), actualOutput.getId());
-        Assertions.assertEquals(aEntity.getName(), actualOutput.getName());
-        Assertions.assertEquals(aEntity.getDescription(), actualOutput.getDescription());
-        Assertions.assertEquals(aEntity.getPrice(), actualOutput.getPrice());
-        Assertions.assertEquals(aEntity.getQuantity(), actualOutput.getQuantity());
-        Assertions.assertEquals(aEntity.getCategoryId(), actualOutput.getCategoryId());
-        Assertions.assertEquals(aEntity.getCreatedAt(), actualOutput.getCreatedAt());
-        Assertions.assertEquals(aEntity.getUpdatedAt(), actualOutput.getUpdatedAt());
+        final var actualCause = Assertions.assertInstanceOf(PropertyValueException.class,
+                actualException.getCause());
+
+        Assertions.assertEquals(expectedPropertyName, actualCause.getPropertyName());
+        Assertions.assertEquals(expectedErrorMessage, actualCause.getMessage());
     }
 
     @Test
@@ -164,7 +166,7 @@ public class ProductJpaRepositoryTest {
         final var aProduct = Product.newProduct(
                 "Product Name",
                 "Product Description",
-                10.0,
+                BigDecimal.valueOf(10.0),
                 10,
                 CategoryID.unique(),
                 ProductAttributes.create(
@@ -193,7 +195,7 @@ public class ProductJpaRepositoryTest {
         final var aProduct = Product.newProduct(
                 "Product Name",
                 "Product Description",
-                10.0,
+                BigDecimal.valueOf(10.0),
                 10,
                 CategoryID.unique(),
                 ProductAttributes.create(
@@ -288,7 +290,96 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
         Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
         Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId().getValue());
-        Assertions.assertFalse(actualResult.getAttributes().isEmpty());
+        Assertions.assertEquals(1, actualResult.getAttributes().size());
+        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
+        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidEmptyImages_whenCallSave_shouldReturnProduct() {
+        final var aProduct = Product.newProduct(
+                "Product Name",
+                "Product Description",
+                BigDecimal.valueOf(10.0),
+                10,
+                CategoryID.unique(),
+                ProductAttributes.create(
+                        ProductColor.with("1", "Red"),
+                        ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
+                        "Product Name")
+        );
+        aProduct.addImage(Fixture.Products.imageCoverType());
+
+        final var aEntity = ProductJpaEntity.toEntity(aProduct);
+        aEntity.setImages(Set.of());
+
+        final var actualResult = Assertions.assertDoesNotThrow(() -> productRepository.save(aEntity).toDomain());
+
+        Assertions.assertEquals(aEntity.getId(), actualResult.getId().getValue());
+        Assertions.assertEquals(aEntity.getName(), actualResult.getName());
+        Assertions.assertEquals(aEntity.getDescription(), actualResult.getDescription());
+        Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
+        Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
+        Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId().getValue());
+        Assertions.assertTrue(actualResult.getImages().isEmpty());
+        Assertions.assertEquals(1, actualResult.getAttributes().size());
+        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
+        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+    }
+
+    @Test
+    void givenAnInvalidNullProductImageId_whenCallSave_shouldReturnAnException() {
+        final var expectedErrorMessage = "ids for this class must be manually assigned before calling save(): com.kaua.ecommerce.infrastructure.product.persistence.ProductImageJpaEntity";
+
+        final var aProduct = Fixture.Products.tshirt();
+        aProduct.addImage(Fixture.Products.imageCoverType());
+
+        final var aEntity = ProductJpaEntity.toEntity(aProduct);
+        final var aProductImage = aEntity.getImages().stream().findFirst().get().getImage();
+        aProductImage.setId(null);
+
+        final var actualException = Assertions.assertThrows(JpaSystemException.class,
+                () -> productRepository.save(aEntity));
+
+        final var actualCause = Assertions.assertInstanceOf(IdentifierGenerationException.class,
+                actualException.getCause());
+
+        Assertions.assertEquals(expectedErrorMessage, actualCause.getMessage());
+    }
+
+    @Test
+    void givenAValidProductImageValues_whenCallSave_shouldReturnProductWithProductImages() {
+        final var aProduct = Fixture.Products.tshirt();
+        aProduct.addImage(Fixture.Products.imageCoverType());
+
+        final var aEntity = ProductJpaEntity.toEntity(aProduct);
+        final var aProductImage = aEntity.getImages().stream().findFirst().get().getImage();
+        aProductImage.setName("image.jpg");
+        aProductImage.setLocation("1234-COVER-567890-image.jpg");
+        aProductImage.setUrl("http://localhost:8080/1234-COVER-567890-image.jpg");
+
+        final var aProductImageDomain = aProductImage.toDomain();
+
+        Assertions.assertEquals(aProductImage.getId(), aProductImageDomain.id());
+        Assertions.assertEquals(aProductImage.getName(), aProductImageDomain.name());
+        Assertions.assertEquals(aProductImage.getLocation(), aProductImageDomain.location());
+
+        Assertions.assertEquals(0, productRepository.count());
+
+        final var actualResult = Assertions.assertDoesNotThrow(() -> productRepository.save(aEntity));
+
+        Assertions.assertEquals(1, productRepository.count());
+        Assertions.assertEquals(aEntity.getId(), actualResult.getId());
+        Assertions.assertEquals(aEntity.getName(), actualResult.getName());
+        Assertions.assertEquals(aEntity.getDescription(), actualResult.getDescription());
+        Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
+        Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
+        Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId());
+        Assertions.assertEquals(1, actualResult.getImages().size());
+        Assertions.assertNotNull(actualResult.getImages().stream().findFirst().get().getImage());
+        Assertions.assertNotNull(actualResult.getImages().stream().findFirst().get().getProduct());
+        Assertions.assertNotNull(actualResult.getImages().stream().findFirst().get().getId());
+        Assertions.assertEquals(1, actualResult.getAttributes().size());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
         Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
     }

@@ -2,12 +2,12 @@ package com.kaua.ecommerce.infrastructure.service.local;
 
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.infrastructure.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Tag("unitTest")
+@UnitTest
 public class InMemoryStorageServiceImplTest {
 
     private InMemoryStorageServiceImpl target = new InMemoryStorageServiceImpl();

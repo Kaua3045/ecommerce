@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.service.impl;
 
-import org.junit.jupiter.api.Tag;
+import com.kaua.ecommerce.infrastructure.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -8,7 +8,7 @@ import org.springframework.kafka.support.SendResult;
 
 import java.util.concurrent.CompletableFuture;
 
-@Tag("unitTest")
+@UnitTest
 public class KafkaEventServiceImplTest {
 
     @Test

@@ -1,10 +1,10 @@
 package com.kaua.ecommerce.infrastructure.utils;
 
 import com.kaua.ecommerce.domain.exceptions.DomainException;
+import com.kaua.ecommerce.infrastructure.UnitTest;
 import com.kaua.ecommerce.infrastructure.exceptions.ImageSizeNotValidException;
 import com.kaua.ecommerce.infrastructure.exceptions.ImageTypeNotValidException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Tag("unitTest")
+@UnitTest
 public class ResourceOfTest {
 
     @Test

@@ -1,14 +1,12 @@
 package com.kaua.ecommerce.infrastructure.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kaua.ecommerce.infrastructure.UnitTest;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test-integration")
-@Tag("unitTest")
+@UnitTest
 public class JacksonTest {
 
     @Test

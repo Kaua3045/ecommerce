@@ -2,11 +2,11 @@ package com.kaua.ecommerce.infrastructure.service.local;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.events.CategoryCreatedEvent;
+import com.kaua.ecommerce.infrastructure.UnitTest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Tag("unitTest")
+@UnitTest
 public class InMemoryEventServiceImplTest {
 
     private final InMemoryEventServiceImpl target = new InMemoryEventServiceImpl();

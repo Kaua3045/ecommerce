@@ -2,11 +2,13 @@ package com.kaua.ecommerce.infrastructure.utils;
 
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.validation.Error;
+import com.kaua.ecommerce.infrastructure.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+@UnitTest
 public class ApiErrorTest {
 
     @Test

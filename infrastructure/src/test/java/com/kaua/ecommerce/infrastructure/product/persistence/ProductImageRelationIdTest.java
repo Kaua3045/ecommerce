@@ -1,10 +1,10 @@
 package com.kaua.ecommerce.infrastructure.product.persistence;
 
+import com.kaua.ecommerce.infrastructure.UnitTest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Tag("unitTest")
+@UnitTest
 public class ProductImageRelationIdTest {
 
     @Test

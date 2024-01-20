@@ -5,7 +5,6 @@ import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
-import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.domain.validation.Error;
 
 import java.util.Objects;
@@ -32,14 +31,8 @@ public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase 
 
         switch (aResource.type()) {
             case COVER -> {
-                aProduct.getImages()
-                        .forEach(image -> {
-                            if (image.location().contains(ProductImageType.COVER.name())) {
-                                this.mediaResourceGateway.clearImage(image);
-                            }
-                        });
-                aProduct.removeCoverImage();
-                aProduct.addImage(this.mediaResourceGateway.storeImage(aProductId, aResource));
+                aProduct.getCoverImage().ifPresent(this.mediaResourceGateway::clearImage);
+                aProduct.changeCoverImage(this.mediaResourceGateway.storeImage(aProductId, aResource));
             }
             case GALLERY -> aProduct.addImage(this.mediaResourceGateway.storeImage(aProductId, aResource));
             default -> throw DomainException.with(new Error("'productImageType' not implemented"));

@@ -2,7 +2,9 @@ package com.kaua.ecommerce.domain.product;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
 import com.kaua.ecommerce.domain.category.CategoryID;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
+import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
 import java.math.BigDecimal;
@@ -116,9 +118,15 @@ public class Product extends AggregateRoot<ProductID> {
     }
 
     public void addImage(final ProductImage aImage) {
-        if (aImage != null) {
-            this.images.add(aImage);
+        if (aImage == null) {
+            return;
         }
+
+        if (this.images.size() == 20) {
+            throw DomainException.with(new Error("Product can't have more than 20 images"));
+        }
+
+        this.images.add(aImage);
     }
 
     public void removeCoverImage() {

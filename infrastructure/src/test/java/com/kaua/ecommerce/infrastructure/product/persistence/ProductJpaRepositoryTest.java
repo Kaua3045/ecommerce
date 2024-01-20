@@ -383,4 +383,37 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
         Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
     }
+
+    @Test
+    void givenAValidNullCoverImage_whenCallSave_shouldReturnProduct() {
+        final var aProduct = Product.newProduct(
+                "Product Name",
+                "Product Description",
+                BigDecimal.valueOf(10.0),
+                10,
+                CategoryID.unique(),
+                ProductAttributes.create(
+                        ProductColor.with("1", "Red"),
+                        ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
+                        "Product Name")
+        );
+        aProduct.changeCoverImage(Fixture.Products.imageCoverType());
+
+        final var aEntity = ProductJpaEntity.toEntity(aProduct);
+        aEntity.setCoverImage(null);
+
+        final var actualResult = Assertions.assertDoesNotThrow(() -> productRepository.save(aEntity).toDomain());
+
+        Assertions.assertEquals(aEntity.getId(), actualResult.getId().getValue());
+        Assertions.assertEquals(aEntity.getName(), actualResult.getName());
+        Assertions.assertEquals(aEntity.getDescription(), actualResult.getDescription());
+        Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
+        Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
+        Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId().getValue());
+        Assertions.assertTrue(actualResult.getCoverImage().isEmpty());
+        Assertions.assertEquals(1, actualResult.getAttributes().size());
+        Assertions.assertEquals(0, actualResult.getImages().size());
+        Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
+        Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
+    }
 }

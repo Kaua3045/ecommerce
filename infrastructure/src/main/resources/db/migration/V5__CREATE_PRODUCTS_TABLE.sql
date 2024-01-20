@@ -5,6 +5,7 @@ CREATE TABLE products (
     price NUMERIC(19, 2) NOT NULL,
     quantity integer NOT NULL,
     category_id VARCHAR(36) NOT NULL,
+    cover_image_id VARCHAR(36),
     created_at DATETIME(6) NOT NULL,
     updated_at DATETIME(6) NOT NULL
 );

@@ -3,6 +3,7 @@ package com.kaua.ecommerce.domain.product;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.category.CategoryID;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
@@ -277,5 +278,25 @@ public class ProductTest extends UnitTest {
         final var aProductImageTypeOf = ProductImageType.of(aProductImageType);
 
         Assertions.assertTrue(aProductImageTypeOf.isEmpty());
+    }
+
+    @Test
+    void givenAnInvalidProductImage_whenCallAddImageWithProductContains20Images_shouldThrowDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aImage = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
+
+        for (int i = 0; i < 20; i++) {
+            final var aOldImages = ProductImage.with(
+                    "abc".concat("-").concat(String.valueOf(i)),
+                    "product.jpg".concat("-").concat(String.valueOf(i)),
+                    "/images/product.jpg".concat("-").concat(String.valueOf(i)));
+            aProduct.addImage(aOldImages);
+        }
+
+        Assertions.assertThrows(
+                DomainException.class,
+                () -> aProduct.addImage(aImage),
+                "Product can't have more than 20 images"
+        );
     }
 }

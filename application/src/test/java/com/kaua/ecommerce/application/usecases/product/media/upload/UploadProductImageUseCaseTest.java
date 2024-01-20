@@ -37,7 +37,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         final var aProductImage = Fixture.Products.imageCoverType();
         final var aProduct = Fixture.Products.tshirt();
         final var aProductImageResource = Fixture.Products.imageCoverTypeResource();
-        aProduct.addImage(ProductImage.with(
+        aProduct.changeCoverImage(ProductImage.with(
                 "image.png",
                 "COVER-image.png",
                 "http://localhost:8080/COVER-image.png"
@@ -64,21 +64,15 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(mediaResourceGateway, Mockito.times(1)).storeImage(aProduct.getId(), aProductImageResource);
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
-                        && Objects.equals(1, aCmd.getImages().size())
-                        && Objects.equals(aProductImage.id(), aCmd.getImages().stream().findFirst().get().id())
-                        && Objects.equals(aProductImage.location(), aCmd.getImages().stream().findFirst().get().location())));
+                        && Objects.equals(aProductImage.id(), aCmd.getCoverImage().get().id())
+                        && Objects.equals(aProductImage.location(), aCmd.getCoverImage().get().location())));
     }
 
     @Test
-    void givenAValidParamsWithCoverType_whenCallExecuteWithProductContainsGalleryImage_shouldUploadProductImage() {
+    void givenAValidParamsWithCoverType_whenCallExecuteWithProductNotContainsCoverImage_shouldUploadProductImage() {
         final var aProductImage = Fixture.Products.imageCoverType();
         final var aProduct = Fixture.Products.tshirt();
         final var aProductImageResource = Fixture.Products.imageCoverTypeResource();
-        aProduct.addImage(ProductImage.with(
-                "image.png",
-                "GALLERY-image.png",
-                "http://localhost:8080/COVER-image.png"
-        ));
 
         final var aProductId = aProduct.getId().getValue();
 
@@ -100,7 +94,8 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(mediaResourceGateway, Mockito.times(1)).storeImage(aProduct.getId(), aProductImageResource);
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
-                        && Objects.equals(2, aCmd.getImages().size())));
+                        && Objects.equals(aProductImage.id(), aCmd.getCoverImage().get().id())
+                        && Objects.equals(aProductImage.location(), aCmd.getCoverImage().get().location())));
     }
 
     @Test

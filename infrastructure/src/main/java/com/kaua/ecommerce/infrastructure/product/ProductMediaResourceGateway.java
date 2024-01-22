@@ -40,6 +40,7 @@ public class ProductMediaResourceGateway implements MediaResourceGateway {
     private ProductImage generateProductImage(ProductID aProductID, ProductImageResource aResource) {
         final var aImageResource = aResource.resource();
         final var aProductImageId = IdUtils.generate().replace("-", "");
+        // TODO: Refactor buildLocation to receive aProductImageId as parameter, in this moment buildLocation use other random id
         final var aLocation = buildLocation(aProductID, aResource);
         final var aUrl = getProviderUrl().concat("/").concat(aLocation);
         return ProductImage.with(

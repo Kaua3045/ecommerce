@@ -2,13 +2,16 @@ package com.kaua.ecommerce.domain.product;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
 import com.kaua.ecommerce.domain.category.CategoryID;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
+import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class Product extends AggregateRoot<ProductID> {
@@ -17,6 +20,7 @@ public class Product extends AggregateRoot<ProductID> {
     private String description;
     private BigDecimal price;
     private int quantity;
+    private ProductImage coverImage;
     private Set<ProductImage> images;
     private CategoryID categoryId;
     private Set<ProductAttributes> attributes;
@@ -29,6 +33,7 @@ public class Product extends AggregateRoot<ProductID> {
             final String aDescription,
             final BigDecimal aPrice,
             final int aQuantity,
+            final ProductImage aCoverImage,
             final Set<ProductImage> aImages,
             final CategoryID aCategoryId,
             final Set<ProductAttributes> aAttributes,
@@ -40,6 +45,7 @@ public class Product extends AggregateRoot<ProductID> {
         this.description = aDescription;
         this.price = aPrice;
         this.quantity = aQuantity;
+        this.coverImage = aCoverImage;
         this.images = aImages;
         this.categoryId = aCategoryId;
         this.attributes = aAttributes;
@@ -63,6 +69,7 @@ public class Product extends AggregateRoot<ProductID> {
                 aDescription,
                 aPrice,
                 aQuantity,
+                null,
                 new HashSet<>(),
                 aCategoryId,
                 new HashSet<>(),
@@ -80,6 +87,7 @@ public class Product extends AggregateRoot<ProductID> {
             final String aDescription,
             final BigDecimal aPrice,
             final int aQuantity,
+            final ProductImage aCoverImage,
             final Set<ProductImage> aImages,
             final String aCategoryId,
             final Set<ProductAttributes> aAttributes,
@@ -92,6 +100,7 @@ public class Product extends AggregateRoot<ProductID> {
                 aDescription,
                 aPrice,
                 aQuantity,
+                aCoverImage,
                 new HashSet<>(aImages == null ? Collections.emptySet() : aImages),
                 CategoryID.from(aCategoryId),
                 new HashSet<>(aAttributes == null ? Collections.emptySet() : aAttributes),
@@ -107,6 +116,7 @@ public class Product extends AggregateRoot<ProductID> {
                 aProduct.getDescription(),
                 aProduct.getPrice(),
                 aProduct.getQuantity(),
+                aProduct.getCoverImage().orElse(null),
                 new HashSet<>(aProduct.getImages()),
                 aProduct.getCategoryId(),
                 new HashSet<>(aProduct.getAttributes()),
@@ -116,13 +126,19 @@ public class Product extends AggregateRoot<ProductID> {
     }
 
     public void addImage(final ProductImage aImage) {
-        if (aImage != null) {
-            this.images.add(aImage);
+        if (aImage == null) {
+            return;
         }
+
+        if (this.images.size() == 20) {
+            throw DomainException.with(new Error("Product can't have more than 20 images"));
+        }
+
+        this.images.add(aImage);
     }
 
-    public void removeCoverImage() {
-        this.images.removeIf(aImage -> aImage.location().contains(ProductImageType.COVER.name()));
+    public void changeCoverImage(final ProductImage aImage) {
+        this.coverImage = aImage;
     }
 
     @Override
@@ -144,6 +160,10 @@ public class Product extends AggregateRoot<ProductID> {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public Optional<ProductImage> getCoverImage() {
+        return Optional.ofNullable(coverImage);
     }
 
     public Set<ProductImage> getImages() {

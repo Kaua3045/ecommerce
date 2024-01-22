@@ -1,3 +1,10 @@
+CREATE TABLE products_images (
+    id VARCHAR(36) PRIMARY KEY NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    url VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE products (
     id VARCHAR(36) PRIMARY KEY NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -5,8 +12,10 @@ CREATE TABLE products (
     price NUMERIC(19, 2) NOT NULL,
     quantity integer NOT NULL,
     category_id VARCHAR(36) NOT NULL,
+    cover_image_id VARCHAR(36),
     created_at DATETIME(6) NOT NULL,
-    updated_at DATETIME(6) NOT NULL
+    updated_at DATETIME(6) NOT NULL,
+    FOREIGN KEY (cover_image_id) REFERENCES products_images(id)
 );
 
 CREATE TABLE products_colors (
@@ -33,12 +42,6 @@ CREATE TABLE products_attributes (
     FOREIGN KEY (size_id) REFERENCES products_sizes(id)
 );
 
-CREATE TABLE products_images (
-    id VARCHAR(36) PRIMARY KEY NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    location VARCHAR(255) NOT NULL,
-    url VARCHAR(255) NOT NULL
-);
 
 CREATE TABLE products_images_relations (
     product_id VARCHAR(36) NOT NULL,

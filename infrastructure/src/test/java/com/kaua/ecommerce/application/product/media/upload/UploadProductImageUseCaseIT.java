@@ -44,7 +44,7 @@ public class UploadProductImageUseCaseIT {
 
         final var aProductEntity = this.productJpaRepository.findById(aProductId).get();
 
-        Assertions.assertEquals(1, aProductEntity.getImages().size());
+        Assertions.assertTrue(aProductEntity.getCoverImage().isPresent());
     }
 
     @Test
@@ -72,33 +72,5 @@ public class UploadProductImageUseCaseIT {
         final var aProductEntity = this.productJpaRepository.findById(aProductId).get();
 
         Assertions.assertEquals(1, aProductEntity.getImages().size());
-    }
-
-    @Test
-    void givenAValidValuesWithCoverType_whenCallsUploadProductImage_shouldUploadImageAndReturnProductWithTwoImages() {
-        // given
-        final var aProduct = Fixture.Products.tshirt();
-        final var aProductId = aProduct.getId().getValue();
-        aProduct.addImage(Fixture.Products.imageGalleryType());
-
-        this.productJpaRepository.save(ProductJpaEntity.toEntity(aProduct));
-
-        Assertions.assertEquals(1, this.productJpaRepository.count());
-
-        final var aCommand = UploadProductImageCommand.with(
-                aProductId,
-                Fixture.Products.imageCoverTypeResource()
-        );
-
-        // when
-        final var actualResult = this.uploadProductImageUseCase.execute(aCommand);
-
-        // then
-        Assertions.assertEquals(aProductId, actualResult.productId());
-        Assertions.assertEquals(ProductImageType.COVER.name(), actualResult.productImageType().name());
-
-        final var aProductEntity = this.productJpaRepository.findById(aProductId).get();
-
-        Assertions.assertEquals(2, aProductEntity.getImages().size());
     }
 }

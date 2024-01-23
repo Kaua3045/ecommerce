@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public enum ProductImageType {
 
-    COVER,
+    BANNER,
     GALLERY,
     INVALID_TYPE;
 

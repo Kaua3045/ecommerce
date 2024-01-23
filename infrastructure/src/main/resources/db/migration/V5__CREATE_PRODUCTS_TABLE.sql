@@ -12,10 +12,10 @@ CREATE TABLE products (
     price NUMERIC(19, 2) NOT NULL,
     quantity integer NOT NULL,
     category_id VARCHAR(36) NOT NULL,
-    cover_image_id VARCHAR(36),
+    banner_image_id VARCHAR(36),
     created_at DATETIME(6) NOT NULL,
     updated_at DATETIME(6) NOT NULL,
-    FOREIGN KEY (cover_image_id) REFERENCES products_images(id)
+    FOREIGN KEY (banner_image_id) REFERENCES products_images(id)
 );
 
 CREATE TABLE products_colors (

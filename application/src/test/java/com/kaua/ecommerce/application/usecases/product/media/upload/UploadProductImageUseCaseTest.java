@@ -33,14 +33,14 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
     private DefaultUploadProductImageUseCase uploadProductImageUseCase;
 
     @Test
-    void givenAValidParamsWithCoverType_whenCallExecuteWithProductContainsCoverImage_shouldUploadProductImage() {
-        final var aProductImage = Fixture.Products.imageCoverType();
+    void givenAValidParamsWithBannerType_whenCallExecuteWithProductContainsBannerImage_shouldUploadProductImage() {
+        final var aProductImage = Fixture.Products.imageBannerType();
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImageResource = Fixture.Products.imageCoverTypeResource();
-        aProduct.changeCoverImage(ProductImage.with(
+        final var aProductImageResource = Fixture.Products.imageBannerTypeResource();
+        aProduct.changeBannerImage(ProductImage.with(
                 "image.png",
-                "COVER-image.png",
-                "http://localhost:8080/COVER-image.png"
+                "BANNER-image.png",
+                "http://localhost:8080/BANNER-image.png"
         ));
 
         final var aProductId = aProduct.getId().getValue();
@@ -56,7 +56,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         final var aOutput = this.uploadProductImageUseCase.execute(aCommand);
 
         Assertions.assertNotNull(aOutput);
-        Assertions.assertEquals(ProductImageType.COVER.name(), aOutput.productImageType().name());
+        Assertions.assertEquals(ProductImageType.BANNER.name(), aOutput.productImageType().name());
         Assertions.assertEquals(aProductId, aOutput.productId());
 
         Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
@@ -64,15 +64,15 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(mediaResourceGateway, Mockito.times(1)).storeImage(aProduct.getId(), aProductImageResource);
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
-                        && Objects.equals(aProductImage.id(), aCmd.getCoverImage().get().id())
-                        && Objects.equals(aProductImage.location(), aCmd.getCoverImage().get().location())));
+                        && Objects.equals(aProductImage.id(), aCmd.getBannerImage().get().id())
+                        && Objects.equals(aProductImage.location(), aCmd.getBannerImage().get().location())));
     }
 
     @Test
-    void givenAValidParamsWithCoverType_whenCallExecuteWithProductNotContainsCoverImage_shouldUploadProductImage() {
-        final var aProductImage = Fixture.Products.imageCoverType();
+    void givenAValidParamsWithBannerType_whenCallExecuteWithProductNotContainsBannerImage_shouldUploadProductImage() {
+        final var aProductImage = Fixture.Products.imageBannerType();
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImageResource = Fixture.Products.imageCoverTypeResource();
+        final var aProductImageResource = Fixture.Products.imageBannerTypeResource();
 
         final var aProductId = aProduct.getId().getValue();
 
@@ -86,7 +86,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         final var aOutput = this.uploadProductImageUseCase.execute(aCommand);
 
         Assertions.assertNotNull(aOutput);
-        Assertions.assertEquals(ProductImageType.COVER.name(), aOutput.productImageType().name());
+        Assertions.assertEquals(ProductImageType.BANNER.name(), aOutput.productImageType().name());
         Assertions.assertEquals(aProductId, aOutput.productId());
 
         Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
@@ -94,8 +94,8 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(mediaResourceGateway, Mockito.times(1)).storeImage(aProduct.getId(), aProductImageResource);
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
-                        && Objects.equals(aProductImage.id(), aCmd.getCoverImage().get().id())
-                        && Objects.equals(aProductImage.location(), aCmd.getCoverImage().get().location())));
+                        && Objects.equals(aProductImage.id(), aCmd.getBannerImage().get().id())
+                        && Objects.equals(aProductImage.location(), aCmd.getBannerImage().get().location())));
     }
 
     @Test

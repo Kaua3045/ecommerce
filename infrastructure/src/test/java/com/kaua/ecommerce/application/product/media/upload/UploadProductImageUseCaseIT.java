@@ -21,7 +21,7 @@ public class UploadProductImageUseCaseIT {
     private UploadProductImageUseCase uploadProductImageUseCase;
 
     @Test
-    void givenAValidValuesWithCoverType_whenCallsUploadProductImage_shouldUploadImage() {
+    void givenAValidValuesWithBannerType_whenCallsUploadProductImage_shouldUploadImage() {
         // given
         final var aProduct = Fixture.Products.tshirt();
         final var aProductId = aProduct.getId().getValue();
@@ -32,7 +32,7 @@ public class UploadProductImageUseCaseIT {
 
         final var aCommand = UploadProductImageCommand.with(
                 aProductId,
-                Fixture.Products.imageCoverTypeResource()
+                Fixture.Products.imageBannerTypeResource()
         );
 
         // when
@@ -40,11 +40,11 @@ public class UploadProductImageUseCaseIT {
 
         // then
         Assertions.assertEquals(aProductId, actualResult.productId());
-        Assertions.assertEquals(ProductImageType.COVER.name(), actualResult.productImageType().name());
+        Assertions.assertEquals(ProductImageType.BANNER.name(), actualResult.productImageType().name());
 
         final var aProductEntity = this.productJpaRepository.findById(aProductId).get();
 
-        Assertions.assertTrue(aProductEntity.getCoverImage().isPresent());
+        Assertions.assertTrue(aProductEntity.getBannerImage().isPresent());
     }
 
     @Test

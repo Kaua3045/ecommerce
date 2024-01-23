@@ -16,12 +16,12 @@ public class ProductImageResourceTest {
 
         final var actualProductImageResource = ProductImageResource.with(
                 aResource,
-                ProductImageType.COVER
+                ProductImageType.BANNER
         );
 
         Assertions.assertNotNull(actualProductImageResource);
         Assertions.assertEquals(aResource, actualProductImageResource.resource());
-        Assertions.assertEquals(ProductImageType.COVER, actualProductImageResource.type());
+        Assertions.assertEquals(ProductImageType.BANNER, actualProductImageResource.type());
     }
 
     @Test
@@ -32,7 +32,7 @@ public class ProductImageResourceTest {
                         "image/png",
                         "image.png"
                 ),
-                ProductImageType.COVER
+                ProductImageType.BANNER
         );
         final var anotherProductImageResource = ProductImageResource.with(
                 Resource.with(
@@ -40,7 +40,7 @@ public class ProductImageResourceTest {
                         "image/png",
                         "image.png"
                 ),
-                ProductImageType.COVER
+                ProductImageType.BANNER
         );
 
         Assertions.assertTrue(aProductImageResource.equals(anotherProductImageResource));
@@ -57,7 +57,7 @@ public class ProductImageResourceTest {
                         "image/png",
                         "image.png"
                 ),
-                ProductImageType.COVER
+                ProductImageType.BANNER
         );
         final var anotherProductImageResource = ProductImageResource.with(
                 Resource.with(
@@ -82,7 +82,7 @@ public class ProductImageResourceTest {
                         "image/png",
                         "image.png"
                 ),
-                ProductImageType.COVER
+                ProductImageType.BANNER
         );
         final var anotherProductImageResource = ProductImageResource.with(
                 Resource.with(
@@ -90,7 +90,7 @@ public class ProductImageResourceTest {
                         "image/png",
                         "image.png"
                 ),
-                ProductImageType.COVER
+                ProductImageType.BANNER
         );
 
         Assertions.assertNotEquals(aProductImageResource.hashCode(), anotherProductImageResource.hashCode());

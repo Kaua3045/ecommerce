@@ -38,7 +38,7 @@ public class ProductMediaResourceGatewayTest {
     void givenValidResource_whenCallsStorageImage_shouldStoreIt() {
         // given
         final var aProductId = ProductID.unique();
-        final var aResource = Fixture.Products.imageCoverTypeResource();
+        final var aResource = Fixture.Products.imageBannerTypeResource();
 
         // when
         final var actualMedia =
@@ -58,7 +58,7 @@ public class ProductMediaResourceGatewayTest {
     void givenValidResource_whenCallsClearImage_shouldDeleteImage() {
         // given
         final var aProductId = ProductID.unique();
-        final var aResource = Fixture.Products.imageCoverTypeResource();
+        final var aResource = Fixture.Products.imageBannerTypeResource();
 
         final var aProductImage = this.mediaResourceGateway.storeImage(aProductId, aResource);
 

@@ -20,7 +20,7 @@ public class Product extends AggregateRoot<ProductID> {
     private String description;
     private BigDecimal price;
     private int quantity;
-    private ProductImage coverImage;
+    private ProductImage bannerImage;
     private Set<ProductImage> images;
     private CategoryID categoryId;
     private Set<ProductAttributes> attributes;
@@ -33,7 +33,7 @@ public class Product extends AggregateRoot<ProductID> {
             final String aDescription,
             final BigDecimal aPrice,
             final int aQuantity,
-            final ProductImage aCoverImage,
+            final ProductImage aBannerImage,
             final Set<ProductImage> aImages,
             final CategoryID aCategoryId,
             final Set<ProductAttributes> aAttributes,
@@ -45,7 +45,7 @@ public class Product extends AggregateRoot<ProductID> {
         this.description = aDescription;
         this.price = aPrice;
         this.quantity = aQuantity;
-        this.coverImage = aCoverImage;
+        this.bannerImage = aBannerImage;
         this.images = aImages;
         this.categoryId = aCategoryId;
         this.attributes = aAttributes;
@@ -87,7 +87,7 @@ public class Product extends AggregateRoot<ProductID> {
             final String aDescription,
             final BigDecimal aPrice,
             final int aQuantity,
-            final ProductImage aCoverImage,
+            final ProductImage aBannerImage,
             final Set<ProductImage> aImages,
             final String aCategoryId,
             final Set<ProductAttributes> aAttributes,
@@ -100,7 +100,7 @@ public class Product extends AggregateRoot<ProductID> {
                 aDescription,
                 aPrice,
                 aQuantity,
-                aCoverImage,
+                aBannerImage,
                 new HashSet<>(aImages == null ? Collections.emptySet() : aImages),
                 CategoryID.from(aCategoryId),
                 new HashSet<>(aAttributes == null ? Collections.emptySet() : aAttributes),
@@ -116,7 +116,7 @@ public class Product extends AggregateRoot<ProductID> {
                 aProduct.getDescription(),
                 aProduct.getPrice(),
                 aProduct.getQuantity(),
-                aProduct.getCoverImage().orElse(null),
+                aProduct.getBannerImage().orElse(null),
                 new HashSet<>(aProduct.getImages()),
                 aProduct.getCategoryId(),
                 new HashSet<>(aProduct.getAttributes()),
@@ -137,8 +137,8 @@ public class Product extends AggregateRoot<ProductID> {
         this.images.add(aImage);
     }
 
-    public void changeCoverImage(final ProductImage aImage) {
-        this.coverImage = aImage;
+    public void changeBannerImage(final ProductImage aImage) {
+        this.bannerImage = aImage;
     }
 
     @Override
@@ -162,8 +162,8 @@ public class Product extends AggregateRoot<ProductID> {
         return quantity;
     }
 
-    public Optional<ProductImage> getCoverImage() {
-        return Optional.ofNullable(coverImage);
+    public Optional<ProductImage> getBannerImage() {
+        return Optional.ofNullable(bannerImage);
     }
 
     public Set<ProductImage> getImages() {

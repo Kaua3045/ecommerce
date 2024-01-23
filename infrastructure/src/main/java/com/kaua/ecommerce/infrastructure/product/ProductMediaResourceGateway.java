@@ -39,9 +39,8 @@ public class ProductMediaResourceGateway implements MediaResourceGateway {
 
     private ProductImage generateProductImage(ProductID aProductID, ProductImageResource aResource) {
         final var aImageResource = aResource.resource();
-        final var aProductImageId = IdUtils.generate().replace("-", "");
-        // TODO: Refactor buildLocation to receive aProductImageId as parameter, in this moment buildLocation use other random id
-        final var aLocation = buildLocation(aProductID, aResource);
+        final var aProductImageId = IdUtils.generateWithoutDash();
+        final var aLocation = buildLocation(aProductID, aResource, aProductImageId);
         final var aUrl = getProviderUrl().concat("/").concat(aLocation);
         return ProductImage.with(
                 aProductImageId,
@@ -60,13 +59,17 @@ public class ProductMediaResourceGateway implements MediaResourceGateway {
         return this.storageProperties.getProviderUrl();
     }
 
-    private String buildLocation(ProductID aProductID, ProductImageResource aResource) {
+    private String buildLocation(
+            final ProductID aProductID,
+            final ProductImageResource aResource,
+            final String aProductImageId
+    ) {
         final var aImageResource = aResource.resource();
         return aProductID.getValue()
                 .concat("-")
                 .concat(aResource.type().name())
                 .concat("-")
-                .concat(IdUtils.generate().replace("-", ""))
+                .concat(aProductImageId)
                 .concat("-")
                 .concat(aImageResource.fileName());
     }

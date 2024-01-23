@@ -36,8 +36,8 @@ public class ProductJpaEntity {
     private Set<ProductAttributesJpaEntity> attributes;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "cover_image_id", referencedColumnName = "id")
-    private ProductImageJpaEntity coverImage;
+    @JoinColumn(name = "banner_image_id", referencedColumnName = "id")
+    private ProductImageJpaEntity bannerImage;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<ProductImageRelationJpaEntity> images;
@@ -57,7 +57,7 @@ public class ProductJpaEntity {
             final BigDecimal price,
             final int quantity,
             final String categoryId,
-            final ProductImageJpaEntity coverImage,
+            final ProductImageJpaEntity bannerImage,
             final Instant createdAt,
             final Instant updatedAt
     ) {
@@ -68,7 +68,7 @@ public class ProductJpaEntity {
         this.quantity = quantity;
         this.categoryId = categoryId;
         this.attributes = new HashSet<>();
-        this.coverImage = coverImage;
+        this.bannerImage = bannerImage;
         this.images = new HashSet<>();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -82,7 +82,7 @@ public class ProductJpaEntity {
                 aProduct.getPrice(),
                 aProduct.getQuantity(),
                 aProduct.getCategoryId().getValue(),
-                aProduct.getCoverImage().map(ProductImageJpaEntity::toEntity).orElse(null),
+                aProduct.getBannerImage().map(ProductImageJpaEntity::toEntity).orElse(null),
                 aProduct.getCreatedAt(),
                 aProduct.getUpdatedAt()
         );
@@ -100,7 +100,7 @@ public class ProductJpaEntity {
                 getDescription(),
                 getPrice(),
                 getQuantity(),
-                getCoverImage().map(ProductImageJpaEntity::toDomain).orElse(null),
+                getBannerImage().map(ProductImageJpaEntity::toDomain).orElse(null),
                 getImagesToDomain(),
                 getCategoryId(),
                 getAttributesToDomain(),
@@ -199,12 +199,12 @@ public class ProductJpaEntity {
         this.attributes = attributes;
     }
 
-    public Optional<ProductImageJpaEntity> getCoverImage() {
-        return Optional.ofNullable(coverImage);
+    public Optional<ProductImageJpaEntity> getBannerImage() {
+        return Optional.ofNullable(bannerImage);
     }
 
-    public void setCoverImage(ProductImageJpaEntity coverImage) {
-        this.coverImage = coverImage;
+    public void setBannerImage(ProductImageJpaEntity bannerImage) {
+        this.bannerImage = bannerImage;
     }
 
     public Set<ProductImageRelationJpaEntity> getImages() {

@@ -37,7 +37,7 @@ public class S3StorageServiceImplTest {
                 "image/png",
                 aFileName
         );
-        final var aKey = IdUtils.generate() + "-" + "COVER" + "-" +
+        final var aKey = IdUtils.generate() + "-" + "BANNER" + "-" +
                 IdUtils.generate().replace("-", "")
                 + "-" + aFileName;
 
@@ -63,7 +63,7 @@ public class S3StorageServiceImplTest {
                 "image/png",
                 aFileName
         );
-        final var aKey = IdUtils.generate() + "-" + "COVER" + "-" +
+        final var aKey = IdUtils.generate() + "-" + "BANNER" + "-" +
                 IdUtils.generate().replace("-", "")
                 + "-" + aFileName;
 
@@ -83,7 +83,7 @@ public class S3StorageServiceImplTest {
     @Test
     void givenAValidLocation_whenCallDelete_thenShouldDeleteFile() {
         // given
-        final var aLocation = IdUtils.generate() + "-" + "COVER" + "-" +
+        final var aLocation = IdUtils.generate() + "-" + "BANNER" + "-" +
                 IdUtils.generate().replace("-", "")
                 + "-" + "product.png";
 
@@ -100,7 +100,7 @@ public class S3StorageServiceImplTest {
     @Test
     void givenAValidLocationButS3Throws_whenCallDelete_thenShouldThrowRuntimeException() {
         // given
-        final var aLocation = IdUtils.generate() + "-" + "COVER" + "-" +
+        final var aLocation = IdUtils.generate() + "-" + "BANNER" + "-" +
                 IdUtils.generate().replace("-", "")
                 + "-" + "product.png";
         final var expectedErrorMessage = "software.amazon.awssdk.services.s3.model.S3Exception";

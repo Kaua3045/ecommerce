@@ -308,7 +308,7 @@ public class ProductJpaRepositoryTest {
                         ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
                         "Product Name")
         );
-        aProduct.addImage(Fixture.Products.imageCoverType());
+        aProduct.addImage(Fixture.Products.imageBannerType());
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
         aEntity.setImages(Set.of());
@@ -332,7 +332,7 @@ public class ProductJpaRepositoryTest {
         final var expectedErrorMessage = "ids for this class must be manually assigned before calling save(): com.kaua.ecommerce.infrastructure.product.persistence.ProductImageJpaEntity";
 
         final var aProduct = Fixture.Products.tshirt();
-        aProduct.addImage(Fixture.Products.imageCoverType());
+        aProduct.addImage(Fixture.Products.imageBannerType());
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
         final var aProductImage = aEntity.getImages().stream().findFirst().get().getImage();
@@ -350,13 +350,13 @@ public class ProductJpaRepositoryTest {
     @Test
     void givenAValidProductImageValues_whenCallSave_shouldReturnProductWithProductImages() {
         final var aProduct = Fixture.Products.tshirt();
-        aProduct.addImage(Fixture.Products.imageCoverType());
+        aProduct.addImage(Fixture.Products.imageBannerType());
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
         final var aProductImage = aEntity.getImages().stream().findFirst().get().getImage();
         aProductImage.setName("image.jpg");
-        aProductImage.setLocation("1234-COVER-567890-image.jpg");
-        aProductImage.setUrl("http://localhost:8080/1234-COVER-567890-image.jpg");
+        aProductImage.setLocation("1234-BANNER-567890-image.jpg");
+        aProductImage.setUrl("http://localhost:8080/1234-BANNER-567890-image.jpg");
 
         final var aProductImageDomain = aProductImage.toDomain();
 
@@ -385,7 +385,7 @@ public class ProductJpaRepositoryTest {
     }
 
     @Test
-    void givenAValidNullCoverImage_whenCallSave_shouldReturnProduct() {
+    void givenAValidNullBannerImage_whenCallSave_shouldReturnProduct() {
         final var aProduct = Product.newProduct(
                 "Product Name",
                 "Product Description",
@@ -397,10 +397,10 @@ public class ProductJpaRepositoryTest {
                         ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
                         "Product Name")
         );
-        aProduct.changeCoverImage(Fixture.Products.imageCoverType());
+        aProduct.changeBannerImage(Fixture.Products.imageBannerType());
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
-        aEntity.setCoverImage(null);
+        aEntity.setBannerImage(null);
 
         final var actualResult = Assertions.assertDoesNotThrow(() -> productRepository.save(aEntity).toDomain());
 
@@ -410,7 +410,7 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
         Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
         Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId().getValue());
-        Assertions.assertTrue(actualResult.getCoverImage().isEmpty());
+        Assertions.assertTrue(actualResult.getBannerImage().isEmpty());
         Assertions.assertEquals(1, actualResult.getAttributes().size());
         Assertions.assertEquals(0, actualResult.getImages().size());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());

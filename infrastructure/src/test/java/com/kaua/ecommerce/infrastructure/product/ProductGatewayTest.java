@@ -79,7 +79,7 @@ public class ProductGatewayTest {
     @Test
     void givenAValidProductId_whenCallFindById_shouldReturnProduct() {
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImage = Fixture.Products.imageCoverType();
+        final var aProductImage = Fixture.Products.imageBannerType();
         aProduct.addImage(aProductImage);
         this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
 
@@ -139,7 +139,7 @@ public class ProductGatewayTest {
     @Test
     void givenAValidProductWithImages_whenCallUpdate_shouldUpdateProduct() {
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImage = Fixture.Products.imageCoverType();
+        final var aProductImage = Fixture.Products.imageBannerType();
 
         this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
 

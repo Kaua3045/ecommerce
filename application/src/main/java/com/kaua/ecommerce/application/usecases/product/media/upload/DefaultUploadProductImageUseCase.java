@@ -30,9 +30,9 @@ public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase 
         final var aResource = input.productImageResource();
 
         switch (aResource.type()) {
-            case COVER -> {
-                aProduct.getCoverImage().ifPresent(this.mediaResourceGateway::clearImage);
-                aProduct.changeCoverImage(this.mediaResourceGateway.storeImage(aProductId, aResource));
+            case BANNER -> {
+                aProduct.getBannerImage().ifPresent(this.mediaResourceGateway::clearImage);
+                aProduct.changeBannerImage(this.mediaResourceGateway.storeImage(aProductId, aResource));
             }
             case GALLERY -> aProduct.addImage(this.mediaResourceGateway.storeImage(aProductId, aResource));
             default -> throw DomainException.with(new Error("'productImageType' not implemented"));

@@ -26,7 +26,7 @@ public class InMemoryStorageServiceImplTest {
                 "image/png",
                 aFileName
         );
-        final var aKey = IdUtils.generate() + "-" + "COVER" + "-" +
+        final var aKey = IdUtils.generate() + "-" + "BANNER" + "-" +
                 IdUtils.generate().replace("-", "")
                 + "-" + aFileName;
 
@@ -46,7 +46,7 @@ public class InMemoryStorageServiceImplTest {
                 "image/png",
                 aFileName
         );
-        final var aKey = IdUtils.generate() + "-" + "COVER" + "-" +
+        final var aKey = IdUtils.generate() + "-" + "BANNER" + "-" +
                 IdUtils.generate().replace("-", "")
                 + "-" + aFileName;
 

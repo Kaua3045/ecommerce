@@ -150,20 +150,20 @@ public final class Fixture {
                         "Camiseta")
         );
 
-        private static final ProductImage imageCoverType = ProductImage.with(
+        private static final ProductImage imageBannerType = ProductImage.with(
                 IdUtils.generate(),
                 "image-one.jpg",
-                "COVER-image-one.jpg",
-                "https://localhost.com/COVER-image-one.jpg"
+                "BANNER-image-one.jpg",
+                "https://localhost.com/BANNER-image-one.jpg"
         );
 
-        private static final ProductImageResource imageCoverTypeResource = ProductImageResource.with(
+        private static final ProductImageResource imageBannerTypeResource = ProductImageResource.with(
                 Resource.with(
                         "image-one".getBytes(),
                         "image/png",
                         "image-one.jpg"
                 ),
-                ProductImageType.COVER
+                ProductImageType.BANNER
         );
 
         private static final ProductImage imageGalleryType = ProductImage.with(
@@ -186,19 +186,19 @@ public final class Fixture {
             return Product.with(tshirt);
         }
 
-        public static ProductImage imageCoverType() {
+        public static ProductImage imageBannerType() {
             return ProductImage.with(
-                    imageCoverType.id(),
-                    imageCoverType.name(),
-                    imageCoverType.location(),
-                    imageCoverType.url()
+                    imageBannerType.id(),
+                    imageBannerType.name(),
+                    imageBannerType.location(),
+                    imageBannerType.url()
             );
         }
 
-        public static ProductImageResource imageCoverTypeResource() {
+        public static ProductImageResource imageBannerTypeResource() {
             return ProductImageResource.with(
-                    imageCoverTypeResource.resource(),
-                    imageCoverTypeResource.type()
+                    imageBannerTypeResource.resource(),
+                    imageBannerTypeResource.type()
             );
         }
 

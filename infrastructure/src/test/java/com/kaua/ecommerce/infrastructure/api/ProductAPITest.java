@@ -693,7 +693,7 @@ public class ProductAPITest {
         // given
         final var aProduct = Fixture.Products.tshirt();
         final var aId = aProduct.getId().getValue();
-        final var aType = ProductImageType.COVER;
+        final var aType = ProductImageType.BANNER;
 
         final var aImage = new MockMultipartFile(
                 "media_file",
@@ -733,7 +733,7 @@ public class ProductAPITest {
         // given
         final var aProduct = Fixture.Products.tshirt();
         final var aId = aProduct.getId().getValue();
-        final var aType = ProductImageType.COVER;
+        final var aType = ProductImageType.BANNER;
 
         final var aImage = new MockMultipartFile(
                 "media_file",
@@ -765,7 +765,7 @@ public class ProductAPITest {
         // given
         final var aProduct = Fixture.Products.tshirt();
         final var aId = aProduct.getId().getValue();
-        final var aType = ProductImageType.COVER;
+        final var aType = ProductImageType.BANNER;
 
         final var aImage = new MockMultipartFile(
                 "media_file",
@@ -796,7 +796,7 @@ public class ProductAPITest {
     void givenAnInvalidProductId_whenCallUploadProductImage_thenShouldThrowNotFoundException() throws Exception {
         // given
         final var aId = "123";
-        final var aType = ProductImageType.COVER;
+        final var aType = ProductImageType.BANNER;
 
         final var aImage = new MockMultipartFile(
                 "media_file",

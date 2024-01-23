@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.domain.product;
 
+import com.kaua.ecommerce.domain.utils.IdUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +34,7 @@ public class ProductImageTest {
 
     @Test
     void givenAValidValuesWithId_whenCallWith_shouldBeInstantiateProductImage() {
-        final var aId = "abc";
+        final var aId = IdUtils.generateWithoutDash();
         final var aName = "product.jpg";
         final var aLocation = "/images/product.jpg";
         final var aUrl = "http://localhost:8080/images/product.jpg";

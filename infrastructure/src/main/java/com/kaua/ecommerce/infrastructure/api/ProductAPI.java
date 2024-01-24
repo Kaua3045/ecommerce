@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Tag(name = "Product")
 @RequestMapping(value = "products")
 public interface ProductAPI {
@@ -33,7 +35,7 @@ public interface ProductAPI {
     )
     @Operation(summary = "Upload a product image by type")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "201", description = "Images stored and linked in product successfully"),
             @ApiResponse(responseCode = "404", description = "A product id was not found"),
             @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
@@ -41,6 +43,6 @@ public interface ProductAPI {
     ResponseEntity<?> uploadProductImageByType(
             @PathVariable String id,
             @PathVariable String type,
-            @RequestParam("media_file") MultipartFile media
+            @RequestParam("media_file") List<MultipartFile> media
     );
 }

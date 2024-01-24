@@ -3,13 +3,14 @@ package com.kaua.ecommerce.application.product.media.upload;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
 import com.kaua.ecommerce.domain.Fixture;
-import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @IntegrationTest
 public class UploadProductImageUseCaseIT {
@@ -32,7 +33,7 @@ public class UploadProductImageUseCaseIT {
 
         final var aCommand = UploadProductImageCommand.with(
                 aProductId,
-                Fixture.Products.imageBannerTypeResource()
+                List.of(Fixture.Products.imageBannerTypeResource())
         );
 
         // when
@@ -40,7 +41,6 @@ public class UploadProductImageUseCaseIT {
 
         // then
         Assertions.assertEquals(aProductId, actualResult.productId());
-        Assertions.assertEquals(ProductImageType.BANNER.name(), actualResult.productImageType().name());
 
         final var aProductEntity = this.productJpaRepository.findById(aProductId).get();
 
@@ -59,7 +59,7 @@ public class UploadProductImageUseCaseIT {
 
         final var aCommand = UploadProductImageCommand.with(
                 aProductId,
-                Fixture.Products.imageGalleryTypeResource()
+                List.of(Fixture.Products.imageGalleryTypeResource())
         );
 
         // when
@@ -67,7 +67,6 @@ public class UploadProductImageUseCaseIT {
 
         // then
         Assertions.assertEquals(aProductId, actualResult.productId());
-        Assertions.assertEquals(ProductImageType.GALLERY.name(), actualResult.productImageType().name());
 
         final var aProductEntity = this.productJpaRepository.findById(aProductId).get();
 

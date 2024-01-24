@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URI;
+import java.util.List;
 
 @RestController
 public class ProductController implements ProductAPI {
@@ -56,18 +56,22 @@ public class ProductController implements ProductAPI {
     }
 
     @Override
-    public ResponseEntity<?> uploadProductImageByType(String id, String type, MultipartFile media) {
+    public ResponseEntity<?> uploadProductImageByType(String id, String type, List<MultipartFile> media) {
         final var aType = ProductImageType.of(type)
                 .orElseThrow(() -> DomainException
                         .with(new Error("type %s was not found".formatted(type))));
 
+        final var aProductImageResource = media.stream().map(it -> ProductImageResource
+                        .with(ResourceOf.with(it), aType))
+                .toList();
+
         final var aCommand = UploadProductImageCommand.with(
-                id, ProductImageResource.with(ResourceOf.with(media), aType));
+                id, aProductImageResource);
 
         final var aResult = this.uploadProductImageUseCase.execute(aCommand);
 
         return ResponseEntity
-                .created(URI.create("/products/%s/medias/%s".formatted(id, type)))
+                .status(HttpStatus.CREATED)
                 .body(aResult);
     }
 }

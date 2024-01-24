@@ -14,8 +14,7 @@ CREATE TABLE products (
     category_id VARCHAR(36) NOT NULL,
     banner_image_id VARCHAR(36),
     created_at DATETIME(6) NOT NULL,
-    updated_at DATETIME(6) NOT NULL,
-    FOREIGN KEY (banner_image_id) REFERENCES products_images(id)
+    updated_at DATETIME(6) NOT NULL
 );
 
 CREATE TABLE products_colors (

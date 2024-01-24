@@ -1,12 +1,16 @@
 package com.kaua.ecommerce.application.usecases.product.media.upload;
 
+import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedException;
 import com.kaua.ecommerce.application.gateways.MediaResourceGateway;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
+import com.kaua.ecommerce.domain.product.ProductImageResource;
+import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.domain.validation.Error;
 
+import java.util.List;
 import java.util.Objects;
 
 public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase {
@@ -27,19 +31,32 @@ public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase 
         final var aProduct = this.productGateway.findById(input.productId())
                 .orElseThrow(NotFoundException.with(Product.class, input.productId()));
         final var aProductId = aProduct.getId();
-        final var aResource = input.productImageResource();
+        final var aResource = input.productImagesResources();
 
-        switch (aResource.type()) {
-            case BANNER -> {
-                aProduct.getBannerImage().ifPresent(this.mediaResourceGateway::clearImage);
-                aProduct.changeBannerImage(this.mediaResourceGateway.storeImage(aProductId, aResource));
+        validateBannerImage(aResource);
+
+        aResource.forEach(resource -> {
+            switch (resource.type()) {
+                case BANNER -> {
+                    aProduct.getBannerImage().ifPresent(this.mediaResourceGateway::clearImage);
+                    aProduct.changeBannerImage(this.mediaResourceGateway.storeImage(aProductId, resource));
+                }
+                case GALLERY -> aProduct.addImage(this.mediaResourceGateway.storeImage(aProductId, resource));
+                default -> throw DomainException.with(new Error("'productImageType' not implemented"));
             }
-            case GALLERY -> aProduct.addImage(this.mediaResourceGateway.storeImage(aProductId, aResource));
-            default -> throw DomainException.with(new Error("'productImageType' not implemented"));
-        }
+        });
 
         this.productGateway.update(aProduct);
 
-        return UploadProductImageOutput.from(aProduct, aResource.type());
+        return UploadProductImageOutput.from(aProduct);
+    }
+
+    private void validateBannerImage(final List<ProductImageResource> productImageResource) {
+        final var aBannerCount = productImageResource.stream().filter(image -> image.type()
+                .equals(ProductImageType.BANNER)).count();
+
+        if (aBannerCount > 1) {
+            throw new OnlyOneBannerImagePermittedException();
+        }
     }
 }

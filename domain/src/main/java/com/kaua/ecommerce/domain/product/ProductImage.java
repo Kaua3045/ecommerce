@@ -29,7 +29,7 @@ public class ProductImage extends ValueObject {
             final String location,
             final String url
     ) {
-        return new ProductImage(IdUtils.generate(), name, location, url);
+        return new ProductImage(IdUtils.generateWithoutDash(), name, location, url);
     }
 
     public static ProductImage with(

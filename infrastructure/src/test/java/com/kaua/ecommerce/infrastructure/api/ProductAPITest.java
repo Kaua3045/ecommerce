@@ -2,6 +2,7 @@ package com.kaua.ecommerce.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
+import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedException;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductOutput;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
@@ -689,7 +690,7 @@ public class ProductAPITest {
     }
 
     @Test
-    void givenAValidProductIdAndImage_whenCallUploadProductImage_thenShouldReturnOkAndProductIdAndType() throws Exception {
+    void givenAValidProductIdAndBannerImage_whenCallUploadProductImage_thenShouldReturnOkAndProductIdAndType() throws Exception {
         // given
         final var aProduct = Fixture.Products.tshirt();
         final var aId = aProduct.getId().getValue();
@@ -703,7 +704,7 @@ public class ProductAPITest {
         );
 
         Mockito.when(uploadProductImageUseCase.execute(Mockito.any(UploadProductImageCommand.class)))
-                .thenReturn(UploadProductImageOutput.from(aProduct, aType));
+                .thenReturn(UploadProductImageOutput.from(aProduct));
 
         final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/{type}", aId, aType.name())
                 .file(aImage)
@@ -713,8 +714,7 @@ public class ProductAPITest {
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.product_id", equalTo(aId)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.product_image_type", equalTo(aType.name())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.product_id", equalTo(aId)));
 
         final var cmdCaptor = ArgumentCaptor.forClass(UploadProductImageCommand.class);
 
@@ -723,9 +723,95 @@ public class ProductAPITest {
         final var actualCmd = cmdCaptor.getValue();
 
         Assertions.assertEquals(aId, actualCmd.productId());
-        Assertions.assertEquals(aType, actualCmd.productImageResource().type());
-        Assertions.assertEquals(aImage.getOriginalFilename(), actualCmd.productImageResource().resource().fileName());
-        Assertions.assertEquals(aImage.getContentType(), actualCmd.productImageResource().resource().contentType());
+        Assertions.assertEquals(aType, actualCmd.productImagesResources().stream().findFirst().get().type());
+        Assertions.assertEquals(aImage.getOriginalFilename(), actualCmd.productImagesResources()
+                .stream().findFirst().get().resource().fileName());
+        Assertions.assertEquals(aImage.getContentType(), actualCmd.productImagesResources()
+                .stream().findFirst().get().resource().contentType());
+    }
+
+    @Test
+    void givenAValidProductIdAndGalleryImages_whenCallUploadProductImage_thenShouldReturnOkAndProductIdAndType() throws Exception {
+        // given
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+        final var aType = ProductImageType.GALLERY;
+
+        final var aImageOne = new MockMultipartFile(
+                "media_file",
+                "product.png",
+                "image/png",
+                "image".getBytes()
+        );
+        final var aImageTwo = new MockMultipartFile(
+                "media_file",
+                "product-two.png",
+                "image/png",
+                "image-two".getBytes()
+        );
+
+        Mockito.when(uploadProductImageUseCase.execute(Mockito.any(UploadProductImageCommand.class)))
+                .thenReturn(UploadProductImageOutput.from(aProduct));
+
+        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/{type}", aId, aType.name())
+                .file(aImageOne)
+                .file(aImageTwo)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.product_id", equalTo(aId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UploadProductImageCommand.class);
+
+        Mockito.verify(uploadProductImageUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.productId());
+        Assertions.assertEquals(aType, actualCmd.productImagesResources().stream().findFirst().get().type());
+        Assertions.assertEquals(2, actualCmd.productImagesResources().size());
+    }
+
+    @Test
+    void givenAValidProductIdAndInvalidTwoBannerImage_whenCallUploadProductImage_thenShouldThrowDomainException() throws Exception {
+        // given
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+        final var aType = ProductImageType.BANNER;
+
+        final var aImageOne = new MockMultipartFile(
+                "media_file",
+                "product.png",
+                "image/png",
+                "image".getBytes()
+        );
+        final var aImageTwo = new MockMultipartFile(
+                "media_file",
+                "product-two.png",
+                "image/png",
+                "image-two".getBytes()
+        );
+
+        final var expectedErrorMessage = "Only one banner image is allowed";
+
+        Mockito.when(uploadProductImageUseCase.execute(Mockito.any(UploadProductImageCommand.class)))
+                .thenThrow(new OnlyOneBannerImagePermittedException());
+
+        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/{type}", aId, aType.name())
+                .file(aImageOne)
+                .file(aImageTwo)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        Mockito.verify(uploadProductImageUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 
     @Test
@@ -826,9 +912,11 @@ public class ProductAPITest {
         final var actualCmd = cmdCaptor.getValue();
 
         Assertions.assertEquals(aId, actualCmd.productId());
-        Assertions.assertEquals(aType, actualCmd.productImageResource().type());
-        Assertions.assertEquals(aImage.getOriginalFilename(), actualCmd.productImageResource().resource().fileName());
-        Assertions.assertEquals(aImage.getContentType(), actualCmd.productImageResource().resource().contentType());
+        Assertions.assertEquals(aType, actualCmd.productImagesResources().stream().findFirst().get().type());
+        Assertions.assertEquals(aImage.getOriginalFilename(), actualCmd.productImagesResources()
+                .stream().findFirst().get().resource().fileName());
+        Assertions.assertEquals(aImage.getContentType(), actualCmd.productImagesResources()
+                .stream().findFirst().get().resource().contentType());
     }
 
     @Test

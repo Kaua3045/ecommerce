@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -45,7 +46,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
         final var aProductId = aProduct.getId().getValue();
 
-        final var aCommand = UploadProductImageCommand.with(aProductId, aProductImageResource);
+        final var aCommand = UploadProductImageCommand.with(aProductId, List.of(aProductImageResource));
 
         Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
         Mockito.doNothing().when(mediaResourceGateway).clearImage(Mockito.any());
@@ -56,7 +57,6 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         final var aOutput = this.uploadProductImageUseCase.execute(aCommand);
 
         Assertions.assertNotNull(aOutput);
-        Assertions.assertEquals(ProductImageType.BANNER.name(), aOutput.productImageType().name());
         Assertions.assertEquals(aProductId, aOutput.productId());
 
         Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
@@ -76,7 +76,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
         final var aProductId = aProduct.getId().getValue();
 
-        final var aCommand = UploadProductImageCommand.with(aProductId, aProductImageResource);
+        final var aCommand = UploadProductImageCommand.with(aProductId, List.of(aProductImageResource));
 
         Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
         Mockito.when(mediaResourceGateway.storeImage(Mockito.any(), Mockito.any()))
@@ -86,7 +86,6 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         final var aOutput = this.uploadProductImageUseCase.execute(aCommand);
 
         Assertions.assertNotNull(aOutput);
-        Assertions.assertEquals(ProductImageType.BANNER.name(), aOutput.productImageType().name());
         Assertions.assertEquals(aProductId, aOutput.productId());
 
         Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
@@ -106,7 +105,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
         final var aProductId = aProduct.getId().getValue();
 
-        final var aCommand = UploadProductImageCommand.with(aProductId, aProductImageResource);
+        final var aCommand = UploadProductImageCommand.with(aProductId, List.of(aProductImageResource));
 
         Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
         Mockito.when(mediaResourceGateway.storeImage(Mockito.any(), Mockito.any()))
@@ -116,7 +115,6 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         final var aOutput = this.uploadProductImageUseCase.execute(aCommand);
 
         Assertions.assertNotNull(aOutput);
-        Assertions.assertEquals(ProductImageType.GALLERY.name(), aOutput.productImageType().name());
         Assertions.assertEquals(aProductId, aOutput.productId());
 
         Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
@@ -146,7 +144,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
         final var expectedErrorMessage = "'productImageType' not implemented";
 
-        final var aCommand = UploadProductImageCommand.with(aProductId, aProductImageResource);
+        final var aCommand = UploadProductImageCommand.with(aProductId, List.of(aProductImageResource));
 
         Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
 
@@ -154,6 +152,87 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
                 () -> this.uploadProductImageUseCase.execute(aCommand));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
+
+        Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
+        Mockito.verify(mediaResourceGateway, Mockito.times(0)).clearImage(Mockito.any());
+        Mockito.verify(mediaResourceGateway, Mockito.times(0)).storeImage(Mockito.any(), Mockito.any());
+        Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
+    }
+
+    @Test
+    void givenAValidTwoGalleryImages_whenCallUploadProductImageExecute_shouldUploadProductImage() {
+        final var aProductImage = Fixture.Products.imageGalleryType();
+        final var aProductImageTwo = ProductImage.with(
+                "image2.png",
+                "GALLERY-image2.png",
+                "http://localhost:8080/GALLERY-image2.png"
+        );
+        final var aProduct = Fixture.Products.tshirt();
+        final var aProductImageResource = Fixture.Products.imageGalleryTypeResource();
+        final var aProductImageResourceTwo = ProductImageResource.with(
+                Resource.with(
+                        "content".getBytes(),
+                        "image/png",
+                        "image2.png"
+                ),
+                ProductImageType.GALLERY
+        );
+
+        final var aProductId = aProduct.getId().getValue();
+
+        final var aCommand = UploadProductImageCommand.with(
+                aProductId,
+                List.of(aProductImageResource, aProductImageResourceTwo)
+        );
+
+        Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
+        Mockito.when(mediaResourceGateway.storeImage(Mockito.any(), Mockito.any()))
+                .thenReturn(aProductImage)
+                .thenReturn(aProductImageTwo);
+        Mockito.when(productGateway.update(aProduct)).thenAnswer(returnsFirstArg());
+
+        final var aOutput = this.uploadProductImageUseCase.execute(aCommand);
+
+        Assertions.assertNotNull(aOutput);
+        Assertions.assertEquals(aProductId, aOutput.productId());
+
+        Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
+        Mockito.verify(mediaResourceGateway, Mockito.times(0)).clearImage(Mockito.any());
+        Mockito.verify(mediaResourceGateway, Mockito.times(2)).storeImage(Mockito.any(), Mockito.any());
+        Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
+                Objects.equals(aProductId, aCmd.getId().getValue())
+                        && Objects.equals(2, aCmd.getImages().size())));
+    }
+
+    @Test
+    void givenAnInvalidTwoBannerImages_whenCallUploadProductImageExecute_shouldThrowDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aProductImageResource = Fixture.Products.imageBannerTypeResource();
+        final var aProductImageResourceTwo = ProductImageResource.with(
+                Resource.with(
+                        "content".getBytes(),
+                        "image/png",
+                        "image2.png"
+                ),
+                ProductImageType.BANNER
+        );
+
+        final var aProductId = aProduct.getId().getValue();
+
+        final var expectedErrorMessage = "Only one banner image is allowed";
+
+        final var aCommand = UploadProductImageCommand.with(
+                aProductId,
+                List.of(aProductImageResource, aProductImageResourceTwo)
+        );
+
+        Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
+
+        final var aException = Assertions.assertThrows(DomainException.class,
+                () -> this.uploadProductImageUseCase.execute(aCommand));
+
+        Assertions.assertNotNull(aException);
+        Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
         Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
         Mockito.verify(mediaResourceGateway, Mockito.times(0)).clearImage(Mockito.any());

@@ -55,8 +55,6 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
         );
         aProduct.validate(aNotification);
 
-//        return Either.right(Output.from(this.productGateway.findById("f340ab1c-d692-4c40-bc63-1b823c7f68bb").get()));
-
         return aNotification.hasError()
                 ? Either.left(aNotification)
                 : Either.right(CreateProductOutput.from(this.productGateway.create(aProduct)));

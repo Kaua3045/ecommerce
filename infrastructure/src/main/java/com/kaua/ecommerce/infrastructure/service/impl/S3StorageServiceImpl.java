@@ -5,6 +5,7 @@ import com.kaua.ecommerce.infrastructure.service.StorageService;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.Objects;
@@ -26,6 +27,7 @@ public class S3StorageServiceImpl implements StorageService {
                     .bucket(bucketName)
                     .key(aKey)
                     .contentType(aResource.contentType())
+                    .acl(ObjectCannedACL.PUBLIC_READ)
                     .build();
 
             this.s3Client.putObject(aRequest, RequestBody

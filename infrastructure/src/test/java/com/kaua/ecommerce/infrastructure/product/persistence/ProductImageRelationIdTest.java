@@ -53,6 +53,5 @@ public class ProductImageRelationIdTest {
         final var aProductImageIdTwo = ProductImageRelationId.from("2", "3");
 
         Assertions.assertFalse(aProductImageIdOne.equals(aProductImageIdTwo));
-
     }
 }

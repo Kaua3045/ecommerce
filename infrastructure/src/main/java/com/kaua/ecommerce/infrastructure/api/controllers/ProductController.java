@@ -1,6 +1,5 @@
 package com.kaua.ecommerce.infrastructure.api.controllers;
 
-import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
@@ -34,19 +33,7 @@ public class ProductController implements ProductAPI {
 
     @Override
     public ResponseEntity<?> createProduct(CreateProductInput body) {
-        final var aCommand = CreateProductCommand.with(
-                body.name(),
-                body.description(),
-                body.price(),
-                body.quantity(),
-                body.categoryId(),
-                body.colorName(),
-                body.sizeName(),
-                body.weight(),
-                body.height(),
-                body.width(),
-                body.depth()
-        );
+        final var aCommand = body.toCommand();
 
         final var aResult = this.createProductUseCase.execute(aCommand);
 

@@ -22,13 +22,13 @@ public class ProductTest extends UnitTest {
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
-        final var aAttributes = ProductAttributes.create(
-                ProductColor.with("1", "Red"),
+        final var aAttributes = ProductAttributes.with(
+                ProductColor.with("1", "RED"),
                 ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
                 aName
         );
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         Assertions.assertNotNull(aProduct.getId());
         Assertions.assertEquals(aName, aProduct.getName());
@@ -51,13 +51,13 @@ public class ProductTest extends UnitTest {
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
-        final var aAttributes = ProductAttributes.create(
-                ProductColor.with("1", "GREEN"),
+        final var aAttributes = ProductAttributes.with(
+                ProductColor.with("1", "RED"),
                 ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
                 aName
         );
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         Assertions.assertNotNull(aProduct.getId());
         Assertions.assertEquals(aName, aProduct.getName());

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 public class ProductValidationTest {
 
@@ -27,7 +28,7 @@ public class ProductValidationTest {
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
         final var expectedErrorCount = 1;
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         final var aTestValidationHandler = new TestValidationHandler();
         aProduct.validate(aTestValidationHandler);
@@ -52,7 +53,7 @@ public class ProductValidationTest {
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
         final var expectedErrorCount = 1;
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         final var aTestValidationHandler = new TestValidationHandler();
         aProduct.validate(aTestValidationHandler);
@@ -77,7 +78,7 @@ public class ProductValidationTest {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorCount = 1;
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         final var aTestValidationHandler = new TestValidationHandler();
         aProduct.validate(aTestValidationHandler);
@@ -102,7 +103,7 @@ public class ProductValidationTest {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorCount = 1;
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         final var aTestValidationHandler = new TestValidationHandler();
         aProduct.validate(aTestValidationHandler);
@@ -127,7 +128,7 @@ public class ProductValidationTest {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
         final var expectedErrorCount = 1;
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         final var aTestValidationHandler = new TestValidationHandler();
         aProduct.validate(aTestValidationHandler);
@@ -152,7 +153,7 @@ public class ProductValidationTest {
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("price");
         final var expectedErrorCount = 1;
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         final var aTestValidationHandler = new TestValidationHandler();
         aProduct.validate(aTestValidationHandler);
@@ -177,7 +178,7 @@ public class ProductValidationTest {
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("price", 0);
         final var expectedErrorCount = 1;
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         final var aTestValidationHandler = new TestValidationHandler();
         aProduct.validate(aTestValidationHandler);
@@ -202,7 +203,7 @@ public class ProductValidationTest {
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
         final var expectedErrorCount = 1;
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
 
         final var aTestValidationHandler = new TestValidationHandler();
         aProduct.validate(aTestValidationHandler);
@@ -218,13 +219,13 @@ public class ProductValidationTest {
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
-        final ProductAttributes aAttributes = null;
+        final Set<ProductAttributes> aAttributes = null;
 
         final var expectedErrorMessage = "'attributes' must not be null";
         final var expectedErrorCount = 1;
 
         final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, aAttributes);
-        System.out.println(aProduct.getAttributes().size());
+
         final var aTestValidationHandler = new TestValidationHandler();
         aProduct.validate(aTestValidationHandler);
 

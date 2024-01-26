@@ -169,10 +169,10 @@ public class ProductJpaRepositoryTest {
                 BigDecimal.valueOf(10.0),
                 10,
                 CategoryID.unique(),
-                ProductAttributes.create(
+                Set.of(ProductAttributes.create(
                         ProductColor.with("1", "Red"),
                         ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
-                        "Product Name")
+                        "Product Name"))
         );
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
@@ -198,10 +198,10 @@ public class ProductJpaRepositoryTest {
                 BigDecimal.valueOf(10.0),
                 10,
                 CategoryID.unique(),
-                ProductAttributes.create(
+                Set.of(ProductAttributes.create(
                         ProductColor.with("1", "Red"),
                         ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
-                        "Product Name")
+                        "Product Name"))
         );
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
@@ -303,10 +303,10 @@ public class ProductJpaRepositoryTest {
                 BigDecimal.valueOf(10.0),
                 10,
                 CategoryID.unique(),
-                ProductAttributes.create(
+                Set.of(ProductAttributes.create(
                         ProductColor.with("1", "Red"),
                         ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
-                        "Product Name")
+                        "Product Name"))
         );
         aProduct.addImage(Fixture.Products.imageBannerType());
 
@@ -392,10 +392,10 @@ public class ProductJpaRepositoryTest {
                 BigDecimal.valueOf(10.0),
                 10,
                 CategoryID.unique(),
-                ProductAttributes.create(
+                Set.of(ProductAttributes.create(
                         ProductColor.with("1", "Red"),
                         ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
-                        "Product Name")
+                        "Product Name"))
         );
         aProduct.changeBannerImage(Fixture.Products.imageBannerType());
 

@@ -22,6 +22,7 @@ import com.kaua.ecommerce.infrastructure.ControllerTest;
 import com.kaua.ecommerce.infrastructure.exceptions.ImageSizeNotValidException;
 import com.kaua.ecommerce.infrastructure.exceptions.ImageTypeNotValidException;
 import com.kaua.ecommerce.infrastructure.product.models.CreateProductInput;
+import com.kaua.ecommerce.infrastructure.product.models.CreateProductInputAttributes;
 import com.kaua.ecommerce.infrastructure.service.StorageService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -77,18 +79,22 @@ public class ProductAPITest {
         final var aWidth = 0.5;
         final var aDepth = 0.5;
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -115,12 +121,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test
@@ -140,18 +141,22 @@ public class ProductAPITest {
         final var aWidth = 0.5;
         final var aDepth = 0.5;
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -178,12 +183,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test
@@ -202,18 +202,22 @@ public class ProductAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -241,12 +245,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test
@@ -265,18 +264,22 @@ public class ProductAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -304,12 +307,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test
@@ -328,18 +326,22 @@ public class ProductAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -367,12 +369,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test
@@ -391,18 +388,22 @@ public class ProductAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -430,12 +431,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test
@@ -454,18 +450,22 @@ public class ProductAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -493,12 +493,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test
@@ -517,18 +512,22 @@ public class ProductAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("price", 0);
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -556,12 +555,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test
@@ -580,18 +574,22 @@ public class ProductAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -619,12 +617,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test
@@ -643,18 +636,22 @@ public class ProductAPITest {
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aCategoryId);
 
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aInput = new CreateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributesInput)
         );
 
         Mockito.when(createProductUseCase.execute(Mockito.any()))
@@ -681,12 +678,7 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(aColorName, actualCmd.colorName());
-        Assertions.assertEquals(aSizeName, actualCmd.sizeName());
-        Assertions.assertEquals(aWeight, actualCmd.weight());
-        Assertions.assertEquals(aHeight, actualCmd.height());
-        Assertions.assertEquals(aWidth, actualCmd.width());
-        Assertions.assertEquals(aDepth, actualCmd.depth());
+        Assertions.assertEquals(1, actualCmd.attributes().size());
     }
 
     @Test

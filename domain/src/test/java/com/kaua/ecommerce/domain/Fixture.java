@@ -12,14 +12,14 @@ import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.Resource;
 
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
 public final class Fixture {
 
-    private Fixture() {}
+    private Fixture() {
+    }
 
     public static String notFoundMessage(final Class<? extends AggregateRoot<?>> anAggregate, final String id) {
         return NotFoundException.with(anAggregate, id).get().getMessage();
@@ -144,10 +144,10 @@ public final class Fixture {
                 BigDecimal.valueOf(10.0),
                 50,
                 CategoryID.unique(),
-                ProductAttributes.create(
+                Set.of(ProductAttributes.create(
                         ProductColor.with("1", "Red"),
                         ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
-                        "Camiseta")
+                        "Camiseta"))
         );
 
         private static final ProductImage imageBannerType = ProductImage.with(

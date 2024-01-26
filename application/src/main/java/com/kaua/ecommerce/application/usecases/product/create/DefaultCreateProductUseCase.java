@@ -12,6 +12,7 @@ import com.kaua.ecommerce.domain.product.ProductSize;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DefaultCreateProductUseCase extends CreateProductUseCase {
 
@@ -33,17 +34,22 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
         final var aCategory = this.categoryGateway.findById(aCommand.categoryId())
                 .orElseThrow(NotFoundException.with(Category.class, aCommand.categoryId()));
 
-        final var aColor = this.productGateway.findColorByName(aCommand.colorName());
+        final var aAttributes = aCommand.attributes()
+                .stream().map(attribute -> {
+                    final var aColorName = attribute.colorName()
+                            .toUpperCase();
 
-        final var aProductColor = aColor.orElseGet(() -> ProductColor.with(aCommand.colorName()));
-        final var aProductSize = ProductSize.with(
-                aCommand.sizeName(),
-                aCommand.weight(),
-                aCommand.height(),
-                aCommand.width(),
-                aCommand.depth());
+                    final var aColor = this.productGateway.findColorByName(aColorName)
+                            .orElseGet(() -> ProductColor.with(aColorName));
 
-        final var aAttributes = ProductAttributes.create(aProductColor, aProductSize, aCommand.name());
+                    final var aProductSize = ProductSize.with(
+                            attribute.sizeName(),
+                            attribute.weight(),
+                            attribute.height(),
+                            attribute.width(),
+                            attribute.depth());
+                    return ProductAttributes.create(aColor, aProductSize, aCommand.name());
+                }).collect(Collectors.toSet());
 
         final var aProduct = Product.newProduct(
                 aCommand.name(),

@@ -59,7 +59,7 @@ public class Product extends AggregateRoot<ProductID> {
             final BigDecimal aPrice,
             final int aQuantity,
             final CategoryID aCategoryId,
-            final ProductAttributes aAttributes
+            final Set<ProductAttributes> aAttributes
     ) {
         final var aId = ProductID.unique();
         final var aNow = InstantUtils.now();
@@ -77,7 +77,12 @@ public class Product extends AggregateRoot<ProductID> {
                 aNow
         );
 
-        aProduct.attributes.add(aAttributes);
+        if (aAttributes == null) {
+            aProduct.attributes.add(null);
+            return aProduct;
+        }
+
+        aProduct.attributes.addAll(aAttributes);
         return aProduct;
     }
 

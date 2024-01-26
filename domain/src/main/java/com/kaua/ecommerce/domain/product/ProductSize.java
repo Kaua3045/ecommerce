@@ -37,7 +37,7 @@ public class ProductSize extends ValueObject {
             final double width,
             final double depth
     ) {
-        return new ProductSize(IdUtils.generate(), size, weight, height, width, depth);
+        return new ProductSize(IdUtils.generate(), size.toUpperCase(), weight, height, width, depth);
     }
 
     public static ProductSize with(
@@ -48,7 +48,7 @@ public class ProductSize extends ValueObject {
             final double width,
             final double depth
     ) {
-        return new ProductSize(id, size, weight, height, width, depth);
+        return new ProductSize(id, size.toUpperCase(), weight, height, width, depth);
     }
 
     public String id() {

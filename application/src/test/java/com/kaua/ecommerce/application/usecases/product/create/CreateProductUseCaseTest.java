@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -41,12 +42,21 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
-        final var aColorName = "Red";
+        final var aColorName = "RED";
         final var aSizeName = "M";
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
         final var aDepth = 0.5;
+
+        final var aAttributes = CreateProductCommandAttributes.with(
+                aColorName,
+                aSizeName,
+                aWeight,
+                aHeight,
+                aWidth,
+                aDepth
+        );
 
         final var aCommand = CreateProductCommand.with(
                 aName,
@@ -54,12 +64,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aPrice,
                 aQuantity,
                 aCategoryId,
-                aColorName,
-                aSizeName,
-                aWeight,
-                aHeight,
-                aWidth,
-                aDepth
+                List.of(aAttributes)
         );
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
@@ -100,18 +105,22 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aCategoryId);
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.empty());
@@ -146,18 +155,22 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
@@ -190,18 +203,22 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
@@ -234,18 +251,22 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
@@ -278,18 +299,22 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
@@ -322,18 +347,22 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
@@ -366,18 +395,22 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("price");
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
@@ -410,12 +443,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("price", 0);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
                 aSizeName,
                 aWeight,
@@ -424,6 +452,14 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aDepth
         );
 
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
+        );
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
 
         final var aOutput = this.createProductUseCase.execute(aCommand).getLeft();
@@ -454,18 +490,22 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
                 aSizeName,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));

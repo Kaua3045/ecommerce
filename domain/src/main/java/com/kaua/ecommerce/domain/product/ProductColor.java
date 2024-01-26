@@ -16,11 +16,11 @@ public class ProductColor extends ValueObject {
     }
 
     public static ProductColor with(final String color) {
-        return new ProductColor(IdUtils.generate(), color);
+        return new ProductColor(IdUtils.generate(), color.toUpperCase());
     }
 
     public static ProductColor with(final String id, final String color) {
-        return new ProductColor(id, color);
+        return new ProductColor(id, color.toUpperCase());
     }
 
     public String id() {

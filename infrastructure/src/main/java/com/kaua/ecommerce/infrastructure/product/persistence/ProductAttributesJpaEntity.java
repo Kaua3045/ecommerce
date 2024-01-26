@@ -14,23 +14,30 @@ public class ProductAttributesJpaEntity {
     @ManyToOne
     private ProductJpaEntity product;
 
+    @MapsId("colorId")
     @ManyToOne(cascade = CascadeType.ALL)
     private ProductColorJpaEntity color;
 
+    @MapsId("sizeId")
     @ManyToOne(cascade = CascadeType.ALL)
     private ProductSizeJpaEntity size;
 
     @Column(name = "sku", nullable = false)
     private String sku;
 
-    public ProductAttributesJpaEntity() {}
+    public ProductAttributesJpaEntity() {
+    }
 
     private ProductAttributesJpaEntity(
             final ProductAttributes attributes,
             final ProductJpaEntity product,
             final String sku
     ) {
-        this.id = ProductAttributesId.from(product.getId());
+        this.id = ProductAttributesId.from(
+                product.getId(),
+                attributes.color().id(),
+                attributes.size().id()
+        );
         this.color = ProductColorJpaEntity.toEntity(attributes.color());
         this.size = ProductSizeJpaEntity.toEntity(attributes.size());
         this.product = product;

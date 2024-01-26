@@ -10,7 +10,7 @@ public class ProductColorTest {
         final var aColor = "Red";
         final var aProductColor = ProductColor.with(aColor);
 
-        Assertions.assertEquals(aColor, aProductColor.color());
+        Assertions.assertEquals(aColor.toUpperCase(), aProductColor.color());
         Assertions.assertNotNull(aProductColor.id());
     }
 
@@ -20,7 +20,7 @@ public class ProductColorTest {
         final var aId = "1";
         final var aProductColor = ProductColor.with(aId, aColor);
 
-        Assertions.assertEquals(aColor, aProductColor.color());
+        Assertions.assertEquals(aColor.toUpperCase(), aProductColor.color());
         Assertions.assertEquals(aId, aProductColor.id());
     }
 

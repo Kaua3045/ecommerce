@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @DatabaseGatewayTest
 public class ProductGatewayTest {
@@ -33,7 +34,7 @@ public class ProductGatewayTest {
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.unique();
-        final var aColor = "Red";
+        final var aColor = "RED";
         final var aSize = "M";
         final var aWeight = 0.5;
         final var aHeight = 0.5;
@@ -46,11 +47,11 @@ public class ProductGatewayTest {
                 aPrice,
                 aQuantity,
                 aCategoryId,
-                ProductAttributes.create(
+                Set.of(ProductAttributes.create(
                         ProductColor.with(aColor),
                         ProductSize.with(aSize, aWeight, aHeight, aWidth, aDepth),
                         aName
-                )
+                ))
         );
 
         Assertions.assertEquals(0, this.productRepository.count());

@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.application.product.create;
 
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommand;
+import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommandAttributes;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @IntegrationTest
 public class CreateProductUseCaseIT {
@@ -37,12 +39,21 @@ public class CreateProductUseCaseIT {
         final var aPrice = new BigDecimal("10.00");
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
-        final var aColor = "Red";
+        final var aColor = "RED";
         final var aSize = "M";
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
         final var aDepth = 0.5;
+
+        final var aAttributes = CreateProductCommandAttributes.with(
+                aColor,
+                aSize,
+                aWeight,
+                aHeight,
+                aWidth,
+                aDepth
+        );
 
         final var aCommand = CreateProductCommand.with(
                 aName,
@@ -50,12 +61,7 @@ public class CreateProductUseCaseIT {
                 aPrice,
                 aQuantity,
                 aCategoryId,
-                aColor,
-                aSize,
-                aWeight,
-                aHeight,
-                aWidth,
-                aDepth
+                List.of(aAttributes)
         );
 
         Assertions.assertEquals(0, this.productRepository.count());
@@ -100,18 +106,22 @@ public class CreateProductUseCaseIT {
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColor,
                 aSize,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         final var aResult = this.createProductUseCase.execute(aCommand).getLeft();
@@ -141,18 +151,22 @@ public class CreateProductUseCaseIT {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColor,
                 aSize,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         final var aResult = this.createProductUseCase.execute(aCommand).getLeft();
@@ -182,18 +196,22 @@ public class CreateProductUseCaseIT {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColor,
                 aSize,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         final var aResult = this.createProductUseCase.execute(aCommand).getLeft();
@@ -223,18 +241,22 @@ public class CreateProductUseCaseIT {
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColor,
                 aSize,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         final var aResult = this.createProductUseCase.execute(aCommand).getLeft();
@@ -264,18 +286,22 @@ public class CreateProductUseCaseIT {
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("price", 0);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColor,
                 aSize,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         final var aResult = this.createProductUseCase.execute(aCommand).getLeft();
@@ -305,18 +331,22 @@ public class CreateProductUseCaseIT {
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
         final var expectedErrorCount = 1;
 
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId,
+        final var aAttributes = CreateProductCommandAttributes.with(
                 aColor,
                 aSize,
                 aWeight,
                 aHeight,
                 aWidth,
                 aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
         );
 
         final var aResult = this.createProductUseCase.execute(aCommand).getLeft();

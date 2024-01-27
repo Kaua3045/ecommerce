@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api;
 
 import com.kaua.ecommerce.infrastructure.product.models.CreateProductInput;
+import com.kaua.ecommerce.infrastructure.product.models.UpdateProductInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -45,4 +46,18 @@ public interface ProductAPI {
             @PathVariable String type,
             @RequestParam("media_file") List<MultipartFile> media
     );
+
+    @PatchMapping(
+            value = "{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Update a product by it's identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "404", description = "A product id was not found"),
+            @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> updateProduct(@PathVariable String id, @RequestBody UpdateProductInput body);
 }

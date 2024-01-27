@@ -146,6 +146,22 @@ public class Product extends AggregateRoot<ProductID> {
         this.bannerImage = aImage;
     }
 
+    public Product update(
+            final String aName,
+            final String aDescription,
+            final BigDecimal aPrice,
+            final int aQuantity,
+            final CategoryID aCategoryId
+    ) {
+        this.name = aName;
+        this.description = aDescription;
+        this.price = aPrice;
+        this.quantity = aQuantity;
+        this.categoryId = aCategoryId;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new ProductValidation(this, handler).validate();

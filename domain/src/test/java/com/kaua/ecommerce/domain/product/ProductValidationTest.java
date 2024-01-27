@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.domain.product;
 
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
 import com.kaua.ecommerce.domain.category.CategoryID;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
@@ -258,5 +259,173 @@ public class ProductValidationTest {
                         aName));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
+    }
+
+    @Test
+    void givenInvalidBlankName_whenCallUpdate_shouldReturnDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aName = " ";
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(50.0);
+        final var aQuantity = 5;
+        final var aCategoryId = CategoryID.from("1");
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
+        final var expectedErrorCount = 1;
+
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aProductUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenInvalidNullName_whenCallUpdate_shouldReturnDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final String aName = null;
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(50.0);
+        final var aQuantity = 5;
+        final var aCategoryId = CategoryID.from("1");
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
+        final var expectedErrorCount = 1;
+
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aProductUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenInvalidNameLengthLessThan3_whenCallUpdate_shouldReturnDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aName = "Ab ";
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(50.0);
+        final var aQuantity = 5;
+        final var aCategoryId = CategoryID.from("1");
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
+        final var expectedErrorCount = 1;
+
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aProductUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenInvalidNameLengthMoreThan255_whenCallUpdate_shouldReturnDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aName = RandomStringUtils.generateValue(256);
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(50.0);
+        final var aQuantity = 5;
+        final var aCategoryId = CategoryID.from("1");
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
+        final var expectedErrorCount = 1;
+
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aProductUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenInvalidDescriptionLengthMoreThan255_whenCallUpdate_shouldReturnDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aName = "Product Name";
+        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aPrice = BigDecimal.valueOf(50.0);
+        final var aQuantity = 5;
+        final var aCategoryId = CategoryID.from("1");
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorCount = 1;
+
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aProductUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenInvalidNullPrice_whenCallUpdate_shouldReturnDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aName = "Product Name";
+        final var aDescription = "Product Description";
+        final BigDecimal aPrice = null;
+        final var aQuantity = 5;
+        final var aCategoryId = CategoryID.from("1");
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("price");
+        final var expectedErrorCount = 1;
+
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aProductUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenInvalidPriceSmallerOrEqualZero_whenCallUpdate_shouldReturnDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aName = "Product Name";
+        final String aDescription = null;
+        final var aPrice = BigDecimal.valueOf(0.0);
+        final var aQuantity = 5;
+        final var aCategoryId = CategoryID.from("1");
+
+        final var expectedErrorMessage = CommonErrorMessage.greaterThan("price", 0);
+        final var expectedErrorCount = 1;
+
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aProductUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenInvalidQuantityLessThanZero_whenCallUpdate_shouldReturnDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aName = "Product Name";
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(50.0);
+        final var aQuantity = -1;
+        final var aCategoryId = CategoryID.from("1");
+
+        final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
+        final var expectedErrorCount = 1;
+
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aProductUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
     }
 }

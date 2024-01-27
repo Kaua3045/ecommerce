@@ -9,6 +9,9 @@ import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCa
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageOutput;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
+import com.kaua.ecommerce.application.usecases.product.update.UpdateProductCommand;
+import com.kaua.ecommerce.application.usecases.product.update.UpdateProductOutput;
+import com.kaua.ecommerce.application.usecases.product.update.UpdateProductUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
@@ -23,7 +26,7 @@ import com.kaua.ecommerce.infrastructure.exceptions.ImageSizeNotValidException;
 import com.kaua.ecommerce.infrastructure.exceptions.ImageTypeNotValidException;
 import com.kaua.ecommerce.infrastructure.product.models.CreateProductInput;
 import com.kaua.ecommerce.infrastructure.product.models.CreateProductInputAttributes;
-import com.kaua.ecommerce.infrastructure.service.StorageService;
+import com.kaua.ecommerce.infrastructure.product.models.UpdateProductInput;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -60,7 +63,7 @@ public class ProductAPITest {
     private UploadProductImageUseCase uploadProductImageUseCase;
 
     @MockBean
-    private StorageService storageService;
+    private UpdateProductUseCase updateProductUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
@@ -934,5 +937,379 @@ public class ProductAPITest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+    }
+
+    @Test
+    void givenAValidInput_whenCallUpdateProduct_thenReturnStatusOkAndProductId() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+
+        final var aName = "Product Test";
+        final var aDescription = "Product Test Description";
+        final var aPrice = BigDecimal.valueOf(59.98);
+        final var aQuantity = 3;
+        final var aCategoryId = "123";
+
+        final var aInput = new UpdateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId
+        );
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(UpdateProductOutput.from(aProduct)));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductCommand.class);
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+        Assertions.assertEquals(aPrice, actualCmd.price());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
+    }
+
+    @Test
+    void givenAnInvalidInputNullName_whenCallUpdateProduct_thenReturnStatusOkAndProductIdAndNotUpdateName() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+
+        final String aName = null;
+        final var aDescription = "Product Test Description";
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = 10;
+        final var aCategoryId = "123";
+
+        final var aInput = new UpdateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId
+        );
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(UpdateProductOutput.from(aProduct)));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductCommand.class);
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertNull(actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+        Assertions.assertEquals(aPrice, actualCmd.price());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
+    }
+
+    @Test
+    void givenAnInvalidInputNameLengthLessThan3_whenCallUpdateProduct_thenReturnDomainException() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+
+        final var aName = "Pr ";
+        final var aDescription = "Product Test Description";
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = 10;
+        final var aCategoryId = "123";
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
+
+        final var aInput = new UpdateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId
+        );
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductCommand.class);
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+        Assertions.assertEquals(aPrice, actualCmd.price());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
+    }
+
+    @Test
+    void givenAnInvalidInputDescriptionLengthMoreThan255_whenCallUpdateProduct_thenReturnDomainException() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+
+        final var aName = "Product Name";
+        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = 10;
+        final var aCategoryId = "123";
+
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+
+        final var aInput = new UpdateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId
+        );
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductCommand.class);
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+        Assertions.assertEquals(aPrice, actualCmd.price());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
+    }
+
+    @Test
+    void givenAnInvalidInputPriceSmallerOrEqualZero_whenCallUpdateProduct_thenReturnDomainException() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+
+        final var aName = "Product Name";
+        final var aDescription = "Product Test Description";
+        final var aPrice = BigDecimal.valueOf(0.0);
+        final var aQuantity = 10;
+        final var aCategoryId = "123";
+
+        final var expectedErrorMessage = CommonErrorMessage.greaterThan("price", 0);
+
+        final var aInput = new UpdateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId
+        );
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductCommand.class);
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+        Assertions.assertEquals(aPrice, actualCmd.price());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
+    }
+
+    @Test
+    void givenAnInvalidInputQuantityLessThanZero_whenCallUpdateProduct_thenReturnDomainException() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+
+        final var aName = "Product Name";
+        final var aDescription = "Product Test Description";
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = -1;
+        final var aCategoryId = "123";
+
+        final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
+
+        final var aInput = new UpdateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId
+        );
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductCommand.class);
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+        Assertions.assertEquals(aPrice, actualCmd.price());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
+    }
+
+    @Test
+    void givenAnInvalidInputNullCategoryId_whenCallUpdateProduct_thenReturnStatusOkAndProductIdAndNotUpdateCateogry() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+
+        final var aName = "Product Name";
+        final var aDescription = "Product Test Description";
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = 10;
+        final String aCategoryId = null;
+
+        final var aInput = new UpdateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId
+        );
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(UpdateProductOutput.from(aProduct)));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductCommand.class);
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+        Assertions.assertEquals(aPrice, actualCmd.price());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertNull(actualCmd.categoryId());
+    }
+
+    @Test
+    void givenAnInvalidInputNotExistsCategoryId_whenCallUpdateProduct_thenThrowNotFoundException() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+
+        final var aName = "Product Name";
+        final var aDescription = "Product Test Description";
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = 10;
+        final var aCategoryId = "123";
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aCategoryId);
+
+        final var aInput = new UpdateProductInput(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId
+        );
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenThrow(NotFoundException.with(Category.class, aCategoryId).get());
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductCommand.class);
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aName, actualCmd.name());
+        Assertions.assertEquals(aDescription, actualCmd.description());
+        Assertions.assertEquals(aPrice, actualCmd.price());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
     }
 }

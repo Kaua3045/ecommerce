@@ -310,4 +310,25 @@ public class ProductTest extends UnitTest {
                 "Product can't have more than 20 images"
         );
     }
+
+    @Test
+    void givenAValidValues_whenCallUpdate_shouldUpdateProduct() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aName = "Product Name";
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(50.95);
+        final var aQuantity = 2;
+        final var aCategoryId = CategoryID.from("1");
+
+        final var aProductUpdatedAt = aProduct.getUpdatedAt();
+
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+
+        Assertions.assertEquals(aName, aProductUpdated.getName());
+        Assertions.assertEquals(aDescription, aProductUpdated.getDescription());
+        Assertions.assertEquals(aPrice, aProductUpdated.getPrice());
+        Assertions.assertEquals(aQuantity, aProductUpdated.getQuantity());
+        Assertions.assertEquals(aCategoryId, aProductUpdated.getCategoryId());
+        Assertions.assertTrue(aProductUpdatedAt.isBefore(aProductUpdated.getUpdatedAt()));
+    }
 }

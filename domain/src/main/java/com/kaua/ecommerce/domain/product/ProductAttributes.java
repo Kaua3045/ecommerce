@@ -33,7 +33,6 @@ public class ProductAttributes extends ValueObject {
         return new ProductAttributes(color, size, sku);
     }
 
-    // TODO: refactor to use all product name characters or use a random string or use a ten first characters
     private static String generateSku(final String productName, final ProductColor color, final ProductSize size) {
         final var aUniqueId = UUID.randomUUID().toString().substring(0, 8);
         final var aProductNameNullCheck = processProductName(productName);

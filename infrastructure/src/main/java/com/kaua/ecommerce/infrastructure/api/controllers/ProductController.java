@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
+import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductCommand;
@@ -26,15 +27,18 @@ public class ProductController implements ProductAPI {
     private final CreateProductUseCase createProductUseCase;
     private final UploadProductImageUseCase uploadProductImageUseCase;
     private final UpdateProductUseCase updateProductUseCase;
+    private final DeleteProductUseCase deleteProductUseCase;
 
     public ProductController(
             final CreateProductUseCase createProductUseCase,
             final UploadProductImageUseCase uploadProductImageUseCase,
-            final UpdateProductUseCase updateProductUseCase
+            final UpdateProductUseCase updateProductUseCase,
+            final DeleteProductUseCase deleteProductUseCase
     ) {
         this.createProductUseCase = createProductUseCase;
         this.uploadProductImageUseCase = uploadProductImageUseCase;
         this.updateProductUseCase = updateProductUseCase;
+        this.deleteProductUseCase = deleteProductUseCase;
     }
 
     @Override
@@ -84,5 +88,10 @@ public class ProductController implements ProductAPI {
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.ok(aResult.getRight());
+    }
+
+    @Override
+    public void deleteProduct(String id) {
+        this.deleteProductUseCase.execute(id);
     }
 }

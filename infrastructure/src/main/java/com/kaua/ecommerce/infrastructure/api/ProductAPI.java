@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,4 +61,13 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     ResponseEntity<?> updateProduct(@PathVariable String id, @RequestBody UpdateProductInput body);
+
+    @DeleteMapping(value = "{id}")
+    @Operation(summary = "Delete a product by it's identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    void deleteProduct(@PathVariable String id);
 }

@@ -6,6 +6,7 @@ import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedExce
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductOutput;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
+import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageOutput;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
@@ -64,6 +65,9 @@ public class ProductAPITest {
 
     @MockBean
     private UpdateProductUseCase updateProductUseCase;
+
+    @MockBean
+    private DeleteProductUseCase deleteProductUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
@@ -1311,5 +1315,36 @@ public class ProductAPITest {
         Assertions.assertEquals(aPrice, actualCmd.price());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
+    }
+
+    @Test
+    void givenAValidProductId_whenCallDeleteProduct_thenShouldBeOk() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+
+        Mockito.doNothing().when(deleteProductUseCase).execute(Mockito.anyString());
+
+        final var request = MockMvcRequestBuilders.delete("/products/{id}", aId);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(deleteProductUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenAnInvalidProductId_whenCallDeleteProduct_thenShouldBeOk() throws Exception {
+        final var aId = "INVALID";
+
+        Mockito.doNothing().when(deleteProductUseCase).execute(Mockito.anyString());
+
+        final var request = MockMvcRequestBuilders.delete("/products/{id}", aId);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(deleteProductUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 }

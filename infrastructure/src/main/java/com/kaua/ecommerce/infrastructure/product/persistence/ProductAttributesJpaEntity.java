@@ -15,7 +15,7 @@ public class ProductAttributesJpaEntity {
     private ProductJpaEntity product;
 
     @MapsId("colorId")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     private ProductColorJpaEntity color;
 
     @MapsId("sizeId")

@@ -5,6 +5,8 @@ import com.kaua.ecommerce.application.gateways.MediaResourceGateway;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.create.DefaultCreateProductUseCase;
+import com.kaua.ecommerce.application.usecases.product.delete.DefaultDeleteProductUseCase;
+import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.DefaultUploadProductImageUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.DefaultUpdateProductUseCase;
@@ -44,5 +46,10 @@ public class ProductUseCaseConfig {
     @Bean
     public UpdateProductUseCase updateProductUseCase() {
         return new DefaultUpdateProductUseCase(productGateway, categoryGateway);
+    }
+
+    @Bean
+    public DeleteProductUseCase deleteProductUseCase() {
+        return new DefaultDeleteProductUseCase(productGateway, mediaResourceGateway);
     }
 }

@@ -3,6 +3,7 @@ package com.kaua.ecommerce.infrastructure.service.local;
 import com.kaua.ecommerce.domain.utils.Resource;
 import com.kaua.ecommerce.infrastructure.service.StorageService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,5 +31,10 @@ public class InMemoryStorageServiceImpl implements StorageService {
     @Override
     public void delete(String location) {
         this.storage.remove(location);
+    }
+
+    @Override
+    public void deleteAllByLocation(List<String> locations) {
+        locations.forEach(this.storage.keySet()::remove);
     }
 }

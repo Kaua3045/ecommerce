@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 @UnitTest
 public class InMemoryStorageServiceImplTest {
 
@@ -55,6 +57,42 @@ public class InMemoryStorageServiceImplTest {
 
         // when
         this.target.delete(aKey);
+
+        // then
+        Assertions.assertEquals(0, this.target.storage().size());
+    }
+
+    @Test
+    void givenValidLocations_whenCallDeleteAllByLocation_thenShouldDeleteFiles() {
+        // given
+        final var aFileNameOne = "avatar.png";
+        final var aResourceOne = Resource.with(
+                "content".getBytes(),
+                "image/png",
+                aFileNameOne
+        );
+        final var aKeyOne = IdUtils.generate() + "-" + "BANNER" + "-" +
+                IdUtils.generate().replace("-", "")
+                + "-" + aFileNameOne;
+
+        final var aFileNameTwo = "product.png";
+        final var aResourceTwo = Resource.with(
+                "content".getBytes(),
+                "image/png",
+                aFileNameTwo
+        );
+        final var aKeyTwo = IdUtils.generate() + "-" + "BANNER" + "-" +
+                IdUtils.generate().replace("-", "")
+                + "-" + aFileNameTwo;
+
+        // when
+        this.target.store(aKeyOne, aResourceOne);
+        this.target.store(aKeyTwo, aResourceTwo);
+
+        // when
+        Assertions.assertEquals(2, this.target.storage().size());
+
+        this.target.deleteAllByLocation(List.of(aKeyOne, aKeyTwo));
 
         // then
         Assertions.assertEquals(0, this.target.storage().size());

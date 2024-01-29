@@ -12,6 +12,8 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
+import java.util.List;
+
 @IntegrationTest
 public class S3StorageServiceImplTest {
 
@@ -116,6 +118,54 @@ public class S3StorageServiceImplTest {
         Assertions.assertEquals(expectedErrorMessage, aResult.getMessage());
 
         Mockito.verify(s3Client, Mockito.times(1)).deleteObject(Mockito.any(DeleteObjectRequest.class));
+    }
+
+    @Test
+    void givenAValidLocations_whenCallDeleteAllByLocation_thenShouldDeleteFiles() {
+        // given
+        final var aLocationOne = IdUtils.generate() + "-" + "GALLERY" + "-" +
+                IdUtils.generate().replace("-", "")
+                + "-" + "product.png";
+        final var aLocationTwo = IdUtils.generate() + "-" + "GALLERY" + "-" +
+                IdUtils.generate().replace("-", "")
+                + "-" + "products.png";
+
+        // when
+        Mockito.when(s3Client.deleteObjects(Mockito.any(DeleteObjectsRequest.class)))
+                .thenReturn(DeleteObjectsResponse.builder().build());
+
+        Assertions.assertDoesNotThrow(() -> this.target
+                .deleteAllByLocation(List.of(aLocationOne, aLocationTwo)));
+
+        // then
+        Mockito.verify(s3Client, Mockito.times(1)).deleteObjects(Mockito.any(DeleteObjectsRequest.class));
+    }
+
+    @Test
+    void givenAValidLocationsButS3Throws_whenCallDeleteAllByLocation_thenShouldThrowRuntimeException() {
+        // given
+        final var aLocationOne = IdUtils.generate() + "-" + "GALLERY" + "-" +
+                IdUtils.generate().replace("-", "")
+                + "-" + "product.png";
+        final var aLocationTwo = IdUtils.generate() + "-" + "GALLERY" + "-" +
+                IdUtils.generate().replace("-", "")
+                + "-" + "products.png";
+
+        final var aLocations = List.of(aLocationOne, aLocationTwo);
+
+        final var expectedErrorMessage = "software.amazon.awssdk.services.s3.model.S3Exception";
+
+        // when
+        Mockito.when(s3Client.deleteObjects(Mockito.any(DeleteObjectsRequest.class)))
+                .thenThrow(S3Exception.class);
+
+        final var aResult = Assertions.assertThrows(RuntimeException.class,
+                () -> this.target.deleteAllByLocation(aLocations));
+
+        // then
+        Assertions.assertEquals(expectedErrorMessage, aResult.getMessage());
+
+        Mockito.verify(s3Client, Mockito.times(1)).deleteObjects(Mockito.any(DeleteObjectsRequest.class));
     }
 
     private PutObjectResponse buildPutObjectResponse() {

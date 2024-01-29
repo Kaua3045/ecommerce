@@ -27,6 +27,7 @@ public class ProductMySQLGateway implements ProductGateway {
         this.productColorRepository = Objects.requireNonNull(productColorRepository);
     }
 
+    @Transactional
     @Override
     public Product create(Product aProduct) {
         this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
@@ -50,5 +51,11 @@ public class ProductMySQLGateway implements ProductGateway {
     public Product update(Product aProduct) {
         this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
         return aProduct;
+    }
+
+    @Transactional
+    @Override
+    public void delete(String aProductID) {
+        this.productRepository.deleteById(aProductID);
     }
 }

@@ -4,10 +4,9 @@ import com.kaua.ecommerce.domain.utils.Resource;
 import com.kaua.ecommerce.infrastructure.service.StorageService;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 
+import java.util.List;
 import java.util.Objects;
 
 public class S3StorageServiceImpl implements StorageService {
@@ -47,6 +46,26 @@ public class S3StorageServiceImpl implements StorageService {
                     .build();
 
             this.s3Client.deleteObject(aDeleteRequest);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deleteAllByLocation(List<String> locations) {
+        try {
+            final var aObjectsIdentifiers = locations.stream()
+                    .map(location -> ObjectIdentifier.builder()
+                            .key(location)
+                            .build())
+                    .toList();
+
+            final var aDeleteRequest = DeleteObjectsRequest.builder()
+                    .delete(builder -> builder.objects(aObjectsIdentifiers))
+                    .bucket(bucketName)
+                    .build();
+
+            this.s3Client.deleteObjects(aDeleteRequest);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

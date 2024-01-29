@@ -14,4 +14,6 @@ public interface ProductGateway {
     Optional<ProductColor> findColorByName(String aColorName);
 
     Product update(Product aProduct);
+
+    void delete(String aProductID);
 }

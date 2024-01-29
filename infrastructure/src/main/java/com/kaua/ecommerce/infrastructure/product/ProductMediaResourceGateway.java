@@ -10,6 +10,7 @@ import com.kaua.ecommerce.infrastructure.service.StorageService;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Component
 public class ProductMediaResourceGateway implements MediaResourceGateway {
@@ -35,6 +36,14 @@ public class ProductMediaResourceGateway implements MediaResourceGateway {
     @Override
     public void clearImage(ProductImage aImage) {
         this.storageService.delete(aImage.location());
+    }
+
+    @Override
+    public void clearImages(Set<ProductImage> aImages) {
+        final var aLocations = aImages.stream()
+                .map(ProductImage::location)
+                .toList();
+        this.storageService.deleteAllByLocation(aLocations);
     }
 
     private ProductImage generateProductImage(ProductID aProductID, ProductImageResource aResource) {

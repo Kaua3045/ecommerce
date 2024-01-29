@@ -79,9 +79,20 @@ public class ProductGatewayTest {
 
     @Test
     void givenAValidProductId_whenCallFindById_shouldReturnProduct() {
-        final var aProduct = Fixture.Products.tshirt();
+        final var aProduct = Product.newProduct(
+                "Product Name",
+                null,
+                BigDecimal.valueOf(10.0),
+                10,
+                CategoryID.unique(),
+                Set.of(ProductAttributes.create(
+                        ProductColor.with("Blue"),
+                        ProductSize.with("M", 0.5, 0.5, 0.5, 0.5),
+                        "Product Name")));
+
         final var aProductImage = Fixture.Products.imageBannerType();
         aProduct.addImage(aProductImage);
+
         this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
 
         Assertions.assertEquals(1, this.productRepository.count());
@@ -164,5 +175,68 @@ public class ProductGatewayTest {
         Assertions.assertNotNull(aPersistedProduct.getAttributes().stream().findFirst().get().getSku());
         Assertions.assertEquals(aProduct.getCreatedAt(), aPersistedProduct.getCreatedAt());
         Assertions.assertEquals(aProduct.getUpdatedAt(), aPersistedProduct.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidProductId_whenCallDelete_shouldBeOk() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aProductImage = Fixture.Products.imageGalleryType();
+        aProduct.addImage(aProductImage);
+
+        this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
+
+        Assertions.assertEquals(1, this.productRepository.count());
+
+        this.productGateway.delete(aProduct.getId().getValue());
+
+        Assertions.assertEquals(0, this.productRepository.count());
+    }
+
+    @Test
+    void givenAValidProductIdOnProductColorIsSameToOtherEntity_whenCallDelete_shouldBeOk() {
+        final var aProductColor = ProductColor.with("green");
+        final var aProduct = Product.newProduct(
+                "Product Name",
+                null,
+                BigDecimal.valueOf(10.0),
+                10,
+                CategoryID.unique(),
+                Set.of(ProductAttributes.create(
+                        aProductColor,
+                        ProductSize.with("2", "M", 0.5, 0.5, 0.5, 0.5),
+                        "Product Name")));
+        final var aProductImage = Fixture.Products.imageGalleryType();
+        aProduct.addImage(aProductImage);
+
+        this.productGateway.create(aProduct);
+        this.productGateway.create(Product.newProduct(
+                "Product Name",
+                null,
+                BigDecimal.valueOf(10.0),
+                10,
+                CategoryID.unique(),
+                Set.of(ProductAttributes.create(
+                        aProductColor,
+                        ProductSize.with("M", 0.5, 0.5, 0.5, 0.5),
+                        "Product Name"))));
+
+        Assertions.assertEquals(1, this.productColorRepository.count());
+        Assertions.assertEquals(2, this.productRepository.count());
+
+        this.productGateway.delete(aProduct.getId().getValue());
+
+        Assertions.assertEquals(1, this.productRepository.count());
+        Assertions.assertEquals(1, this.productColorRepository.count());
+    }
+
+    @Test
+    void givenAnInvalidProductId_whenCallDelete_shouldBeOk() {
+        final var aProductId = ProductID.unique();
+
+        Assertions.assertEquals(0, this.productRepository.count());
+
+        this.productGateway.delete(aProductId.getValue());
+
+        Assertions.assertEquals(0, this.productRepository.count());
     }
 }

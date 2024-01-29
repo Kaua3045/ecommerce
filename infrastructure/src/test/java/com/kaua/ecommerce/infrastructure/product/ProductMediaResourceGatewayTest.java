@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Set;
+
 @IntegrationTest
 public class ProductMediaResourceGatewayTest {
 
@@ -64,6 +66,27 @@ public class ProductMediaResourceGatewayTest {
 
         // when
         Assertions.assertDoesNotThrow(() -> this.mediaResourceGateway.clearImage(aProductImage));
+
+        // then
+        Assertions.assertEquals(0, storageService().storage().size());
+    }
+
+    @Test
+    void givenValidResource_whenCallsClearImages_shouldDeleteImages() {
+        // given
+        final var aProductId = ProductID.unique();
+        final var aResourceOne = Fixture.Products.imageBannerTypeResource();
+        final var aResourceTwo = Fixture.Products.imageGalleryTypeResource();
+
+        final var aProductImageOne = this.mediaResourceGateway.storeImage(aProductId, aResourceOne);
+        final var aProductImageTwo = this.mediaResourceGateway.storeImage(aProductId, aResourceTwo);
+
+        final var aProductImages = Set.of(aProductImageOne, aProductImageTwo);
+
+        // when
+        Assertions.assertEquals(2, storageService().storage().size());
+
+        Assertions.assertDoesNotThrow(() -> this.mediaResourceGateway.clearImages(aProductImages));
 
         // then
         Assertions.assertEquals(0, storageService().storage().size());

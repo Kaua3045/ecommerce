@@ -3,7 +3,10 @@ package com.kaua.ecommerce.domain.product;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.category.CategoryID;
+import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
+import com.kaua.ecommerce.domain.product.events.ProductCreatedEvent;
+import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
@@ -373,5 +376,63 @@ public class ProductTest extends UnitTest {
         final var aProductStatusOf = ProductStatus.of(aProductStatus);
 
         Assertions.assertTrue(aProductStatusOf.isEmpty());
+    }
+
+    @Test
+    void givenAValidProduct_whenCallRegisterEvent_shouldReturnProductWithDomainEvent() {
+        final var aName = "Product Name";
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = 10;
+        final var aCategoryId = CategoryID.from("1");
+        final var aAttributes = ProductAttributes.with(
+                ProductColor.with("1", "RED"),
+                ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
+                aName
+        );
+
+        final var aDomainEventType = EventsTypes.PRODUCT_CREATED;
+
+        final var aProduct = Product.newProduct(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                Set.of(aAttributes));
+
+        final var aProductCreatedEvent = ProductCreatedEvent.from(aProduct);
+        aProduct.registerEvent(aProductCreatedEvent);
+
+        Assertions.assertEquals(aDomainEventType, aProduct.getDomainEvents().stream().findFirst().get().eventType());
+        Assertions.assertEquals(1, aProduct.getDomainEvents().size());
+    }
+
+    @Test
+    void givenAValidProduct_whenCallProductUpdatedEventFrom_shouldReturnProductUpdatedEvent() {
+        final var aName = "Product Name";
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = 10;
+        final var aCategoryId = CategoryID.from("1");
+        final var aAttributes = ProductAttributes.with(
+                ProductColor.with("1", "RED"),
+                ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
+                aName
+        );
+
+        final var aProduct = Product.newProduct(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                Set.of(aAttributes));
+        final var aProductUpdatedStatus = aProduct.updateStatus(ProductStatus.INACTIVE);
+
+        final var aProductUpdated = ProductUpdatedEvent.from(aProductUpdatedStatus);
+
+        Assertions.assertNotNull(aProductUpdated);
+        Assertions.assertEquals(aProduct.getId().getValue(), aProductUpdated.id());
     }
 }

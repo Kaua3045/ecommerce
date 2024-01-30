@@ -6,5 +6,8 @@ public final class EventsTypes {
     public static final String CATEGORY_UPDATED = "category_updated";
     public static final String CATEGORY_DELETED = "category_deleted";
 
+    public static final String PRODUCT_CREATED = "product_created";
+    public static final String PRODUCT_UPDATED = "product_updated";
+
     private EventsTypes() {}
 }

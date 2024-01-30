@@ -3,6 +3,7 @@ package com.kaua.ecommerce.application.product.delete;
 import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.product.ProductID;
+import com.kaua.ecommerce.domain.product.ProductStatus;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
@@ -30,11 +31,11 @@ public class DeleteProductUseCaseIT {
 
         Assertions.assertDoesNotThrow(() -> this.deleteProductUseCase.execute(aProductId));
 
-        Assertions.assertEquals(0, this.productRepository.count());
+        Assertions.assertEquals(1, this.productRepository.count());
 
         final var aPersistedProduct = this.productRepository.findById(aProductId);
 
-        Assertions.assertTrue(aPersistedProduct.isEmpty());
+        Assertions.assertEquals(ProductStatus.DELETED, aPersistedProduct.get().getStatus());
     }
 
     @Test

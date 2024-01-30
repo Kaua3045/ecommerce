@@ -6,6 +6,7 @@ import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
+import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 
 import java.util.Objects;
@@ -51,6 +52,8 @@ public class DefaultUpdateProductUseCase extends UpdateProductUseCase {
         if (aNotification.hasError()) {
             return Either.left(aNotification);
         }
+
+        aProductUpdated.registerEvent(ProductUpdatedEvent.from(aProduct));
 
         return Either.right(UpdateProductOutput.from(this.productGateway.update(aProductUpdated)));
     }

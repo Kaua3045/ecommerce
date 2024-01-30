@@ -39,6 +39,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertTrue(aProduct.getImages().isEmpty());
         Assertions.assertEquals(aCategoryId, aProduct.getCategoryId());
         Assertions.assertEquals(aAttributes, aProduct.getAttributes().stream().findFirst().get());
+        Assertions.assertEquals(ProductStatus.ACTIVE, aProduct.getStatus());
         Assertions.assertNotNull(aProduct.getCreatedAt());
         Assertions.assertNotNull(aProduct.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aProduct.validate(new ThrowsValidationHandler()));
@@ -68,6 +69,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertTrue(aProduct.getImages().isEmpty());
         Assertions.assertEquals(aCategoryId, aProduct.getCategoryId());
         Assertions.assertEquals(aAttributes, aProduct.getAttributes().stream().findFirst().get());
+        Assertions.assertEquals(ProductStatus.ACTIVE, aProduct.getStatus());
         Assertions.assertNotNull(aProduct.getCreatedAt());
         Assertions.assertNotNull(aProduct.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aProduct.validate(new ThrowsValidationHandler()));
@@ -100,6 +102,7 @@ public class ProductTest extends UnitTest {
                 ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
                 aName
         );
+        final var aStatus = ProductStatus.INACTIVE;
         final var aCreatedAt = InstantUtils.now();
         final var aUpdatedAt = InstantUtils.now();
 
@@ -113,6 +116,7 @@ public class ProductTest extends UnitTest {
                 Set.of(aImage),
                 aCategoryId.getValue(),
                 Set.of(aAttributes),
+                aStatus,
                 aCreatedAt,
                 aUpdatedAt
         );
@@ -126,6 +130,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aImage.location(), aProduct.getImages().stream().findFirst().get().location());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
         Assertions.assertEquals(aAttributes, aProduct.getAttributes().stream().findFirst().get());
+        Assertions.assertEquals(aStatus, aProduct.getStatus());
         Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aProduct.getUpdatedAt());
     }
@@ -145,6 +150,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertTrue(aProductWith.getImages().isEmpty());
         Assertions.assertEquals(aProductWith.getCategoryId().getValue(), aProduct.getCategoryId().getValue());
         Assertions.assertEquals(aProductWith.getAttributes(), aProduct.getAttributes());
+        Assertions.assertEquals(aProductWith.getStatus(), aProduct.getStatus());
         Assertions.assertEquals(aProductWith.getCreatedAt(), aProduct.getCreatedAt());
         Assertions.assertEquals(aProductWith.getUpdatedAt(), aProduct.getUpdatedAt());
     }
@@ -160,6 +166,7 @@ public class ProductTest extends UnitTest {
         final var aImage = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
         final var aCategoryId = CategoryID.from("1");
         final Set<ProductAttributes> aAttributes = null;
+        final var aStatus = ProductStatus.INACTIVE;
         final var aCreatedAt = InstantUtils.now();
         final var aUpdatedAt = InstantUtils.now();
 
@@ -173,6 +180,7 @@ public class ProductTest extends UnitTest {
                 Set.of(aImage),
                 aCategoryId.getValue(),
                 aAttributes,
+                aStatus,
                 aCreatedAt,
                 aUpdatedAt
         );
@@ -186,6 +194,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aImage.id(), aProduct.getImages().stream().findFirst().get().id());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
         Assertions.assertTrue(aProduct.getAttributes().isEmpty());
+        Assertions.assertEquals(aStatus, aProduct.getStatus());
         Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aProduct.getUpdatedAt());
     }
@@ -205,6 +214,7 @@ public class ProductTest extends UnitTest {
                 ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
                 aName
         );
+        final var aStatus = ProductStatus.INACTIVE;
         final var aCreatedAt = InstantUtils.now();
         final var aUpdatedAt = InstantUtils.now();
 
@@ -218,6 +228,7 @@ public class ProductTest extends UnitTest {
                 aImages,
                 aCategoryId.getValue(),
                 Set.of(aAttributes),
+                aStatus,
                 aCreatedAt,
                 aUpdatedAt
         );
@@ -231,6 +242,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertTrue(aProduct.getImages().isEmpty());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
         Assertions.assertEquals(aAttributes.sku(), aProduct.getAttributes().stream().findFirst().get().sku());
+        Assertions.assertEquals(aStatus, aProduct.getStatus());
         Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aProduct.getUpdatedAt());
     }
@@ -330,5 +342,36 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aQuantity, aProductUpdated.getQuantity());
         Assertions.assertEquals(aCategoryId, aProductUpdated.getCategoryId());
         Assertions.assertTrue(aProductUpdatedAt.isBefore(aProductUpdated.getUpdatedAt()));
+    }
+
+    @Test
+    void givenAValidValues_whenCallUpdateStatus_shouldUpdateProductStatus() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aStatus = ProductStatus.INACTIVE;
+
+        final var aProductUpdatedAt = aProduct.getUpdatedAt();
+
+        final var aProductUpdated = aProduct.updateStatus(aStatus);
+
+        Assertions.assertEquals(aStatus, aProductUpdated.getStatus());
+        Assertions.assertTrue(aProductUpdatedAt.isBefore(aProductUpdated.getUpdatedAt()));
+    }
+
+    @Test
+    void givenAValidStatus_whenCallProductStatusOf_shouldReturnProductStatus() {
+        final var aProductStatus = ProductStatus.INACTIVE;
+
+        final var aProductStatusOf = ProductStatus.of(aProductStatus.name());
+
+        Assertions.assertEquals(aProductStatus, aProductStatusOf.get());
+    }
+
+    @Test
+    void givenAnInvalidNullStatus_whenCallProductStatusOf_shouldReturnEmpty() {
+        final String aProductStatus = null;
+
+        final var aProductStatusOf = ProductStatus.of(aProductStatus);
+
+        Assertions.assertTrue(aProductStatusOf.isEmpty());
     }
 }

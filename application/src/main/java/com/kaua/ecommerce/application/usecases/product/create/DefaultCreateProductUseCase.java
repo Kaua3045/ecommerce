@@ -9,6 +9,7 @@ import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductAttributes;
 import com.kaua.ecommerce.domain.product.ProductColor;
 import com.kaua.ecommerce.domain.product.ProductSize;
+import com.kaua.ecommerce.domain.product.events.ProductCreatedEvent;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 
 import java.util.Objects;
@@ -60,6 +61,7 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
                 aAttributes
         );
         aProduct.validate(aNotification);
+        aProduct.registerEvent(ProductCreatedEvent.from(aProduct));
 
         return aNotification.hasError()
                 ? Either.left(aNotification)

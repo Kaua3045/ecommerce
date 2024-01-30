@@ -8,6 +8,7 @@ public final class EventsTypes {
 
     public static final String PRODUCT_CREATED = "product_created";
     public static final String PRODUCT_UPDATED = "product_updated";
+    public static final String PRODUCT_DELETED = "product_deleted";
 
     private EventsTypes() {}
 }

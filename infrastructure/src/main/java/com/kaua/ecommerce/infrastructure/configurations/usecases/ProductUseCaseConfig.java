@@ -50,6 +50,6 @@ public class ProductUseCaseConfig {
 
     @Bean
     public DeleteProductUseCase deleteProductUseCase() {
-        return new DefaultDeleteProductUseCase(productGateway, mediaResourceGateway);
+        return new DefaultDeleteProductUseCase(productGateway);
     }
 }

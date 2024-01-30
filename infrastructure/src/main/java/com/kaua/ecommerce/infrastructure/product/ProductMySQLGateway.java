@@ -7,6 +7,7 @@ import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaEnti
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaRepository;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.service.EventDatabaseService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,19 +19,22 @@ public class ProductMySQLGateway implements ProductGateway {
 
     private final ProductJpaRepository productRepository;
     private final ProductColorJpaRepository productColorRepository;
+    private final EventDatabaseService eventDatabaseService;
 
     public ProductMySQLGateway(
             final ProductJpaRepository productRepository,
-            final ProductColorJpaRepository productColorRepository
+            final ProductColorJpaRepository productColorRepository,
+            final EventDatabaseService eventDatabaseService
     ) {
         this.productRepository = Objects.requireNonNull(productRepository);
         this.productColorRepository = Objects.requireNonNull(productColorRepository);
+        this.eventDatabaseService = Objects.requireNonNull(eventDatabaseService);
     }
 
     @Transactional
     @Override
     public Product create(Product aProduct) {
-        this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
+        save(aProduct);
         return aProduct;
     }
 
@@ -49,7 +53,7 @@ public class ProductMySQLGateway implements ProductGateway {
     @Transactional
     @Override
     public Product update(Product aProduct) {
-        this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
+        save(aProduct);
         return aProduct;
     }
 
@@ -57,5 +61,10 @@ public class ProductMySQLGateway implements ProductGateway {
     @Override
     public void delete(String aProductID) {
         this.productRepository.deleteById(aProductID);
+    }
+
+    private void save(final Product aProduct) {
+        this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
+        aProduct.publishDomainEvent(this.eventDatabaseService::send);
     }
 }

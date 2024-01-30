@@ -24,6 +24,7 @@ public class Product extends AggregateRoot<ProductID> {
     private Set<ProductImage> images;
     private CategoryID categoryId;
     private Set<ProductAttributes> attributes;
+    private ProductStatus status;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -37,6 +38,7 @@ public class Product extends AggregateRoot<ProductID> {
             final Set<ProductImage> aImages,
             final CategoryID aCategoryId,
             final Set<ProductAttributes> aAttributes,
+            final ProductStatus aStatus,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
     ) {
@@ -49,6 +51,7 @@ public class Product extends AggregateRoot<ProductID> {
         this.images = aImages;
         this.categoryId = aCategoryId;
         this.attributes = aAttributes;
+        this.status = aStatus;
         this.createdAt = aCreatedAt;
         this.updatedAt = aUpdatedAt;
     }
@@ -73,6 +76,7 @@ public class Product extends AggregateRoot<ProductID> {
                 new HashSet<>(),
                 aCategoryId,
                 new HashSet<>(),
+                ProductStatus.ACTIVE,
                 aNow,
                 aNow
         );
@@ -96,6 +100,7 @@ public class Product extends AggregateRoot<ProductID> {
             final Set<ProductImage> aImages,
             final String aCategoryId,
             final Set<ProductAttributes> aAttributes,
+            final ProductStatus aStatus,
             final Instant aCreatedAt,
             final Instant aUpdatedAt
     ) {
@@ -109,6 +114,7 @@ public class Product extends AggregateRoot<ProductID> {
                 new HashSet<>(aImages == null ? Collections.emptySet() : aImages),
                 CategoryID.from(aCategoryId),
                 new HashSet<>(aAttributes == null ? Collections.emptySet() : aAttributes),
+                aStatus,
                 aCreatedAt,
                 aUpdatedAt
         );
@@ -125,6 +131,7 @@ public class Product extends AggregateRoot<ProductID> {
                 new HashSet<>(aProduct.getImages()),
                 aProduct.getCategoryId(),
                 new HashSet<>(aProduct.getAttributes()),
+                aProduct.getStatus(),
                 aProduct.getCreatedAt(),
                 aProduct.getUpdatedAt()
         );
@@ -158,6 +165,12 @@ public class Product extends AggregateRoot<ProductID> {
         this.price = aPrice;
         this.quantity = aQuantity;
         this.categoryId = aCategoryId;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
+    public Product updateStatus(final ProductStatus aStatus) {
+        this.status = aStatus;
         this.updatedAt = InstantUtils.now();
         return this;
     }
@@ -197,6 +210,10 @@ public class Product extends AggregateRoot<ProductID> {
 
     public Set<ProductAttributes> getAttributes() {
         return Collections.unmodifiableSet(attributes);
+    }
+
+    public ProductStatus getStatus() {
+        return status;
     }
 
     public Instant getCreatedAt() {

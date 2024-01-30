@@ -49,3 +49,5 @@ CREATE TABLE products_images_relations (
     FOREIGN KEY (product_id) REFERENCES products(id),
     FOREIGN KEY (image_id) REFERENCES products_images(id)
 );
+
+CREATE INDEX idx_products_color_color ON products_colors (color);

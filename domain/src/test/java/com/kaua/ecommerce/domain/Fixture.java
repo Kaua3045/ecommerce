@@ -11,12 +11,15 @@ import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.Resource;
+import net.datafaker.Faker;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
 public final class Fixture {
+
+    private static final Faker faker = new Faker();
 
     private Fixture() {
     }
@@ -138,83 +141,71 @@ public final class Fixture {
 
     public static final class Products {
 
-        private static final Product tshirt = Product.newProduct(
+        private static final Product TSHIRT = Product.newProduct(
                 "Camiseta",
                 "Camiseta de algodão",
                 BigDecimal.valueOf(10.0),
                 50,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
-                        ProductColor.with("1", "Red"),
-                        ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
+                        ProductColor.with(faker.color().name()),
+                        ProductSize.with(faker.options()
+                                        .option("P", "M", "G", "GG", "XG"),
+                                faker.random().nextDouble(),
+                                faker.random().nextDouble(),
+                                faker.random().nextDouble(),
+                                faker.random().nextDouble()),
                         "Camiseta"))
         );
 
-        private static final ProductImage imageBannerType = ProductImage.with(
-                IdUtils.generate(),
-                "image-one.jpg",
-                "BANNER-image-one.jpg",
-                "https://localhost.com/BANNER-image-one.jpg"
-        );
-
-        private static final ProductImageResource imageBannerTypeResource = ProductImageResource.with(
-                Resource.with(
-                        "image-one".getBytes(),
-                        "image/png",
-                        "image-one.jpg"
-                ),
-                ProductImageType.BANNER
-        );
-
-        private static final ProductImage imageGalleryType = ProductImage.with(
-                IdUtils.generate(),
-                "image-two.jpg",
-                "GALLERY-image-one.jpg",
-                "https://localhost.com/GALLERY-image-one.jpg"
-        );
-
-        private static final ProductImageResource imageGalleryTypeResource = ProductImageResource.with(
-                Resource.with(
-                        "image-two".getBytes(),
-                        "image/png",
-                        "image-two.jpg"
-                ),
-                ProductImageType.GALLERY
+        private static final Product BOOK = Product.newProduct(
+                "Livro",
+                "Livro de teste",
+                BigDecimal.valueOf(faker.random().nextDouble()),
+                faker.random().nextInt(),
+                CategoryID.unique(),
+                Set.of(ProductAttributes.create(
+                        ProductColor.with(faker.color().name()),
+                        ProductSize.with(faker.options()
+                                        .option("M", "G"),
+                                faker.random().nextDouble(),
+                                faker.random().nextDouble(),
+                                faker.random().nextDouble(),
+                                faker.random().nextDouble()),
+                        "Livro"))
         );
 
         public static Product tshirt() {
-            return Product.with(tshirt);
+            return Product.with(TSHIRT);
         }
 
-        public static ProductImage imageBannerType() {
-            return ProductImage.with(
-                    imageBannerType.id(),
-                    imageBannerType.name(),
-                    imageBannerType.location(),
-                    imageBannerType.url()
-            );
+        public static Product book() {
+            return Product.with(BOOK);
         }
 
-        public static ProductImageResource imageBannerTypeResource() {
+        public static ProductImageResource productImageResource(final ProductImageType aType) {
             return ProductImageResource.with(
-                    imageBannerTypeResource.resource(),
-                    imageBannerTypeResource.type()
+                    resource(),
+                    aType
             );
         }
 
-        public static ProductImage imageGalleryType() {
+        public static ProductImage productImage(final ProductImageType aType) {
+            final var aName = faker.name().title();
+            final var aLocation = aType.name().concat("-").concat(aName).concat(".jpg");
             return ProductImage.with(
-                    imageGalleryType.id(),
-                    imageGalleryType.name(),
-                    imageGalleryType.location(),
-                    imageGalleryType.url()
+                    aName,
+                    "/images/".concat(aLocation),
+                    "https://localhost:8080/".concat(aLocation)
             );
         }
 
-        public static ProductImageResource imageGalleryTypeResource() {
-            return ProductImageResource.with(
-                    imageGalleryTypeResource.resource(),
-                    imageGalleryTypeResource.type()
+        public static Resource resource() {
+            final var aName = faker.name().title();
+            return Resource.with(
+                    aName.getBytes(),
+                    "image/png",
+                    aName.concat(".jpg")
             );
         }
     }

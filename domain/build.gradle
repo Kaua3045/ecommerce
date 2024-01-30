@@ -6,6 +6,7 @@ plugins {
 group = 'com.kaua.ecommerce.domain'
 
 dependencies {
+    implementation 'net.datafaker:datafaker:2.0.1'
 }
 
 configurations {

@@ -5,10 +5,7 @@ import com.kaua.ecommerce.application.gateways.MediaResourceGateway;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.CategoryID;
-import com.kaua.ecommerce.domain.product.Product;
-import com.kaua.ecommerce.domain.product.ProductAttributes;
-import com.kaua.ecommerce.domain.product.ProductColor;
-import com.kaua.ecommerce.domain.product.ProductSize;
+import com.kaua.ecommerce.domain.product.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -49,8 +46,8 @@ public class DeleteProductUseCaseTest extends UseCaseTest {
                         "aName"
                 ))
         );
-        aProduct.changeBannerImage(Fixture.Products.imageBannerType());
-        aProduct.addImage(Fixture.Products.imageGalleryType());
+        aProduct.changeBannerImage(Fixture.Products.productImage(ProductImageType.BANNER));
+        aProduct.addImage(Fixture.Products.productImage(ProductImageType.GALLERY));
 
         final var aProductID = aProduct.getId().getValue();
 

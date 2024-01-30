@@ -3,6 +3,7 @@ package com.kaua.ecommerce.application.product.media.upload;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
 import com.kaua.ecommerce.domain.Fixture;
+import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
@@ -33,7 +34,7 @@ public class UploadProductImageUseCaseIT {
 
         final var aCommand = UploadProductImageCommand.with(
                 aProductId,
-                List.of(Fixture.Products.imageBannerTypeResource())
+                List.of(Fixture.Products.productImageResource(ProductImageType.BANNER))
         );
 
         // when
@@ -59,7 +60,7 @@ public class UploadProductImageUseCaseIT {
 
         final var aCommand = UploadProductImageCommand.with(
                 aProductId,
-                List.of(Fixture.Products.imageGalleryTypeResource())
+                List.of(Fixture.Products.productImageResource(ProductImageType.GALLERY))
         );
 
         // when

@@ -2,10 +2,7 @@ package com.kaua.ecommerce.infrastructure.product.persistence;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.CategoryID;
-import com.kaua.ecommerce.domain.product.Product;
-import com.kaua.ecommerce.domain.product.ProductAttributes;
-import com.kaua.ecommerce.domain.product.ProductColor;
-import com.kaua.ecommerce.domain.product.ProductSize;
+import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.infrastructure.DatabaseGatewayTest;
 import org.hibernate.PropertyValueException;
 import org.hibernate.id.IdentifierGenerationException;
@@ -308,7 +305,7 @@ public class ProductJpaRepositoryTest {
                         ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
                         "Product Name"))
         );
-        aProduct.addImage(Fixture.Products.imageBannerType());
+        aProduct.addImage(Fixture.Products.productImage(ProductImageType.BANNER));
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
         aEntity.setImages(Set.of());
@@ -332,7 +329,7 @@ public class ProductJpaRepositoryTest {
         final var expectedErrorMessage = "ids for this class must be manually assigned before calling save(): com.kaua.ecommerce.infrastructure.product.persistence.ProductImageJpaEntity";
 
         final var aProduct = Fixture.Products.tshirt();
-        aProduct.addImage(Fixture.Products.imageBannerType());
+        aProduct.addImage(Fixture.Products.productImage(ProductImageType.BANNER));
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
         final var aProductImage = aEntity.getImages().stream().findFirst().get().getImage();
@@ -350,7 +347,7 @@ public class ProductJpaRepositoryTest {
     @Test
     void givenAValidProductImageValues_whenCallSave_shouldReturnProductWithProductImages() {
         final var aProduct = Fixture.Products.tshirt();
-        aProduct.addImage(Fixture.Products.imageBannerType());
+        aProduct.addImage(Fixture.Products.productImage(ProductImageType.BANNER));
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
         final var aProductImage = aEntity.getImages().stream().findFirst().get().getImage();
@@ -397,7 +394,7 @@ public class ProductJpaRepositoryTest {
                         ProductSize.with("1", "M", 0.5, 0.5, 0.5, 0.5),
                         "Product Name"))
         );
-        aProduct.changeBannerImage(Fixture.Products.imageBannerType());
+        aProduct.changeBannerImage(Fixture.Products.productImage(ProductImageType.BANNER));
 
         final var aEntity = ProductJpaEntity.toEntity(aProduct);
         aEntity.setBannerImage(null);

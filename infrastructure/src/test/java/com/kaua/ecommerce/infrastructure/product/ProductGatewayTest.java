@@ -90,7 +90,7 @@ public class ProductGatewayTest {
                         ProductSize.with("M", 0.5, 0.5, 0.5, 0.5),
                         "Product Name")));
 
-        final var aProductImage = Fixture.Products.imageBannerType();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.BANNER);
         aProduct.addImage(aProductImage);
 
         this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
@@ -151,7 +151,7 @@ public class ProductGatewayTest {
     @Test
     void givenAValidProductWithImages_whenCallUpdate_shouldUpdateProduct() {
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImage = Fixture.Products.imageBannerType();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.BANNER);
 
         this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
 
@@ -180,7 +180,7 @@ public class ProductGatewayTest {
     @Test
     void givenAValidProductId_whenCallDelete_shouldBeOk() {
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImage = Fixture.Products.imageGalleryType();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.GALLERY);
         aProduct.addImage(aProductImage);
 
         this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
@@ -205,7 +205,7 @@ public class ProductGatewayTest {
                         aProductColor,
                         ProductSize.with("2", "M", 0.5, 0.5, 0.5, 0.5),
                         "Product Name")));
-        final var aProductImage = Fixture.Products.imageGalleryType();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.GALLERY);
         aProduct.addImage(aProductImage);
 
         this.productGateway.create(aProduct);

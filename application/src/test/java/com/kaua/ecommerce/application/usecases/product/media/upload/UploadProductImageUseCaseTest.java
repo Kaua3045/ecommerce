@@ -35,9 +35,9 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidParamsWithBannerType_whenCallExecuteWithProductContainsBannerImage_shouldUploadProductImage() {
-        final var aProductImage = Fixture.Products.imageBannerType();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.BANNER);
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImageResource = Fixture.Products.imageBannerTypeResource();
+        final var aProductImageResource = Fixture.Products.productImageResource(ProductImageType.BANNER);
         aProduct.changeBannerImage(ProductImage.with(
                 "image.png",
                 "BANNER-image.png",
@@ -70,9 +70,9 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidParamsWithBannerType_whenCallExecuteWithProductNotContainsBannerImage_shouldUploadProductImage() {
-        final var aProductImage = Fixture.Products.imageBannerType();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.BANNER);
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImageResource = Fixture.Products.imageBannerTypeResource();
+        final var aProductImageResource = Fixture.Products.productImageResource(ProductImageType.BANNER);
 
         final var aProductId = aProduct.getId().getValue();
 
@@ -99,9 +99,9 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidParamsWithGalleryType_whenCallExecute_shouldUploadProductImage() {
-        final var aProductImage = Fixture.Products.imageGalleryType();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.GALLERY);
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImageResource = Fixture.Products.imageGalleryTypeResource();
+        final var aProductImageResource = Fixture.Products.productImageResource(ProductImageType.GALLERY);
 
         final var aProductId = aProduct.getId().getValue();
 
@@ -161,14 +161,14 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
     @Test
     void givenAValidTwoGalleryImages_whenCallUploadProductImageExecute_shouldUploadProductImage() {
-        final var aProductImage = Fixture.Products.imageGalleryType();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.GALLERY);
         final var aProductImageTwo = ProductImage.with(
                 "image2.png",
                 "GALLERY-image2.png",
                 "http://localhost:8080/GALLERY-image2.png"
         );
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImageResource = Fixture.Products.imageGalleryTypeResource();
+        final var aProductImageResource = Fixture.Products.productImageResource(ProductImageType.GALLERY);
         final var aProductImageResourceTwo = ProductImageResource.with(
                 Resource.with(
                         "content".getBytes(),
@@ -207,7 +207,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
     @Test
     void givenAnInvalidTwoBannerImages_whenCallUploadProductImageExecute_shouldThrowDomainException() {
         final var aProduct = Fixture.Products.tshirt();
-        final var aProductImageResource = Fixture.Products.imageBannerTypeResource();
+        final var aProductImageResource = Fixture.Products.productImageResource(ProductImageType.BANNER);
         final var aProductImageResourceTwo = ProductImageResource.with(
                 Resource.with(
                         "content".getBytes(),

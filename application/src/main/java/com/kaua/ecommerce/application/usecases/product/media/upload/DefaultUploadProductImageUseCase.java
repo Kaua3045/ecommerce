@@ -8,6 +8,7 @@ import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductImageResource;
 import com.kaua.ecommerce.domain.product.ProductImageType;
+import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.domain.validation.Error;
 
 import java.util.List;
@@ -47,6 +48,7 @@ public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase 
         });
 
         this.productGateway.update(aProduct);
+        aProduct.registerEvent(ProductUpdatedEvent.from(aProduct));
 
         return UploadProductImageOutput.from(aProduct);
     }

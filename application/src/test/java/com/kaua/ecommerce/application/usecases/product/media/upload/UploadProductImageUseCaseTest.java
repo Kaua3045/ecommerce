@@ -64,6 +64,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(mediaResourceGateway, Mockito.times(1)).storeImage(aProduct.getId(), aProductImageResource);
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.equals(aProductImage.id(), aCmd.getBannerImage().get().id())
                         && Objects.equals(aProductImage.location(), aCmd.getBannerImage().get().location())));
     }
@@ -93,6 +94,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(mediaResourceGateway, Mockito.times(1)).storeImage(aProduct.getId(), aProductImageResource);
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.equals(aProductImage.id(), aCmd.getBannerImage().get().id())
                         && Objects.equals(aProductImage.location(), aCmd.getBannerImage().get().location())));
     }
@@ -122,6 +124,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(mediaResourceGateway, Mockito.times(1)).storeImage(aProduct.getId(), aProductImageResource);
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.equals(1, aCmd.getImages().size())
                         && Objects.equals(aProductImage.id(), aCmd.getImages().stream().findFirst().get().id())
                         && Objects.equals(aProductImage.name(), aCmd.getImages().stream().findFirst().get().name())
@@ -201,6 +204,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(mediaResourceGateway, Mockito.times(2)).storeImage(Mockito.any(), Mockito.any());
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.equals(2, aCmd.getImages().size())));
     }
 

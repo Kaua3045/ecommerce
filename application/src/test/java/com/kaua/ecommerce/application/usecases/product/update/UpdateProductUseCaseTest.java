@@ -72,6 +72,7 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(1, aCmd.getAttributes().size())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
     }
@@ -187,6 +188,7 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(1, aCmd.getAttributes().size())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
     }
@@ -230,6 +232,7 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(1, aCmd.getAttributes().size())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
     }
@@ -381,6 +384,7 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(1, aCmd.getAttributes().size())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
     }
@@ -494,6 +498,7 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aProduct.getCategoryId().getValue())
                         && Objects.equals(1, aCmd.getAttributes().size())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
     }
@@ -535,6 +540,7 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aProduct.getCategoryId().getValue())
                         && Objects.equals(1, aCmd.getAttributes().size())
+                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
     }

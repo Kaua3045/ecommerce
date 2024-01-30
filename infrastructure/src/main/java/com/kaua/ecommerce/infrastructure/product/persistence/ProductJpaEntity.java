@@ -32,6 +32,10 @@ public class ProductJpaEntity {
     @Column(name = "category_id", nullable = false)
     private String categoryId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ProductStatus status;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<ProductAttributesJpaEntity> attributes;
 
@@ -57,6 +61,7 @@ public class ProductJpaEntity {
             final BigDecimal price,
             final int quantity,
             final String categoryId,
+            final ProductStatus status,
             final ProductImageJpaEntity bannerImage,
             final Instant createdAt,
             final Instant updatedAt
@@ -67,6 +72,7 @@ public class ProductJpaEntity {
         this.price = price;
         this.quantity = quantity;
         this.categoryId = categoryId;
+        this.status = status;
         this.attributes = new HashSet<>();
         this.bannerImage = bannerImage;
         this.images = new HashSet<>();
@@ -82,6 +88,7 @@ public class ProductJpaEntity {
                 aProduct.getPrice(),
                 aProduct.getQuantity(),
                 aProduct.getCategoryId().getValue(),
+                aProduct.getStatus(),
                 aProduct.getBannerImage().map(ProductImageJpaEntity::toEntity).orElse(null),
                 aProduct.getCreatedAt(),
                 aProduct.getUpdatedAt()
@@ -104,6 +111,7 @@ public class ProductJpaEntity {
                 getImagesToDomain(),
                 getCategoryId(),
                 getAttributesToDomain(),
+                getStatus(),
                 getCreatedAt(),
                 getUpdatedAt()
         );
@@ -189,6 +197,14 @@ public class ProductJpaEntity {
 
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public ProductStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProductStatus status) {
+        this.status = status;
     }
 
     public Set<ProductAttributesJpaEntity> getAttributes() {

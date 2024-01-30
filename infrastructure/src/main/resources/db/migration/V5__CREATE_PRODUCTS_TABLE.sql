@@ -13,6 +13,7 @@ CREATE TABLE products (
     quantity integer NOT NULL,
     category_id VARCHAR(36) NOT NULL,
     banner_image_id VARCHAR(36),
+    status VARCHAR(20) NOT NULL,
     created_at DATETIME(6) NOT NULL,
     updated_at DATETIME(6) NOT NULL
 );

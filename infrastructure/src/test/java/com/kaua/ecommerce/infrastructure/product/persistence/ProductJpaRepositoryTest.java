@@ -413,4 +413,24 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
         Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
     }
+
+    @Test
+    void givenAnInvalidNullStatus_whenCallSave_shouldReturnAnException() {
+        final var expectedPropertyName = "status";
+        final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity.status";
+
+        final var aProduct = Fixture.Products.book();
+
+        final var aEntity = ProductJpaEntity.toEntity(aProduct);
+        aEntity.setStatus(null);
+
+        final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> productRepository.save(aEntity));
+
+        final var actualCause = Assertions.assertInstanceOf(PropertyValueException.class,
+                actualException.getCause());
+
+        Assertions.assertEquals(expectedPropertyName, actualCause.getPropertyName());
+        Assertions.assertEquals(expectedErrorMessage, actualCause.getMessage());
+    }
 }

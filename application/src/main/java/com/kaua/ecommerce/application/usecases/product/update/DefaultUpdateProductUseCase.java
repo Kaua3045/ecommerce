@@ -1,11 +1,13 @@
 package com.kaua.ecommerce.application.usecases.product.update;
 
 import com.kaua.ecommerce.application.either.Either;
+import com.kaua.ecommerce.application.exceptions.ProductIsDeletedException;
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
+import com.kaua.ecommerce.domain.product.ProductStatus;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 
@@ -26,6 +28,10 @@ public class DefaultUpdateProductUseCase extends UpdateProductUseCase {
         final var aNotification = NotificationHandler.create();
         final var aProduct = this.productGateway.findById(input.id())
                 .orElseThrow(NotFoundException.with(Product.class, input.id()));
+
+        if (aProduct.getStatus().equals(ProductStatus.DELETED)) {
+            throw new ProductIsDeletedException();
+        }
 
         final var aCategoryId = input.categoryId() == null || input.categoryId().isBlank()
                 ? aProduct.getCategoryId()

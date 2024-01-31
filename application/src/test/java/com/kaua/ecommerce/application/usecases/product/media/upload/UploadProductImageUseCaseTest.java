@@ -8,6 +8,7 @@ import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.product.ProductImage;
 import com.kaua.ecommerce.domain.product.ProductImageResource;
 import com.kaua.ecommerce.domain.product.ProductImageType;
+import com.kaua.ecommerce.domain.product.ProductStatus;
 import com.kaua.ecommerce.domain.utils.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -228,6 +229,36 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         final var aCommand = UploadProductImageCommand.with(
                 aProductId,
                 List.of(aProductImageResource, aProductImageResourceTwo)
+        );
+
+        Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
+
+        final var aException = Assertions.assertThrows(DomainException.class,
+                () -> this.uploadProductImageUseCase.execute(aCommand));
+
+        Assertions.assertNotNull(aException);
+        Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
+
+        Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
+        Mockito.verify(mediaResourceGateway, Mockito.times(0)).clearImage(Mockito.any());
+        Mockito.verify(mediaResourceGateway, Mockito.times(0)).storeImage(Mockito.any(), Mockito.any());
+        Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
+    }
+
+    @Test
+    void givenAnInvalidProductAsMarkedToDeleted_whenCallUploadProductImageExecute_shouldThrowDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        aProduct.updateStatus(ProductStatus.DELETED);
+
+        final var aProductImageResource = Fixture.Products.productImageResource(ProductImageType.BANNER);
+
+        final var aProductId = aProduct.getId().getValue();
+
+        final var expectedErrorMessage = "Product is deleted";
+
+        final var aCommand = UploadProductImageCommand.with(
+                aProductId,
+                List.of(aProductImageResource)
         );
 
         Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));

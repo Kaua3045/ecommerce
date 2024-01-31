@@ -3,10 +3,14 @@ package com.kaua.ecommerce.application.usecases.product.update;
 import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
+import com.kaua.ecommerce.domain.product.ProductImageType;
+import com.kaua.ecommerce.domain.product.ProductStatus;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -16,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -543,5 +548,36 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                         && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
+    }
+
+    @Test
+    void givenAnInvalidProductAsMarkedToDeleted_whenCallUpdateProductExecute_shouldThrowDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        aProduct.updateStatus(ProductStatus.DELETED);
+
+        final var aProductId = aProduct.getId().getValue();
+
+        final var expectedErrorMessage = "Product is deleted";
+
+        final var aCommand = UpdateProductCommand.with(
+                aProductId,
+                "Camiseta larga",
+                aProduct.getDescription(),
+                aProduct.getPrice(),
+                aProduct.getQuantity(),
+                aProduct.getCategoryId().getValue()
+        );
+
+        Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
+
+        final var aException = Assertions.assertThrows(DomainException.class,
+                () -> this.updateProductUseCase.execute(aCommand));
+
+        Assertions.assertNotNull(aException);
+        Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
+
+        Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
+        Mockito.verify(categoryGateway, Mockito.times(0)).findById(Mockito.any());
+        Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
     }
 }

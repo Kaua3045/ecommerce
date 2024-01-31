@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.application.usecases.product.media.upload;
 
 import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedException;
+import com.kaua.ecommerce.application.exceptions.ProductIsDeletedException;
 import com.kaua.ecommerce.application.gateways.MediaResourceGateway;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
@@ -8,6 +9,7 @@ import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductImageResource;
 import com.kaua.ecommerce.domain.product.ProductImageType;
+import com.kaua.ecommerce.domain.product.ProductStatus;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.domain.validation.Error;
 
@@ -33,6 +35,10 @@ public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase 
                 .orElseThrow(NotFoundException.with(Product.class, input.productId()));
         final var aProductId = aProduct.getId();
         final var aResource = input.productImagesResources();
+
+        if (aProduct.getStatus().equals(ProductStatus.DELETED)) {
+            throw new ProductIsDeletedException();
+        }
 
         validateBannerImage(aResource);
 

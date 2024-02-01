@@ -45,7 +45,7 @@ public interface ProductAPI {
     })
     ResponseEntity<?> uploadProductImageByType(
             @PathVariable String id,
-            @PathVariable String type,
+            @Parameter(description = "Accepted types (banner and gallery") @PathVariable String type,
             @RequestParam("media_file") List<MultipartFile> media
     );
 

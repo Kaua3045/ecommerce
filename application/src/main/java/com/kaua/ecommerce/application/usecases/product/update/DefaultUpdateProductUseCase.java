@@ -30,7 +30,7 @@ public class DefaultUpdateProductUseCase extends UpdateProductUseCase {
                 .orElseThrow(NotFoundException.with(Product.class, input.id()));
 
         if (aProduct.getStatus().equals(ProductStatus.DELETED)) {
-            throw new ProductIsDeletedException();
+            throw ProductIsDeletedException.with(aProduct.getId());
         }
 
         final var aCategoryId = input.categoryId() == null || input.categoryId().isBlank()

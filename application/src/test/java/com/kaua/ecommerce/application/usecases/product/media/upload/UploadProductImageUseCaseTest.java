@@ -254,7 +254,7 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
         final var aProductId = aProduct.getId().getValue();
 
-        final var expectedErrorMessage = "Product is deleted";
+        final var expectedErrorMessage = "Product with id %s is deleted".formatted(aProductId);
 
         final var aCommand = UploadProductImageCommand.with(
                 aProductId,

@@ -11,6 +11,8 @@ import com.kaua.ecommerce.application.usecases.product.media.upload.DefaultUploa
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.DefaultUpdateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductUseCase;
+import com.kaua.ecommerce.application.usecases.product.update.status.DefaultUpdateProductStatusUseCase;
+import com.kaua.ecommerce.application.usecases.product.update.status.UpdateProductStatusUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,6 +48,11 @@ public class ProductUseCaseConfig {
     @Bean
     public UpdateProductUseCase updateProductUseCase() {
         return new DefaultUpdateProductUseCase(productGateway, categoryGateway);
+    }
+
+    @Bean
+    public UpdateProductStatusUseCase updateProductStatusUseCase() {
+        return new DefaultUpdateProductStatusUseCase(productGateway);
     }
 
     @Bean

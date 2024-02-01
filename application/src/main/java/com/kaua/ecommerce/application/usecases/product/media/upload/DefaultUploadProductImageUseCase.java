@@ -37,7 +37,7 @@ public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase 
         final var aResource = input.productImagesResources();
 
         if (aProduct.getStatus().equals(ProductStatus.DELETED)) {
-            throw new ProductIsDeletedException();
+            throw ProductIsDeletedException.with(aProductId);
         }
 
         validateBannerImage(aResource);

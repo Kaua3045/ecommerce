@@ -13,8 +13,12 @@ import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProduc
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductOutput;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductUseCase;
+import com.kaua.ecommerce.application.usecases.product.update.status.UpdateProductStatusCommand;
+import com.kaua.ecommerce.application.usecases.product.update.status.UpdateProductStatusOutput;
+import com.kaua.ecommerce.application.usecases.product.update.status.UpdateProductStatusUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductImageType;
@@ -68,6 +72,9 @@ public class ProductAPITest {
 
     @MockBean
     private DeleteProductUseCase deleteProductUseCase;
+
+    @MockBean
+    private UpdateProductStatusUseCase updateProductStatusUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
@@ -1346,5 +1353,123 @@ public class ProductAPITest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(deleteProductUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidCommand_whenCallUpdateProductStatus_thenReturnStatusOkAndProductId() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+
+        final var aId = aProduct.getId().getValue();
+        final var aStatus = "inactive";
+
+        Mockito.when(updateProductStatusUseCase.execute(Mockito.any()))
+                .thenReturn(UpdateProductStatusOutput.from(aProduct));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}/{status}", aId, aStatus)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductStatusCommand.class);
+
+        Mockito.verify(updateProductStatusUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aStatus, actualCmd.status());
+    }
+
+    @Test
+    void givenAnInvalidProductId_whenCallUpdateProductStatus_thenThrowNotFoundException() throws Exception {
+        final var aId = "1";
+        final var aStatus = "inactive";
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Product.class, aId);
+
+        Mockito.when(updateProductStatusUseCase.execute(Mockito.any()))
+                .thenThrow(NotFoundException.with(Product.class, aId).get());
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}/{status}", aId, aStatus)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductStatusCommand.class);
+
+        Mockito.verify(updateProductStatusUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aStatus, actualCmd.status());
+    }
+
+    @Test
+    void givenAnInvalidStatus_whenCallUpdateProductStatus_thenThrowDomainException() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+
+        final var aId = aProduct.getId().getValue();
+        final var aStatus = "INVALID";
+
+        final var expectedErrorMessage = "status INVALID was not found";
+
+        Mockito.when(updateProductStatusUseCase.execute(Mockito.any()))
+                .thenThrow(DomainException.with(new Error(expectedErrorMessage)));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}/{status}", aId, aStatus)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductStatusCommand.class);
+
+        Mockito.verify(updateProductStatusUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aStatus, actualCmd.status());
+    }
+
+    @Test
+    void givenAnInvalidStatusIsDeleted_whenCallUpdateProductStatus_thenThrowDomainException() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+
+        final var aId = aProduct.getId().getValue();
+        final var aStatus = "deleted";
+
+        final var expectedErrorMessage = "status DELETED is not allowed to be set";
+
+        Mockito.when(updateProductStatusUseCase.execute(Mockito.any()))
+                .thenThrow(DomainException.with(new Error(expectedErrorMessage)));
+
+        final var request = MockMvcRequestBuilders.patch("/products/{id}/{status}", aId, aStatus)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductStatusCommand.class);
+
+        Mockito.verify(updateProductStatusUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aId, actualCmd.id());
+        Assertions.assertEquals(aStatus, actualCmd.status());
     }
 }

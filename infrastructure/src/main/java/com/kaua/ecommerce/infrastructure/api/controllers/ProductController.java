@@ -6,6 +6,8 @@ import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProduc
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductUseCase;
+import com.kaua.ecommerce.application.usecases.product.update.status.UpdateProductStatusCommand;
+import com.kaua.ecommerce.application.usecases.product.update.status.UpdateProductStatusUseCase;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.product.ProductImageResource;
 import com.kaua.ecommerce.domain.product.ProductImageType;
@@ -28,17 +30,20 @@ public class ProductController implements ProductAPI {
     private final UploadProductImageUseCase uploadProductImageUseCase;
     private final UpdateProductUseCase updateProductUseCase;
     private final DeleteProductUseCase deleteProductUseCase;
+    private final UpdateProductStatusUseCase updateProductStatusUseCase;
 
     public ProductController(
             final CreateProductUseCase createProductUseCase,
             final UploadProductImageUseCase uploadProductImageUseCase,
             final UpdateProductUseCase updateProductUseCase,
-            final DeleteProductUseCase deleteProductUseCase
+            final DeleteProductUseCase deleteProductUseCase,
+            final UpdateProductStatusUseCase updateProductStatusUseCase
     ) {
         this.createProductUseCase = createProductUseCase;
         this.uploadProductImageUseCase = uploadProductImageUseCase;
         this.updateProductUseCase = updateProductUseCase;
         this.deleteProductUseCase = deleteProductUseCase;
+        this.updateProductStatusUseCase = updateProductStatusUseCase;
     }
 
     @Override
@@ -88,6 +93,14 @@ public class ProductController implements ProductAPI {
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.ok(aResult.getRight());
+    }
+
+    @Override
+    public ResponseEntity<?> updateProductStatus(String id, String status) {
+        final var aResult = this.updateProductStatusUseCase.execute(UpdateProductStatusCommand.with(
+                id, status));
+
+        return ResponseEntity.status(HttpStatus.OK).body(aResult);
     }
 
     @Override

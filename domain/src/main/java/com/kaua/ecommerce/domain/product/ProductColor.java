@@ -23,11 +23,11 @@ public class ProductColor extends ValueObject {
         return new ProductColor(id, color.toUpperCase());
     }
 
-    public String id() {
+    public String getId() {
         return id;
     }
 
-    public String color() {
+    public String getColor() {
         return color;
     }
 }

@@ -50,12 +50,12 @@ public class ProductAttributes extends ValueObject {
     }
 
     private static String processProductColor(final ProductColor color) {
-        return color == null ? DEFAULT_SKU_VALUE : color.color().trim()
+        return color == null ? DEFAULT_SKU_VALUE : color.getColor().trim()
                 .replaceAll(REMOVE_WHITE_SPACES, "").toUpperCase();
     }
 
     private static String processProductSize(final ProductSize size) {
-        return size == null ? DEFAULT_SKU_VALUE : size.size().trim()
+        return size == null ? DEFAULT_SKU_VALUE : size.getSize().trim()
                 .replaceAll(REMOVE_WHITE_SPACES, "").toUpperCase();
     }
 
@@ -72,16 +72,16 @@ public class ProductAttributes extends ValueObject {
         return aProductNameFirstCharactersStrBuilder.toString().toUpperCase();
     }
 
-    public String sku() {
-        return sku;
-    }
-
-    public ProductColor color() {
+    public ProductColor getColor() {
         return color;
     }
 
-    public ProductSize size() {
+    public ProductSize getSize() {
         return size;
+    }
+
+    public String getSku() {
+        return sku;
     }
 
     @Override
@@ -94,6 +94,6 @@ public class ProductAttributes extends ValueObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(color, size, sku);
+        return Objects.hash(getColor(), getSize(), getSku());
     }
 }

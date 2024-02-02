@@ -51,27 +51,27 @@ public class ProductSize extends ValueObject {
         return new ProductSize(id, size.toUpperCase(), weight, height, width, depth);
     }
 
-    public String id() {
+    public String getId() {
         return id;
     }
 
-    public String size() {
+    public String getSize() {
         return size;
     }
 
-    public double weight() {
+    public double getWeight() {
         return weight;
     }
 
-    public double height() {
+    public double getHeight() {
         return height;
     }
 
-    public double width() {
+    public double getWidth() {
         return width;
     }
 
-    public double depth() {
+    public double getDepth() {
         return depth;
     }
 }

@@ -64,8 +64,8 @@ public class ProductColorJpaRepositoryTest {
 
         final var aPersistedProductColor = this.productColorRepository.save(aEntity).toDomain();
 
-        Assertions.assertEquals(aProductColor.id(), aPersistedProductColor.id());
-        Assertions.assertEquals(aProductColor.color(), aPersistedProductColor.color());
+        Assertions.assertEquals(aProductColor.getId(), aPersistedProductColor.getId());
+        Assertions.assertEquals(aProductColor.getColor(), aPersistedProductColor.getColor());
         Assertions.assertEquals(1, this.productColorRepository.count());
     }
 }

@@ -269,12 +269,12 @@ public class ProductJpaRepositoryTest {
         aProductSize.setDepth(1.0);
         final var aProductSizeDomain = aProductSize.toDomain();
 
-        Assertions.assertEquals(aProductSize.getId(), aProductSizeDomain.id());
-        Assertions.assertEquals(aProductSize.getSize(), aProductSizeDomain.size());
-        Assertions.assertEquals(aProductSize.getWeight(), aProductSizeDomain.weight());
-        Assertions.assertEquals(aProductSize.getHeight(), aProductSizeDomain.height());
-        Assertions.assertEquals(aProductSize.getWidth(), aProductSizeDomain.width());
-        Assertions.assertEquals(aProductSize.getDepth(), aProductSizeDomain.depth());
+        Assertions.assertEquals(aProductSize.getId(), aProductSizeDomain.getId());
+        Assertions.assertEquals(aProductSize.getSize(), aProductSizeDomain.getSize());
+        Assertions.assertEquals(aProductSize.getWeight(), aProductSizeDomain.getWeight());
+        Assertions.assertEquals(aProductSize.getHeight(), aProductSizeDomain.getHeight());
+        Assertions.assertEquals(aProductSize.getWidth(), aProductSizeDomain.getWidth());
+        Assertions.assertEquals(aProductSize.getDepth(), aProductSizeDomain.getDepth());
 
         Assertions.assertEquals(0, productRepository.count());
 
@@ -357,9 +357,9 @@ public class ProductJpaRepositoryTest {
 
         final var aProductImageDomain = aProductImage.toDomain();
 
-        Assertions.assertEquals(aProductImage.getId(), aProductImageDomain.id());
-        Assertions.assertEquals(aProductImage.getName(), aProductImageDomain.name());
-        Assertions.assertEquals(aProductImage.getLocation(), aProductImageDomain.location());
+        Assertions.assertEquals(aProductImage.getId(), aProductImageDomain.getId());
+        Assertions.assertEquals(aProductImage.getName(), aProductImageDomain.getName());
+        Assertions.assertEquals(aProductImage.getLocation(), aProductImageDomain.getLocation());
 
         Assertions.assertEquals(0, productRepository.count());
 

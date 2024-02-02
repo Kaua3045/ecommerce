@@ -21,7 +21,7 @@ public class ProductColorJpaEntity {
     }
 
     public static ProductColorJpaEntity toEntity(final ProductColor aProductColor) {
-        return new ProductColorJpaEntity(aProductColor.id(), aProductColor.color());
+        return new ProductColorJpaEntity(aProductColor.getId(), aProductColor.getColor());
     }
 
     public ProductColor toDomain() {

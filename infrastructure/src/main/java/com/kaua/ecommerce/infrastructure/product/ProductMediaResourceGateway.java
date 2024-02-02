@@ -35,13 +35,13 @@ public class ProductMediaResourceGateway implements MediaResourceGateway {
 
     @Override
     public void clearImage(ProductImage aImage) {
-        this.storageService.delete(aImage.location());
+        this.storageService.delete(aImage.getLocation());
     }
 
     @Override
     public void clearImages(Set<ProductImage> aImages) {
         final var aLocations = aImages.stream()
-                .map(ProductImage::location)
+                .map(ProductImage::getLocation)
                 .toList();
         this.storageService.deleteAllByLocation(aLocations);
     }
@@ -61,7 +61,7 @@ public class ProductMediaResourceGateway implements MediaResourceGateway {
 
     private void store(final ProductImage aProductImage, final ProductImageResource aResource) {
         final var aImageResource = aResource.resource();
-        this.storageService.store(aProductImage.location(), aImageResource);
+        this.storageService.store(aProductImage.getLocation(), aImageResource);
     }
 
     public String getProviderUrl() {

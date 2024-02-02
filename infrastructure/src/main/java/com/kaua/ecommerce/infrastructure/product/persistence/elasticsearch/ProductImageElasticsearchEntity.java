@@ -1,32 +1,30 @@
-package com.kaua.ecommerce.infrastructure.product.persistence;
+package com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch;
 
 import com.kaua.ecommerce.domain.product.ProductImage;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.util.Objects;
-
-@Entity
-@Table(name = "products_images")
-public class ProductImageJpaEntity {
+@Document(indexName = "product_images")
+public class ProductImageElasticsearchEntity {
 
     @Id
     private String id;
 
-    @Column(name = "name", nullable = false)
+    @Field(name = "name", type = FieldType.Text)
     private String name;
 
-    @Column(name = "location", nullable = false)
+    @Field(name = "location", type = FieldType.Text)
     private String location;
 
-    @Column(name = "url", nullable = false)
+    @Field(name = "url", type = FieldType.Text)
     private String url;
 
-    public ProductImageJpaEntity() {}
+    public ProductImageElasticsearchEntity() {
+    }
 
-    private ProductImageJpaEntity(
+    private ProductImageElasticsearchEntity(
             final String id,
             final String name,
             final String location,
@@ -38,8 +36,8 @@ public class ProductImageJpaEntity {
         this.url = url;
     }
 
-    public static ProductImageJpaEntity toEntity(ProductImage aProductImage) {
-        return new ProductImageJpaEntity(
+    public static ProductImageElasticsearchEntity toEntity(ProductImage aProductImage) {
+        return new ProductImageElasticsearchEntity(
                 aProductImage.getId(),
                 aProductImage.getName(),
                 aProductImage.getLocation(),
@@ -60,20 +58,20 @@ public class ProductImageJpaEntity {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
     public void setId(String id) {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public void setLocation(String location) {

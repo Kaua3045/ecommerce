@@ -1,36 +1,36 @@
-package com.kaua.ecommerce.infrastructure.product.persistence;
+package com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch;
 
 import com.kaua.ecommerce.domain.product.ProductSize;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Entity
-@Table(name = "products_sizes")
-public class ProductSizeJpaEntity {
+@Document(indexName = "product_sizes")
+public class ProductSizeElasticsearchEntity {
 
     @Id
     private String id;
 
-    @Column(name = "size_name", nullable = false)
+    @Field(name = "size", type = FieldType.Text)
     private String size;
 
-    @Column(name = "weight", nullable = false)
+    @Field(name = "weight", type = FieldType.Double)
     private double weight;
 
-    @Column(name = "height", nullable = false)
+    @Field(name = "height", type = FieldType.Double)
     private double height;
 
-    @Column(name = "width", nullable = false)
+    @Field(name = "width", type = FieldType.Double)
     private double width;
 
-    @Column(name = "depth", nullable = false)
+    @Field(name = "depth", type = FieldType.Double)
     private double depth;
 
-    public ProductSizeJpaEntity() {}
+    public ProductSizeElasticsearchEntity() {
+    }
 
-    private ProductSizeJpaEntity(
+    private ProductSizeElasticsearchEntity(
             final String id,
             final String size,
             final double weight,
@@ -46,8 +46,8 @@ public class ProductSizeJpaEntity {
         this.depth = depth;
     }
 
-    public static ProductSizeJpaEntity toEntity(final ProductSize aProductSize) {
-        return new ProductSizeJpaEntity(
+    public static ProductSizeElasticsearchEntity toEntity(final ProductSize aProductSize) {
+        return new ProductSizeElasticsearchEntity(
                 aProductSize.getId(),
                 aProductSize.getSize(),
                 aProductSize.getWeight(),

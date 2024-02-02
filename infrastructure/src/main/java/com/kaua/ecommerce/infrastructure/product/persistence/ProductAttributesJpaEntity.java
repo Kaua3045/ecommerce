@@ -35,17 +35,17 @@ public class ProductAttributesJpaEntity {
     ) {
         this.id = ProductAttributesId.from(
                 product.getId(),
-                attributes.color().id(),
-                attributes.size().id()
+                attributes.getColor().getId(),
+                attributes.getSize().getId()
         );
-        this.color = ProductColorJpaEntity.toEntity(attributes.color());
-        this.size = ProductSizeJpaEntity.toEntity(attributes.size());
+        this.color = ProductColorJpaEntity.toEntity(attributes.getColor());
+        this.size = ProductSizeJpaEntity.toEntity(attributes.getSize());
         this.product = product;
         this.sku = sku;
     }
 
     public static ProductAttributesJpaEntity toEntity(final ProductAttributes attributes, final ProductJpaEntity product) {
-        return new ProductAttributesJpaEntity(attributes, product, attributes.sku());
+        return new ProductAttributesJpaEntity(attributes, product, attributes.getSku());
     }
 
     public ProductAttributesId getId() {

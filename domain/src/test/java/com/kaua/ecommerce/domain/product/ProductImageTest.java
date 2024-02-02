@@ -14,10 +14,10 @@ public class ProductImageTest {
 
         final var aProductImage = ProductImage.with(aName, aLocation, aUrl);
 
-        Assertions.assertNotNull(aProductImage.id());
-        Assertions.assertEquals(aName, aProductImage.name());
-        Assertions.assertEquals(aLocation, aProductImage.location());
-        Assertions.assertEquals(aUrl, aProductImage.url());
+        Assertions.assertNotNull(aProductImage.getId());
+        Assertions.assertEquals(aName, aProductImage.getName());
+        Assertions.assertEquals(aLocation, aProductImage.getLocation());
+        Assertions.assertEquals(aUrl, aProductImage.getUrl());
     }
 
     @Test
@@ -41,9 +41,10 @@ public class ProductImageTest {
 
         final var aProductImage = ProductImage.with(aId, aName, aLocation, aUrl);
 
-        Assertions.assertEquals(aId, aProductImage.id());
-        Assertions.assertEquals(aName, aProductImage.name());
-        Assertions.assertEquals(aLocation, aProductImage.location());
+        Assertions.assertEquals(aId, aProductImage.getId());
+        Assertions.assertEquals(aName, aProductImage.getName());
+        Assertions.assertEquals(aLocation, aProductImage.getLocation());
+        Assertions.assertEquals(aUrl, aProductImage.getUrl());
     }
 
     @Test

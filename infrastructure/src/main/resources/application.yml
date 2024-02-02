@@ -40,6 +40,12 @@ kafka:
       id: kafka-listener-categories
       topics: category-topic
       group-id: categories-group
+    products:
+      auto-offset-reset: earliest
+      concurrency: 1
+      id: kafka-listener-products
+      topics: product-topic
+      group-id: products-group
 
 server:
   port: 8080

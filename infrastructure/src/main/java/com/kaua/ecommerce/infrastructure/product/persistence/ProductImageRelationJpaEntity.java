@@ -26,7 +26,7 @@ public class ProductImageRelationJpaEntity {
             final ProductJpaEntity product,
             final ProductImage image
     ) {
-        this.id = ProductImageRelationId.from(product.getId(), image.id());
+        this.id = ProductImageRelationId.from(product.getId(), image.getId());
         this.product = product;
         this.image = ProductImageJpaEntity.toEntity(image);
     }

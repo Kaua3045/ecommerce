@@ -3,9 +3,10 @@ package com.kaua.ecommerce.domain.product;
 import com.kaua.ecommerce.domain.ValueObject;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ProductImage extends ValueObject {
+public class ProductImage extends ValueObject implements Serializable {
 
     private final String id;
     private final String name;
@@ -41,19 +42,19 @@ public class ProductImage extends ValueObject {
         return new ProductImage(id, name, location, url);
     }
 
-    public String id() {
+    public String getId() {
         return id;
     }
 
-    public String name() {
+    public String getName() {
         return name;
     }
 
-    public String location() {
+    public String getLocation() {
         return location;
     }
 
-    public String url() {
+    public String getUrl() {
         return url;
     }
 
@@ -67,6 +68,6 @@ public class ProductImage extends ValueObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, location, url);
+        return Objects.hash(getId(), getName(), getLocation(), getUrl());
     }
 }

@@ -83,8 +83,8 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                         && Objects.equals(aCmd.getQuantity(), aQuantity)
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
-                        && Objects.equals(aColorName, aCmd.getAttributes().stream().findFirst().get().color().color())
-                        && Objects.equals(aSizeName, aCmd.getAttributes().stream().findFirst().get().size().size())
+                        && Objects.equals(aColorName, aCmd.getAttributes().stream().findFirst().get().getColor().getColor())
+                        && Objects.equals(aSizeName, aCmd.getAttributes().stream().findFirst().get().getSize().getSize())
                         && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));

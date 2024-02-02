@@ -53,8 +53,8 @@ public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase 
             }
         });
 
-        this.productGateway.update(aProduct);
         aProduct.registerEvent(ProductUpdatedEvent.from(aProduct));
+        this.productGateway.update(aProduct);
 
         return UploadProductImageOutput.from(aProduct);
     }

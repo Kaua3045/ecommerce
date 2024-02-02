@@ -5,6 +5,7 @@ import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.application.usecases.product.search.save.SaveProductUseCase;
 import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.product.events.ProductCreatedEvent;
+import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
 import com.kaua.ecommerce.infrastructure.listeners.models.MessageValue;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
@@ -23,6 +24,9 @@ public class ProductEventListener {
     public static final TypeReference<MessageValue<OutboxEventEntity>> PRODUCT_MESSAGE = new TypeReference<>() {
     };
     private static final Logger LOG = LoggerFactory.getLogger(ProductEventListener.class);
+
+    private static final String NOT_FOUND_MESSAGE = "Product not found in database: {}";
+    private static final String EVENT_RECEIVED_MESSAGE = "Product {} received from Kafka: {}";
 
     private final ProductGateway productGateway;
     private final SaveProductUseCase saveProductUseCase;
@@ -57,8 +61,18 @@ public class ProductEventListener {
                         .ifPresentOrElse(aProduct -> {
                             this.saveProductUseCase.execute(aProduct);
                             ack.acknowledge();
-                            LOG.debug("Product created received from Kafka: {}", aProductId);
-                        }, () -> LOG.debug("Product created not found in database: {}", aProductId));
+                            LOG.debug(EVENT_RECEIVED_MESSAGE, "created", aProductId);
+                        }, () -> LOG.debug(NOT_FOUND_MESSAGE, aProductId));
+            }
+            case EventsTypes.PRODUCT_UPDATED -> {
+                final var aProductUpdated = Json.readValue(aOutBoxEvent.getData(), ProductUpdatedEvent.class);
+                final var aProductId = aProductUpdated.id();
+                this.productGateway.findById(aProductId)
+                        .ifPresentOrElse(aProduct -> {
+                            this.saveProductUseCase.execute(aProduct);
+                            ack.acknowledge();
+                            LOG.debug(EVENT_RECEIVED_MESSAGE, "updated", aProductId);
+                        }, () -> LOG.debug(NOT_FOUND_MESSAGE, aProductId));
             }
             default -> LOG.warn("Event type not supported: {}", aOutBoxEvent.getEventType());
         }

@@ -48,12 +48,12 @@ public class ProductMediaResourceGatewayTest {
                 this.mediaResourceGateway.storeImage(aProductId, aResource);
 
         // then
-        Assertions.assertNotNull(actualMedia.id());
-        Assertions.assertNotNull(actualMedia.location());
-        Assertions.assertEquals(aResource.resource().fileName(), actualMedia.name());
-        Assertions.assertNotNull(actualMedia.url());
+        Assertions.assertNotNull(actualMedia.getId());
+        Assertions.assertNotNull(actualMedia.getLocation());
+        Assertions.assertEquals(aResource.resource().fileName(), actualMedia.getName());
+        Assertions.assertNotNull(actualMedia.getUrl());
 
-        Assertions.assertTrue(storageService().storage().containsKey(actualMedia.location()));
+        Assertions.assertTrue(storageService().storage().containsKey(actualMedia.getLocation()));
         Assertions.assertEquals(1, storageService().storage().size());
     }
 

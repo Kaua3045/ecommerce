@@ -106,9 +106,9 @@ public class ProductGatewayTest {
         Assertions.assertEquals(aProduct.getQuantity(), aPersistedProduct.getQuantity());
         Assertions.assertEquals(aProduct.getCategoryId().getValue(), aPersistedProduct.getCategoryId().getValue());
         Assertions.assertEquals(1, aPersistedProduct.getImages().size());
-        Assertions.assertEquals(aProduct.getAttributes().stream().findFirst().get().sku(), aPersistedProduct.getAttributes().stream().findFirst().get().sku());
-        Assertions.assertEquals(aProduct.getAttributes().stream().findFirst().get().color().color(), aPersistedProduct.getAttributes().stream().findFirst().get().color().color());
-        Assertions.assertEquals(aProduct.getAttributes().stream().findFirst().get().size().size(), aPersistedProduct.getAttributes().stream().findFirst().get().size().size());
+        Assertions.assertEquals(aProduct.getAttributes().stream().findFirst().get().getSku(), aPersistedProduct.getAttributes().stream().findFirst().get().getSku());
+        Assertions.assertEquals(aProduct.getAttributes().stream().findFirst().get().getColor().getColor(), aPersistedProduct.getAttributes().stream().findFirst().get().getColor().getColor());
+        Assertions.assertEquals(aProduct.getAttributes().stream().findFirst().get().getSize().getSize(), aPersistedProduct.getAttributes().stream().findFirst().get().getSize().getSize());
         Assertions.assertEquals(aProduct.getCreatedAt(), aPersistedProduct.getCreatedAt());
         Assertions.assertEquals(aProduct.getUpdatedAt(), aPersistedProduct.getUpdatedAt());
     }
@@ -131,10 +131,10 @@ public class ProductGatewayTest {
 
         Assertions.assertEquals(1, this.productColorRepository.count());
 
-        final var aPersistedProductColor = this.productGateway.findColorByName(aProductColor.color()).get();
+        final var aPersistedProductColor = this.productGateway.findColorByName(aProductColor.getColor()).get();
 
-        Assertions.assertEquals(aProductColor.id(), aPersistedProductColor.id());
-        Assertions.assertEquals(aProductColor.color(), aPersistedProductColor.color());
+        Assertions.assertEquals(aProductColor.getId(), aPersistedProductColor.getId());
+        Assertions.assertEquals(aProductColor.getColor(), aPersistedProductColor.getColor());
     }
 
     @Test

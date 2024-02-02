@@ -48,12 +48,12 @@ public class ProductSizeJpaEntity {
 
     public static ProductSizeJpaEntity toEntity(final ProductSize aProductSize) {
         return new ProductSizeJpaEntity(
-                aProductSize.id(),
-                aProductSize.size(),
-                aProductSize.weight(),
-                aProductSize.height(),
-                aProductSize.width(),
-                aProductSize.depth());
+                aProductSize.getId(),
+                aProductSize.getSize(),
+                aProductSize.getWeight(),
+                aProductSize.getHeight(),
+                aProductSize.getWidth(),
+                aProductSize.getDepth());
     }
 
     public ProductSize toDomain() {

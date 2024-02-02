@@ -40,10 +40,10 @@ public class ProductImageJpaEntity {
 
     public static ProductImageJpaEntity toEntity(ProductImage aProductImage) {
         return new ProductImageJpaEntity(
-                aProductImage.id(),
-                aProductImage.name(),
-                aProductImage.location(),
-                aProductImage.url()
+                aProductImage.getId(),
+                aProductImage.getName(),
+                aProductImage.getLocation(),
+                aProductImage.getUrl()
         );
     }
 

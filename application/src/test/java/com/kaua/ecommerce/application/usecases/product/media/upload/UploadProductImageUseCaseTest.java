@@ -66,8 +66,8 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
                         && Objects.equals(1, aCmd.getDomainEvents().size())
-                        && Objects.equals(aProductImage.id(), aCmd.getBannerImage().get().id())
-                        && Objects.equals(aProductImage.location(), aCmd.getBannerImage().get().location())));
+                        && Objects.equals(aProductImage.getId(), aCmd.getBannerImage().get().getId())
+                        && Objects.equals(aProductImage.getLocation(), aCmd.getBannerImage().get().getLocation())));
     }
 
     @Test
@@ -96,8 +96,8 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
                         && Objects.equals(1, aCmd.getDomainEvents().size())
-                        && Objects.equals(aProductImage.id(), aCmd.getBannerImage().get().id())
-                        && Objects.equals(aProductImage.location(), aCmd.getBannerImage().get().location())));
+                        && Objects.equals(aProductImage.getId(), aCmd.getBannerImage().get().getId())
+                        && Objects.equals(aProductImage.getLocation(), aCmd.getBannerImage().get().getLocation())));
     }
 
     @Test
@@ -127,9 +127,9 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
                 Objects.equals(aProductId, aCmd.getId().getValue())
                         && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.equals(1, aCmd.getImages().size())
-                        && Objects.equals(aProductImage.id(), aCmd.getImages().stream().findFirst().get().id())
-                        && Objects.equals(aProductImage.name(), aCmd.getImages().stream().findFirst().get().name())
-                        && Objects.equals(aProductImage.location(), aCmd.getImages().stream().findFirst().get().location())));
+                        && Objects.equals(aProductImage.getId(), aCmd.getImages().stream().findFirst().get().getId())
+                        && Objects.equals(aProductImage.getName(), aCmd.getImages().stream().findFirst().get().getName())
+                        && Objects.equals(aProductImage.getLocation(), aCmd.getImages().stream().findFirst().get().getLocation())));
     }
 
     @Test

@@ -42,11 +42,9 @@ public class ProductAttributesTest {
 
         final var aProductAttributes = ProductAttributes.create(aColor, aSize, aProductName);
 
-        Assertions.assertEquals(aColor, aProductAttributes.color());
-        Assertions.assertEquals(aSize, aProductAttributes.size());
-        Assertions.assertNotNull(aProductAttributes.sku());
-
-        System.out.println(aProductAttributes.sku());
+        Assertions.assertEquals(aColor, aProductAttributes.getColor());
+        Assertions.assertEquals(aSize, aProductAttributes.getSize());
+        Assertions.assertNotNull(aProductAttributes.getSku());
     }
 
     @Test
@@ -57,9 +55,9 @@ public class ProductAttributesTest {
 
         final var aProductAttributes = ProductAttributes.with(aColor, aSize, aSku);
 
-        Assertions.assertEquals(aColor, aProductAttributes.color());
-        Assertions.assertEquals(aSize, aProductAttributes.size());
-        Assertions.assertEquals(aSku, aProductAttributes.sku());
+        Assertions.assertEquals(aColor, aProductAttributes.getColor());
+        Assertions.assertEquals(aSize, aProductAttributes.getSize());
+        Assertions.assertEquals(aSku, aProductAttributes.getSku());
     }
 
     @Test

@@ -130,8 +130,8 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aDescription, aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
         Assertions.assertEquals(aQuantity, aProduct.getQuantity());
-        Assertions.assertEquals(aBannerImage.location(), aProduct.getBannerImage().get().location());
-        Assertions.assertEquals(aImage.location(), aProduct.getImages().stream().findFirst().get().location());
+        Assertions.assertEquals(aBannerImage.getLocation(), aProduct.getBannerImage().get().getLocation());
+        Assertions.assertEquals(aImage.getLocation(), aProduct.getImages().stream().findFirst().get().getLocation());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
         Assertions.assertEquals(aAttributes, aProduct.getAttributes().stream().findFirst().get());
         Assertions.assertEquals(aStatus, aProduct.getStatus());
@@ -194,8 +194,8 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aDescription, aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
         Assertions.assertEquals(aQuantity, aProduct.getQuantity());
-        Assertions.assertEquals(aBannerImage.location(), aProduct.getBannerImage().get().location());
-        Assertions.assertEquals(aImage.id(), aProduct.getImages().stream().findFirst().get().id());
+        Assertions.assertEquals(aBannerImage.getLocation(), aProduct.getBannerImage().get().getLocation());
+        Assertions.assertEquals(aImage.getId(), aProduct.getImages().stream().findFirst().get().getId());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
         Assertions.assertTrue(aProduct.getAttributes().isEmpty());
         Assertions.assertEquals(aStatus, aProduct.getStatus());
@@ -245,7 +245,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertTrue(aProduct.getBannerImage().isEmpty());
         Assertions.assertTrue(aProduct.getImages().isEmpty());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
-        Assertions.assertEquals(aAttributes.sku(), aProduct.getAttributes().stream().findFirst().get().sku());
+        Assertions.assertEquals(aAttributes.getSku(), aProduct.getAttributes().stream().findFirst().get().getSku());
         Assertions.assertEquals(aStatus, aProduct.getStatus());
         Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aProduct.getUpdatedAt());

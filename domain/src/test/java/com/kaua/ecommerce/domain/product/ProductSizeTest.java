@@ -15,12 +15,12 @@ public class ProductSizeTest {
 
         final var aProductSize = ProductSize.with(aSize, aWeight, aHeight, aWidth, aDepth);
 
-        Assertions.assertNotNull(aProductSize.id());
-        Assertions.assertEquals(aSize, aProductSize.size());
-        Assertions.assertEquals(aWeight, aProductSize.weight());
-        Assertions.assertEquals(aHeight, aProductSize.height());
-        Assertions.assertEquals(aWidth, aProductSize.width());
-        Assertions.assertEquals(aDepth, aProductSize.depth());
+        Assertions.assertNotNull(aProductSize.getId());
+        Assertions.assertEquals(aSize, aProductSize.getSize());
+        Assertions.assertEquals(aWeight, aProductSize.getWeight());
+        Assertions.assertEquals(aHeight, aProductSize.getHeight());
+        Assertions.assertEquals(aWidth, aProductSize.getWidth());
+        Assertions.assertEquals(aDepth, aProductSize.getDepth());
     }
 
     @Test
@@ -34,12 +34,12 @@ public class ProductSizeTest {
 
         final var aProductSize = ProductSize.with(aId, aSize, aWeight, aHeight, aWidth, aDepth);
 
-        Assertions.assertEquals(aId, aProductSize.id());
-        Assertions.assertEquals(aSize, aProductSize.size());
-        Assertions.assertEquals(aWeight, aProductSize.weight());
-        Assertions.assertEquals(aHeight, aProductSize.height());
-        Assertions.assertEquals(aWidth, aProductSize.width());
-        Assertions.assertEquals(aDepth, aProductSize.depth());
+        Assertions.assertEquals(aId, aProductSize.getId());
+        Assertions.assertEquals(aSize, aProductSize.getSize());
+        Assertions.assertEquals(aWeight, aProductSize.getWeight());
+        Assertions.assertEquals(aHeight, aProductSize.getHeight());
+        Assertions.assertEquals(aWidth, aProductSize.getWidth());
+        Assertions.assertEquals(aDepth, aProductSize.getDepth());
     }
 
     @Test

@@ -7,6 +7,7 @@ import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public class ProductElasticsearchGateway implements SearchGateway<Product> {
         this.productElasticsearchRepository = Objects.requireNonNull(productElasticsearchRepository);
     }
 
+    @Transactional
     @Override
     public Product save(Product aggregateRoot) {
         this.productElasticsearchRepository.save(ProductElasticsearchEntity.toEntity(aggregateRoot));
@@ -41,8 +43,9 @@ public class ProductElasticsearchGateway implements SearchGateway<Product> {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
+    @Transactional
     @Override
     public void deleteById(String id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        this.productElasticsearchRepository.deleteById(id);
     }
 }

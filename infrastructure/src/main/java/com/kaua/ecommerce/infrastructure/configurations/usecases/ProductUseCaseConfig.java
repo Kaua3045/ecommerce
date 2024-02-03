@@ -10,6 +10,7 @@ import com.kaua.ecommerce.application.usecases.product.delete.DefaultDeleteProdu
 import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.DefaultUploadProductImageUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
+import com.kaua.ecommerce.application.usecases.product.search.remove.RemoveProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.search.save.SaveProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.DefaultUpdateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductUseCase;
@@ -69,5 +70,10 @@ public class ProductUseCaseConfig {
     @Bean
     public SaveProductUseCase saveProductUseCase() {
         return new SaveProductUseCase(productSearchGateway);
+    }
+
+    @Bean
+    public RemoveProductUseCase removeProductUseCase() {
+        return new RemoveProductUseCase(productGateway, mediaResourceGateway, productSearchGateway);
     }
 }

@@ -3,6 +3,7 @@ package com.kaua.ecommerce.infrastructure.product;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.infrastructure.AbstractElasticsearchTest;
+import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,21 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
     }
 
     @Test
+    void givenAValidProduct_whenCallDeleteById_shouldReturnProductSaved() {
+        final var aProduct = Fixture.Products.book();
+        aProduct.changeBannerImage(Fixture.Products.productImage(ProductImageType.BANNER));
+        aProduct.addImage(Fixture.Products.productImage(ProductImageType.GALLERY));
+        this.productElasticsearchRepository.save(ProductElasticsearchEntity.toEntity(aProduct));
+
+        Assertions.assertEquals(1, this.productElasticsearchRepository.count());
+
+        Assertions.assertDoesNotThrow(() -> this.productElasticsearchGateway
+                .deleteById(aProduct.getId().getValue()));
+
+        Assertions.assertEquals(0, this.productElasticsearchRepository.count());
+    }
+
+    @Test
     void testNotImplementedMethods() {
         Assertions.assertThrows(UnsupportedOperationException.class,
                 () -> productElasticsearchGateway.findAll(null));
@@ -52,8 +68,5 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
 
         Assertions.assertThrows(UnsupportedOperationException.class,
                 () -> productElasticsearchGateway.findByIdNested(null));
-
-        Assertions.assertThrows(UnsupportedOperationException.class,
-                () -> productElasticsearchGateway.deleteById(null));
     }
 }

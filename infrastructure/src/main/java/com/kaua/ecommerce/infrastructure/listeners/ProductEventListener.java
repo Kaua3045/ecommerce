@@ -2,9 +2,11 @@ package com.kaua.ecommerce.infrastructure.listeners;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.usecases.product.search.remove.RemoveProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.search.save.SaveProductUseCase;
 import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.product.events.ProductCreatedEvent;
+import com.kaua.ecommerce.domain.product.events.ProductDeletedEvent;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
 import com.kaua.ecommerce.infrastructure.listeners.models.MessageValue;
@@ -30,13 +32,16 @@ public class ProductEventListener {
 
     private final ProductGateway productGateway;
     private final SaveProductUseCase saveProductUseCase;
+    private final RemoveProductUseCase removeProductUseCase;
 
     public ProductEventListener(
             final ProductGateway productGateway,
-            final SaveProductUseCase saveProductUseCase
+            final SaveProductUseCase saveProductUseCase,
+            final RemoveProductUseCase removeProductUseCase
     ) {
         this.productGateway = Objects.requireNonNull(productGateway);
         this.saveProductUseCase = Objects.requireNonNull(saveProductUseCase);
+        this.removeProductUseCase = Objects.requireNonNull(removeProductUseCase);
     }
 
     @KafkaListener(
@@ -73,6 +78,13 @@ public class ProductEventListener {
                             ack.acknowledge();
                             LOG.debug(EVENT_RECEIVED_MESSAGE, "updated", aProductId);
                         }, () -> LOG.debug(NOT_FOUND_MESSAGE, aProductId));
+            }
+            case EventsTypes.PRODUCT_DELETED -> {
+                final var aProductUpdated = Json.readValue(aOutBoxEvent.getData(), ProductDeletedEvent.class);
+                final var aProductId = aProductUpdated.id();
+                this.removeProductUseCase.execute(aProductId);
+                ack.acknowledge();
+                LOG.debug(EVENT_RECEIVED_MESSAGE, "deleted", aProductId);
             }
             default -> LOG.warn("Event type not supported: {}", aOutBoxEvent.getEventType());
         }

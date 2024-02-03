@@ -1,10 +1,12 @@
 package com.kaua.ecommerce.infrastructure.listeners;
 
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.usecases.product.search.remove.RemoveProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.search.save.SaveProductUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.CategoryID;
 import com.kaua.ecommerce.domain.product.events.ProductCreatedEvent;
+import com.kaua.ecommerce.domain.product.events.ProductDeletedEvent;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
@@ -33,6 +35,9 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
     @MockBean
     private ProductGateway productGateway;
+
+    @MockBean
+    private RemoveProductUseCase removeProductUseCase;
 
     @Value("${kafka.consumers.products.topics}")
     private String productTopic;
@@ -94,6 +99,32 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
+    void givenAValidProductDeletedEvent_whenReceive_shouldDeleteProduct() throws Exception {
+        // given
+        final var aProduct = Fixture.Products.book();
+        final var aProductEvent = ProductDeletedEvent.from(aProduct);
+        final var aOutboxEvent = OutboxEventEntity.from(aProductEvent);
+
+        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.DELETE)));
+
+        final var latch = new CountDownLatch(1);
+
+        Mockito.doAnswer(t -> {
+            latch.countDown();
+            return null;
+        }).when(removeProductUseCase).execute(Mockito.any());
+
+        // when
+        producer().send(new ProducerRecord<>(productTopic, aMessage));
+        producer().flush();
+
+        Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
+
+        // then
+        Mockito.verify(removeProductUseCase, Mockito.times(1)).execute(eq(aProduct.getId().getValue()));
+    }
+
+    @Test
     void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() {
         // given
         final var aOutboxEntity = OutboxEventEntity.from(new
@@ -120,7 +151,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         Mockito.doReturn(Optional.empty()).when(productGateway).findById(Mockito.any());
 
         // when
-        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase);
+        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase, removeProductUseCase);
         aProductEventListener.onMessage(aMessage, null);
 
         // then
@@ -139,7 +170,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         Mockito.doReturn(Optional.empty()).when(productGateway).findById(Mockito.any());
 
         // when
-        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase);
+        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase, removeProductUseCase);
         aProductEventListener.onMessage(aMessage, null);
 
         // then

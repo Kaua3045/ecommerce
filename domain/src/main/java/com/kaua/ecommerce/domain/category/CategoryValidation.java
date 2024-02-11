@@ -12,6 +12,7 @@ public class CategoryValidation extends Validator {
     private final Category category;
     private static final int MINIMUM_LENGTH = 3;
     private static final int MAXIMUM_LENGTH = 255;
+    private static final int MAXIMUM_DESCRIPTION_LENGTH = 1000;
 
     protected CategoryValidation(final Category category, final ValidationHandler handler) {
         super(handler);
@@ -42,7 +43,7 @@ public class CategoryValidation extends Validator {
             return;
         }
         if (category.getDescription() != null && category.getDescription().trim().length() > MAXIMUM_LENGTH) {
-            this.validationHandler().append(new Error(lengthBetween("description", 0, MAXIMUM_LENGTH)));
+            this.validationHandler().append(new Error(lengthBetween("description", 0, MAXIMUM_DESCRIPTION_LENGTH)));
         }
     }
 

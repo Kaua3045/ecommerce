@@ -15,6 +15,12 @@ elasticsearch:
   username: elastic
   password: elastic
 
+kafka:
+  consumers:
+    products:
+      auto-create-topics: true
+
+
 logging:
   level:
     com.kaua.ecommerce.infrastructure: DEBUG

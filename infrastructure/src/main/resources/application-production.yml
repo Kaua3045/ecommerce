@@ -18,3 +18,8 @@ elasticsearch:
   host: ${ELASTICSEARCH_HOST:http://localhost:9200}
   username: ${ELASTICSEARCH_USERNAME:elastic}
   password: ${ELASTICSEARCH_PASSWORD:elastic}
+
+kafka:
+  consumers:
+    products:
+      auto-create-topics: true

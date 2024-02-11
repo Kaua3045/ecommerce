@@ -308,11 +308,11 @@ public class CategoryAPITest {
     }
 
     @Test
-    void givenAnInvalidInputDescriptionLengthMoreThan255_whenCallCreateCategory_thenReturnDomainException() throws Exception {
+    void givenAnInvalidInputDescriptionLengthMoreThan1000_whenCallCreateCategory_thenReturnDomainException() throws Exception {
         final var aName = "Category Test";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(1001);
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 1000);
 
         final var aInput = new CreateCategoryInput(aName, aDescription);
 
@@ -637,14 +637,14 @@ public class CategoryAPITest {
     }
 
     @Test
-    void givenAnInvalidInputDescriptionLengthMoreThan255_whenCallUpdateSubCategories_thenReturnDomainException() throws Exception {
+    void givenAnInvalidInputDescriptionLengthMoreThan1000_whenCallUpdateSubCategories_thenReturnDomainException() throws Exception {
         final var aCategory = Fixture.Categories.tech();
         final var aId = aCategory.getId().getValue();
 
         final var aName = "Category Test";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(1001);
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 1000);
 
         final var aInput = new UpdateSubCategoriesInput(aName, aDescription);
 
@@ -1143,14 +1143,14 @@ public class CategoryAPITest {
     }
 
     @Test
-    void givenAnInvalidInputDescriptionLengthMoreThan255_whenCallUpdateCategory_thenReturnDomainException() throws Exception {
+    void givenAnInvalidInputDescriptionLengthMoreThan1000_whenCallUpdateCategory_thenReturnDomainException() throws Exception {
         final var aCategory = Fixture.Categories.tech();
         final var aId = aCategory.getId().getValue();
 
         final var aName = "Category Test";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(1001);
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 1000);
 
         final var aInput = new UpdateCategoryInput(aName, aDescription);
 

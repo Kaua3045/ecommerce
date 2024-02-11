@@ -262,14 +262,14 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
     }
 
     @Test
-    void givenAnInvalidDescriptionLengthMoreThan255_whenCallUpdateSubCategories_shouldReturnAnDomainException() {
+    void givenAnInvalidDescriptionLengthMoreThan1000_whenCallUpdateSubCategories_shouldReturnAnDomainException() {
         final var aCategory = Fixture.Categories.tech();
 
         final var aId = aCategory.getId().getValue();
         final var aName = "Category Test";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(1001);
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 1000);
         final var expectedErrorCount = 1;
 
         final var aCommand = UpdateSubCategoriesCommand.with(aId, null, aName, aDescription);

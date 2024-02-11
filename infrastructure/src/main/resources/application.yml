@@ -46,6 +46,8 @@ kafka:
       id: kafka-listener-products
       topics: product-topic
       group-id: products-group
+      max-attempts: 4
+      auto-create-topics: false
 
 server:
   port: 8080

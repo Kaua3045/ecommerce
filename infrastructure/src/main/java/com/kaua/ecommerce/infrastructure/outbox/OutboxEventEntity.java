@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.infrastructure.outbox;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kaua.ecommerce.domain.event.DomainEvent;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
@@ -16,18 +17,23 @@ public class OutboxEventEntity {
 
     @Id
     @Column(name = "event_id", nullable = false)
+    @JsonProperty("event_id")
     private String eventId;
 
     @Column(name = "aggregate_name", nullable = false)
+    @JsonProperty("aggregate_name")
     private String aggregateName;
 
     @Column(name = "event_type", nullable = false)
+    @JsonProperty("event_type")
     private String eventType;
 
     @Column(name = "data", nullable = false)
+    @JsonProperty("data")
     private String data;
 
     @Column(name = "occurred_on", nullable = false)
+    @JsonProperty("occurred_on")
     private Instant occurredOn;
 
     public OutboxEventEntity() {

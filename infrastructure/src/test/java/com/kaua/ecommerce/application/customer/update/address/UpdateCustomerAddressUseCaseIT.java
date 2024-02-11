@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.application.customer.update.address;
 
+import com.kaua.ecommerce.application.adapters.responses.AddressResponse;
 import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCustomerAddressCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCustomerAddressUseCase;
 import com.kaua.ecommerce.config.CacheTestConfiguration;
@@ -8,13 +9,16 @@ import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.CacheGatewayTest;
+import com.kaua.ecommerce.infrastructure.api.ViaCepClient;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaRepository;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheRepository;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @CacheGatewayTest
 public class UpdateCustomerAddressUseCaseIT extends CacheTestConfiguration {
@@ -30,6 +34,9 @@ public class UpdateCustomerAddressUseCaseIT extends CacheTestConfiguration {
 
     @Autowired
     private AddressJpaRepository addressRepository;
+
+    @MockBean
+    private ViaCepClient viaCepClient;
 
     @Test
     void givenAValidValues_whenCallsUpdateCustomerAddress_shouldReturnAccountId() {
@@ -47,6 +54,9 @@ public class UpdateCustomerAddressUseCaseIT extends CacheTestConfiguration {
 
         final var aCommand = UpdateCustomerAddressCommand
                 .with(aAccountId, aStreet, aNumber, aComplement, aDistrict, aCity, aState, aZipCode);
+
+        Mockito.when(this.viaCepClient.getAddressByZipCode(aZipCode))
+                .thenReturn(new AddressResponse(aZipCode, aStreet, aComplement, aDistrict, aCity, aState));
 
         final var aResult = this.updateCustomerAddressUseCase.execute(aCommand).getRight();
 
@@ -121,6 +131,16 @@ public class UpdateCustomerAddressUseCaseIT extends CacheTestConfiguration {
 
         final var aCommand = UpdateCustomerAddressCommand
                 .with(aAccountId, aStreet, aNumber, aComplement, aDistrict, aCity, aState, aZipCode);
+
+        Mockito.when(this.viaCepClient.getAddressByZipCode(aZipCode))
+                .thenReturn(new AddressResponse(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                ));
 
         final var aResult = this.updateCustomerAddressUseCase.execute(aCommand).getLeft();
 

@@ -11,7 +11,7 @@ import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
 import com.kaua.ecommerce.infrastructure.listeners.models.MessageValue;
 import com.kaua.ecommerce.infrastructure.listeners.models.Operation;
-import com.kaua.ecommerce.infrastructure.listeners.models.TestCategoryListenerDomainEvent;
+import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
 import com.kaua.ecommerce.infrastructure.listeners.models.ValuePayload;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -120,7 +120,7 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() {
         // given
         final var aOutboxEntity = OutboxEventEntity.from(new
-                TestCategoryListenerDomainEvent(CategoryID.unique().getValue()));
+                TestListenerDomainEvent(CategoryID.unique().getValue()));
         final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEntity, aOutboxEntity, aSource(), Operation.CREATE)));
 
         // when

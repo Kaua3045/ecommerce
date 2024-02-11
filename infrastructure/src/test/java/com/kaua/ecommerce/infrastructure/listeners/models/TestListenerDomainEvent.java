@@ -1,17 +1,18 @@
 package com.kaua.ecommerce.infrastructure.listeners.models;
 
 import com.kaua.ecommerce.domain.event.DomainEvent;
+import com.kaua.ecommerce.domain.utils.InstantUtils;
 
 import java.time.Instant;
 
-public record TestCategoryListenerDomainEvent(
+public record TestListenerDomainEvent(
         String id,
         String aggregateName,
         String eventType,
         Instant occurredOn
 ) implements DomainEvent {
 
-    public TestCategoryListenerDomainEvent(String id) {
-        this(id, "test", "test-created", Instant.now());
+    public TestListenerDomainEvent(String id) {
+        this(id, "test", "test-created", InstantUtils.now());
     }
 }

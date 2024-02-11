@@ -315,17 +315,17 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
     }
 
     @Test
-    void givenAnInvalidDescriptionLengthMoreThan255_whenCallExecute_shouldReturnDomainException() {
+    void givenAnInvalidDescriptionLengthMoreThan3000_whenCallExecute_shouldReturnDomainException() {
         final var aCategory = Fixture.Categories.tech();
         final var aProduct = Fixture.Products.tshirt();
 
         final var aName = "Product Name";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(3001);
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
         final var expectedErrorCount = 1;
 
         final var aCommand = UpdateProductCommand.with(

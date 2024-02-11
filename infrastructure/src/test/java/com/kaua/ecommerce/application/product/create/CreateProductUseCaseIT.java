@@ -222,12 +222,12 @@ public class CreateProductUseCaseIT {
     }
 
     @Test
-    void givenAnInvalidDescriptionLengthMoreThan255_whenCallsCreateProductUseCase_shouldReturnDomainException() {
+    void givenAnInvalidDescriptionLengthMoreThan3000_whenCallsCreateProductUseCase_shouldReturnDomainException() {
         final var aCategory = Fixture.Categories.tech();
         this.categoryRepository.save(CategoryJpaEntity.toEntity(aCategory));
 
         final var aName = "Product Name";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(3001);
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
@@ -238,7 +238,7 @@ public class CreateProductUseCaseIT {
         final var aWidth = 0.5;
         final var aDepth = 0.5;
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
         final var expectedErrorCount = 1;
 
         final var aAttributes = CreateProductCommandAttributes.with(

@@ -114,9 +114,9 @@ public class ProductValidationTest {
     }
 
     @Test
-    void givenInvalidDescriptionLengthMoreThan255_whenCallNewProduct_shouldReturnDomainException() {
+    void givenInvalidDescriptionLengthMoreThan3000_whenCallNewProduct_shouldReturnDomainException() {
         final var aName = "Product Name";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(3001);
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
@@ -126,7 +126,7 @@ public class ProductValidationTest {
                 aName
         );
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
         final var expectedErrorCount = 1;
 
         final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
@@ -346,15 +346,15 @@ public class ProductValidationTest {
     }
 
     @Test
-    void givenInvalidDescriptionLengthMoreThan255_whenCallUpdate_shouldReturnDomainException() {
+    void givenInvalidDescriptionLengthMoreThan3000_whenCallUpdate_shouldReturnDomainException() {
         final var aProduct = Fixture.Products.tshirt();
         final var aName = "Product Name";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(3001);
         final var aPrice = BigDecimal.valueOf(50.0);
         final var aQuantity = 5;
         final var aCategoryId = CategoryID.from("1");
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
         final var expectedErrorCount = 1;
 
         final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);

@@ -11,6 +11,7 @@ public class ProductValidation extends Validator {
 
     private static final int MINIMUM_LENGTH = 3;
     private static final int MAXIMUM_LENGTH = 255;
+    private static final int MAXIMUM_DESCRIPTION_LENGTH = 3000;
 
     protected ProductValidation(final Product product, final ValidationHandler handler) {
         super(handler);
@@ -40,8 +41,8 @@ public class ProductValidation extends Validator {
 
     private void checkDescriptionConstraints() {
         if (product.getDescription() != null &&
-                product.getDescription().trim().length() > MAXIMUM_LENGTH) {
-            validationHandler().append(new Error(CommonErrorMessage.lengthBetween("description", 0, MAXIMUM_LENGTH)));
+                product.getDescription().trim().length() > MAXIMUM_DESCRIPTION_LENGTH) {
+            validationHandler().append(new Error(CommonErrorMessage.lengthBetween("description", 0, MAXIMUM_DESCRIPTION_LENGTH)));
         }
     }
 

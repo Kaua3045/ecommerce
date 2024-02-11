@@ -42,7 +42,7 @@ public class CategoryValidation extends Validator {
             this.validationHandler().append(new Error("'description' should not be blank"));
             return;
         }
-        if (category.getDescription() != null && category.getDescription().trim().length() > MAXIMUM_LENGTH) {
+        if (category.getDescription() != null && category.getDescription().trim().length() > MAXIMUM_DESCRIPTION_LENGTH) {
             this.validationHandler().append(new Error(lengthBetween("description", 0, MAXIMUM_DESCRIPTION_LENGTH)));
         }
     }

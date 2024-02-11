@@ -197,11 +197,11 @@ public class CreateCategoryRootUseCaseTest extends UseCaseTest {
     }
 
     @Test
-    void givenAnInvalidDescriptionLengthMoreThan255_whenCallCreateCategory_shouldReturnAnDomainException() {
+    void givenAnInvalidDescriptionLengthMoreThan1000_whenCallCreateCategory_shouldReturnAnDomainException() {
         final var aName = "Category Test";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(1001);
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 1000);
         final var expectedErrorCount = 1;
 
         final var aCommand = CreateCategoryRootCommand.with(aName, aDescription);

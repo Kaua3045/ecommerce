@@ -236,15 +236,15 @@ public class UpdateCategoryUseCaseIT {
     }
 
     @Test
-    void givenAnInvalidDescriptionLengthMoreThan255_whenCallsUpdateCategoryUseCase_shouldReturnDomainException() {
+    void givenAnInvalidDescriptionLengthMoreThan1000_whenCallsUpdateCategoryUseCase_shouldReturnDomainException() {
         final var aCategory = Fixture.Categories.home();
         this.categoryRepository.save(CategoryJpaEntity.toEntity(aCategory));
 
         final var aId = aCategory.getId().getValue();
         final var aName = "Category Test";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(1001);
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 1000);
         final var expectedErrorCount = 1;
 
         final var aCommand = UpdateCategoryCommand.with(aId, null, aName, aDescription);

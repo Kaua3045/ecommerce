@@ -210,14 +210,14 @@ public class CategoryTest extends UnitTest {
     }
 
     @Test
-    void givenAnInvalidDescriptionLengthMoreThan255_whenCallNewCategory_shouldReturnDomainException() {
+    void givenAnInvalidDescriptionLengthMoreThan1000_whenCallNewCategory_shouldReturnDomainException() {
         final var aName = "Category Name";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(1001);
         final var aSlug = "category-name";
         final CategoryID aParent = null;
 
         final var expectedErrorCount = 1;
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 1000);
 
         final var aCategory = Category.newCategory(
                 aName,
@@ -835,7 +835,7 @@ public class CategoryTest extends UnitTest {
     }
 
     @Test
-    void givenAnInvalidDescriptionLengthMoreThan255_whenCallUpdate_shouldReturnDomainException() {
+    void givenAnInvalidDescriptionLengthMoreThan1000_whenCallUpdate_shouldReturnDomainException() {
         final var aCategory = Category.newCategory(
                 "Teste",
                 "testes",
@@ -843,11 +843,11 @@ public class CategoryTest extends UnitTest {
                 null);
 
         final var aName = "Category Name";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(1001);
         final var aSlug = "category-name";
 
         final var expectedErrorCount = 1;
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 1000);
 
         final var aCategoryUpdated = aCategory.update(aName, aDescription, aSlug);
 

@@ -449,9 +449,9 @@ public class ProductAPITest {
     }
 
     @Test
-    void givenAnInvalidInputDescriptionLengthMoreThan255_whenCallCreateProduct_thenReturnDomainException() throws Exception {
+    void givenAnInvalidInputDescriptionLengthMoreThan3000_whenCallCreateProduct_thenReturnDomainException() throws Exception {
         final var aName = "Product Name";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(3001);
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = "123";
@@ -462,7 +462,7 @@ public class ProductAPITest {
         final var aWidth = 0.5;
         final var aDepth = 0.5;
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
 
         final var aAttributesInput = new CreateProductInputAttributes(
                 aColorName,
@@ -1089,17 +1089,17 @@ public class ProductAPITest {
     }
 
     @Test
-    void givenAnInvalidInputDescriptionLengthMoreThan255_whenCallUpdateProduct_thenReturnDomainException() throws Exception {
+    void givenAnInvalidInputDescriptionLengthMoreThan3000_whenCallUpdateProduct_thenReturnDomainException() throws Exception {
         final var aProduct = Fixture.Products.tshirt();
         final var aId = aProduct.getId().getValue();
 
         final var aName = "Product Name";
-        final var aDescription = RandomStringUtils.generateValue(256);
+        final var aDescription = RandomStringUtils.generateValue(3001);
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;
         final var aCategoryId = "123";
 
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 255);
+        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
 
         final var aInput = new UpdateProductInput(
                 aName,

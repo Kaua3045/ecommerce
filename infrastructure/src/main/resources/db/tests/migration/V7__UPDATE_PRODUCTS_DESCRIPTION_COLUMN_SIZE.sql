@@ -1,1 +1,1 @@
-ALTER TABLE products MODIFY COLUMN description VARCHAR(3000);
+ALTER TABLE products ALTER COLUMN description VARCHAR(3000);

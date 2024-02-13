@@ -1,1 +1,1 @@
-ALTER TABLE categories MODIFY COLUMN description VARCHAR(1000);
+ALTER TABLE categories ALTER COLUMN description VARCHAR(1000);

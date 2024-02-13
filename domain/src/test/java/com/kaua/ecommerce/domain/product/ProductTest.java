@@ -109,6 +109,7 @@ public class ProductTest extends UnitTest {
         final var aStatus = ProductStatus.INACTIVE;
         final var aCreatedAt = InstantUtils.now();
         final var aUpdatedAt = InstantUtils.now();
+        final var aVersion = 0;
 
         final var aProduct = Product.with(
                 aProductID,
@@ -122,7 +123,8 @@ public class ProductTest extends UnitTest {
                 Set.of(aAttributes),
                 aStatus,
                 aCreatedAt,
-                aUpdatedAt
+                aUpdatedAt,
+                aVersion
         );
 
         Assertions.assertEquals(aProductID, aProduct.getId().getValue());
@@ -137,6 +139,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aStatus, aProduct.getStatus());
         Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aProduct.getUpdatedAt());
+        Assertions.assertEquals(aVersion, aProduct.getVersion());
     }
 
     @Test
@@ -157,6 +160,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aProductWith.getStatus(), aProduct.getStatus());
         Assertions.assertEquals(aProductWith.getCreatedAt(), aProduct.getCreatedAt());
         Assertions.assertEquals(aProductWith.getUpdatedAt(), aProduct.getUpdatedAt());
+        Assertions.assertEquals(aProductWith.getVersion(), aProduct.getVersion());
     }
 
     @Test
@@ -173,6 +177,7 @@ public class ProductTest extends UnitTest {
         final var aStatus = ProductStatus.INACTIVE;
         final var aCreatedAt = InstantUtils.now();
         final var aUpdatedAt = InstantUtils.now();
+        final var aVersion = 0;
 
         final var aProduct = Product.with(
                 aProductID,
@@ -186,7 +191,8 @@ public class ProductTest extends UnitTest {
                 aAttributes,
                 aStatus,
                 aCreatedAt,
-                aUpdatedAt
+                aUpdatedAt,
+                aVersion
         );
 
         Assertions.assertEquals(aProductID, aProduct.getId().getValue());
@@ -201,6 +207,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aStatus, aProduct.getStatus());
         Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aProduct.getUpdatedAt());
+        Assertions.assertEquals(aVersion, aProduct.getVersion());
     }
 
     @Test
@@ -221,6 +228,7 @@ public class ProductTest extends UnitTest {
         final var aStatus = ProductStatus.INACTIVE;
         final var aCreatedAt = InstantUtils.now();
         final var aUpdatedAt = InstantUtils.now();
+        final var aVersion = 0;
 
         final var aProduct = Product.with(
                 aProductID,
@@ -234,7 +242,8 @@ public class ProductTest extends UnitTest {
                 Set.of(aAttributes),
                 aStatus,
                 aCreatedAt,
-                aUpdatedAt
+                aUpdatedAt,
+                aVersion
         );
 
         Assertions.assertEquals(aProductID, aProduct.getId().getValue());
@@ -249,6 +258,7 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aStatus, aProduct.getStatus());
         Assertions.assertEquals(aCreatedAt, aProduct.getCreatedAt());
         Assertions.assertEquals(aUpdatedAt, aProduct.getUpdatedAt());
+        Assertions.assertEquals(aVersion, aProduct.getVersion());
     }
 
     @Test

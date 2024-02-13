@@ -27,3 +27,4 @@ spring:
       path: /h2
   flyway:
     enabled: true
+    locations: classpath:db/tests/migration

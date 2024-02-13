@@ -2,7 +2,6 @@ package com.kaua.ecommerce.application.usecases.product.update.status;
 
 import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
-import com.kaua.ecommerce.application.usecases.product.update.UpdateProductCommand;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;

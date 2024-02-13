@@ -40,9 +40,10 @@ public class Product extends AggregateRoot<ProductID> {
             final Set<ProductAttributes> aAttributes,
             final ProductStatus aStatus,
             final Instant aCreatedAt,
-            final Instant aUpdatedAt
+            final Instant aUpdatedAt,
+            final long aVersion
     ) {
-        super(aProductID);
+        super(aProductID, aVersion);
         this.name = aName;
         this.description = aDescription;
         this.price = aPrice;
@@ -78,7 +79,8 @@ public class Product extends AggregateRoot<ProductID> {
                 new HashSet<>(),
                 ProductStatus.ACTIVE,
                 aNow,
-                aNow
+                aNow,
+                0
         );
 
         if (aAttributes == null) {
@@ -102,7 +104,8 @@ public class Product extends AggregateRoot<ProductID> {
             final Set<ProductAttributes> aAttributes,
             final ProductStatus aStatus,
             final Instant aCreatedAt,
-            final Instant aUpdatedAt
+            final Instant aUpdatedAt,
+            final long aVersion
     ) {
         return new Product(
                 ProductID.from(aProductID),
@@ -116,7 +119,8 @@ public class Product extends AggregateRoot<ProductID> {
                 new HashSet<>(aAttributes == null ? Collections.emptySet() : aAttributes),
                 aStatus,
                 aCreatedAt,
-                aUpdatedAt
+                aUpdatedAt,
+                aVersion
         );
     }
 
@@ -133,7 +137,8 @@ public class Product extends AggregateRoot<ProductID> {
                 new HashSet<>(aProduct.getAttributes()),
                 aProduct.getStatus(),
                 aProduct.getCreatedAt(),
-                aProduct.getUpdatedAt()
+                aProduct.getUpdatedAt(),
+                aProduct.getVersion()
         );
     }
 

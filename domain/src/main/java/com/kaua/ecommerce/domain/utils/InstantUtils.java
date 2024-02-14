@@ -10,4 +10,8 @@ public final class InstantUtils {
     public static Instant now() {
         return Instant.now().truncatedTo(ChronoUnit.MICROS);
     }
+
+    public static Instant fromTimestamp(final Long timestamp) {
+        return Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.MICROS);
+    }
 }

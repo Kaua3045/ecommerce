@@ -5,6 +5,7 @@ import com.kaua.ecommerce.domain.product.ProductAttributes;
 import com.kaua.ecommerce.domain.product.ProductImage;
 import com.kaua.ecommerce.domain.product.ProductStatus;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.elasticsearch.annotations.*;
 
 import java.math.BigDecimal;
@@ -57,6 +58,9 @@ public class ProductElasticsearchEntity {
     @Field(type = FieldType.Date, name = "updated_at")
     private Instant updatedAt;
 
+    @Version
+    private Long version;
+
     public ProductElasticsearchEntity() {
     }
 
@@ -70,7 +74,8 @@ public class ProductElasticsearchEntity {
             final String categoryId,
             final ProductStatus status,
             final Instant createdAt,
-            final Instant updatedAt
+            final Instant updatedAt,
+            final long version
     ) {
         this.id = id;
         this.name = name;
@@ -84,6 +89,7 @@ public class ProductElasticsearchEntity {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.version = version;
     }
 
     public static ProductElasticsearchEntity toEntity(final Product aProduct) {
@@ -99,7 +105,8 @@ public class ProductElasticsearchEntity {
                 aProduct.getCategoryId().getValue(),
                 aProduct.getStatus(),
                 aProduct.getCreatedAt(),
-                aProduct.getUpdatedAt()
+                aProduct.getUpdatedAt(),
+                aProduct.getVersion()
         );
 
         aProduct.getImages().forEach(aEntity::addImage);
@@ -123,7 +130,8 @@ public class ProductElasticsearchEntity {
                 getAttributesDomain(),
                 getStatus(),
                 getCreatedAt(),
-                getUpdatedAt()
+                getUpdatedAt(),
+                getVersion()
         );
     }
 
@@ -238,5 +246,9 @@ public class ProductElasticsearchEntity {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public long getVersion() {
+        return version;
     }
 }

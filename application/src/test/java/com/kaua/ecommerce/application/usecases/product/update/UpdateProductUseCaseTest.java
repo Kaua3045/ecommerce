@@ -3,13 +3,11 @@ package com.kaua.ecommerce.application.usecases.product.update;
 import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
-import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
-import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.domain.product.ProductStatus;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
@@ -20,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 

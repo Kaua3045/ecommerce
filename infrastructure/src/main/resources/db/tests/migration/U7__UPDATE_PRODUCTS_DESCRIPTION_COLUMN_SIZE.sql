@@ -1,0 +1,1 @@
+ALTER TABLE categories ALTER COLUMN description VARCHAR(255);

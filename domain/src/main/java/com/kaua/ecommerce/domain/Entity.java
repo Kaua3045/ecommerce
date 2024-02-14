@@ -13,10 +13,12 @@ public abstract class Entity<ID extends Identifier> {
 
     private final ID id;
     private final List<DomainEvent> domainEvents;
+    private final long version;
 
-    protected Entity(final ID id, final List<DomainEvent> domainEvents) {
+    protected Entity(final ID id, final List<DomainEvent> domainEvents, final long version) {
         this.id = Objects.requireNonNull(id, "'id' should not be null");
         this.domainEvents = new ArrayList<>(domainEvents == null ? Collections.emptyList() : domainEvents);
+        this.version = version;
     }
 
     public abstract void validate(ValidationHandler handler);
@@ -54,6 +56,10 @@ public abstract class Entity<ID extends Identifier> {
         if (event != null) {
             this.domainEvents.add(event);
         }
+    }
+
+    public long getVersion() {
+        return version;
     }
 
     @Override

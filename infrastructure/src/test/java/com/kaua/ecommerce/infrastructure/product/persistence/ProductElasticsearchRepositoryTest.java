@@ -21,7 +21,15 @@ public class ProductElasticsearchRepositoryTest extends AbstractElasticsearchTes
 
     @Test
     void givenAValidProduct_whenCallSave_shouldPersistProduct() {
-        final var aProduct = Fixture.Products.book();
+        final var aProduct = Product.newProduct(
+                "name",
+                "description",
+                BigDecimal.valueOf(100.0),
+                10,
+                CategoryID.unique(),
+                Set.of(ProductAttributes.with(ProductColor.with("Red"),
+                        ProductSize.with("M", 5, 0.5, 0.5, 0.5), "sku"))
+        );
         aProduct.changeBannerImage(Fixture.Products.productImage(ProductImageType.BANNER));
         aProduct.addImage(Fixture.Products.productImage(ProductImageType.GALLERY));
 

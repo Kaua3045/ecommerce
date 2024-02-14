@@ -52,6 +52,10 @@ public class ProductJpaEntity {
     @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant updatedAt;
 
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
+
     public ProductJpaEntity() {}
 
     private ProductJpaEntity(
@@ -64,7 +68,8 @@ public class ProductJpaEntity {
             final ProductStatus status,
             final ProductImageJpaEntity bannerImage,
             final Instant createdAt,
-            final Instant updatedAt
+            final Instant updatedAt,
+            final Long version
     ) {
         this.id = id;
         this.name = name;
@@ -78,6 +83,7 @@ public class ProductJpaEntity {
         this.images = new HashSet<>();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.version = version;
     }
 
     public static ProductJpaEntity toEntity(final Product aProduct) {
@@ -91,7 +97,8 @@ public class ProductJpaEntity {
                 aProduct.getStatus(),
                 aProduct.getBannerImage().map(ProductImageJpaEntity::toEntity).orElse(null),
                 aProduct.getCreatedAt(),
-                aProduct.getUpdatedAt()
+                aProduct.getUpdatedAt(),
+                aProduct.getVersion()
         );
 
         aProduct.getAttributes().forEach(aEntity::addAttributes);
@@ -113,7 +120,8 @@ public class ProductJpaEntity {
                 getAttributesToDomain(),
                 getStatus(),
                 getCreatedAt(),
-                getUpdatedAt()
+                getUpdatedAt(),
+                getVersion()
         );
     }
 
@@ -245,5 +253,9 @@ public class ProductJpaEntity {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 }

@@ -120,8 +120,26 @@ public class EntityTest extends UnitTest {
         Assertions.assertEquals(0, entity1.getDomainEvents().size());
     }
 
+    @Test
+    void testCreateAggregateRoot() {
+        SampleIdentifier sampleId = new SampleIdentifier(UUID.randomUUID().toString());
+        AggregateRoot<SampleIdentifier> aggregateRoot = createAggregateRoot(sampleId);
+
+        Assertions.assertNotNull(aggregateRoot);
+        Assertions.assertEquals(sampleId, aggregateRoot.getId());
+    }
+
     private Entity<SampleIdentifier> createEntity(SampleIdentifier id) {
-        return new Entity<>(id, Collections.emptyList()) {
+        return new Entity<>(id, Collections.emptyList(), 0) {
+            @Override
+            public void validate(ValidationHandler handler) {
+                // Lógica de validação simulada
+            }
+        };
+    }
+
+    private AggregateRoot<SampleIdentifier> createAggregateRoot(SampleIdentifier id) {
+        return new AggregateRoot<>(id, Collections.emptyList(), 0) {
             @Override
             public void validate(ValidationHandler handler) {
                 // Lógica de validação simulada

@@ -93,8 +93,6 @@ public class RedisEventValidationServiceImplTest extends CacheTestConfiguration 
         final var aDomainEvent = new TestListenerDomainEvent(IdUtils.generate());
         final var aPayloadId = aDomainEvent.id();
 
-        final var aPayloadIdWithAggregate = aDomainEvent.aggregateName().concat("-").concat(aPayloadId);
-
         this.eventValidationRepository.save(
                 EventValidationEntity.from(aDomainEvent.aggregateName().concat("-")
                                 .concat(aPayloadId),

@@ -19,7 +19,7 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
 
     @Test
     void givenAValidProduct_whenCallSave_shouldReturnProductSaved() {
-        final var aProduct = Fixture.Products.book();
+        final var aProduct = Fixture.Products.tshirt();
         aProduct.changeBannerImage(Fixture.Products.productImage(ProductImageType.BANNER));
         aProduct.addImage(Fixture.Products.productImage(ProductImageType.GALLERY));
 

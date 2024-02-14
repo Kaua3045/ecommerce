@@ -40,3 +40,4 @@ spring:
     show-sql: true
   flyway:
     enabled: true
+    locations: classpath:db/migration

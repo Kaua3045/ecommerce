@@ -53,10 +53,10 @@ public class ProductJpaEntity {
     private Instant updatedAt;
 
     @Version
-    @Column(name = "version", nullable = false)
-    private Long version;
+    private long version;
 
-    public ProductJpaEntity() {}
+    public ProductJpaEntity() {
+    }
 
     private ProductJpaEntity(
             final String id,
@@ -69,7 +69,7 @@ public class ProductJpaEntity {
             final ProductImageJpaEntity bannerImage,
             final Instant createdAt,
             final Instant updatedAt,
-            final Long version
+            final long version
     ) {
         this.id = id;
         this.name = name;
@@ -255,7 +255,7 @@ public class ProductJpaEntity {
         this.updatedAt = updatedAt;
     }
 
-    public Long getVersion() {
+    public long getVersion() {
         return version;
     }
 }

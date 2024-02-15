@@ -4,12 +4,11 @@ import com.kaua.ecommerce.config.CacheTestConfiguration;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.CacheGatewayTest;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
-import com.kaua.ecommerce.infrastructure.outbox.event.EventValidationEntity;
-import com.kaua.ecommerce.infrastructure.outbox.event.EventValidationRepository;
 import com.kaua.ecommerce.infrastructure.service.EventValidationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.temporal.ChronoUnit;
 
@@ -17,10 +16,10 @@ import java.time.temporal.ChronoUnit;
 public class RedisEventValidationServiceImplTest extends CacheTestConfiguration {
 
     @Autowired
-    private EventValidationRepository eventValidationRepository;
+    private EventValidationService eventValidationService;
 
     @Autowired
-    private EventValidationService eventValidationService;
+    private RedisTemplate<String, Long> redisTemplate;
 
     @Test
     void givenFirstEvent_whenIsInvalid_thenShouldReturnFalse() {
@@ -29,13 +28,13 @@ public class RedisEventValidationServiceImplTest extends CacheTestConfiguration 
         final var aPayloadId = aDomainEvent.id();
 
         // when
-        Assertions.assertEquals(0, this.eventValidationRepository.count());
-
         final var aResult = this.eventValidationService.isInvalid(aDomainEvent, aPayloadId);
 
         // then
-        Assertions.assertEquals(1, this.eventValidationRepository.count());
         Assertions.assertFalse(aResult);
+        Assertions.assertNotNull(this.redisTemplate.opsForValue().get(
+                RedisEventValidationServiceImpl.EVENT_VALIDATION_PREFIX.concat(aDomainEvent
+                        .aggregateName().concat("-").concat(aPayloadId))));
     }
 
     @Test
@@ -44,47 +43,41 @@ public class RedisEventValidationServiceImplTest extends CacheTestConfiguration 
         final var aDomainEvent = new TestListenerDomainEvent(IdUtils.generate());
         final var aPayloadId = aDomainEvent.id();
 
-        this.eventValidationRepository.save(
-                EventValidationEntity.from(aDomainEvent.aggregateName().concat("-")
-                                .concat(aPayloadId),
-                        aDomainEvent.occurredOn().minus(1, ChronoUnit.DAYS)));
+        this.redisTemplate.opsForValue().set(
+                RedisEventValidationServiceImpl.EVENT_VALIDATION_PREFIX.concat(aDomainEvent
+                                .aggregateName().concat("-"))
+                        .concat(aPayloadId), aDomainEvent.occurredOn().minus(1, ChronoUnit.DAYS).toEpochMilli());
 
         // when
-        Assertions.assertEquals(1, this.eventValidationRepository.count());
         final var aResult = this.eventValidationService.isInvalid(aDomainEvent, aPayloadId);
 
         // then
         Assertions.assertFalse(aResult);
 
-        Assertions.assertEquals(aDomainEvent.occurredOn(), this.eventValidationRepository.findById(
-                aDomainEvent.aggregateName().concat("-").concat(aPayloadId)).get().getOccurredOn());
+        Assertions.assertEquals(aDomainEvent.occurredOn().toEpochMilli(), this.redisTemplate.opsForValue()
+                .get(RedisEventValidationServiceImpl.EVENT_VALIDATION_PREFIX.concat(aDomainEvent
+                        .aggregateName().concat("-").concat(aPayloadId))));
     }
 
     @Test
-    void givenEventAndEventStoredIs7DaysInFuture_whenIsInvalid_thenShouldReturnFalse() {
+    void givenEventAndEventStoredIs7DaysInFuture_whenIsInvalid_thenShouldReturnTrue() {
         // given
         final var aDomainEvent = new TestListenerDomainEvent(IdUtils.generate());
         final var aPayloadId = aDomainEvent.id();
 
-        final var aEntity = EventValidationEntity.from(
-                aDomainEvent.aggregateName().concat("-").concat(aPayloadId),
-                aDomainEvent.occurredOn().plus(1, ChronoUnit.DAYS)
-        );
-        aEntity.setId(aDomainEvent.aggregateName().concat("-").concat(aPayloadId));
-        aEntity.setOccurredOn(aDomainEvent.occurredOn().plus(7, ChronoUnit.DAYS));
-
-        this.eventValidationRepository.save(aEntity);
+        this.redisTemplate.opsForValue().set(
+                RedisEventValidationServiceImpl.EVENT_VALIDATION_PREFIX.concat(aDomainEvent
+                                .aggregateName().concat("-"))
+                        .concat(aPayloadId), aDomainEvent.occurredOn().plus(7, ChronoUnit.DAYS).toEpochMilli());
 
         // when
-        Assertions.assertEquals(1, this.eventValidationRepository.count());
-
         final var aResult = this.eventValidationService.isInvalid(aDomainEvent, aPayloadId);
 
         // then
-        Assertions.assertEquals(1, this.eventValidationRepository.count());
         Assertions.assertTrue(aResult);
-        Assertions.assertEquals(aEntity.getId(), aDomainEvent.aggregateName()
-                .concat("-").concat(aPayloadId));
+        Assertions.assertEquals(aDomainEvent.occurredOn().plus(7, ChronoUnit.DAYS).toEpochMilli(),
+                this.redisTemplate.opsForValue().get(RedisEventValidationServiceImpl.EVENT_VALIDATION_PREFIX
+                        .concat(aDomainEvent.aggregateName().concat("-").concat(aPayloadId))));
     }
 
     @Test
@@ -93,17 +86,21 @@ public class RedisEventValidationServiceImplTest extends CacheTestConfiguration 
         final var aDomainEvent = new TestListenerDomainEvent(IdUtils.generate());
         final var aPayloadId = aDomainEvent.id();
 
-        this.eventValidationRepository.save(
-                EventValidationEntity.from(aDomainEvent.aggregateName().concat("-")
-                                .concat(aPayloadId),
-                        aDomainEvent.occurredOn().plus(1, ChronoUnit.DAYS)));
+        this.redisTemplate.opsForValue().set(
+                RedisEventValidationServiceImpl.EVENT_VALIDATION_PREFIX.concat(aDomainEvent
+                                .aggregateName().concat("-"))
+                        .concat(aPayloadId), aDomainEvent.occurredOn().plus(1, ChronoUnit.DAYS).toEpochMilli());
 
         // when
-        Assertions.assertEquals(1, this.eventValidationRepository.count());
+        Assertions.assertNotNull(this.redisTemplate.opsForValue().get(
+                RedisEventValidationServiceImpl.EVENT_VALIDATION_PREFIX.concat(aDomainEvent
+                        .aggregateName().concat("-").concat(aPayloadId))));
 
         this.eventValidationService.invalidate(aDomainEvent.aggregateName(), aPayloadId);
 
         // then
-        Assertions.assertEquals(0, this.eventValidationRepository.count());
+        Assertions.assertNull(this.redisTemplate.opsForValue().get(
+                RedisEventValidationServiceImpl.EVENT_VALIDATION_PREFIX.concat(aDomainEvent
+                        .aggregateName().concat("-").concat(aPayloadId))));
     }
 }

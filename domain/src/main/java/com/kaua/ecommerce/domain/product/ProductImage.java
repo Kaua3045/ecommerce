@@ -70,4 +70,14 @@ public class ProductImage extends ValueObject implements Serializable {
     public int hashCode() {
         return Objects.hash(getId(), getName(), getLocation(), getUrl());
     }
+
+    @Override
+    public String toString() {
+        return "ProductImage(" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", url='" + url + '\'' +
+                ')';
+    }
 }

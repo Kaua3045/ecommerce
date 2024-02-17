@@ -97,4 +97,12 @@ public class ProductImageTest {
         Assertions.assertFalse(aProductImage.equals(""));
         Assertions.assertNotEquals(aProductImage.hashCode(), anotherProductImage.hashCode());
     }
+
+    @Test
+    void givenAValidProductImage_whenCallToString_shouldBeReturnStringRepresentation() {
+        final var aProductImage = ProductImage.with("abc", "Random", "/images", "http://localhost:8080/images");
+        final var aProductImageString = aProductImage.toString();
+
+        Assertions.assertNotNull(aProductImageString);
+    }
 }

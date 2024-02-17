@@ -2,8 +2,11 @@ package com.kaua.ecommerce.application.usecases.product.media.upload;
 
 import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedException;
 import com.kaua.ecommerce.application.exceptions.ProductIsDeletedException;
+import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
+import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.MediaResourceGateway;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
@@ -20,13 +23,19 @@ public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase 
 
     private final ProductGateway productGateway;
     private final MediaResourceGateway mediaResourceGateway;
+    private final TransactionManager transactionManager;
+    private final EventPublisher eventPublisher;
 
     public DefaultUploadProductImageUseCase(
             final ProductGateway productGateway,
-            final MediaResourceGateway mediaResourceGateway
+            final MediaResourceGateway mediaResourceGateway,
+            final TransactionManager transactionManager,
+            final EventPublisher eventPublisher
     ) {
         this.productGateway = Objects.requireNonNull(productGateway);
         this.mediaResourceGateway = Objects.requireNonNull(mediaResourceGateway);
+        this.transactionManager = Objects.requireNonNull(transactionManager);
+        this.eventPublisher = Objects.requireNonNull(eventPublisher);
     }
 
     @Override
@@ -53,8 +62,17 @@ public class DefaultUploadProductImageUseCase extends UploadProductImageUseCase 
             }
         });
 
-        aProduct.registerEvent(ProductUpdatedEvent.from(aProduct));
-        this.productGateway.update(aProduct);
+        final var aResult = this.transactionManager.execute(() -> {
+            final var aProductSaved = this.productGateway.update(aProduct);
+            this.eventPublisher.publish(ProductUpdatedEvent.from(aProductSaved));
+            return aProductSaved;
+        });
+
+        if (aResult.isFailure()) {
+            aProduct.getBannerImage().ifPresent(this.mediaResourceGateway::clearImage);
+            this.mediaResourceGateway.clearImages(aProduct.getImages());
+            throw TransactionFailureException.with(aResult.getErrorResult());
+        }
 
         return UploadProductImageOutput.from(aProduct);
     }

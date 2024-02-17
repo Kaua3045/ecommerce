@@ -2,8 +2,11 @@ package com.kaua.ecommerce.application.usecases.product.update;
 
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.exceptions.ProductIsDeletedException;
+import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
+import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
@@ -17,10 +20,19 @@ public class DefaultUpdateProductUseCase extends UpdateProductUseCase {
 
     private final ProductGateway productGateway;
     private final CategoryGateway categoryGateway;
+    private final TransactionManager transactionManager;
+    private final EventPublisher eventPublisher;
 
-    public DefaultUpdateProductUseCase(final ProductGateway productGateway, final CategoryGateway categoryGateway) {
+    public DefaultUpdateProductUseCase(
+            final ProductGateway productGateway,
+            final CategoryGateway categoryGateway,
+            final TransactionManager transactionManager,
+            final EventPublisher eventPublisher
+    ) {
         this.productGateway = Objects.requireNonNull(productGateway);
         this.categoryGateway = Objects.requireNonNull(categoryGateway);
+        this.transactionManager = Objects.requireNonNull(transactionManager);
+        this.eventPublisher = Objects.requireNonNull(eventPublisher);
     }
 
     @Override
@@ -59,8 +71,16 @@ public class DefaultUpdateProductUseCase extends UpdateProductUseCase {
             return Either.left(aNotification);
         }
 
-        aProductUpdated.registerEvent(ProductUpdatedEvent.from(aProduct));
+        final var aResult = this.transactionManager.execute(() -> {
+            final var aProductSaved = this.productGateway.update(aProductUpdated);
+            this.eventPublisher.publish(ProductUpdatedEvent.from(aProductSaved));
+            return aProductSaved;
+        });
 
-        return Either.right(UpdateProductOutput.from(this.productGateway.update(aProductUpdated)));
+        if (aResult.isFailure()) {
+            throw TransactionFailureException.with(aResult.getErrorResult());
+        }
+
+        return Either.right(UpdateProductOutput.from(aResult.getSuccessResult()));
     }
 }

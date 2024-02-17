@@ -116,4 +116,18 @@ public class OutboxEventRepositoryTest {
 
         Assertions.assertEquals(expectedErrorMessage, actualCause.getMessage());
     }
+
+    @Test
+    void givenAnValidEntity_whenCallSave_shouldPersistDataAndCallToString() {
+        final var aCategory = Fixture.Categories.tech();
+
+        final var aEntity = OutboxEventEntity.from(CategoryCreatedEvent.from(aCategory));
+
+        final var actualEntity = outboxEventRepository.save(aEntity);
+
+        final var actualEntityToString = actualEntity.toString();
+
+        Assertions.assertNotNull(actualEntity);
+        Assertions.assertNotNull(actualEntityToString);
+    }
 }

@@ -102,4 +102,15 @@ public class OutboxEventEntity {
     public void setOccurredOn(Instant occurredOn) {
         this.occurredOn = occurredOn;
     }
+
+    @Override
+    public String toString() {
+        return "OutboxEventEntity(" +
+                "eventId='" + eventId + '\'' +
+                ", aggregateName='" + aggregateName + '\'' +
+                ", eventType='" + eventType + '\'' +
+                ", data='" + data + '\'' +
+                ", occurredOn=" + occurredOn +
+                ')';
+    }
 }

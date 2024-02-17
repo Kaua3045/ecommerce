@@ -6,6 +6,8 @@ import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,8 @@ import java.util.Optional;
 
 @Component
 public class ProductElasticsearchGateway implements SearchGateway<Product> {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductElasticsearchGateway.class);
 
     private final ProductElasticsearchRepository productElasticsearchRepository;
 
@@ -25,6 +29,7 @@ public class ProductElasticsearchGateway implements SearchGateway<Product> {
     @Override
     public Product save(Product aggregateRoot) {
         this.productElasticsearchRepository.save(ProductElasticsearchEntity.toEntity(aggregateRoot));
+        log.info("inserted or updated product in elasticsearch: {}", aggregateRoot);
         return aggregateRoot;
     }
 
@@ -47,5 +52,6 @@ public class ProductElasticsearchGateway implements SearchGateway<Product> {
     @Override
     public void deleteById(String id) {
         this.productElasticsearchRepository.deleteById(id);
+        log.info("deleted product from elasticsearch: {}", id);
     }
 }

@@ -230,4 +230,22 @@ public class Product extends AggregateRoot<ProductID> {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    @Override
+    public String toString() {
+        return "Product(" +
+                "id='" + getId().getValue() + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", bannerImage=" + bannerImage.getLocation() +
+                ", images=" + images.size() +
+                ", categoryId=" + categoryId.getValue() +
+                ", attributes=" + attributes.size() +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ')';
+    }
 }

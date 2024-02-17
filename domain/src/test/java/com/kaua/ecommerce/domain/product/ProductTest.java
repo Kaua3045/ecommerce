@@ -484,4 +484,15 @@ public class ProductTest extends UnitTest {
         Assertions.assertNotNull(aProductDeleted);
         Assertions.assertEquals(aProduct.getId().getValue(), aProductDeleted.id());
     }
+
+    @Test
+    void givenAValidProduct_whenCallToString_shouldReturnProductToString() {
+        final var aProduct = Fixture.Products.tshirt();
+        aProduct.changeBannerImage(Fixture.Products.productImage(ProductImageType.BANNER));
+        aProduct.addImage(Fixture.Products.productImage(ProductImageType.GALLERY));
+
+        final var aProductToString = aProduct.toString();
+
+        Assertions.assertNotNull(aProductToString);
+    }
 }

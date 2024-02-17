@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Category")
-@RequestMapping(value = "categories")
+@RequestMapping(value = "v1/categories")
 public interface CategoryAPI {
 
     @PostMapping(

@@ -239,7 +239,7 @@ public class Product extends AggregateRoot<ProductID> {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", quantity=" + quantity +
-                ", bannerImage=" + bannerImage.getLocation() +
+                ", bannerImage=" + getBannerImage().map(ProductImage::getLocation).orElse(null) +
                 ", images=" + images.size() +
                 ", categoryId=" + categoryId.getValue() +
                 ", attributes=" + attributes.size() +

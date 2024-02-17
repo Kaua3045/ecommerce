@@ -61,7 +61,7 @@ public class GlobalExceptionHandlerTest {
         Mockito.when(updateCustomerCpfUseCase.execute(Mockito.any()))
                 .thenThrow(DomainException.with(new Error(expectedErrorMessage)));
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/cpf", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/cpf", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -93,7 +93,7 @@ public class GlobalExceptionHandlerTest {
         Mockito.when(updateCustomerCpfUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Customer.class, aAccountId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/cpf", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/cpf", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -125,7 +125,7 @@ public class GlobalExceptionHandlerTest {
         Mockito.when(updateCustomerCpfUseCase.execute(Mockito.any()))
                 .thenThrow(TransactionFailureException.with(new Error("Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)")));
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/cpf", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/cpf", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -150,7 +150,7 @@ public class GlobalExceptionHandlerTest {
         Mockito.when(updateCustomerCpfUseCase.execute(Mockito.any()))
                 .thenThrow(TransactionFailureException.with(new Error(expectedErrorMessage)));
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/cpf", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/cpf", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));

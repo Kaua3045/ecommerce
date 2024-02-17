@@ -152,10 +152,12 @@ public class Product extends AggregateRoot<ProductID> {
         }
 
         this.images.add(aImage);
+        this.updatedAt = InstantUtils.now();
     }
 
     public void changeBannerImage(final ProductImage aImage) {
         this.bannerImage = aImage;
+        this.updatedAt = InstantUtils.now();
     }
 
     public Product update(

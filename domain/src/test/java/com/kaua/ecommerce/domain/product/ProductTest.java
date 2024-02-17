@@ -266,9 +266,14 @@ public class ProductTest extends UnitTest {
         final var aProduct = Fixture.Products.tshirt();
         final var aImage = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
 
+        final var aProductUpdatedAtBefore = aProduct.getUpdatedAt();
+
         aProduct.addImage(aImage);
 
+        final var aProductUpdatedAtAfter = aProduct.getUpdatedAt();
+
         Assertions.assertEquals(aImage, aProduct.getImages().stream().findFirst().get());
+        Assertions.assertTrue(aProductUpdatedAtBefore.isBefore(aProductUpdatedAtAfter));
     }
 
     @Test
@@ -294,9 +299,14 @@ public class ProductTest extends UnitTest {
         final var aUrl = "http://localhost:8080/images/product.jpg";
         final var aImage = ProductImage.with("abc", "product.jpg", aLocation, aUrl);
 
+        final var aProductUpdatedAtBefore = aProduct.getUpdatedAt();
+
         aProduct.changeBannerImage(aImage);
 
+        final var aProductUpdatedAtAfter = aProduct.getUpdatedAt();
+
         Assertions.assertEquals(aImage, aProduct.getBannerImage().get());
+        Assertions.assertTrue(aProductUpdatedAtBefore.isBefore(aProductUpdatedAtAfter));
     }
 
     @Test

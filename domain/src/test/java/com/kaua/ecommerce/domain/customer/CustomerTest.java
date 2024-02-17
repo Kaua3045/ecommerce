@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.domain.customer;
 
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
 import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.customer.address.Address;
@@ -617,5 +618,14 @@ public class CustomerTest extends UnitTest {
         Assertions.assertEquals(aAddress.getZipCode(), aCustomer.getAddress().get().getZipCode());
 
         Assertions.assertDoesNotThrow(() -> aCustomer.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAValidCustomer_whenCallToString_shouldReturnString() {
+        final var aCustomer = Fixture.Customers.customerWithAllParams;
+
+        final var aCustomerToString = aCustomer.toString();
+
+        Assertions.assertNotNull(aCustomerToString);
     }
 }

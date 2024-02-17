@@ -2,6 +2,8 @@ package com.kaua.ecommerce.infrastructure.product.persistence;
 
 import com.kaua.ecommerce.domain.product.*;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -36,13 +38,16 @@ public class ProductJpaEntity {
     @Column(name = "status", nullable = false)
     private ProductStatus status;
 
+    @Fetch(FetchMode.JOIN)
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<ProductAttributesJpaEntity> attributes;
 
+    @Fetch(FetchMode.JOIN)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "banner_image_id", referencedColumnName = "id")
     private ProductImageJpaEntity bannerImage;
 
+    @Fetch(FetchMode.JOIN)
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<ProductImageRelationJpaEntity> images;
 

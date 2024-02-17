@@ -1,13 +1,18 @@
 package com.kaua.ecommerce.application.usecases.product.create;
 
 import com.kaua.ecommerce.application.UseCaseTest;
+import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
+import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
+import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
+import com.kaua.ecommerce.domain.validation.Error;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -29,6 +35,12 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
     @Mock
     private CategoryGateway categoryGateway;
+
+    @Mock
+    private TransactionManager transactionManager;
+
+    @Mock
+    private EventPublisher eventPublisher;
 
     @InjectMocks
     private DefaultCreateProductUseCase createProductUseCase;
@@ -69,6 +81,11 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
         Mockito.when(this.productGateway.create(Mockito.any())).thenAnswer(returnsFirstArg());
+        Mockito.when(this.transactionManager.execute(Mockito.any())).thenAnswer(it -> {
+            final var aSupplier = it.getArgument(0, Supplier.class);
+            return TransactionResult.success(aSupplier.get());
+        });
+        Mockito.doNothing().when(this.eventPublisher).publish(Mockito.any());
 
         final var aOutput = this.createProductUseCase.execute(aCommand).getRight();
 
@@ -85,9 +102,10 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(aColorName, aCmd.getAttributes().stream().findFirst().get().getColor().getColor())
                         && Objects.equals(aSizeName, aCmd.getAttributes().stream().findFirst().get().getSize().getSize())
-                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
+        Mockito.verify(transactionManager, Mockito.times(1)).execute(Mockito.any());
+        Mockito.verify(eventPublisher, Mockito.times(1)).publish(Mockito.any());
     }
 
     @Test
@@ -518,5 +536,57 @@ public class CreateProductUseCaseTest extends UseCaseTest {
 
         Mockito.verify(categoryGateway, Mockito.times(1)).findById(aCategoryId);
         Mockito.verify(productGateway, Mockito.times(0)).create(Mockito.any());
+    }
+
+    @Test
+    void givenAValidCommand_whenCallExecuteButThrowsOnPublishEvent_thenShouldThrowTransactionFailureException() {
+        final var aCategory = Fixture.Categories.tech();
+
+        final var aName = "Product Name";
+        final var aDescription = "Product Description";
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aQuantity = 10;
+        final var aCategoryId = aCategory.getId().getValue();
+        final var aColorName = "RED";
+        final var aSizeName = "M";
+        final var aWeight = 0.5;
+        final var aHeight = 0.5;
+        final var aWidth = 0.5;
+        final var aDepth = 0.5;
+
+        final var aAttributes = CreateProductCommandAttributes.with(
+                aColorName,
+                aSizeName,
+                aWeight,
+                aHeight,
+                aWidth,
+                aDepth
+        );
+
+        final var aCommand = CreateProductCommand.with(
+                aName,
+                aDescription,
+                aPrice,
+                aQuantity,
+                aCategoryId,
+                List.of(aAttributes)
+        );
+
+        final var expectedErrorMessage = "Event Publisher Error";
+
+        Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
+        Mockito.when(this.transactionManager.execute(Mockito.any())).thenReturn(TransactionResult
+                .failure(new Error(expectedErrorMessage)));
+
+        final var aOutput = Assertions.assertThrows(
+                TransactionFailureException.class,
+                () -> this.createProductUseCase.execute(aCommand));
+
+        Assertions.assertEquals(expectedErrorMessage, aOutput.getMessage());
+
+        Mockito.verify(categoryGateway, Mockito.times(1)).findById(aCategoryId);
+        Mockito.verify(productGateway, Mockito.times(0)).create(Mockito.any());
+        Mockito.verify(transactionManager, Mockito.times(1)).execute(Mockito.any());
+        Mockito.verify(eventPublisher, Mockito.times(0)).publish(Mockito.any());
     }
 }

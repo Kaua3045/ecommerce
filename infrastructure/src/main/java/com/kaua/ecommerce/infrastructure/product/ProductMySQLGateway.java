@@ -7,7 +7,6 @@ import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaEnti
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaRepository;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
-import com.kaua.ecommerce.infrastructure.service.EventDatabaseService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,52 +18,47 @@ public class ProductMySQLGateway implements ProductGateway {
 
     private final ProductJpaRepository productRepository;
     private final ProductColorJpaRepository productColorRepository;
-    private final EventDatabaseService eventDatabaseService;
 
     public ProductMySQLGateway(
             final ProductJpaRepository productRepository,
-            final ProductColorJpaRepository productColorRepository,
-            final EventDatabaseService eventDatabaseService
+            final ProductColorJpaRepository productColorRepository
     ) {
         this.productRepository = Objects.requireNonNull(productRepository);
         this.productColorRepository = Objects.requireNonNull(productColorRepository);
-        this.eventDatabaseService = Objects.requireNonNull(eventDatabaseService);
     }
 
-    @Transactional
     @Override
     public Product create(Product aProduct) {
         save(aProduct);
         return aProduct;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Product> findById(String aProductID) {
         return this.productRepository.findById(aProductID)
                 .map(ProductJpaEntity::toDomain);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<ProductColor> findColorByName(String aColorName) {
         return this.productColorRepository.findByColorIgnoreCase(aColorName)
                 .map(ProductColorJpaEntity::toDomain);
     }
 
-    @Transactional
     @Override
     public Product update(Product aProduct) {
-        save(aProduct);
-        return aProduct;
+        return save(aProduct);
     }
 
-    @Transactional
     @Override
     public void delete(String aProductID) {
         this.productRepository.deleteById(aProductID);
     }
 
-    private void save(final Product aProduct) {
-        this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
-        aProduct.publishDomainEvent(this.eventDatabaseService::send);
+    private Product save(final Product aProduct) {
+        return this.productRepository.saveAndFlush(ProductJpaEntity
+                .toEntity(aProduct)).toDomain();
     }
 }

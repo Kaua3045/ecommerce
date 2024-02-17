@@ -54,6 +54,10 @@ public class S3StorageServiceImpl implements StorageService {
     @Override
     public void deleteAllByLocation(List<String> locations) {
         try {
+            if (locations.isEmpty()) {
+                return;
+            }
+
             final var aObjectsIdentifiers = locations.stream()
                     .map(location -> ObjectIdentifier.builder()
                             .key(location)

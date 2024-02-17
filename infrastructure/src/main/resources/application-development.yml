@@ -24,6 +24,7 @@ kafka:
 logging:
   level:
     com.kaua.ecommerce.infrastructure: DEBUG
+    org.springframework.orm.jpa.JpaTransactionManager: DEBUG
 
 server:
   undertow:

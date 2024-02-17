@@ -1,12 +1,17 @@
 package com.kaua.ecommerce.application.usecases.product.update.status;
 
 import com.kaua.ecommerce.application.UseCaseTest;
+import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
+import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
+import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductStatus;
+import com.kaua.ecommerce.domain.validation.Error;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,6 +20,7 @@ import org.mockito.Mockito;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -23,6 +29,12 @@ public class UpdateProductStatusUseCaseTest extends UseCaseTest {
 
     @Mock
     private ProductGateway productGateway;
+
+    @Mock
+    private TransactionManager transactionManager;
+
+    @Mock
+    private EventPublisher eventPublisher;
 
     @InjectMocks
     private DefaultUpdateProductStatusUseCase updateProductStatusUseCase;
@@ -39,6 +51,11 @@ public class UpdateProductStatusUseCaseTest extends UseCaseTest {
 
         Mockito.when(this.productGateway.findById(Mockito.any())).thenReturn(Optional.of(aProduct));
         Mockito.when(this.productGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
+        Mockito.when(this.transactionManager.execute(Mockito.any())).thenAnswer(it -> {
+            final var aSupplier = it.getArgument(0, Supplier.class);
+            return TransactionResult.success(aSupplier.get());
+        });
+        Mockito.doNothing().when(this.eventPublisher).publish(Mockito.any());
 
         final var aOutput = this.updateProductStatusUseCase.execute(aCommand);
 
@@ -54,7 +71,6 @@ public class UpdateProductStatusUseCaseTest extends UseCaseTest {
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aProduct.getCategoryId().getValue())
                         && Objects.equals(1, aCmd.getAttributes().size())
-                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.equals(aStatus, aCmd.getStatus())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
@@ -72,6 +88,11 @@ public class UpdateProductStatusUseCaseTest extends UseCaseTest {
 
         Mockito.when(this.productGateway.findById(Mockito.any())).thenReturn(Optional.of(aProduct));
         Mockito.when(this.productGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
+        Mockito.when(this.transactionManager.execute(Mockito.any())).thenAnswer(it -> {
+            final var aSupplier = it.getArgument(0, Supplier.class);
+            return TransactionResult.success(aSupplier.get());
+        });
+        Mockito.doNothing().when(this.eventPublisher).publish(Mockito.any());
 
         final var aOutput = this.updateProductStatusUseCase.execute(aCommand);
 
@@ -87,7 +108,6 @@ public class UpdateProductStatusUseCaseTest extends UseCaseTest {
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aProduct.getCategoryId().getValue())
                         && Objects.equals(1, aCmd.getAttributes().size())
-                        && Objects.equals(1, aCmd.getDomainEvents().size())
                         && Objects.equals(aStatus, aCmd.getStatus())
                         && Objects.nonNull(aCmd.getCreatedAt())
                         && Objects.nonNull(aCmd.getUpdatedAt())));
@@ -192,6 +212,33 @@ public class UpdateProductStatusUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
         Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
+        Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
+    }
+
+    @Test
+    void givenAValidCommand_whenCallExecuteButThrowsOnPublishEvent_thenShouldThrowTransactionFailureException() {
+        final var aProduct = Fixture.Products.tshirt();
+
+        final var aStatus = ProductStatus.INACTIVE;
+
+        final var expectedErrorMessage = "Error on publish event";
+
+        final var aCommand = UpdateProductStatusCommand.with(
+                aProduct.getId().getValue(),
+                aStatus.name()
+        );
+
+        Mockito.when(this.productGateway.findById(Mockito.any())).thenReturn(Optional.of(aProduct));
+        Mockito.when(this.transactionManager.execute(Mockito.any())).thenReturn(TransactionResult
+                .failure(new Error(expectedErrorMessage)));
+
+        final var aOutput = Assertions.assertThrows(
+                TransactionFailureException.class,
+                () -> this.updateProductStatusUseCase.execute(aCommand));
+
+        Assertions.assertEquals(expectedErrorMessage, aOutput.getMessage());
+
+        Mockito.verify(productGateway, Mockito.times(1)).findById(aProduct.getId().getValue());
         Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
     }
 }

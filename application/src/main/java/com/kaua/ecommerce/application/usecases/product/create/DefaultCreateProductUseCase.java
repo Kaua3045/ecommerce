@@ -1,8 +1,11 @@
 package com.kaua.ecommerce.application.usecases.product.create;
 
 import com.kaua.ecommerce.application.either.Either;
+import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
+import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
@@ -19,13 +22,19 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
 
     private final ProductGateway productGateway;
     private final CategoryGateway categoryGateway;
+    private final TransactionManager transactionManager;
+    private final EventPublisher eventPublisher;
 
     public DefaultCreateProductUseCase(
             final ProductGateway productGateway,
-            final CategoryGateway categoryGateway
+            final CategoryGateway categoryGateway,
+            final TransactionManager transactionManager,
+            final EventPublisher eventPublisher
     ) {
         this.productGateway = Objects.requireNonNull(productGateway);
         this.categoryGateway = Objects.requireNonNull(categoryGateway);
+        this.transactionManager = Objects.requireNonNull(transactionManager);
+        this.eventPublisher = Objects.requireNonNull(eventPublisher);
     }
 
     @Override
@@ -61,10 +70,21 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
                 aAttributes
         );
         aProduct.validate(aNotification);
-        aProduct.registerEvent(ProductCreatedEvent.from(aProduct));
 
-        return aNotification.hasError()
-                ? Either.left(aNotification)
-                : Either.right(CreateProductOutput.from(this.productGateway.create(aProduct)));
+        if (aNotification.hasError()) {
+            return Either.left(aNotification);
+        }
+
+        final var aResult = this.transactionManager.execute(() -> {
+            final var aProductSaved = this.productGateway.create(aProduct);
+            this.eventPublisher.publish(ProductCreatedEvent.from(aProductSaved));
+            return aProductSaved;
+        });
+
+        if (aResult.isFailure()) {
+            throw TransactionFailureException.with(aResult.getErrorResult());
+        }
+
+        return Either.right(CreateProductOutput.from(aResult.getSuccessResult()));
     }
 }

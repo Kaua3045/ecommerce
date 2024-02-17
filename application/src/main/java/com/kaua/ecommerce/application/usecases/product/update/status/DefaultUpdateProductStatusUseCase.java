@@ -1,7 +1,10 @@
 package com.kaua.ecommerce.application.usecases.product.update.status;
 
 import com.kaua.ecommerce.application.exceptions.ProductIsDeletedException;
+import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
+import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;
@@ -14,9 +17,17 @@ import java.util.Objects;
 public class DefaultUpdateProductStatusUseCase extends UpdateProductStatusUseCase {
 
     private final ProductGateway productGateway;
+    private final TransactionManager transactionManager;
+    private final EventPublisher eventPublisher;
 
-    public DefaultUpdateProductStatusUseCase(final ProductGateway productGateway) {
+    public DefaultUpdateProductStatusUseCase(
+            final ProductGateway productGateway,
+            final TransactionManager transactionManager,
+            final EventPublisher eventPublisher
+    ) {
         this.productGateway = Objects.requireNonNull(productGateway);
+        this.transactionManager = Objects.requireNonNull(transactionManager);
+        this.eventPublisher = Objects.requireNonNull(eventPublisher);
     }
 
     @Override
@@ -37,8 +48,17 @@ public class DefaultUpdateProductStatusUseCase extends UpdateProductStatusUseCas
         }
 
         final var aProductUpdated = aProduct.updateStatus(aStatus);
-        aProductUpdated.registerEvent(ProductUpdatedEvent.from(aProductUpdated));
 
-        return UpdateProductStatusOutput.from(this.productGateway.update(aProductUpdated));
+        final var aResult = this.transactionManager.execute(() -> {
+            final var aProductSaved = this.productGateway.update(aProductUpdated);
+            this.eventPublisher.publish(ProductUpdatedEvent.from(aProductSaved));
+            return aProductSaved;
+        });
+
+        if (aResult.isFailure()) {
+            throw TransactionFailureException.with(aResult.getErrorResult());
+        }
+
+        return UpdateProductStatusOutput.from(aResult.getSuccessResult());
     }
 }

@@ -1,9 +1,7 @@
 package com.kaua.ecommerce.infrastructure.configurations.usecases;
 
-import com.kaua.ecommerce.application.gateways.CategoryGateway;
-import com.kaua.ecommerce.application.gateways.MediaResourceGateway;
-import com.kaua.ecommerce.application.gateways.ProductGateway;
-import com.kaua.ecommerce.application.gateways.SearchGateway;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
+import com.kaua.ecommerce.application.gateways.*;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.create.DefaultCreateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.delete.DefaultDeleteProductUseCase;
@@ -29,42 +27,48 @@ public class ProductUseCaseConfig {
     private final CategoryGateway categoryGateway;
     private final MediaResourceGateway mediaResourceGateway;
     private final SearchGateway<Product> productSearchGateway;
+    private final TransactionManager transactionManager;
+    private final EventPublisher eventPublisher;
 
     public ProductUseCaseConfig(
             final ProductGateway productGateway,
             final CategoryGateway categoryGateway,
             final MediaResourceGateway mediaResourceGateway,
-            final SearchGateway<Product> productSearchGateway
+            final SearchGateway<Product> productSearchGateway,
+            final TransactionManager transactionManager,
+            final EventPublisher eventPublisher
     ) {
         this.productGateway = Objects.requireNonNull(productGateway);
         this.categoryGateway = Objects.requireNonNull(categoryGateway);
         this.mediaResourceGateway = Objects.requireNonNull(mediaResourceGateway);
         this.productSearchGateway = Objects.requireNonNull(productSearchGateway);
+        this.transactionManager = Objects.requireNonNull(transactionManager);
+        this.eventPublisher = Objects.requireNonNull(eventPublisher);
     }
 
     @Bean
     public CreateProductUseCase createProductUseCase() {
-        return new DefaultCreateProductUseCase(productGateway, categoryGateway);
+        return new DefaultCreateProductUseCase(productGateway, categoryGateway, transactionManager, eventPublisher);
     }
 
     @Bean
     public UploadProductImageUseCase updateProductImageUseCase() {
-        return new DefaultUploadProductImageUseCase(productGateway, mediaResourceGateway);
+        return new DefaultUploadProductImageUseCase(productGateway, mediaResourceGateway, transactionManager, eventPublisher);
     }
 
     @Bean
     public UpdateProductUseCase updateProductUseCase() {
-        return new DefaultUpdateProductUseCase(productGateway, categoryGateway);
+        return new DefaultUpdateProductUseCase(productGateway, categoryGateway, transactionManager, eventPublisher);
     }
 
     @Bean
     public UpdateProductStatusUseCase updateProductStatusUseCase() {
-        return new DefaultUpdateProductStatusUseCase(productGateway);
+        return new DefaultUpdateProductStatusUseCase(productGateway, transactionManager, eventPublisher);
     }
 
     @Bean
     public DeleteProductUseCase deleteProductUseCase() {
-        return new DefaultDeleteProductUseCase(productGateway);
+        return new DefaultDeleteProductUseCase(productGateway, transactionManager, eventPublisher);
     }
 
     @Bean

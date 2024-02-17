@@ -1,7 +1,10 @@
 package com.kaua.ecommerce.application.usecases.product.delete;
 
 import com.kaua.ecommerce.application.UseCaseTest;
+import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
+import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.CategoryID;
 import com.kaua.ecommerce.domain.product.*;
@@ -15,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -23,6 +27,12 @@ public class DeleteProductUseCaseTest extends UseCaseTest {
 
     @Mock
     private ProductGateway productGateway;
+
+    @Mock
+    private TransactionManager transactionManager;
+
+    @Mock
+    private EventPublisher eventPublisher;
 
     @InjectMocks
     private DefaultDeleteProductUseCase deleteProductUseCase;
@@ -53,6 +63,11 @@ public class DeleteProductUseCaseTest extends UseCaseTest {
 
         Mockito.when(this.productGateway.findById(aProductID)).thenReturn(Optional.of(aProduct));
         Mockito.when(this.productGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
+        Mockito.when(this.transactionManager.execute(Mockito.any())).thenAnswer(it -> {
+            final var aSupplier = it.getArgument(0, Supplier.class);
+            return TransactionResult.success(aSupplier.get());
+        });
+        Mockito.doNothing().when(this.eventPublisher).publish(Mockito.any());
 
         Assertions.assertDoesNotThrow(() -> this.deleteProductUseCase.execute(aProductID));
 
@@ -66,6 +81,10 @@ public class DeleteProductUseCaseTest extends UseCaseTest {
         final var aProductID = "aProductID";
 
         Mockito.when(this.productGateway.findById(aProductID)).thenReturn(Optional.empty());
+        Mockito.when(this.transactionManager.execute(Mockito.any())).thenAnswer(it -> {
+            final var aSupplier = it.getArgument(0, Supplier.class);
+            return TransactionResult.success(aSupplier.get());
+        });
 
         Assertions.assertDoesNotThrow(() -> this.deleteProductUseCase.execute(aProductID));
 

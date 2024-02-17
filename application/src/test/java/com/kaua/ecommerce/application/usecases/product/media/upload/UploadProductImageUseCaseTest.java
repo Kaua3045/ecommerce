@@ -1,12 +1,12 @@
 package com.kaua.ecommerce.application.usecases.product.media.upload;
 
 import com.kaua.ecommerce.application.UseCaseTest;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
+import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.MediaResourceGateway;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
-import com.kaua.ecommerce.application.adapters.TransactionManager;
-import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.product.ProductImage;
@@ -59,6 +59,8 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
         final var aProductId = aProduct.getId().getValue();
 
+        final var aProductUpdatedAt = aProduct.getUpdatedAt();
+
         final var aCommand = UploadProductImageCommand.with(aProductId, List.of(aProductImageResource));
 
         Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
@@ -83,7 +85,8 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
         Mockito.verify(productGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aProductId, aCmd.getId().getValue())
                         && Objects.equals(aProductImage.getId(), aCmd.getBannerImage().get().getId())
-                        && Objects.equals(aProductImage.getLocation(), aCmd.getBannerImage().get().getLocation())));
+                        && Objects.equals(aProductImage.getLocation(), aCmd.getBannerImage().get().getLocation())
+                        && aProductUpdatedAt.isBefore(aCmd.getUpdatedAt())));
         Mockito.verify(this.transactionManager, Mockito.times(1)).execute(Mockito.any());
         Mockito.verify(this.eventPublisher, Mockito.times(1)).publish(Mockito.any());
     }
@@ -132,6 +135,8 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
 
         final var aProductId = aProduct.getId().getValue();
 
+        final var aProductUpdatedAt = aProduct.getUpdatedAt();
+
         final var aCommand = UploadProductImageCommand.with(aProductId, List.of(aProductImageResource));
 
         Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
@@ -157,7 +162,8 @@ public class UploadProductImageUseCaseTest extends UseCaseTest {
                         && Objects.equals(1, aCmd.getImages().size())
                         && Objects.equals(aProductImage.getId(), aCmd.getImages().stream().findFirst().get().getId())
                         && Objects.equals(aProductImage.getName(), aCmd.getImages().stream().findFirst().get().getName())
-                        && Objects.equals(aProductImage.getLocation(), aCmd.getImages().stream().findFirst().get().getLocation())));
+                        && Objects.equals(aProductImage.getLocation(), aCmd.getImages().stream().findFirst().get().getLocation())
+                        && aProductUpdatedAt.isBefore(aCmd.getUpdatedAt())));
         Mockito.verify(this.transactionManager, Mockito.times(1)).execute(Mockito.any());
         Mockito.verify(this.eventPublisher, Mockito.times(1)).publish(Mockito.any());
     }

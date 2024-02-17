@@ -23,8 +23,8 @@ public class EventPublisherImpl implements EventPublisher {
     @Override
     public <T extends DomainEvent> void publish(T event) {
         try {
-            this.eventDatabaseService.send(event, "");
             log.info("Event published: {}", event.getClass().getSimpleName());
+            this.eventDatabaseService.send(event, "");
         } catch (final Exception e) {
             log.error("Error to publish event", e);
         }

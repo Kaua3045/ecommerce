@@ -168,6 +168,16 @@ public class S3StorageServiceImplTest {
         Mockito.verify(s3Client, Mockito.times(1)).deleteObjects(Mockito.any(DeleteObjectsRequest.class));
     }
 
+    @Test
+    void givenAnEmptyLocations_whenCallDeleteAllByLocation_thenShouldReturn() {
+        // when
+        Assertions.assertDoesNotThrow(() -> this.target
+                .deleteAllByLocation(List.of()));
+
+        // then
+        Mockito.verify(s3Client, Mockito.times(0)).deleteObjects(Mockito.any(DeleteObjectsRequest.class));
+    }
+
     private PutObjectResponse buildPutObjectResponse() {
         return PutObjectResponse.builder()
                 .eTag("test")

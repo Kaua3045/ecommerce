@@ -6,6 +6,8 @@ import com.kaua.ecommerce.domain.category.events.CategoryDeletedEvent;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaRepository;
 import com.kaua.ecommerce.infrastructure.service.EventDatabaseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,8 @@ import java.util.Optional;
 
 @Component
 public class CategoryMySQLGateway implements CategoryGateway {
+
+    private static final Logger log = LoggerFactory.getLogger(CategoryMySQLGateway.class);
 
     private final CategoryJpaRepository categoryJpaRepository;
     private final EventDatabaseService eventDatabaseService;
@@ -31,6 +35,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
     public Category create(Category aCategory) {
         this.categoryJpaRepository.save(CategoryJpaEntity.toEntity(aCategory));
         aCategory.publishDomainEvent(this.eventDatabaseService::send);
+        log.info("inserted category: {}", aCategory);
         return aCategory;
     }
 
@@ -50,6 +55,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
     public Category update(Category aCategory) {
         this.categoryJpaRepository.save(CategoryJpaEntity.toEntity(aCategory));
         aCategory.publishDomainEvent(this.eventDatabaseService::send);
+        log.info("updated category: {}", aCategory);
         return aCategory;
     }
 
@@ -58,6 +64,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
     public void deleteById(String aId) {
         if (this.categoryJpaRepository.existsById(aId)) {
             this.categoryJpaRepository.deleteById(aId);
+            log.info("deleted category with id: {}", aId);
         }
     }
 
@@ -67,6 +74,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
         if (this.categoryJpaRepository.existsById(aId)) {
             publishRootCategoryDeletedEvent(aId);
             this.categoryJpaRepository.deleteById(aId);
+            log.info("deleted root category with id: {}", aId);
         }
     }
 

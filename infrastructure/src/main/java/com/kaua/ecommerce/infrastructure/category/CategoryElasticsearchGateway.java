@@ -7,6 +7,8 @@ import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchEntity;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -22,6 +24,8 @@ import java.util.Optional;
 
 @Component
 public class CategoryElasticsearchGateway implements SearchGateway<Category> {
+
+    private static final Logger log = LoggerFactory.getLogger(CategoryElasticsearchGateway.class);
 
     private static final String NAME_PROP = "name";
     private static final String KEYWORD = ".keyword";
@@ -41,6 +45,7 @@ public class CategoryElasticsearchGateway implements SearchGateway<Category> {
     @Override
     public Category save(Category aCategory) {
         this.categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategory));
+        log.info("inserted category in elasticsearch: {}", aCategory);
         return aCategory;
     }
 
@@ -104,6 +109,7 @@ public class CategoryElasticsearchGateway implements SearchGateway<Category> {
     @Override
     public void deleteById(String aId) {
         this.categoryElasticsearchRepository.deleteById(aId);
+        log.info("deleted category in elasticsearch with id: {}", aId);
     }
 
     private String buildSort(final String sort) {

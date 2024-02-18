@@ -1,12 +1,12 @@
 package com.kaua.ecommerce.application.usecases.product.update;
 
+import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.exceptions.ProductIsDeletedException;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
 import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
-import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.product.Product;

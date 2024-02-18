@@ -4,6 +4,7 @@ import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCa
 import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
+import com.kaua.ecommerce.application.usecases.product.retrieve.get.GetProductByIdUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.status.UpdateProductStatusCommand;
@@ -15,7 +16,9 @@ import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.infrastructure.api.ProductAPI;
 import com.kaua.ecommerce.infrastructure.product.models.CreateProductInput;
+import com.kaua.ecommerce.infrastructure.product.models.GetProductResponse;
 import com.kaua.ecommerce.infrastructure.product.models.UpdateProductInput;
+import com.kaua.ecommerce.infrastructure.product.presenter.ProductApiPresenter;
 import com.kaua.ecommerce.infrastructure.utils.LogControllerResult;
 import com.kaua.ecommerce.infrastructure.utils.ResourceOf;
 import org.slf4j.Logger;
@@ -37,18 +40,22 @@ public class ProductController implements ProductAPI {
     private final UpdateProductUseCase updateProductUseCase;
     private final DeleteProductUseCase deleteProductUseCase;
     private final UpdateProductStatusUseCase updateProductStatusUseCase;
+    private final GetProductByIdUseCase getProductByIdUseCase;
 
     public ProductController(
             final CreateProductUseCase createProductUseCase,
             final UploadProductImageUseCase uploadProductImageUseCase,
             final UpdateProductUseCase updateProductUseCase,
             final DeleteProductUseCase deleteProductUseCase,
-            final UpdateProductStatusUseCase updateProductStatusUseCase) {
+            final UpdateProductStatusUseCase updateProductStatusUseCase,
+            final GetProductByIdUseCase getProductByIdUseCase
+    ) {
         this.createProductUseCase = createProductUseCase;
         this.uploadProductImageUseCase = uploadProductImageUseCase;
         this.updateProductUseCase = updateProductUseCase;
         this.deleteProductUseCase = deleteProductUseCase;
         this.updateProductStatusUseCase = updateProductStatusUseCase;
+        this.getProductByIdUseCase = getProductByIdUseCase;
     }
 
     @Override
@@ -66,6 +73,11 @@ public class ProductController implements ProductAPI {
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.status(HttpStatus.CREATED).body(aResult.getRight());
+    }
+
+    @Override
+    public GetProductResponse getProductById(String id) {
+        return ProductApiPresenter.present(this.getProductByIdUseCase.execute(id));
     }
 
     @Override

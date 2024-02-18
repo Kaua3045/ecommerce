@@ -77,7 +77,7 @@ public class CustomerAPITest {
         Mockito.when(updateCustomerCpfUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateCustomerCpfOutput.from(aCustomer)));
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/cpf", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/cpf", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -109,7 +109,7 @@ public class CustomerAPITest {
         Mockito.when(updateCustomerCpfUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Customer.class, aAccountId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/cpf", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/cpf", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -142,7 +142,7 @@ public class CustomerAPITest {
         Mockito.when(updateCustomerCpfUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/cpf", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/cpf", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -174,7 +174,7 @@ public class CustomerAPITest {
         Mockito.when(updateCustomerTelephoneUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateCustomerTelephoneOutput.from(aCustomer)));
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/telephone", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/telephone", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -206,7 +206,7 @@ public class CustomerAPITest {
         Mockito.when(updateCustomerTelephoneUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Customer.class, aAccountId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/telephone", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/telephone", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -239,7 +239,7 @@ public class CustomerAPITest {
         Mockito.when(updateCustomerTelephoneUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/telephone", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/telephone", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -271,7 +271,7 @@ public class CustomerAPITest {
         Mockito.when(getCustomerByAccountIdUseCase.execute(Mockito.any()))
                 .thenReturn(GetCustomerByAccountIdOutput.from(aCustomer));
 
-        final var request = MockMvcRequestBuilders.get("/customers/{accountId}", aAccountId)
+        final var request = MockMvcRequestBuilders.get("/v1/customers/{accountId}", aAccountId)
                 .param("locale", "US")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -304,7 +304,7 @@ public class CustomerAPITest {
         Mockito.when(getCustomerByAccountIdUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Customer.class, aAccountId).get());
 
-        final var request = MockMvcRequestBuilders.get("/customers/{accountId}", aAccountId)
+        final var request = MockMvcRequestBuilders.get("/v1/customers/{accountId}", aAccountId)
                 .accept(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
@@ -324,7 +324,7 @@ public class CustomerAPITest {
         Mockito.when(updateCustomerAddressUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateCustomerAddressOutput.from(aCustomer)));
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/address", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/address", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -361,7 +361,7 @@ public class CustomerAPITest {
         Mockito.when(updateCustomerAddressUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Customer.class, aAccountId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/address", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/address", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -418,7 +418,7 @@ public class CustomerAPITest {
         Mockito.when(updateCustomerAddressUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/customers/{accountId}/address", aAccountId)
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/address", aAccountId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));

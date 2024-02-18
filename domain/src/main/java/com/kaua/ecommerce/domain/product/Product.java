@@ -152,10 +152,12 @@ public class Product extends AggregateRoot<ProductID> {
         }
 
         this.images.add(aImage);
+        this.updatedAt = InstantUtils.now();
     }
 
     public void changeBannerImage(final ProductImage aImage) {
         this.bannerImage = aImage;
+        this.updatedAt = InstantUtils.now();
     }
 
     public Product update(
@@ -227,5 +229,23 @@ public class Product extends AggregateRoot<ProductID> {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Product(" +
+                "id='" + getId().getValue() + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", bannerImage=" + getBannerImage().map(ProductImage::getLocation).orElse(null) +
+                ", images=" + images.size() +
+                ", categoryId=" + categoryId.getValue() +
+                ", attributes=" + attributes.size() +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ')';
     }
 }

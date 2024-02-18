@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Customer")
-@RequestMapping(value = "customers")
+@RequestMapping(value = "v1/customers")
 public interface CustomerAPI {
 
     @GetMapping(

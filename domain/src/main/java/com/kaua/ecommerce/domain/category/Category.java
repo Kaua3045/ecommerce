@@ -162,4 +162,19 @@ public class Category extends AggregateRoot<CategoryID> {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    @Override
+    public String toString() {
+        return "Category(" +
+                "id='" + getId().getValue() + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", slug='" + slug + '\'' +
+                ", parentId=" + getParentId().map(CategoryID::getValue).orElse(null) +
+                ", subCategories=" + subCategories.size() +
+                ", level=" + level +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ')';
+    }
 }

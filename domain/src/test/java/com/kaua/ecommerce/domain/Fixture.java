@@ -191,7 +191,7 @@ public final class Fixture {
         }
 
         public static ProductImage productImage(final ProductImageType aType) {
-            final var aName = faker.name().title();
+            final var aName = faker.name().title().replaceAll(" ", "-");
             final var aLocation = aType.name().concat("-").concat(aName).concat(".jpg");
             return ProductImage.with(
                     aName,

@@ -3,14 +3,20 @@ package com.kaua.ecommerce.infrastructure.service.impl;
 import com.kaua.ecommerce.domain.event.DomainEvent;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.infrastructure.service.EventValidationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+
 @Component
 public class RedisEventValidationServiceImpl implements EventValidationService {
+
+    private static final Logger log = LoggerFactory.getLogger(RedisEventValidationServiceImpl.class);
 
     public static final String EVENT_VALIDATION_PREFIX = "event-validation:";
 
@@ -24,7 +30,7 @@ public class RedisEventValidationServiceImpl implements EventValidationService {
 
     // TODO: aparentemente as transaction não funcionam, o certo seria usar operações atomicas
     // mas como vamos remover isso pois vamos adicionar uma version direto no db, não vamos nos preocupar com isso
-    // o db e o elastic, manteram a version e logo quando recebermos um evento, vamos verificar se a version é a mesma
+    // o db e o elastic, mantem a version e logo quando recebermos um evento, vamos verificar se a version é a mesma
     // vamos verficar no elastic se a versão é a no futuro, se for, ignoramos o evento
     // no momento as operações estão atomicas, a concorrencia esta ok
     // mas não é garantido que vai funcionar em todos os casos
@@ -53,10 +59,13 @@ public class RedisEventValidationServiceImpl implements EventValidationService {
 
                 if (aSavedOccurredOn == null || aSavedOccurredOn.isBefore(event.occurredOn())) {
                     aRedisOperations.opsForValue().set(aEventValidationKey, event.occurredOn().toEpochMilli());
+                    aRedisOperations.expire(aEventValidationKey, Duration.ofDays(10));
                     aRedisOperations.exec();
+                    log.info("Event is valid: {}", event);
                     return false;
                 } else {
                     aRedisOperations.discard();
+                    log.info("Event is invalid: {}", event);
                     return true;
                 }
             }
@@ -70,5 +79,6 @@ public class RedisEventValidationServiceImpl implements EventValidationService {
         final var aEventValidationId = aggregateName.concat("-").concat(payloadId);
         final var aEventValidationKey = EVENT_VALIDATION_PREFIX.concat(aEventValidationId);
         this.redisTemplate.delete(aEventValidationKey);
+        log.info("Event invalidated: {}", aEventValidationKey);
     }
 }

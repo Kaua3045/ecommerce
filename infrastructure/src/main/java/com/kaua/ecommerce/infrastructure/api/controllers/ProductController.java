@@ -9,13 +9,17 @@ import com.kaua.ecommerce.application.usecases.product.update.UpdateProductUseCa
 import com.kaua.ecommerce.application.usecases.product.update.status.UpdateProductStatusCommand;
 import com.kaua.ecommerce.application.usecases.product.update.status.UpdateProductStatusUseCase;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
+import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductImageResource;
 import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.infrastructure.api.ProductAPI;
 import com.kaua.ecommerce.infrastructure.product.models.CreateProductInput;
 import com.kaua.ecommerce.infrastructure.product.models.UpdateProductInput;
+import com.kaua.ecommerce.infrastructure.utils.LogControllerResult;
 import com.kaua.ecommerce.infrastructure.utils.ResourceOf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +29,8 @@ import java.util.List;
 
 @RestController
 public class ProductController implements ProductAPI {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     private final CreateProductUseCase createProductUseCase;
     private final UploadProductImageUseCase uploadProductImageUseCase;
@@ -37,8 +43,7 @@ public class ProductController implements ProductAPI {
             final UploadProductImageUseCase uploadProductImageUseCase,
             final UpdateProductUseCase updateProductUseCase,
             final DeleteProductUseCase deleteProductUseCase,
-            final UpdateProductStatusUseCase updateProductStatusUseCase
-    ) {
+            final UpdateProductStatusUseCase updateProductStatusUseCase) {
         this.createProductUseCase = createProductUseCase;
         this.uploadProductImageUseCase = uploadProductImageUseCase;
         this.updateProductUseCase = updateProductUseCase;
@@ -51,6 +56,12 @@ public class ProductController implements ProductAPI {
         final var aCommand = body.toCommand();
 
         final var aResult = this.createProductUseCase.execute(aCommand);
+
+        LogControllerResult.logResult(
+                log,
+                Product.class,
+                "createProduct",
+                aResult);
 
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
@@ -72,6 +83,12 @@ public class ProductController implements ProductAPI {
 
         final var aResult = this.uploadProductImageUseCase.execute(aCommand);
 
+        LogControllerResult.logResult(
+                log,
+                Product.class,
+                "uploadProductImageByType",
+                aResult);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(aResult);
@@ -90,6 +107,12 @@ public class ProductController implements ProductAPI {
 
         final var aResult = this.updateProductUseCase.execute(aCommand);
 
+        LogControllerResult.logResult(
+                log,
+                Product.class,
+                "updateProduct",
+                aResult);
+
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.ok(aResult.getRight());
@@ -100,11 +123,22 @@ public class ProductController implements ProductAPI {
         final var aResult = this.updateProductStatusUseCase.execute(UpdateProductStatusCommand.with(
                 id, status));
 
+        LogControllerResult.logResult(
+                log,
+                Product.class,
+                "updateProductStatus",
+                aResult);
+
         return ResponseEntity.status(HttpStatus.OK).body(aResult);
     }
 
     @Override
     public void deleteProduct(String id) {
         this.deleteProductUseCase.execute(id);
+        LogControllerResult.logResult(
+                log,
+                Product.class,
+                "deleteProduct",
+                id + " deleted");
     }
 }

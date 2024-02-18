@@ -7,6 +7,8 @@ import com.kaua.ecommerce.domain.product.ProductImageResource;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.configurations.properties.storage.StorageProperties;
 import com.kaua.ecommerce.infrastructure.service.StorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -14,6 +16,8 @@ import java.util.Set;
 
 @Component
 public class ProductMediaResourceGateway implements MediaResourceGateway {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductMediaResourceGateway.class);
 
     private final StorageService storageService;
     private final StorageProperties storageProperties;
@@ -30,12 +34,14 @@ public class ProductMediaResourceGateway implements MediaResourceGateway {
     public ProductImage storeImage(ProductID aProductID, ProductImageResource aResource) {
         final var aProductImage = this.generateProductImage(aProductID, aResource);
         store(aProductImage, aResource);
+        log.info("stored image: {}", aProductImage);
         return aProductImage;
     }
 
     @Override
     public void clearImage(ProductImage aImage) {
         this.storageService.delete(aImage.getLocation());
+        log.info("deleted image: {}", aImage);
     }
 
     @Override
@@ -44,6 +50,7 @@ public class ProductMediaResourceGateway implements MediaResourceGateway {
                 .map(ProductImage::getLocation)
                 .toList();
         this.storageService.deleteAllByLocation(aLocations);
+        log.info("deleted images: {}", aLocations.size());
     }
 
     private ProductImage generateProductImage(ProductID aProductID, ProductImageResource aResource) {

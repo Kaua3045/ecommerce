@@ -89,7 +89,7 @@ public class CategoryAPITest {
         Mockito.when(createCategoryRootUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(CreateCategoryRootOutput.from(aCategory)));
 
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = MockMvcRequestBuilders.post("/v1/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -122,7 +122,7 @@ public class CategoryAPITest {
         Mockito.when(createCategoryRootUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(CreateCategoryRootOutput.from(aCategory)));
 
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = MockMvcRequestBuilders.post("/v1/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -154,7 +154,7 @@ public class CategoryAPITest {
         Mockito.when(createCategoryRootUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = MockMvcRequestBuilders.post("/v1/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -187,7 +187,7 @@ public class CategoryAPITest {
         Mockito.when(createCategoryRootUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = MockMvcRequestBuilders.post("/v1/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -220,7 +220,7 @@ public class CategoryAPITest {
         Mockito.when(createCategoryRootUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = MockMvcRequestBuilders.post("/v1/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -253,7 +253,7 @@ public class CategoryAPITest {
         Mockito.when(createCategoryRootUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = MockMvcRequestBuilders.post("/v1/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -286,7 +286,7 @@ public class CategoryAPITest {
         Mockito.when(createCategoryRootUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = MockMvcRequestBuilders.post("/v1/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -319,7 +319,7 @@ public class CategoryAPITest {
         Mockito.when(createCategoryRootUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/categories")
+        final var request = MockMvcRequestBuilders.post("/v1/categories")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -353,7 +353,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateSubCategoriesOutput.from(aCategory)));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{categoryId}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{categoryId}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -388,7 +388,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateSubCategoriesOutput.from(aCategory)));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -425,7 +425,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -462,7 +462,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Category.class, aCategoryId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{categoryId}/sub", aCategoryId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{categoryId}/sub", aCategoryId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -499,7 +499,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -537,7 +537,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -575,7 +575,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -613,7 +613,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -651,7 +651,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{categoryId}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{categoryId}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -689,7 +689,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenThrow(DomainException.with(new Error(expectedErrorMessage)));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -729,7 +729,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateSubCategoriesOutput.from(aCategory)));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub/{subId}", aId, aSubId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub/{subId}", aId, aSubId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -768,7 +768,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Category.class, aSubId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub/{subId}", aId, aSubId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub/{subId}", aId, aSubId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -811,7 +811,7 @@ public class CategoryAPITest {
         Mockito.when(updateSubCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/sub/{subId}", aId, aSubId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/sub/{subId}", aId, aSubId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -847,7 +847,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateCategoryOutput.from(aCategory)));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -888,7 +888,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateCategoryOutput.from(aCategory)));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{id}/update/{subId}", aId, aSubId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{id}/update/{subId}", aId, aSubId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -931,7 +931,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/{categoryId}/update/{subId}", aId, aSubId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/{categoryId}/update/{subId}", aId, aSubId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -969,7 +969,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1006,7 +1006,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Category.class, aId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1043,7 +1043,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1081,7 +1081,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1119,7 +1119,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1157,7 +1157,7 @@ public class CategoryAPITest {
         Mockito.when(updateCategoryUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/categories/update/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/categories/update/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1189,7 +1189,7 @@ public class CategoryAPITest {
 
         Mockito.doNothing().when(deleteCategoryUseCase).execute(aCommand);
 
-        final var request = MockMvcRequestBuilders.delete("/categories/delete/{id}", aId);
+        final var request = MockMvcRequestBuilders.delete("/v1/categories/delete/{id}", aId);
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
@@ -1206,7 +1206,7 @@ public class CategoryAPITest {
 
         Mockito.doNothing().when(deleteCategoryUseCase).execute(aCommand);
 
-        final var request = MockMvcRequestBuilders.delete("/categories/delete/{id}", aId);
+        final var request = MockMvcRequestBuilders.delete("/v1/categories/delete/{id}", aId);
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
@@ -1227,7 +1227,7 @@ public class CategoryAPITest {
 
         Mockito.doNothing().when(deleteCategoryUseCase).execute(aCommand);
 
-        final var request = MockMvcRequestBuilders.delete("/categories/{rootCategoryId}/delete/{subCategoryId}", aId, aSubId);
+        final var request = MockMvcRequestBuilders.delete("/v1/categories/{rootCategoryId}/delete/{subCategoryId}", aId, aSubId);
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
@@ -1245,7 +1245,7 @@ public class CategoryAPITest {
 
         Mockito.doNothing().when(deleteCategoryUseCase).execute(aCommand);
 
-        final var request = MockMvcRequestBuilders.delete("/categories/{rootCategoryId}/delete/{subCategoryId}", aId, aSubId);
+        final var request = MockMvcRequestBuilders.delete("/v1/categories/{rootCategoryId}/delete/{subCategoryId}", aId, aSubId);
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
@@ -1272,7 +1272,7 @@ public class CategoryAPITest {
         Mockito.when(listCategoriesUseCase.execute(Mockito.any()))
                 .thenReturn(new Pagination<>(aPage, aPerPage, aTotalPages, aTotal, aItems));
 
-        final var request = MockMvcRequestBuilders.get("/categories")
+        final var request = MockMvcRequestBuilders.get("/v1/categories")
                 .queryParam("page", String.valueOf(aPage))
                 .queryParam("perPage", String.valueOf(aPerPage))
                 .queryParam("sort", aSort)
@@ -1320,7 +1320,7 @@ public class CategoryAPITest {
         Mockito.when(getCategoryByIdUseCase.execute(Mockito.any()))
                 .thenReturn(GetCategoryByIdOutput.from(aCategory));
 
-        final var request = MockMvcRequestBuilders.get("/categories/{id}", aId)
+        final var request = MockMvcRequestBuilders.get("/v1/categories/{id}", aId)
                 .contentType(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
@@ -1350,7 +1350,7 @@ public class CategoryAPITest {
         Mockito.when(getCategoryByIdUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Category.class, aId).get());
 
-        final var request = MockMvcRequestBuilders.get("/categories/{id}", aId)
+        final var request = MockMvcRequestBuilders.get("/v1/categories/{id}", aId)
                 .contentType(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)

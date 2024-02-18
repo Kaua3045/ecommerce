@@ -1039,4 +1039,20 @@ public class CategoryTest extends UnitTest {
         Assertions.assertEquals(aCategory.getId().getValue(), aCategoryDeleted.rootCategoryId());
         Assertions.assertTrue(aCategoryDeleted.subCategoryId().isEmpty());
     }
+
+    @Test
+    void givenAValidCategory_whenCallToString_shouldReturnCategoryToString() {
+        final var aName = "Category Name";
+        final var aDescription = "Category Description";
+        final var aSlug = "category-name";
+
+        final var aCategory = Category.newCategory(
+                aName,
+                aDescription,
+                aSlug,
+                null
+        );
+
+        Assertions.assertNotNull(aCategory.toString());
+    }
 }

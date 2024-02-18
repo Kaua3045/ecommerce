@@ -90,8 +90,9 @@ public class ProductGatewayTest {
                         ProductSize.with("M", 0.5, 0.5, 0.5, 0.5),
                         "Product Name")));
 
-        final var aProductImage = Fixture.Products.productImage(ProductImageType.BANNER);
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.GALLERY);
         aProduct.addImage(aProductImage);
+        aProduct.changeBannerImage(Fixture.Products.productImage(ProductImageType.BANNER));
 
         this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
 
@@ -104,6 +105,7 @@ public class ProductGatewayTest {
         Assertions.assertEquals(aProduct.getDescription(), aPersistedProduct.getDescription());
         Assertions.assertEquals(aProduct.getPrice(), aPersistedProduct.getPrice());
         Assertions.assertEquals(aProduct.getQuantity(), aPersistedProduct.getQuantity());
+        Assertions.assertTrue(aPersistedProduct.getBannerImage().isPresent());
         Assertions.assertEquals(aProduct.getCategoryId().getValue(), aPersistedProduct.getCategoryId().getValue());
         Assertions.assertEquals(1, aPersistedProduct.getImages().size());
         Assertions.assertEquals(aProduct.getAttributes().stream().findFirst().get().getSku(), aPersistedProduct.getAttributes().stream().findFirst().get().getSku());

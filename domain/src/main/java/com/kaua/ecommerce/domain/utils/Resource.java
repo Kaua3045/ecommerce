@@ -17,7 +17,7 @@ public class Resource extends ValueObject {
     }
 
     public static Resource with(final byte[] content, final String contentType, final String fileName) {
-        final var aFilenameParts = fileName.split("\\.");
+        final var aFilenameParts = fileName.replace(" ", "-").split("\\.");
         if (aFilenameParts[0].length() > 20) {
             aFilenameParts[0] = aFilenameParts[0].substring(0, 20);
         }

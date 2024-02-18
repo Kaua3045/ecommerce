@@ -1,8 +1,10 @@
 package com.kaua.ecommerce.infrastructure.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedException;
+import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductOutput;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
@@ -114,7 +116,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(CreateProductOutput.from(aProduct)));
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -176,7 +178,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(CreateProductOutput.from(aProduct)));
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -237,7 +239,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -299,7 +301,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -361,7 +363,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -423,7 +425,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -485,7 +487,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -547,7 +549,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -609,7 +611,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -671,7 +673,7 @@ public class ProductAPITest {
         Mockito.when(createProductUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Category.class, aCategoryId).get());
 
-        final var request = MockMvcRequestBuilders.post("/products")
+        final var request = MockMvcRequestBuilders.post("/v1/products")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -712,7 +714,7 @@ public class ProductAPITest {
         Mockito.when(uploadProductImageUseCase.execute(Mockito.any(UploadProductImageCommand.class)))
                 .thenReturn(UploadProductImageOutput.from(aProduct));
 
-        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/{type}", aId, aType.name())
+        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/v1/products/{id}/medias/{type}", aId, aType.name())
                 .file(aImage)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.MULTIPART_FORM_DATA);
@@ -759,7 +761,7 @@ public class ProductAPITest {
         Mockito.when(uploadProductImageUseCase.execute(Mockito.any(UploadProductImageCommand.class)))
                 .thenReturn(UploadProductImageOutput.from(aProduct));
 
-        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/{type}", aId, aType.name())
+        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/v1/products/{id}/medias/{type}", aId, aType.name())
                 .file(aImageOne)
                 .file(aImageTwo)
                 .accept(MediaType.APPLICATION_JSON)
@@ -806,7 +808,7 @@ public class ProductAPITest {
         Mockito.when(uploadProductImageUseCase.execute(Mockito.any(UploadProductImageCommand.class)))
                 .thenThrow(new OnlyOneBannerImagePermittedException());
 
-        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/{type}", aId, aType.name())
+        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/v1/products/{id}/medias/{type}", aId, aType.name())
                 .file(aImageOne)
                 .file(aImageTwo)
                 .accept(MediaType.APPLICATION_JSON)
@@ -839,7 +841,7 @@ public class ProductAPITest {
         Mockito.when(uploadProductImageUseCase.execute(Mockito.any(UploadProductImageCommand.class)))
                 .thenThrow(new ImageSizeNotValidException());
 
-        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/{type}", aId, aType.name())
+        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/v1/products/{id}/medias/{type}", aId, aType.name())
                 .file(aImage)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.MULTIPART_FORM_DATA);
@@ -871,7 +873,7 @@ public class ProductAPITest {
         Mockito.when(uploadProductImageUseCase.execute(Mockito.any(UploadProductImageCommand.class)))
                 .thenThrow(new ImageTypeNotValidException());
 
-        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/{type}", aId, aType.name())
+        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/v1/products/{id}/medias/{type}", aId, aType.name())
                 .file(aImage)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.MULTIPART_FORM_DATA);
@@ -901,7 +903,7 @@ public class ProductAPITest {
         Mockito.when(uploadProductImageUseCase.execute(Mockito.any(UploadProductImageCommand.class)))
                 .thenThrow(NotFoundException.with(Product.class, aId).get());
 
-        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/{type}", aId, aType.name())
+        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/v1/products/{id}/medias/{type}", aId, aType.name())
                 .file(aImage)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.MULTIPART_FORM_DATA);
@@ -939,7 +941,7 @@ public class ProductAPITest {
         );
         final var expectedErrorMessage = "type INVALID was not found";
 
-        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/products/{id}/medias/INVALID", aId)
+        final var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/v1/products/{id}/medias/INVALID", aId)
                 .file(aImage)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.MULTIPART_FORM_DATA);
@@ -972,7 +974,7 @@ public class ProductAPITest {
         Mockito.when(updateProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateProductOutput.from(aProduct)));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1017,7 +1019,7 @@ public class ProductAPITest {
         Mockito.when(updateProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateProductOutput.from(aProduct)));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1064,7 +1066,7 @@ public class ProductAPITest {
         Mockito.when(updateProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1112,7 +1114,7 @@ public class ProductAPITest {
         Mockito.when(updateProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1160,7 +1162,7 @@ public class ProductAPITest {
         Mockito.when(updateProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1208,7 +1210,7 @@ public class ProductAPITest {
         Mockito.when(updateProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1254,7 +1256,7 @@ public class ProductAPITest {
         Mockito.when(updateProductUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateProductOutput.from(aProduct)));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1301,7 +1303,7 @@ public class ProductAPITest {
         Mockito.when(updateProductUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Category.class, aCategoryId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}", aId)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(this.mapper.writeValueAsString(aInput));
@@ -1331,7 +1333,7 @@ public class ProductAPITest {
 
         Mockito.doNothing().when(deleteProductUseCase).execute(Mockito.anyString());
 
-        final var request = MockMvcRequestBuilders.delete("/products/{id}", aId);
+        final var request = MockMvcRequestBuilders.delete("/v1/products/{id}", aId);
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
@@ -1346,7 +1348,7 @@ public class ProductAPITest {
 
         Mockito.doNothing().when(deleteProductUseCase).execute(Mockito.anyString());
 
-        final var request = MockMvcRequestBuilders.delete("/products/{id}", aId);
+        final var request = MockMvcRequestBuilders.delete("/v1/products/{id}", aId);
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
@@ -1365,7 +1367,7 @@ public class ProductAPITest {
         Mockito.when(updateProductStatusUseCase.execute(Mockito.any()))
                 .thenReturn(UpdateProductStatusOutput.from(aProduct));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}/{status}", aId, aStatus)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}/{status}", aId, aStatus)
                 .contentType(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
@@ -1393,7 +1395,7 @@ public class ProductAPITest {
         Mockito.when(updateProductStatusUseCase.execute(Mockito.any()))
                 .thenThrow(NotFoundException.with(Product.class, aId).get());
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}/{status}", aId, aStatus)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}/{status}", aId, aStatus)
                 .contentType(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
@@ -1423,7 +1425,7 @@ public class ProductAPITest {
         Mockito.when(updateProductStatusUseCase.execute(Mockito.any()))
                 .thenThrow(DomainException.with(new Error(expectedErrorMessage)));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}/{status}", aId, aStatus)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}/{status}", aId, aStatus)
                 .contentType(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
@@ -1454,7 +1456,7 @@ public class ProductAPITest {
         Mockito.when(updateProductStatusUseCase.execute(Mockito.any()))
                 .thenThrow(DomainException.with(new Error(expectedErrorMessage)));
 
-        final var request = MockMvcRequestBuilders.patch("/products/{id}/{status}", aId, aStatus)
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}/{status}", aId, aStatus)
                 .contentType(MediaType.APPLICATION_JSON);
 
         this.mvc.perform(request)
@@ -1471,5 +1473,63 @@ public class ProductAPITest {
 
         Assertions.assertEquals(aId, actualCmd.id());
         Assertions.assertEquals(aStatus, actualCmd.status());
+    }
+
+    @Test
+    void givenAValidProduct_whenCallUpdateProductUseCase_butThrowsTransactionFailureExceptionBecauseOptimisticLock() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+
+        final var aInput = new UpdateProductInput(
+                aProduct.getName(),
+                aProduct.getDescription(),
+                aProduct.getPrice(),
+                aProduct.getQuantity(),
+                aProduct.getCategoryId().getValue()
+        );
+
+        final var expectedErrorMessage = "An optimistic lock exception occurred while processing the transaction";
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenThrow(TransactionFailureException.with(new Error("Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect)")));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aProduct.getId().getValue())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidProduct_whenCallUpdateProductUseCase_butThrowsTransactionFailureExceptionBecauseUnexpectedException() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+
+        final var aInput = new UpdateProductInput(
+                aProduct.getName(),
+                aProduct.getDescription(),
+                aProduct.getPrice(),
+                aProduct.getQuantity(),
+                aProduct.getCategoryId().getValue()
+        );
+
+        final var expectedErrorMessage = "An error occurred while processing the transaction";
+
+        Mockito.when(updateProductUseCase.execute(Mockito.any()))
+                .thenThrow(TransactionFailureException.with(new Error("Transaction failed")));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aProduct.getId().getValue())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 }

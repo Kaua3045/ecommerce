@@ -150,4 +150,20 @@ public class Customer extends AggregateRoot<CustomerID> {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    @Override
+    public String toString() {
+        return "Customer(" +
+                "id='" + getId().getValue() + '\'' +
+                ", accountId='" + accountId + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", cpf=" + cpf +
+                ", telephone=" + telephone +
+                ", address=" + address +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ')';
+    }
 }

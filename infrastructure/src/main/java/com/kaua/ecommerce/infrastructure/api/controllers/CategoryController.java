@@ -10,17 +10,23 @@ import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryCom
 import com.kaua.ecommerce.application.usecases.category.update.UpdateCategoryUseCase;
 import com.kaua.ecommerce.application.usecases.category.update.subcategories.UpdateSubCategoriesCommand;
 import com.kaua.ecommerce.application.usecases.category.update.subcategories.UpdateSubCategoriesUseCase;
+import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.api.CategoryAPI;
 import com.kaua.ecommerce.infrastructure.category.models.*;
 import com.kaua.ecommerce.infrastructure.category.presenter.CategoryApiPresenter;
+import com.kaua.ecommerce.infrastructure.utils.LogControllerResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class CategoryController implements CategoryAPI {
+
+    private static final Logger log = LoggerFactory.getLogger(CategoryController.class);
 
     private final CreateCategoryRootUseCase createCategoryRootUseCase;
     private final UpdateSubCategoriesUseCase updateSubCategoriesUseCase;
@@ -50,6 +56,8 @@ public class CategoryController implements CategoryAPI {
         final var aResult = this.createCategoryRootUseCase.execute(
                 CreateCategoryRootCommand.with(body.name(), body.description()));
 
+        LogControllerResult.logResult(log, Category.class, "createCategory", aResult);
+
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.status(HttpStatus.CREATED).body(aResult.getRight());
@@ -72,6 +80,8 @@ public class CategoryController implements CategoryAPI {
         final var aResult = this.updateSubCategoriesUseCase.execute(
                 UpdateSubCategoriesCommand.with(categoryId, null, body.name(), body.description()));
 
+        LogControllerResult.logResult(log, Category.class, "updateSubCategories", aResult);
+
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.ok().body(aResult.getRight());
@@ -81,6 +91,8 @@ public class CategoryController implements CategoryAPI {
     public ResponseEntity<?> updateSubSubCategories(String categoryId, String subCategoryId, UpdateSubCategoriesInput body) {
         final var aResult = this.updateSubCategoriesUseCase.execute(
                 UpdateSubCategoriesCommand.with(categoryId, subCategoryId, body.name(), body.description()));
+
+        LogControllerResult.logResult(log, Category.class, "updateSubSubCategories", aResult);
 
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
@@ -92,6 +104,8 @@ public class CategoryController implements CategoryAPI {
         final var aResult = this.updateCategoryUseCase.execute(
                 UpdateCategoryCommand.with(id, null, body.name(), body.description()));
 
+        LogControllerResult.logResult(log, Category.class, "updateRootCategory", aResult);
+
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.ok().body(aResult.getRight());
@@ -102,6 +116,8 @@ public class CategoryController implements CategoryAPI {
         final var aResult = this.updateCategoryUseCase.execute(
                 UpdateCategoryCommand.with(categoryId, subCategoryId, body.name(), body.description()));
 
+        LogControllerResult.logResult(log, Category.class, "updateSubCategory", aResult);
+
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.ok().body(aResult.getRight());
@@ -110,10 +126,22 @@ public class CategoryController implements CategoryAPI {
     @Override
     public void deleteRootCategory(String categoryId) {
         this.deleteCategoryUseCase.execute(DeleteCategoryCommand.with(categoryId, null));
+        LogControllerResult.logResult(
+                log,
+                Category.class,
+                "deleteRootCategory",
+                categoryId + " deleted"
+        );
     }
 
     @Override
     public void deleteSubCategory(String categoryId, String subCategoryId) {
         this.deleteCategoryUseCase.execute(DeleteCategoryCommand.with(categoryId, subCategoryId));
+        LogControllerResult.logResult(
+                log,
+                Category.class,
+                "deleteSubCategory",
+                subCategoryId + " deleted"
+        );
     }
 }

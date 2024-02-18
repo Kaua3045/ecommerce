@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Tag(name = "Product")
-@RequestMapping(value = "products")
+@RequestMapping(value = "v1/products")
 public interface ProductAPI {
 
     @PostMapping(

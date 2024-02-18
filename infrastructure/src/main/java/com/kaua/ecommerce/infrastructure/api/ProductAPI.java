@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api;
 
 import com.kaua.ecommerce.infrastructure.product.models.CreateProductInput;
+import com.kaua.ecommerce.infrastructure.product.models.GetProductResponse;
 import com.kaua.ecommerce.infrastructure.product.models.UpdateProductInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,6 +31,18 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     ResponseEntity<?> createProduct(@RequestBody CreateProductInput body);
+
+    @GetMapping(
+            value = "{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Get product by it's identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product found successfully"),
+            @ApiResponse(responseCode = "404", description = "Product was not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    GetProductResponse getProductById(@PathVariable String id);
 
     @PostMapping(
             value = "{id}/medias/{type}",

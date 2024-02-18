@@ -1,6 +1,5 @@
 package com.kaua.ecommerce.infrastructure.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedException;
@@ -12,6 +11,8 @@ import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCa
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageOutput;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
+import com.kaua.ecommerce.application.usecases.product.retrieve.get.GetProductByIdOutput;
+import com.kaua.ecommerce.application.usecases.product.retrieve.get.GetProductByIdUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductOutput;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductUseCase;
@@ -77,6 +78,9 @@ public class ProductAPITest {
 
     @MockBean
     private UpdateProductStatusUseCase updateProductStatusUseCase;
+
+    @MockBean
+    private GetProductByIdUseCase getProductByIdUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
@@ -1531,5 +1535,58 @@ public class ProductAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
 
         Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidProductId_whenCallGetProductByIdUseCase_shouldReturnProduct() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        aProduct.changeBannerImage(Fixture.Products.productImage(ProductImageType.BANNER));
+        aProduct.addImage(Fixture.Products.productImage(ProductImageType.GALLERY));
+
+        final var aId = aProduct.getId().getValue();
+
+        Mockito.when(getProductByIdUseCase.execute(Mockito.any()))
+                .thenReturn(GetProductByIdOutput.from(aProduct));
+
+        final var request = MockMvcRequestBuilders.get("/v1/products/{id}", aId)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.product_id", equalTo(aId)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", equalTo(aProduct.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description", equalTo(aProduct.getDescription())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.price", equalTo(aProduct.getPrice().doubleValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", equalTo(aProduct.getQuantity())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.category_id", equalTo(aProduct.getCategoryId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.banner_image.location", equalTo(aProduct.getBannerImage().get().getLocation())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.gallery_images", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status", equalTo(aProduct.getStatus().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.created_at", equalTo(aProduct.getCreatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.updated_at", equalTo(aProduct.getUpdatedAt().toString())));
+
+        Mockito.verify(getProductByIdUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenAnInvalidProductId_whenCallGetProductByIdUseCase_shouldThrowNotFoundException() throws Exception {
+        final var aId = "123";
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Product.class, aId);
+
+        Mockito.when(getProductByIdUseCase.execute(Mockito.any()))
+                .thenThrow(NotFoundException.with(Product.class, aId).get());
+
+        final var request = MockMvcRequestBuilders.get("/v1/products/{id}", aId)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        Mockito.verify(getProductByIdUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 }

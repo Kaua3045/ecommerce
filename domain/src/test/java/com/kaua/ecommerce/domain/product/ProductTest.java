@@ -542,4 +542,53 @@ public class ProductTest extends UnitTest {
         Assertions.assertNull(aResult);
         Assertions.assertEquals(aProductUpdatedAtBefore, aProductUpdatedAtAfter);
     }
+
+    @Test
+    void givenAValidAttribute_whenCallAddAttribute_shouldAddAttribute() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aAttribute = Fixture.Products.productAttributes(aProduct.getName());
+
+        final var aProductUpdatedAtBefore = aProduct.getUpdatedAt();
+
+        aProduct.addAttribute(aAttribute);
+
+        final var aProductUpdatedAtAfter = aProduct.getUpdatedAt();
+
+        Assertions.assertEquals(2, aProduct.getAttributes().size());
+        Assertions.assertTrue(aProductUpdatedAtBefore.isBefore(aProductUpdatedAtAfter));
+    }
+
+    @Test
+    void givenAnInvalidNullAttribute_whenCallAddAttribute_shouldNotAddAttribute() {
+        final var aProduct = Fixture.Products.tshirt();
+        final ProductAttributes aAttribute = null;
+
+        Assertions.assertDoesNotThrow(() -> aProduct.addAttribute(aAttribute));
+        Assertions.assertEquals(1, aProduct.getAttributes().size());
+    }
+
+    @Test
+    void givenAnInvalidProductAttributes_whenCallAddAttributeWithProductContains20Attributes_shouldThrowDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aAttributes = ProductAttributes.create(
+                ProductColor.with("Gray"),
+                ProductSize.with("M", 0.5, 0.5, 0.5, 0.5),
+                aProduct.getName()
+        );
+
+        for (int i = 0; i < 19; i++) {
+            final var aOldAttributes = ProductAttributes.with(
+                    ProductColor.with("Color".concat(String.valueOf(i))),
+                    ProductSize.with("Size".concat(String.valueOf(i)), 0.5, 0.5, 0.5, 0.5),
+                    aProduct.getName()
+            );
+            aProduct.addAttribute(aOldAttributes);
+        }
+
+        Assertions.assertThrows(
+                DomainException.class,
+                () -> aProduct.addAttribute(aAttributes),
+                "Product can't have more than 20 attributes"
+        );
+    }
 }

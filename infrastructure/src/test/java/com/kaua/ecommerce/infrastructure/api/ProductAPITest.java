@@ -13,6 +13,8 @@ import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProduc
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
 import com.kaua.ecommerce.application.usecases.product.retrieve.get.GetProductByIdOutput;
 import com.kaua.ecommerce.application.usecases.product.retrieve.get.GetProductByIdUseCase;
+import com.kaua.ecommerce.application.usecases.product.search.retrieve.list.ListProductsOutput;
+import com.kaua.ecommerce.application.usecases.product.search.retrieve.list.ListProductsUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductOutput;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductUseCase;
@@ -23,6 +25,7 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
@@ -51,9 +54,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.argThat;
 
 @ControllerTest(controllers = ProductAPI.class)
 public class ProductAPITest {
@@ -81,6 +86,9 @@ public class ProductAPITest {
 
     @MockBean
     private GetProductByIdUseCase getProductByIdUseCase;
+
+    @MockBean
+    private ListProductsUseCase listProductsUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
@@ -1588,5 +1596,60 @@ public class ProductAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
 
         Mockito.verify(getProductByIdUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenValidParams_whenCallsListProducts_shouldReturnProducts() throws Exception {
+        final var aProduct = Fixture.Products.book();
+
+        final var aPage = 0;
+        final var aPerPage = 10;
+        final var aTerms = "livro";
+        final var aSort = "description";
+        final var aDirection = "desc";
+        final var aItemsCount = 1;
+        final var aTotalPages = 1;
+        final var aTotal = 1;
+
+        final var aItems = List.of(ListProductsOutput.from(aProduct));
+
+        Mockito.when(listProductsUseCase.execute(Mockito.any()))
+                .thenReturn(new Pagination<>(aPage, aPerPage, aTotalPages, aTotal, aItems));
+
+        final var request = MockMvcRequestBuilders.get("/v1/products")
+                .queryParam("page", String.valueOf(aPage))
+                .queryParam("perPage", String.valueOf(aPerPage))
+                .queryParam("sort", aSort)
+                .queryParam("dir", aDirection)
+                .queryParam("search", aTerms)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.current_page", equalTo(aPage)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.per_page", equalTo(aPerPage)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_pages", equalTo(aTotalPages)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_items", equalTo(aTotal)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items", hasSize(aItemsCount)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].product_id", equalTo(aProduct.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name", equalTo(aProduct.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].description", equalTo(aProduct.getDescription())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].price", equalTo(aProduct.getPrice().doubleValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].quantity", equalTo(aProduct.getQuantity())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].category_id", equalTo(aProduct.getCategoryId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].banner_image", equalTo(null)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].status", equalTo(aProduct.getStatus().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].created_at", equalTo(aProduct.getUpdatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].updated_at", equalTo(aProduct.getUpdatedAt().toString())));
+
+        Mockito.verify(listProductsUseCase, Mockito.times(1)).execute(argThat(query ->
+                Objects.equals(aPage, query.page())
+                        && Objects.equals(aPerPage, query.perPage())
+                        && Objects.equals(aDirection, query.direction())
+                        && Objects.equals(aSort, query.sort())
+                        && Objects.equals(aTerms, query.terms())
+        ));
     }
 }

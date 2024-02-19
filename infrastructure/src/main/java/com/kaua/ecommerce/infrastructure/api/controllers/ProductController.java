@@ -2,6 +2,8 @@ package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesCommand;
 import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesUseCase;
+import com.kaua.ecommerce.application.usecases.product.attributes.remove.RemoveProductAttributesCommand;
+import com.kaua.ecommerce.application.usecases.product.attributes.remove.RemoveProductAttributesUseCase;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.remove.RemoveProductImageCommand;
@@ -49,6 +51,7 @@ public class ProductController implements ProductAPI {
     private final ListProductsUseCase listProductsUseCase;
     private final RemoveProductImageUseCase removeProductImageUseCase;
     private final AddProductAttributesUseCase addProductAttributesUseCase;
+    private final RemoveProductAttributesUseCase removeProductAttributesUseCase;
 
     public ProductController(
             final CreateProductUseCase createProductUseCase,
@@ -59,7 +62,8 @@ public class ProductController implements ProductAPI {
             final GetProductByIdUseCase getProductByIdUseCase,
             final ListProductsUseCase listProductsUseCase,
             final RemoveProductImageUseCase removeProductImageUseCase,
-            final AddProductAttributesUseCase addProductAttributesUseCase
+            final AddProductAttributesUseCase addProductAttributesUseCase,
+            final RemoveProductAttributesUseCase removeProductAttributesUseCase
     ) {
         this.createProductUseCase = createProductUseCase;
         this.uploadProductImageUseCase = uploadProductImageUseCase;
@@ -70,6 +74,7 @@ public class ProductController implements ProductAPI {
         this.listProductsUseCase = listProductsUseCase;
         this.removeProductImageUseCase = removeProductImageUseCase;
         this.addProductAttributesUseCase = addProductAttributesUseCase;
+        this.removeProductAttributesUseCase = removeProductAttributesUseCase;
     }
 
     @Override
@@ -198,5 +203,15 @@ public class ProductController implements ProductAPI {
                 Product.class,
                 "deleteProductImage",
                 location + " deleted");
+    }
+
+    @Override
+    public void deleteProductAttribute(String id, String sku) {
+        this.removeProductAttributesUseCase.execute(RemoveProductAttributesCommand.with(id, sku));
+        LogControllerResult.logResult(
+                log,
+                Product.class,
+                "deleteProductAttribute",
+                sku + " deleted");
     }
 }

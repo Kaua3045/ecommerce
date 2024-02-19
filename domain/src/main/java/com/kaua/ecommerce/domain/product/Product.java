@@ -182,6 +182,23 @@ public class Product extends AggregateRoot<ProductID> {
         return this;
     }
 
+    public ProductImage removeImage(final String aLocation) {
+        if (aLocation == null || aLocation.isBlank()) {
+            return null;
+        }
+
+        final var aResult = this.images.stream()
+                .filter(image -> image.getLocation().equalsIgnoreCase(aLocation))
+                .findFirst();
+
+        if (aResult.isPresent()) {
+            this.images.remove(aResult.get());
+            this.updatedAt = InstantUtils.now();
+            return aResult.get();
+        }
+        return null;
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new ProductValidation(this, handler).validate();

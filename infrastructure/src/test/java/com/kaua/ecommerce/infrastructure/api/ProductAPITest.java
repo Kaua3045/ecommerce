@@ -6,6 +6,7 @@ import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedExce
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesOutput;
 import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesUseCase;
+import com.kaua.ecommerce.application.usecases.product.attributes.remove.RemoveProductAttributesUseCase;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductOutput;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
@@ -96,6 +97,9 @@ public class ProductAPITest {
 
     @MockBean
     private AddProductAttributesUseCase addProductAttributesUseCase;
+
+    @MockBean
+    private RemoveProductAttributesUseCase removeProductAttributesUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
@@ -1711,5 +1715,25 @@ public class ProductAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.product_id", equalTo(aId)));
 
         Mockito.verify(addProductAttributesUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidProductIdAndSku_whenCallDeleteProductSku_thenShouldBeOk() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aProductAttribute = Fixture.Products.productAttributes(aProduct.getName());
+        aProduct.addAttribute(aProductAttribute);
+
+        final var aId = aProduct.getId().getValue();
+        final var aSku = aProductAttribute.getSku();
+
+        Mockito.doNothing().when(removeProductAttributesUseCase).execute(Mockito.any());
+
+        final var request = MockMvcRequestBuilders.delete("/v1/products/{id}/attributes/{sku}", aId, aSku);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(removeProductAttributesUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 }

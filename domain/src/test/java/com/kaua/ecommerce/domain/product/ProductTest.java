@@ -569,7 +569,7 @@ public class ProductTest extends UnitTest {
     }
 
     @Test
-    void givenAnInvalidProductAttributes_whenCallAddAttributeWithProductContains20Attributes_shouldThrowDomainException() {
+    void givenAnInvalidProductAttributes_whenCallAddAttributeWithProductContains10Attributes_shouldThrowDomainException() {
         final var aProduct = Fixture.Products.tshirt();
         final var aAttributes = ProductAttributes.create(
                 ProductColor.with("Gray"),
@@ -577,7 +577,7 @@ public class ProductTest extends UnitTest {
                 aProduct.getName()
         );
 
-        for (int i = 0; i < 19; i++) {
+        for (int i = 0; i < 9; i++) {
             final var aOldAttributes = ProductAttributes.with(
                     ProductColor.with("Color".concat(String.valueOf(i))),
                     ProductSize.with("Size".concat(String.valueOf(i)), 0.5, 0.5, 0.5, 0.5),
@@ -594,12 +594,12 @@ public class ProductTest extends UnitTest {
     }
 
     @Test
-    void givenAnInvalid21ProductAttributes_whenCallNewProduct_shouldThrowDomainException() {
+    void givenAnInvalid11ProductAttributes_whenCallNewProduct_shouldThrowDomainException() {
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aCategoryId = CategoryID.from("1");
 
         final var aProductAttributes = new HashSet<ProductAttributes>();
-        for (int i = 0; i < 21; i++) {
+        for (int i = 0; i < 11; i++) {
             final var aOldAttributes = ProductAttributes.create(
                     ProductColor.with("Color".concat(String.valueOf(i))),
                     ProductSize.with("Size".concat(String.valueOf(i)), 0.5, 0.5, 0.5, 0.5),

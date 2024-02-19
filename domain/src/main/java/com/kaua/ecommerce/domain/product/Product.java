@@ -88,7 +88,7 @@ public class Product extends AggregateRoot<ProductID> {
             return aProduct;
         }
 
-        if (aAttributes.size() > 20) {
+        if (aAttributes.size() > 10) {
             throw new ProductNotHaveMoreAttributesException();
         }
 
@@ -208,7 +208,7 @@ public class Product extends AggregateRoot<ProductID> {
             return;
         }
 
-        if (this.attributes.size() == 20) {
+        if (this.attributes.size() == 10) {
             throw new ProductNotHaveMoreAttributesException();
         }
 

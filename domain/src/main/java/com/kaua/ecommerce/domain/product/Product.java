@@ -199,6 +199,19 @@ public class Product extends AggregateRoot<ProductID> {
         return null;
     }
 
+    public void addAttribute(final ProductAttributes aAttribute) {
+        if (aAttribute == null) {
+            return;
+        }
+
+        if (this.attributes.size() == 20) {
+            throw DomainException.with(new Error("Product can't have more than 20 attributes"));
+        }
+
+        this.attributes.add(aAttribute);
+        this.updatedAt = InstantUtils.now();
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new ProductValidation(this, handler).validate();

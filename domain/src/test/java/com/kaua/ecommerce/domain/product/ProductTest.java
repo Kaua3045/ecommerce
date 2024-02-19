@@ -621,4 +621,46 @@ public class ProductTest extends UnitTest {
                 "Product can't have more than 20 attributes"
         );
     }
+
+    @Test
+    void givenAValidSku_whenCallRemoveAttribute_shouldRemoveAttribute() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aAttribute = Fixture.Products.productAttributes(aProduct.getName());
+        aProduct.addAttribute(aAttribute);
+
+        final var aProductUpdatedAtBefore = aProduct.getUpdatedAt();
+
+        Assertions.assertDoesNotThrow(() -> aProduct.removeAttribute(aAttribute.getSku()));
+
+        final var aProductUpdatedAtAfter = aProduct.getUpdatedAt();
+
+        Assertions.assertEquals(1, aProduct.getAttributes().size());
+        Assertions.assertTrue(aProductUpdatedAtBefore.isBefore(aProductUpdatedAtAfter));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "null",
+            "empty",
+            "another-sku"
+    })
+    void givenAnInvalidSku_whenCallRemoveAttribute_shouldReturnNull(final String aSku) {
+        final var aProduct = Fixture.Products.tshirt();
+
+        final var aSkuToRemove = aSku.contains("null")
+                ? null
+                : aSku.contains("empty")
+                ? ""
+                : aSku;
+
+        final var aProductUpdatedAtBefore = aProduct.getUpdatedAt();
+
+        final var aResult = aProduct.removeAttribute(aSkuToRemove);
+
+        final var aProductUpdatedAtAfter = aProduct.getUpdatedAt();
+
+        Assertions.assertEquals(1, aProduct.getAttributes().size());
+        Assertions.assertNull(aResult);
+        Assertions.assertEquals(aProductUpdatedAtBefore, aProductUpdatedAtAfter);
+    }
 }

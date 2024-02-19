@@ -2,8 +2,8 @@ package com.kaua.ecommerce.domain.product;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
 import com.kaua.ecommerce.domain.category.CategoryID;
-import com.kaua.ecommerce.domain.exceptions.ProductNotHaveMoreAttributesException;
-import com.kaua.ecommerce.domain.exceptions.ProductNotHaveMoreImagesException;
+import com.kaua.ecommerce.domain.exceptions.ProductCannotHaveMoreAttributesException;
+import com.kaua.ecommerce.domain.exceptions.ProductCannotHaveMoreImagesException;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
@@ -89,7 +89,7 @@ public class Product extends AggregateRoot<ProductID> {
         }
 
         if (aAttributes.size() > 10) {
-            throw new ProductNotHaveMoreAttributesException();
+            throw new ProductCannotHaveMoreAttributesException();
         }
 
         aProduct.attributes.addAll(aAttributes);
@@ -152,7 +152,7 @@ public class Product extends AggregateRoot<ProductID> {
         }
 
         if (this.images.size() == 20) {
-            throw new ProductNotHaveMoreImagesException();
+            throw new ProductCannotHaveMoreImagesException();
         }
 
         this.images.add(aImage);
@@ -209,11 +209,28 @@ public class Product extends AggregateRoot<ProductID> {
         }
 
         if (this.attributes.size() == 10) {
-            throw new ProductNotHaveMoreAttributesException();
+            throw new ProductCannotHaveMoreAttributesException();
         }
 
         this.attributes.add(aAttribute);
         this.updatedAt = InstantUtils.now();
+    }
+
+    public Product removeAttribute(final String aSku) {
+        if (aSku == null || aSku.isBlank()) {
+            return null;
+        }
+
+        final var aResult = this.attributes.stream()
+                .filter(attribute -> attribute.getSku().equalsIgnoreCase(aSku))
+                .findFirst();
+
+        if (aResult.isPresent()) {
+            this.attributes.remove(aResult.get());
+            this.updatedAt = InstantUtils.now();
+            return this;
+        }
+        return null;
     }
 
     @Override

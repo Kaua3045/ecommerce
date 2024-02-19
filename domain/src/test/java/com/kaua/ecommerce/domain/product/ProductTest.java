@@ -17,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ProductTest extends UnitTest {
@@ -588,6 +589,35 @@ public class ProductTest extends UnitTest {
         Assertions.assertThrows(
                 DomainException.class,
                 () -> aProduct.addAttribute(aAttributes),
+                "Product can't have more than 20 attributes"
+        );
+    }
+
+    @Test
+    void givenAnInvalid21ProductAttributes_whenCallNewProduct_shouldThrowDomainException() {
+        final var aPrice = BigDecimal.valueOf(10.0);
+        final var aCategoryId = CategoryID.from("1");
+
+        final var aProductAttributes = new HashSet<ProductAttributes>();
+        for (int i = 0; i < 21; i++) {
+            final var aOldAttributes = ProductAttributes.create(
+                    ProductColor.with("Color".concat(String.valueOf(i))),
+                    ProductSize.with("Size".concat(String.valueOf(i)), 0.5, 0.5, 0.5, 0.5),
+                    "Product Name"
+            );
+            aProductAttributes.add(aOldAttributes);
+        }
+
+        Assertions.assertThrows(
+                DomainException.class,
+                () -> Product.newProduct(
+                        "Product Name",
+                        "Product Description",
+                        aPrice,
+                        10,
+                        aCategoryId,
+                        aProductAttributes
+                ),
                 "Product can't have more than 20 attributes"
         );
     }

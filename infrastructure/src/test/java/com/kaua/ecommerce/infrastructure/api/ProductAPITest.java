@@ -8,6 +8,7 @@ import com.kaua.ecommerce.application.usecases.product.create.CreateProductComma
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductOutput;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCase;
+import com.kaua.ecommerce.application.usecases.product.media.remove.RemoveProductImageUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageOutput;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
@@ -89,6 +90,9 @@ public class ProductAPITest {
 
     @MockBean
     private ListProductsUseCase listProductsUseCase;
+
+    @MockBean
+    private RemoveProductImageUseCase removeProductImageUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
@@ -1651,5 +1655,25 @@ public class ProductAPITest {
                         && Objects.equals(aSort, query.sort())
                         && Objects.equals(aTerms, query.terms())
         ));
+    }
+
+    @Test
+    void givenAValidProductIdAndLocation_whenCallDeleteProductImage_thenShouldBeOk() throws Exception {
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.BANNER);
+        final var aProduct = Fixture.Products.tshirt();
+        final var aId = aProduct.getId().getValue();
+        final var aLocation = aProductImage.getLocation();
+
+        aProduct.changeBannerImage(aProductImage);
+
+        Mockito.doNothing().when(removeProductImageUseCase).execute(Mockito.any());
+
+        final var request = MockMvcRequestBuilders.delete("/v1/products/{id}/medias/{location}", aId, aLocation);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(removeProductImageUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 }

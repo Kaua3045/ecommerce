@@ -2,6 +2,8 @@ package com.kaua.ecommerce.infrastructure.configurations.usecases;
 
 import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.application.gateways.*;
+import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesUseCase;
+import com.kaua.ecommerce.application.usecases.product.attributes.add.DefaultAddProductAttributesUseCase;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.create.DefaultCreateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.delete.DefaultDeleteProductUseCase;
@@ -84,6 +86,11 @@ public class ProductUseCaseConfig {
     @Bean
     public GetProductByIdUseCase getProductByIdUseCase() {
         return new DefaultGetProductByIdUseCase(productGateway);
+    }
+
+    @Bean
+    public AddProductAttributesUseCase addProductAttributesUseCase() {
+        return new DefaultAddProductAttributesUseCase(productGateway, transactionManager, eventPublisher);
     }
 
     @Bean

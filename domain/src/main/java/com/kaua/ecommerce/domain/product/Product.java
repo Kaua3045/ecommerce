@@ -2,9 +2,9 @@ package com.kaua.ecommerce.domain.product;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
 import com.kaua.ecommerce.domain.category.CategoryID;
-import com.kaua.ecommerce.domain.exceptions.DomainException;
+import com.kaua.ecommerce.domain.exceptions.ProductNotHaveMoreAttributesException;
+import com.kaua.ecommerce.domain.exceptions.ProductNotHaveMoreImagesException;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
-import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
 import java.math.BigDecimal;
@@ -88,6 +88,10 @@ public class Product extends AggregateRoot<ProductID> {
             return aProduct;
         }
 
+        if (aAttributes.size() > 10) {
+            throw new ProductNotHaveMoreAttributesException();
+        }
+
         aProduct.attributes.addAll(aAttributes);
         return aProduct;
     }
@@ -148,7 +152,7 @@ public class Product extends AggregateRoot<ProductID> {
         }
 
         if (this.images.size() == 20) {
-            throw DomainException.with(new Error("Product can't have more than 20 images"));
+            throw new ProductNotHaveMoreImagesException();
         }
 
         this.images.add(aImage);
@@ -197,6 +201,19 @@ public class Product extends AggregateRoot<ProductID> {
             return aResult.get();
         }
         return null;
+    }
+
+    public void addAttribute(final ProductAttributes aAttribute) {
+        if (aAttribute == null) {
+            return;
+        }
+
+        if (this.attributes.size() == 10) {
+            throw new ProductNotHaveMoreAttributesException();
+        }
+
+        this.attributes.add(aAttribute);
+        this.updatedAt = InstantUtils.now();
     }
 
     @Override

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedException;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
+import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesOutput;
+import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesUseCase;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductOutput;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
@@ -36,9 +38,7 @@ import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import com.kaua.ecommerce.infrastructure.ControllerTest;
 import com.kaua.ecommerce.infrastructure.exceptions.ImageSizeNotValidException;
 import com.kaua.ecommerce.infrastructure.exceptions.ImageTypeNotValidException;
-import com.kaua.ecommerce.infrastructure.product.models.CreateProductInput;
-import com.kaua.ecommerce.infrastructure.product.models.CreateProductInputAttributes;
-import com.kaua.ecommerce.infrastructure.product.models.UpdateProductInput;
+import com.kaua.ecommerce.infrastructure.product.models.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -93,6 +93,9 @@ public class ProductAPITest {
 
     @MockBean
     private RemoveProductImageUseCase removeProductImageUseCase;
+
+    @MockBean
+    private AddProductAttributesUseCase addProductAttributesUseCase;
 
     @Test
     void givenAValidInputWithDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
@@ -1675,5 +1678,38 @@ public class ProductAPITest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(removeProductImageUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenValidParams_whenCallsAddProductAttributes_shouldReturnProductId() throws Exception {
+        final var aProduct = Fixture.Products.book();
+        final var aProductAttribute = Fixture.Products.productAttributes(aProduct.getName());
+
+        final var aId = aProduct.getId().getValue();
+
+        final var aInput = new AddProductAttributesInput(
+                List.of(new AddProductAttributesParamInput(
+                        aProductAttribute.getColor().getColor(),
+                        aProductAttribute.getSize().getSize(),
+                        aProductAttribute.getSize().getWeight(),
+                        aProductAttribute.getSize().getHeight(),
+                        aProductAttribute.getSize().getWidth(),
+                        aProductAttribute.getSize().getDepth()
+                ))
+        );
+
+        Mockito.when(addProductAttributesUseCase.execute(Mockito.any()))
+                .thenReturn(AddProductAttributesOutput.from(aProduct));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}/attributes", aId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.product_id", equalTo(aId)));
+
+        Mockito.verify(addProductAttributesUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 }

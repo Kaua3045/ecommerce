@@ -1,7 +1,9 @@
 package com.kaua.ecommerce.infrastructure.api;
 
+import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.infrastructure.product.models.CreateProductInput;
 import com.kaua.ecommerce.infrastructure.product.models.GetProductResponse;
+import com.kaua.ecommerce.infrastructure.product.models.ListProductsResponse;
 import com.kaua.ecommerce.infrastructure.product.models.UpdateProductInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,6 +33,22 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     ResponseEntity<?> createProduct(@RequestBody CreateProductInput body);
+
+    @GetMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Get all products")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    Pagination<ListProductsResponse> listProducts(
+            @RequestParam(name = "search", required = false, defaultValue = "") final String search,
+            @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
+            @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
+            @RequestParam(name = "sort", required = false, defaultValue = "name") final String sort,
+            @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction
+    );
 
     @GetMapping(
             value = "{id}",

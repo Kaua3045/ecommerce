@@ -208,5 +208,17 @@ public final class Fixture {
                     aName.concat(".jpg")
             );
         }
+
+        public static ProductAttributes productAttributes(final String aProductName) {
+            return ProductAttributes.create(
+                    ProductColor.with(faker.color().name()),
+                    ProductSize.with(faker.options()
+                                    .option("P", "M", "G", "GG", "XG"),
+                            faker.random().nextDouble(),
+                            faker.random().nextDouble(),
+                            faker.random().nextDouble(),
+                            faker.random().nextDouble()),
+                    aProductName);
+        }
     }
 }

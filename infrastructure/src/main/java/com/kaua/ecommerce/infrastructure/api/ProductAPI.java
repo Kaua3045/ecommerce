@@ -118,4 +118,13 @@ public interface ProductAPI {
     })
     @ResponseStatus(HttpStatus.OK)
     void deleteProduct(@PathVariable String id);
+
+    @DeleteMapping(value = "{id}/medias/{location}")
+    @Operation(summary = "Delete a product image by it's identifier and location")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    void deleteProductImage(@PathVariable String id, @PathVariable String location);
 }

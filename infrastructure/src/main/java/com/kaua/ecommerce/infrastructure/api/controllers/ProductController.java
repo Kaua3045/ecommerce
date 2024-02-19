@@ -1,5 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api.controllers;
 
+import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesCommand;
+import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesUseCase;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.delete.DeleteProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.remove.RemoveProductImageCommand;
@@ -20,10 +22,7 @@ import com.kaua.ecommerce.domain.product.ProductImageResource;
 import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.infrastructure.api.ProductAPI;
-import com.kaua.ecommerce.infrastructure.product.models.CreateProductInput;
-import com.kaua.ecommerce.infrastructure.product.models.GetProductResponse;
-import com.kaua.ecommerce.infrastructure.product.models.ListProductsResponse;
-import com.kaua.ecommerce.infrastructure.product.models.UpdateProductInput;
+import com.kaua.ecommerce.infrastructure.product.models.*;
 import com.kaua.ecommerce.infrastructure.product.presenter.ProductApiPresenter;
 import com.kaua.ecommerce.infrastructure.utils.LogControllerResult;
 import com.kaua.ecommerce.infrastructure.utils.ResourceOf;
@@ -49,6 +48,7 @@ public class ProductController implements ProductAPI {
     private final GetProductByIdUseCase getProductByIdUseCase;
     private final ListProductsUseCase listProductsUseCase;
     private final RemoveProductImageUseCase removeProductImageUseCase;
+    private final AddProductAttributesUseCase addProductAttributesUseCase;
 
     public ProductController(
             final CreateProductUseCase createProductUseCase,
@@ -58,7 +58,8 @@ public class ProductController implements ProductAPI {
             final UpdateProductStatusUseCase updateProductStatusUseCase,
             final GetProductByIdUseCase getProductByIdUseCase,
             final ListProductsUseCase listProductsUseCase,
-            final RemoveProductImageUseCase removeProductImageUseCase
+            final RemoveProductImageUseCase removeProductImageUseCase,
+            final AddProductAttributesUseCase addProductAttributesUseCase
     ) {
         this.createProductUseCase = createProductUseCase;
         this.uploadProductImageUseCase = uploadProductImageUseCase;
@@ -68,6 +69,7 @@ public class ProductController implements ProductAPI {
         this.getProductByIdUseCase = getProductByIdUseCase;
         this.listProductsUseCase = listProductsUseCase;
         this.removeProductImageUseCase = removeProductImageUseCase;
+        this.addProductAttributesUseCase = addProductAttributesUseCase;
     }
 
     @Override
@@ -161,6 +163,21 @@ public class ProductController implements ProductAPI {
                 aResult);
 
         return ResponseEntity.status(HttpStatus.OK).body(aResult);
+    }
+
+    @Override
+    public ResponseEntity<?> addProductAttributes(String id, AddProductAttributesInput body) {
+        final var aResult = this.addProductAttributesUseCase.execute(
+                AddProductAttributesCommand.with(id, body.toCommandParams())
+        );
+
+        LogControllerResult.logResult(
+                log,
+                Product.class,
+                "addProductAttributes",
+                aResult);
+
+        return ResponseEntity.ok(aResult);
     }
 
     @Override

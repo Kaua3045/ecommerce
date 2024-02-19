@@ -13,6 +13,8 @@ import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -494,5 +496,50 @@ public class ProductTest extends UnitTest {
         final var aProductToString = aProduct.toString();
 
         Assertions.assertNotNull(aProductToString);
+    }
+
+    @Test
+    void givenAValidLocation_whenCallRemoveImage_shouldRemoveImage() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.GALLERY);
+        aProduct.addImage(aProductImage);
+
+        final var aProductUpdatedAtBefore = aProduct.getUpdatedAt();
+
+        final var aResult = aProduct.removeImage(aProductImage.getLocation());
+
+        final var aProductUpdatedAtAfter = aProduct.getUpdatedAt();
+
+        Assertions.assertTrue(aProduct.getImages().isEmpty());
+        Assertions.assertEquals(aProductImage, aResult);
+        Assertions.assertTrue(aProductUpdatedAtBefore.isBefore(aProductUpdatedAtAfter));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "null",
+            "empty",
+            "another-location"
+    })
+    void givenAnInvalidLocation_whenCallRemoveImage_shouldReturnNull(final String aLocation) {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aProductImage = Fixture.Products.productImage(ProductImageType.GALLERY);
+        aProduct.addImage(aProductImage);
+
+        final var aLocationToRemove = aLocation.contains("null")
+                ? null
+                : aLocation.contains("empty")
+                ? ""
+                : aLocation;
+
+        final var aProductUpdatedAtBefore = aProduct.getUpdatedAt();
+
+        final var aResult = aProduct.removeImage(aLocationToRemove);
+
+        final var aProductUpdatedAtAfter = aProduct.getUpdatedAt();
+
+        Assertions.assertFalse(aProduct.getImages().isEmpty());
+        Assertions.assertNull(aResult);
+        Assertions.assertEquals(aProductUpdatedAtBefore, aProductUpdatedAtAfter);
     }
 }

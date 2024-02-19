@@ -195,7 +195,7 @@ public final class Fixture {
             final var aLocation = aType.name().concat("-").concat(aName).concat(".jpg");
             return ProductImage.with(
                     aName,
-                    "/images/".concat(aLocation),
+                    "images-".concat(aLocation),
                     "https://localhost:8080/".concat(aLocation)
             );
         }

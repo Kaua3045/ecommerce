@@ -29,6 +29,19 @@ public final class Fixture {
         return NotFoundException.with(anAggregate, id).get().getMessage();
     }
 
+    public static String createSku(final String productName) {
+        return ProductAttributes.create(
+                ProductColor.with(faker.color().name()),
+                ProductSize.with(faker.options()
+                                .option("P", "M", "G", "GG", "XG"),
+                        faker.random().nextDouble(),
+                        faker.random().nextDouble(),
+                        faker.random().nextDouble(),
+                        faker.random().nextDouble()),
+                productName
+        ).getSku();
+    }
+
     public static final class Customers {
 
         private static final String firstName = "Mans";

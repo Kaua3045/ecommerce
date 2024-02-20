@@ -8,6 +8,7 @@ import com.kaua.ecommerce.domain.customer.CustomerID;
 import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.Resource;
@@ -219,6 +220,19 @@ public final class Fixture {
                             faker.random().nextDouble(),
                             faker.random().nextDouble()),
                     aProductName);
+        }
+    }
+
+    public static final class Inventories {
+
+        private static final Inventory TSHIRT_SKU = Inventory.newInventory(
+                ProductID.unique().getValue(),
+                "sku-tshirt",
+                faker.random().nextInt(1, 500)
+        );
+
+        public static Inventory tshirtInventory() {
+            return Inventory.with(TSHIRT_SKU);
         }
     }
 }

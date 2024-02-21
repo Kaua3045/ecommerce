@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Component
 public class InventoryMySQLGateway implements InventoryGateway {
@@ -24,14 +26,17 @@ public class InventoryMySQLGateway implements InventoryGateway {
 
     @Transactional
     @Override
-    public Inventory create(final Inventory inventory) {
-        final var aResult = this.inventoryJpaRepository.save(InventoryJpaEntity.toEntity(inventory)).toDomain();
-        log.info("inserted inventory: {}", aResult);
-        return aResult;
+    public Set<Inventory> createInBatch(Set<Inventory> inventories) {
+        final var aResult = this.inventoryJpaRepository.saveAll(inventories.stream()
+                .map(InventoryJpaEntity::toEntity)
+                .toList());
+
+        log.info("inserted inventories: {}", aResult.size());
+        return inventories;
     }
 
     @Override
-    public boolean existsBySku(final String sku) {
-        return this.inventoryJpaRepository.existsBySku(sku);
+    public List<String> existsBySkus(List<String> skus) {
+        return this.inventoryJpaRepository.existsBySkus(skus);
     }
 }

@@ -1,4 +1,4 @@
-package com.kaua.ecommerce.application.usecases.inventory.create;
+package com.kaua.ecommerce.application.usecases.inventory.create.outputs;
 
 import com.kaua.ecommerce.domain.inventory.Inventory;
 

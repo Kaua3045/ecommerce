@@ -2,15 +2,16 @@ package com.kaua.ecommerce.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
-import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryCommand;
-import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryOutput;
 import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateInventoryCommand;
+import com.kaua.ecommerce.application.usecases.inventory.create.outputs.CreateInventoryOutput;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import com.kaua.ecommerce.infrastructure.ControllerTest;
 import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInput;
+import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInputParams;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,6 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -46,14 +50,18 @@ public class InventoryAPITest {
         final var aSku = "sku";
         final var aQuantity = 10;
 
-        final var aInput = new CreateInventoryInput(
-                aProductId,
+        final var aInputParams = new CreateInventoryInputParams(
                 aSku,
                 aQuantity
         );
 
+        final var aInput = new CreateInventoryInput(
+                aProductId,
+                List.of(aInputParams)
+        );
+
         Mockito.when(createInventoryUseCase.execute(Mockito.any()))
-                .thenReturn(Either.right(CreateInventoryOutput.from(aInventory)));
+                .thenReturn(Either.right(CreateInventoryOutput.from(aProductId, Set.of(aInventory))));
 
         final var request = MockMvcRequestBuilders.post("/v1/inventories")
                 .accept(MediaType.APPLICATION_JSON)
@@ -63,9 +71,9 @@ public class InventoryAPITest {
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.inventory_id", equalTo(aInventory.getId().getValue())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.product_id", equalTo(aProductId)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.sku", equalTo(aInventory.getSku())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.inventories[0].inventory_id", equalTo(aInventory.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.inventories[0].sku", equalTo(aInventory.getSku())));
 
         final var cmdCaptor = ArgumentCaptor.forClass(CreateInventoryCommand.class);
 
@@ -74,8 +82,7 @@ public class InventoryAPITest {
         final var actualCmd = cmdCaptor.getValue();
 
         Assertions.assertEquals(aProductId, actualCmd.productId());
-        Assertions.assertEquals(aSku, actualCmd.sku());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(1, actualCmd.inventoryParams().size());
     }
 
     @Test
@@ -86,10 +93,14 @@ public class InventoryAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("productId");
 
-        final var aInput = new CreateInventoryInput(
-                aProductId,
+        final var aInputParams = new CreateInventoryInputParams(
                 aSku,
                 aQuantity
+        );
+
+        final var aInput = new CreateInventoryInput(
+                aProductId,
+                List.of(aInputParams)
         );
 
         Mockito.when(createInventoryUseCase.execute(Mockito.any()))
@@ -113,8 +124,7 @@ public class InventoryAPITest {
         final var actualCmd = cmdCaptor.getValue();
 
         Assertions.assertEquals(aProductId, actualCmd.productId());
-        Assertions.assertEquals(aSku, actualCmd.sku());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(1, actualCmd.inventoryParams().size());
     }
 
     @Test
@@ -125,10 +135,14 @@ public class InventoryAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("sku");
 
-        final var aInput = new CreateInventoryInput(
-                aProductId,
+        final var aInputParams = new CreateInventoryInputParams(
                 aSku,
                 aQuantity
+        );
+
+        final var aInput = new CreateInventoryInput(
+                aProductId,
+                List.of(aInputParams)
         );
 
         Mockito.when(createInventoryUseCase.execute(Mockito.any()))
@@ -152,8 +166,7 @@ public class InventoryAPITest {
         final var actualCmd = cmdCaptor.getValue();
 
         Assertions.assertEquals(aProductId, actualCmd.productId());
-        Assertions.assertEquals(aSku, actualCmd.sku());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(1, actualCmd.inventoryParams().size());
     }
 
     @Test
@@ -164,10 +177,14 @@ public class InventoryAPITest {
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
 
-        final var aInput = new CreateInventoryInput(
-                aProductId,
+        final var aInputParams = new CreateInventoryInputParams(
                 aSku,
                 aQuantity
+        );
+
+        final var aInput = new CreateInventoryInput(
+                aProductId,
+                List.of(aInputParams)
         );
 
         Mockito.when(createInventoryUseCase.execute(Mockito.any()))
@@ -191,7 +208,6 @@ public class InventoryAPITest {
         final var actualCmd = cmdCaptor.getValue();
 
         Assertions.assertEquals(aProductId, actualCmd.productId());
-        Assertions.assertEquals(aSku, actualCmd.sku());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+        Assertions.assertEquals(1, actualCmd.inventoryParams().size());
     }
 }

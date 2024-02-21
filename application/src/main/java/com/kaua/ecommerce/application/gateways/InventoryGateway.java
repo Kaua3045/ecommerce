@@ -2,9 +2,12 @@ package com.kaua.ecommerce.application.gateways;
 
 import com.kaua.ecommerce.domain.inventory.Inventory;
 
+import java.util.List;
+import java.util.Set;
+
 public interface InventoryGateway {
 
-    Inventory create(Inventory inventory);
+    Set<Inventory> createInBatch(Set<Inventory> inventories);
 
-    boolean existsBySku(String sku);
+    List<String> existsBySkus(List<String> skus);
 }

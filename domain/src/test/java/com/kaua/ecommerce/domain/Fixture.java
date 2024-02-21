@@ -8,6 +8,7 @@ import com.kaua.ecommerce.domain.customer.CustomerID;
 import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.Resource;
@@ -26,6 +27,19 @@ public final class Fixture {
 
     public static String notFoundMessage(final Class<? extends AggregateRoot<?>> anAggregate, final String id) {
         return NotFoundException.with(anAggregate, id).get().getMessage();
+    }
+
+    public static String createSku(final String productName) {
+        return ProductAttributes.create(
+                ProductColor.with(faker.color().name()),
+                ProductSize.with(faker.options()
+                                .option("P", "M", "G", "GG", "XG"),
+                        faker.random().nextDouble(),
+                        faker.random().nextDouble(),
+                        faker.random().nextDouble(),
+                        faker.random().nextDouble()),
+                productName
+        ).getSku();
     }
 
     public static final class Customers {
@@ -219,6 +233,19 @@ public final class Fixture {
                             faker.random().nextDouble(),
                             faker.random().nextDouble()),
                     aProductName);
+        }
+    }
+
+    public static final class Inventories {
+
+        private static final Inventory TSHIRT_SKU = Inventory.newInventory(
+                ProductID.unique().getValue(),
+                "sku-tshirt",
+                faker.random().nextInt(1, 500)
+        );
+
+        public static Inventory tshirtInventory() {
+            return Inventory.with(TSHIRT_SKU);
         }
     }
 }

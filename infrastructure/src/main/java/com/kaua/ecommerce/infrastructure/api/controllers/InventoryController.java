@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.api.controllers;
 
-import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryCommand;
+import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateInventoryCommand;
 import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryUseCase;
 import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.infrastructure.api.InventoryAPI;
@@ -27,8 +27,7 @@ public class InventoryController implements InventoryAPI {
     public ResponseEntity<?> createInventory(CreateInventoryInput body) {
         final var aResult = this.createInventoryUseCase.execute(CreateInventoryCommand.with(
                 body.productId(),
-                body.sku(),
-                body.quantity()
+                body.toCommandInventoryParams()
         ));
 
         LogControllerResult.logResult(

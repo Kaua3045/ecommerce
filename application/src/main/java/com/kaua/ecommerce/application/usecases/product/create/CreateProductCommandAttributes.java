@@ -6,7 +6,8 @@ public record CreateProductCommandAttributes(
         double weight,
         double height,
         double width,
-        double depth
+        double depth,
+        int quantity
 ) {
 
     public static CreateProductCommandAttributes with(
@@ -15,7 +16,8 @@ public record CreateProductCommandAttributes(
             final double aWeight,
             final double aHeight,
             final double aWidth,
-            final double aDepth
+            final double aDepth,
+            final int aQuantity
     ) {
         return new CreateProductCommandAttributes(
                 aColorName,
@@ -23,7 +25,8 @@ public record CreateProductCommandAttributes(
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
     }
 }

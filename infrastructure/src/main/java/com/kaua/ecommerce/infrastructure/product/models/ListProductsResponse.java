@@ -11,7 +11,6 @@ public record ListProductsResponse(
         @JsonProperty("name") String name,
         @JsonProperty("description") String description,
         @JsonProperty("price") BigDecimal price,
-        @JsonProperty("quantity") int quantity,
         @JsonProperty("category_id") String categoryId,
         @JsonProperty("banner_image") ListProductsImagesOutput bannerImage,
         @JsonProperty("status") String status,

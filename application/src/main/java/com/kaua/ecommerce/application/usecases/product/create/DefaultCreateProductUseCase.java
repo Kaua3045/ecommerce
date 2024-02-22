@@ -61,7 +61,7 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
                 aCommand.description(),
                 aCommand.price(),
                 aCategory.getId(),
-                CollectionUtils.mapTo(aAttributes, AbstractMap.SimpleEntry::getKey)
+                CollectionUtils.mapTo(aAttributes, AbstractMap.SimpleImmutableEntry::getKey)
         );
         aProduct.validate(aNotification);
 
@@ -84,7 +84,7 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
         return Either.right(CreateProductOutput.from(aResult.getSuccessResult()));
     }
 
-    private Set<AbstractMap.SimpleEntry<ProductAttributes, Integer>> mapToProductAttributesWithQuantity(
+    private Set<AbstractMap.SimpleImmutableEntry<ProductAttributes, Integer>> mapToProductAttributesWithQuantity(
             final String aProductName,
             final List<CreateProductCommandAttributes> aAttributes
     ) {
@@ -102,13 +102,13 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
                     attribute.width(),
                     attribute.depth());
             final var aProductAttribute = ProductAttributes.create(aColor, aProductSize, aProductName);
-            return new AbstractMap.SimpleEntry<>(aProductAttribute, attribute.quantity());
+            return new AbstractMap.SimpleImmutableEntry<>(aProductAttribute, attribute.quantity());
         }).collect(Collectors.toSet());
     }
 
     private Either<NotificationHandler, Void> createInventoryToAttributes(
             final Product aProduct,
-            final Set<AbstractMap.SimpleEntry<ProductAttributes, Integer>> aAttributes
+            final Set<AbstractMap.SimpleImmutableEntry<ProductAttributes, Integer>> aAttributes
     ) {
         final var aCreateInventoryResult = this.productInventoryGateway.createInventory(
                 aProduct.getId().getValue(),

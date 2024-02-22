@@ -7,11 +7,10 @@ import com.kaua.ecommerce.domain.validation.Validator;
 
 public class ProductValidation extends Validator {
 
-    private final Product product;
-
     private static final int MINIMUM_LENGTH = 3;
     private static final int MAXIMUM_LENGTH = 255;
     private static final int MAXIMUM_DESCRIPTION_LENGTH = 3000;
+    private final Product product;
 
     protected ProductValidation(final Product product, final ValidationHandler handler) {
         super(handler);
@@ -23,7 +22,6 @@ public class ProductValidation extends Validator {
         checkNameConstraints();
         checkDescriptionConstraints();
         checkPriceConstraints();
-        checkQuantityConstraints();
         checkProductAttributesConstraints();
     }
 
@@ -54,12 +52,6 @@ public class ProductValidation extends Validator {
 
         if (product.getPrice().doubleValue() <= 0) {
             validationHandler().append(new Error(CommonErrorMessage.greaterThan("price", 0)));
-        }
-    }
-
-    private void checkQuantityConstraints() {
-        if (product.getQuantity() < 0) {
-            validationHandler().append(new Error(CommonErrorMessage.greaterThan("quantity", -1)));
         }
     }
 

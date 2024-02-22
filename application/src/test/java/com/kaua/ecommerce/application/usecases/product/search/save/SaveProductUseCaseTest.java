@@ -47,7 +47,6 @@ public class SaveProductUseCaseTest extends UseCaseTest {
                 " ",
                 "A good book",
                 BigDecimal.valueOf(10.0),
-                10,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("Red"),

@@ -1,11 +1,11 @@
 package com.kaua.ecommerce.application.usecases.product.update.status;
 
 import com.kaua.ecommerce.application.UseCaseTest;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
+import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
-import com.kaua.ecommerce.application.adapters.TransactionManager;
-import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
@@ -67,7 +67,6 @@ public class UpdateProductStatusUseCaseTest extends UseCaseTest {
                 Objects.equals(aCmd.getName(), aProduct.getName())
                         && Objects.equals(aCmd.getDescription(), aProduct.getDescription())
                         && Objects.equals(aCmd.getPrice(), aProduct.getPrice())
-                        && Objects.equals(aCmd.getQuantity(), aProduct.getQuantity())
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aProduct.getCategoryId().getValue())
                         && Objects.equals(1, aCmd.getAttributes().size())
@@ -104,7 +103,6 @@ public class UpdateProductStatusUseCaseTest extends UseCaseTest {
                 Objects.equals(aCmd.getName(), aProduct.getName())
                         && Objects.equals(aCmd.getDescription(), aProduct.getDescription())
                         && Objects.equals(aCmd.getPrice(), aProduct.getPrice())
-                        && Objects.equals(aCmd.getQuantity(), aProduct.getQuantity())
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aProduct.getCategoryId().getValue())
                         && Objects.equals(1, aCmd.getAttributes().size())

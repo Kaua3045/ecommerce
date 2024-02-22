@@ -39,7 +39,6 @@ public class GetProductByIdUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(aProduct.getName(), aOutput.name());
         Assertions.assertEquals(aProduct.getDescription(), aOutput.description());
         Assertions.assertEquals(aProduct.getPrice(), aOutput.price());
-        Assertions.assertEquals(aProduct.getQuantity(), aOutput.quantity());
         Assertions.assertEquals(aProduct.getCategoryId().getValue(), aOutput.categoryId());
         Assertions.assertNotNull(aOutput.bannerImage());
         Assertions.assertEquals(aProduct.getBannerImage().get().getLocation(), aOutput.bannerImage().location());

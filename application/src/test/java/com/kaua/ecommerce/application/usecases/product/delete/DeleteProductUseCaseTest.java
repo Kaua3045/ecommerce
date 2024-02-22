@@ -43,7 +43,6 @@ public class DeleteProductUseCaseTest extends UseCaseTest {
                 "aName",
                 "aDescription",
                 new BigDecimal("10.00"),
-                5,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("red"),

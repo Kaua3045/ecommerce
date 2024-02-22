@@ -28,9 +28,6 @@ public class ProductJpaEntity {
     @Column(name = "price", nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
-
     @Column(name = "category_id", nullable = false)
     private String categoryId;
 
@@ -68,7 +65,6 @@ public class ProductJpaEntity {
             final String name,
             final String description,
             final BigDecimal price,
-            final int quantity,
             final String categoryId,
             final ProductStatus status,
             final ProductImageJpaEntity bannerImage,
@@ -80,7 +76,6 @@ public class ProductJpaEntity {
         this.name = name;
         this.description = description;
         this.price = price;
-        this.quantity = quantity;
         this.categoryId = categoryId;
         this.status = status;
         this.attributes = new HashSet<>();
@@ -97,7 +92,6 @@ public class ProductJpaEntity {
                 aProduct.getName(),
                 aProduct.getDescription(),
                 aProduct.getPrice(),
-                aProduct.getQuantity(),
                 aProduct.getCategoryId().getValue(),
                 aProduct.getStatus(),
                 aProduct.getBannerImage().map(ProductImageJpaEntity::toEntity).orElse(null),
@@ -118,7 +112,6 @@ public class ProductJpaEntity {
                 getName(),
                 getDescription(),
                 getPrice(),
-                getQuantity(),
                 getBannerImage().map(ProductImageJpaEntity::toDomain).orElse(null),
                 getImagesToDomain(),
                 getCategoryId(),
@@ -194,14 +187,6 @@ public class ProductJpaEntity {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
     }
 
     public String getCategoryId() {

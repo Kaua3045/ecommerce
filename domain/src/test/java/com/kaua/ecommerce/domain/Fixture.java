@@ -159,7 +159,6 @@ public final class Fixture {
                 "Camiseta",
                 "Camiseta de algodão",
                 BigDecimal.valueOf(10.0),
-                50,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         ProductColor.with(faker.color().name()),
@@ -176,7 +175,6 @@ public final class Fixture {
                 "Livro",
                 "Livro de teste",
                 BigDecimal.valueOf(faker.random().nextDouble(1, 999999)),
-                faker.random().nextInt(1, 100),
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         ProductColor.with(faker.color().name()),

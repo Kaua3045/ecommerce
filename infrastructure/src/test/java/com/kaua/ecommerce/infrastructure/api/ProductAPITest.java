@@ -124,14 +124,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -158,7 +158,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -186,14 +185,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -220,7 +219,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -247,14 +245,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -282,7 +280,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -309,14 +306,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -344,7 +341,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -371,14 +367,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -406,7 +402,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -433,14 +428,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -468,7 +463,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -495,14 +489,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -530,7 +524,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -557,14 +550,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -592,7 +585,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -619,14 +611,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -654,7 +646,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -681,14 +672,14 @@ public class ProductAPITest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aInput = new CreateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributesInput)
         );
@@ -715,7 +706,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
         Assertions.assertEquals(1, actualCmd.attributes().size());
     }
@@ -983,14 +973,12 @@ public class ProductAPITest {
         final var aName = "Product Test";
         final var aDescription = "Product Test Description";
         final var aPrice = BigDecimal.valueOf(59.98);
-        final var aQuantity = 3;
         final var aCategoryId = "123";
 
         final var aInput = new UpdateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -1016,7 +1004,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
     }
 
@@ -1028,14 +1015,12 @@ public class ProductAPITest {
         final String aName = null;
         final var aDescription = "Product Test Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = "123";
 
         final var aInput = new UpdateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -1061,7 +1046,6 @@ public class ProductAPITest {
         Assertions.assertNull(actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
     }
 
@@ -1073,7 +1057,6 @@ public class ProductAPITest {
         final var aName = "Pr ";
         final var aDescription = "Product Test Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = "123";
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
@@ -1082,7 +1065,6 @@ public class ProductAPITest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -1109,7 +1091,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
     }
 
@@ -1121,7 +1102,6 @@ public class ProductAPITest {
         final var aName = "Product Name";
         final var aDescription = RandomStringUtils.generateValue(3001);
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = "123";
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
@@ -1130,7 +1110,6 @@ public class ProductAPITest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -1157,7 +1136,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
     }
 
@@ -1169,7 +1147,6 @@ public class ProductAPITest {
         final var aName = "Product Name";
         final var aDescription = "Product Test Description";
         final var aPrice = BigDecimal.valueOf(0.0);
-        final var aQuantity = 10;
         final var aCategoryId = "123";
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("price", 0);
@@ -1178,7 +1155,6 @@ public class ProductAPITest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -1205,55 +1181,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
-        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-    }
-
-    @Test
-    void givenAnInvalidInputQuantityLessThanZero_whenCallUpdateProduct_thenReturnDomainException() throws Exception {
-        final var aProduct = Fixture.Products.tshirt();
-        final var aId = aProduct.getId().getValue();
-
-        final var aName = "Product Name";
-        final var aDescription = "Product Test Description";
-        final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = -1;
-        final var aCategoryId = "123";
-
-        final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
-
-        final var aInput = new UpdateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
-                aCategoryId
-        );
-
-        Mockito.when(updateProductUseCase.execute(Mockito.any()))
-                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
-
-        final var request = MockMvcRequestBuilders.patch("/v1/products/{id}", aId)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(this.mapper.writeValueAsString(aInput));
-
-        this.mvc.perform(request)
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
-
-        final var cmdCaptor = ArgumentCaptor.forClass(UpdateProductCommand.class);
-
-        Mockito.verify(updateProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
-
-        final var actualCmd = cmdCaptor.getValue();
-
-        Assertions.assertEquals(aName, actualCmd.name());
-        Assertions.assertEquals(aDescription, actualCmd.description());
-        Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
     }
 
@@ -1265,14 +1192,12 @@ public class ProductAPITest {
         final var aName = "Product Name";
         final var aDescription = "Product Test Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final String aCategoryId = null;
 
         final var aInput = new UpdateProductInput(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -1298,7 +1223,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertNull(actualCmd.categoryId());
     }
 
@@ -1310,7 +1234,6 @@ public class ProductAPITest {
         final var aName = "Product Name";
         final var aDescription = "Product Test Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = "123";
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aCategoryId);
@@ -1319,7 +1242,6 @@ public class ProductAPITest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -1345,7 +1267,6 @@ public class ProductAPITest {
         Assertions.assertEquals(aName, actualCmd.name());
         Assertions.assertEquals(aDescription, actualCmd.description());
         Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aQuantity, actualCmd.quantity());
         Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
     }
 
@@ -1506,7 +1427,6 @@ public class ProductAPITest {
                 aProduct.getName(),
                 aProduct.getDescription(),
                 aProduct.getPrice(),
-                aProduct.getQuantity(),
                 aProduct.getCategoryId().getValue()
         );
 
@@ -1535,7 +1455,6 @@ public class ProductAPITest {
                 aProduct.getName(),
                 aProduct.getDescription(),
                 aProduct.getPrice(),
-                aProduct.getQuantity(),
                 aProduct.getCategoryId().getValue()
         );
 
@@ -1577,7 +1496,6 @@ public class ProductAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", equalTo(aProduct.getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description", equalTo(aProduct.getDescription())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.price", equalTo(aProduct.getPrice().doubleValue())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", equalTo(aProduct.getQuantity())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.category_id", equalTo(aProduct.getCategoryId().getValue())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.banner_image.location", equalTo(aProduct.getBannerImage().get().getLocation())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gallery_images", hasSize(1)))
@@ -1648,7 +1566,6 @@ public class ProductAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name", equalTo(aProduct.getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].description", equalTo(aProduct.getDescription())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].price", equalTo(aProduct.getPrice().doubleValue())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].quantity", equalTo(aProduct.getQuantity())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].category_id", equalTo(aProduct.getCategoryId().getValue())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].banner_image", equalTo(null)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].status", equalTo(aProduct.getStatus().name())))

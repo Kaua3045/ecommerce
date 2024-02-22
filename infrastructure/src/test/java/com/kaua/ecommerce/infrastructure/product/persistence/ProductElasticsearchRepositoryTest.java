@@ -25,7 +25,6 @@ public class ProductElasticsearchRepositoryTest extends AbstractElasticsearchTes
                 "name",
                 "description",
                 BigDecimal.valueOf(100.0),
-                10,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.with(ProductColor.with("Red"),
                         ProductSize.with("M", 5, 0.5, 0.5, 0.5), "sku"))
@@ -46,7 +45,6 @@ public class ProductElasticsearchRepositoryTest extends AbstractElasticsearchTes
         Assertions.assertEquals(actualProduct.getName(), aPersistedProduct.getName());
         Assertions.assertEquals(actualProduct.getDescription(), aPersistedProduct.getDescription());
         Assertions.assertEquals(actualProduct.getPrice(), aPersistedProduct.getPrice());
-        Assertions.assertEquals(actualProduct.getQuantity(), aPersistedProduct.getQuantity());
         Assertions.assertEquals(actualProduct.getBannerImage().get().getId(), aPersistedProduct.getBannerImage().get().getId());
         Assertions.assertEquals(actualProduct.getBannerImage().get().getName(), aPersistedProduct.getBannerImage().get().getName());
         Assertions.assertEquals(actualProduct.getBannerImage().get().getLocation(), aPersistedProduct.getBannerImage().get().getLocation());
@@ -98,7 +96,6 @@ public class ProductElasticsearchRepositoryTest extends AbstractElasticsearchTes
         aEntity.setName("Other Name");
         aEntity.setDescription("Other Description");
         aEntity.setPrice(BigDecimal.valueOf(1000.0));
-        aEntity.setQuantity(10);
         aEntity.setBannerImage(null);
         aEntity.setCategoryId(CategoryID.unique().getValue());
         aEntity.setStatus(ProductStatus.INACTIVE);
@@ -121,7 +118,6 @@ public class ProductElasticsearchRepositoryTest extends AbstractElasticsearchTes
         Assertions.assertEquals(actualProduct.getName(), aPersistedProduct.getName());
         Assertions.assertEquals(actualProduct.getDescription(), aPersistedProduct.getDescription());
         Assertions.assertEquals(actualProduct.getPrice(), aPersistedProduct.getPrice());
-        Assertions.assertEquals(actualProduct.getQuantity(), aPersistedProduct.getQuantity());
         Assertions.assertTrue(actualProduct.getBannerImage().isEmpty());
         Assertions.assertEquals(actualProduct.getImages().size(), aPersistedProduct.getImages().size());
         Assertions.assertEquals(actualProduct.getCategoryId().getValue(), aPersistedProduct.getCategoryId());

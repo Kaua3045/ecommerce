@@ -27,7 +27,6 @@ public class ProductTest extends UnitTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.with(
                 ProductColor.with("1", "RED"),
@@ -35,13 +34,12 @@ public class ProductTest extends UnitTest {
                 aName
         );
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aCategoryId, Set.of(aAttributes));
 
         Assertions.assertNotNull(aProduct.getId());
         Assertions.assertEquals(aName, aProduct.getName());
         Assertions.assertEquals(aDescription, aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
-        Assertions.assertEquals(aQuantity, aProduct.getQuantity());
         Assertions.assertTrue(aProduct.getBannerImage().isEmpty());
         Assertions.assertTrue(aProduct.getImages().isEmpty());
         Assertions.assertEquals(aCategoryId, aProduct.getCategoryId());
@@ -57,7 +55,6 @@ public class ProductTest extends UnitTest {
         final var aName = "Product Name";
         final String aDescription = null;
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.with(
                 ProductColor.with("1", "RED"),
@@ -65,13 +62,12 @@ public class ProductTest extends UnitTest {
                 aName
         );
 
-        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aQuantity, aCategoryId, Set.of(aAttributes));
+        final var aProduct = Product.newProduct(aName, aDescription, aPrice, aCategoryId, Set.of(aAttributes));
 
         Assertions.assertNotNull(aProduct.getId());
         Assertions.assertEquals(aName, aProduct.getName());
         Assertions.assertNull(aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
-        Assertions.assertEquals(aQuantity, aProduct.getQuantity());
         Assertions.assertTrue(aProduct.getBannerImage().isEmpty());
         Assertions.assertTrue(aProduct.getImages().isEmpty());
         Assertions.assertEquals(aCategoryId, aProduct.getCategoryId());
@@ -100,7 +96,6 @@ public class ProductTest extends UnitTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aBannerImage = ProductImage.with("abc", "banner-product.jpg", "/images/banner-product.jpg");
         final var aImage = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
         final var aCategoryId = CategoryID.from("1");
@@ -119,7 +114,6 @@ public class ProductTest extends UnitTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aBannerImage,
                 Set.of(aImage),
                 aCategoryId.getValue(),
@@ -134,7 +128,6 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aName, aProduct.getName());
         Assertions.assertEquals(aDescription, aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
-        Assertions.assertEquals(aQuantity, aProduct.getQuantity());
         Assertions.assertEquals(aBannerImage.getLocation(), aProduct.getBannerImage().get().getLocation());
         Assertions.assertEquals(aImage.getLocation(), aProduct.getImages().stream().findFirst().get().getLocation());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
@@ -155,7 +148,6 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aProductWith.getName(), aProduct.getName());
         Assertions.assertEquals(aProductWith.getDescription(), aProduct.getDescription());
         Assertions.assertEquals(aProductWith.getPrice(), aProduct.getPrice());
-        Assertions.assertEquals(aProductWith.getQuantity(), aProduct.getQuantity());
         Assertions.assertTrue(aProductWith.getBannerImage().isEmpty());
         Assertions.assertTrue(aProductWith.getImages().isEmpty());
         Assertions.assertEquals(aProductWith.getCategoryId().getValue(), aProduct.getCategoryId().getValue());
@@ -172,7 +164,6 @@ public class ProductTest extends UnitTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aBannerImage = ProductImage.with("abc", "banner-product.jpg", "/images/banner-product.jpg");
         final var aImage = ProductImage.with("abc", "product.jpg", "/images/product.jpg");
         final var aCategoryId = CategoryID.from("1");
@@ -187,7 +178,6 @@ public class ProductTest extends UnitTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aBannerImage,
                 Set.of(aImage),
                 aCategoryId.getValue(),
@@ -202,7 +192,6 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aName, aProduct.getName());
         Assertions.assertEquals(aDescription, aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
-        Assertions.assertEquals(aQuantity, aProduct.getQuantity());
         Assertions.assertEquals(aBannerImage.getLocation(), aProduct.getBannerImage().get().getLocation());
         Assertions.assertEquals(aImage.getId(), aProduct.getImages().stream().findFirst().get().getId());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
@@ -219,7 +208,6 @@ public class ProductTest extends UnitTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final ProductImage aBannerImage = null;
         final Set<ProductImage> aImages = null;
@@ -238,7 +226,6 @@ public class ProductTest extends UnitTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aBannerImage,
                 aImages,
                 aCategoryId.getValue(),
@@ -253,7 +240,6 @@ public class ProductTest extends UnitTest {
         Assertions.assertEquals(aName, aProduct.getName());
         Assertions.assertEquals(aDescription, aProduct.getDescription());
         Assertions.assertEquals(aPrice, aProduct.getPrice());
-        Assertions.assertEquals(aQuantity, aProduct.getQuantity());
         Assertions.assertTrue(aProduct.getBannerImage().isEmpty());
         Assertions.assertTrue(aProduct.getImages().isEmpty());
         Assertions.assertEquals(aCategoryId.getValue(), aProduct.getCategoryId().getValue());
@@ -356,17 +342,15 @@ public class ProductTest extends UnitTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(50.95);
-        final var aQuantity = 2;
         final var aCategoryId = CategoryID.from("1");
 
         final var aProductUpdatedAt = aProduct.getUpdatedAt();
 
-        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aQuantity, aCategoryId);
+        final var aProductUpdated = aProduct.update(aName, aDescription, aPrice, aCategoryId);
 
         Assertions.assertEquals(aName, aProductUpdated.getName());
         Assertions.assertEquals(aDescription, aProductUpdated.getDescription());
         Assertions.assertEquals(aPrice, aProductUpdated.getPrice());
-        Assertions.assertEquals(aQuantity, aProductUpdated.getQuantity());
         Assertions.assertEquals(aCategoryId, aProductUpdated.getCategoryId());
         Assertions.assertTrue(aProductUpdatedAt.isBefore(aProductUpdated.getUpdatedAt()));
     }
@@ -407,7 +391,6 @@ public class ProductTest extends UnitTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.with(
                 ProductColor.with("1", "RED"),
@@ -421,7 +404,6 @@ public class ProductTest extends UnitTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 Set.of(aAttributes));
 
@@ -437,7 +419,6 @@ public class ProductTest extends UnitTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.with(
                 ProductColor.with("1", "RED"),
@@ -449,7 +430,6 @@ public class ProductTest extends UnitTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 Set.of(aAttributes));
         final var aProductUpdatedStatus = aProduct.updateStatus(ProductStatus.INACTIVE);
@@ -465,7 +445,6 @@ public class ProductTest extends UnitTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = CategoryID.from("1");
         final var aAttributes = ProductAttributes.with(
                 ProductColor.with("1", "RED"),
@@ -477,7 +456,6 @@ public class ProductTest extends UnitTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 Set.of(aAttributes));
         final var aProductUpdatedStatus = aProduct.updateStatus(ProductStatus.DELETED);
@@ -614,7 +592,6 @@ public class ProductTest extends UnitTest {
                         "Product Name",
                         "Product Description",
                         aPrice,
-                        10,
                         aCategoryId,
                         aProductAttributes
                 ),

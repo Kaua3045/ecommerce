@@ -7,7 +7,6 @@ public record UpdateProductCommand(
         String name,
         String description,
         BigDecimal price,
-        int quantity,
         String categoryId
 ) {
 
@@ -16,7 +15,6 @@ public record UpdateProductCommand(
             final String aName,
             final String aDescription,
             final BigDecimal aPrice,
-            final int aQuantity,
             final String aCategoryId
     ) {
         return new UpdateProductCommand(
@@ -24,7 +22,6 @@ public record UpdateProductCommand(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
     }

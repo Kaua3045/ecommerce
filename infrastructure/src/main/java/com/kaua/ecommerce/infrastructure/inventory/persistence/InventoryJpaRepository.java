@@ -9,4 +9,8 @@ public interface InventoryJpaRepository extends JpaRepository<InventoryJpaEntity
 
     @Query(value = "SELECT i.sku FROM InventoryJpaEntity i WHERE i.sku IN :skus")
     List<String> existsBySkus(List<String> skus);
+
+    boolean existsByProductId(String productId);
+
+    void deleteAllByProductId(String productId);
 }

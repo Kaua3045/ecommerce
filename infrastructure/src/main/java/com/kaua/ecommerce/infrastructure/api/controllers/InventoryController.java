@@ -2,6 +2,7 @@ package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateInventoryCommand;
 import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.infrastructure.api.InventoryAPI;
 import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInput;
@@ -18,9 +19,14 @@ public class InventoryController implements InventoryAPI {
     private static final Logger log = LoggerFactory.getLogger(InventoryController.class);
 
     private final CreateInventoryUseCase createInventoryUseCase;
+    private final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase;
 
-    public InventoryController(final CreateInventoryUseCase createInventoryUseCase) {
+    public InventoryController(
+            final CreateInventoryUseCase createInventoryUseCase,
+            final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase
+    ) {
         this.createInventoryUseCase = createInventoryUseCase;
+        this.cleanInventoriesByProductIdUseCase = cleanInventoriesByProductIdUseCase;
     }
 
     @Override
@@ -40,5 +46,16 @@ public class InventoryController implements InventoryAPI {
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.status(HttpStatus.CREATED).body(aResult.getRight());
+    }
+
+    @Override
+    public void deleteInventoriesByProductId(String productId) {
+        this.cleanInventoriesByProductIdUseCase.execute(productId);
+        LogControllerResult.logResult(
+                log,
+                Inventory.class,
+                "deleteInventoriesByProductId",
+                productId + " deleted inventories"
+        );
     }
 }

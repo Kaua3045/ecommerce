@@ -5,7 +5,9 @@ import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateInventoryCommand;
 import com.kaua.ecommerce.application.usecases.inventory.create.outputs.CreateInventoryOutput;
+import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.domain.Fixture;
+import com.kaua.ecommerce.domain.product.ProductID;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
@@ -41,6 +43,9 @@ public class InventoryAPITest {
 
     @MockBean
     private CreateInventoryUseCase createInventoryUseCase;
+
+    @MockBean
+    private CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateInventory_thenReturnStatusOkAndIdAndSku() throws Exception {
@@ -209,5 +214,22 @@ public class InventoryAPITest {
 
         Assertions.assertEquals(aProductId, actualCmd.productId());
         Assertions.assertEquals(1, actualCmd.inventoryParams().size());
+    }
+
+    @Test
+    void givenAValidProductId_whenCallDeleteInventoriesByProductId_thenReturnStatusOk() throws Exception {
+        final var aProductId = ProductID.unique().getValue();
+
+        Mockito.doNothing().when(cleanInventoriesByProductIdUseCase).execute(aProductId);
+
+        final var request = MockMvcRequestBuilders.delete("/v1/inventories/{productId}", aProductId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(cleanInventoriesByProductIdUseCase, Mockito.times(1)).execute(aProductId);
     }
 }

@@ -88,4 +88,42 @@ public class InventoryGatewayTest {
 
         Assertions.assertTrue(existsSkus.isEmpty());
     }
+
+    @Test
+    void givenAValidProductId_whenCallCleanByProductId_shouldBeOk() {
+        final var aProductId = ProductID.unique().getValue();
+        final var aSkuOne = "sku-one";
+        final var aQuantityOne = 10;
+        final var aSkuTwo = "sku-two";
+        final var aQuantityTwo = 20;
+
+        final var aInventoryOne = Inventory.newInventory(aProductId, aSkuOne, aQuantityOne);
+        final var aInventoryTwo = Inventory.newInventory(aProductId, aSkuTwo, aQuantityTwo);
+
+        this.inventoryRepository.saveAllAndFlush(Set.of(aInventoryOne, aInventoryTwo)
+                .stream().map(InventoryJpaEntity::toEntity).toList());
+
+        Assertions.assertEquals(2, this.inventoryRepository.count());
+
+        this.inventoryGateway.cleanByProductId(aProductId);
+
+        Assertions.assertEquals(0, this.inventoryRepository.count());
+    }
+
+    @Test
+    void givenAnInvalidProductId_whenCallCleanByProductId_shouldBeOk() {
+        final var aProductId = "1";
+        final var aSku = "sku";
+        final var aQuantity = 10;
+
+        final var aInventory = Inventory.newInventory(ProductID.unique().getValue(), aSku, aQuantity);
+
+        this.inventoryRepository.saveAndFlush(InventoryJpaEntity.toEntity(aInventory));
+
+        Assertions.assertEquals(1, this.inventoryRepository.count());
+
+        this.inventoryGateway.cleanByProductId(aProductId);
+
+        Assertions.assertEquals(1, this.inventoryRepository.count());
+    }
 }

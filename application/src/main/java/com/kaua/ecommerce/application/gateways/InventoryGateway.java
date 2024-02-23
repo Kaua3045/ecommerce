@@ -10,4 +10,6 @@ public interface InventoryGateway {
     Set<Inventory> createInBatch(Set<Inventory> inventories);
 
     List<String> existsBySkus(List<String> skus);
+
+    void cleanByProductId(String productId);
 }

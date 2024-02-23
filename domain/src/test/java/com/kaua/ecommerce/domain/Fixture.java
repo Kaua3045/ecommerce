@@ -245,5 +245,14 @@ public final class Fixture {
         public static Inventory tshirtInventory() {
             return Inventory.with(TSHIRT_SKU);
         }
+
+        public static Inventory createInventoryByProduct(final Product aProduct) {
+            return Inventory.newInventory(
+                    aProduct.getId().getValue(),
+                    aProduct.getAttributes().stream()
+                            .findFirst().get().getSku(),
+                    faker.random().nextInt(1, 500)
+            );
+        }
     }
 }

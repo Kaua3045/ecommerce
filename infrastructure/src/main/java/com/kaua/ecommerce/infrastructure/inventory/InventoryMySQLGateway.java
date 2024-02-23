@@ -39,4 +39,13 @@ public class InventoryMySQLGateway implements InventoryGateway {
     public List<String> existsBySkus(List<String> skus) {
         return this.inventoryJpaRepository.existsBySkus(skus);
     }
+
+    @Transactional
+    @Override
+    public void cleanByProductId(String productId) {
+        if (this.inventoryJpaRepository.existsByProductId(productId)) {
+            this.inventoryJpaRepository.deleteAllByProductId(productId);
+            log.info("deleted inventories by productId: {}", productId);
+        }
+    }
 }

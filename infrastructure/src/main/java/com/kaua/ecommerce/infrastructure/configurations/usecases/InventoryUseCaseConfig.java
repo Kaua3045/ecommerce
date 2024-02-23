@@ -3,6 +3,8 @@ package com.kaua.ecommerce.infrastructure.configurations.usecases;
 import com.kaua.ecommerce.application.gateways.InventoryGateway;
 import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.create.DefaultCreateInventoryUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.delete.clean.DefaultCleanInventoriesByProductIdUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,5 +22,10 @@ public class InventoryUseCaseConfig {
     @Bean
     public CreateInventoryUseCase createInventoryUseCase() {
         return new DefaultCreateInventoryUseCase(inventoryGateway);
+    }
+
+    @Bean
+    public CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase() {
+        return new DefaultCleanInventoriesByProductIdUseCase(inventoryGateway);
     }
 }

@@ -41,7 +41,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
         Assertions.assertEquals(aProduct.getName(), actualProduct.getName());
         Assertions.assertEquals(aProduct.getDescription(), actualProduct.getDescription());
         Assertions.assertEquals(aProduct.getPrice(), actualProduct.getPrice());
-        Assertions.assertEquals(aProduct.getQuantity(), actualProduct.getQuantity());
         Assertions.assertEquals(aProduct.getBannerImage().get().getLocation(), actualProduct.getBannerImage().get().getLocation());
         Assertions.assertEquals(aProduct.getImages().size(), actualProduct.getImages().size());
         Assertions.assertEquals(aProduct.getCategoryId().getValue(), actualProduct.getCategoryId().getValue());
@@ -107,7 +106,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
                         "Camiseta",
                         "Camiseta de algodão",
                         new BigDecimal("10.00"),
-                        50,
                         CategoryID.from("1"),
                         Set.of(Fixture.Products.productAttributes("Camiseta"))
                 )));
@@ -116,7 +114,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
                         "Livro",
                         "Livro de teste",
                         new BigDecimal("100.00"),
-                        100,
                         CategoryID.from("1"),
                         Set.of(Fixture.Products.productAttributes("Livro"))
                 )));
@@ -124,7 +121,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
                 "Headphone",
                 null,
                 new BigDecimal("100.00"),
-                100,
                 CategoryID.from("1"),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("Black"),
@@ -171,7 +167,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
                         "Camiseta",
                         "Camiseta de algodão",
                         new BigDecimal("10.00"),
-                        50,
                         CategoryID.from("1"),
                         Set.of(Fixture.Products.productAttributes("Camiseta"))
                 )));
@@ -180,7 +175,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
                         "Livro",
                         "Livro de teste",
                         new BigDecimal("100.00"),
-                        100,
                         CategoryID.from("1"),
                         Set.of(Fixture.Products.productAttributes("Livro"))
                 )));
@@ -188,7 +182,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
                 "Headphone",
                 null,
                 new BigDecimal("100.00"),
-                100,
                 CategoryID.from("1"),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("Black"),
@@ -230,7 +223,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
                         "Camiseta",
                         "Camiseta de algodão",
                         new BigDecimal("10.00"),
-                        50,
                         CategoryID.from("1"),
                         Set.of(Fixture.Products.productAttributes("Camiseta"))
                 )));
@@ -239,7 +231,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
                         "Livro",
                         "Livro de teste",
                         new BigDecimal("100.00"),
-                        100,
                         CategoryID.from("1"),
                         Set.of(Fixture.Products.productAttributes("Livro"))
                 )));
@@ -247,7 +238,6 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
                 "Headphone",
                 null,
                 new BigDecimal("100.00"),
-                100,
                 CategoryID.from("1"),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("Black"),

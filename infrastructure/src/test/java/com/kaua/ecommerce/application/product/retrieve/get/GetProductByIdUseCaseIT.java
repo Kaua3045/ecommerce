@@ -41,7 +41,6 @@ public class GetProductByIdUseCaseIT {
         Assertions.assertEquals(aProduct.getName(), aOutput.name());
         Assertions.assertEquals(aProduct.getDescription(), aOutput.description());
         Assertions.assertEquals(aProduct.getPrice().setScale(2, RoundingMode.HALF_UP), aOutput.price());
-        Assertions.assertEquals(aProduct.getQuantity(), aOutput.quantity());
         Assertions.assertEquals(aProduct.getCategoryId().getValue(), aOutput.categoryId());
         Assertions.assertNotNull(aOutput.bannerImage());
         Assertions.assertEquals(aProduct.getBannerImage().get().getLocation(), aOutput.bannerImage().location());

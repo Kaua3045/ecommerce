@@ -139,7 +139,6 @@ public class ProductController implements ProductAPI {
                 body.name(),
                 body.description(),
                 body.price(),
-                body.quantity(),
                 body.categoryId()
         );
 

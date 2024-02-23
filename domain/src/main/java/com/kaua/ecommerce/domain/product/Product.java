@@ -19,7 +19,6 @@ public class Product extends AggregateRoot<ProductID> {
     private String name;
     private String description;
     private BigDecimal price;
-    private int quantity;
     private ProductImage bannerImage;
     private Set<ProductImage> images;
     private CategoryID categoryId;
@@ -33,7 +32,6 @@ public class Product extends AggregateRoot<ProductID> {
             final String aName,
             final String aDescription,
             final BigDecimal aPrice,
-            final int aQuantity,
             final ProductImage aBannerImage,
             final Set<ProductImage> aImages,
             final CategoryID aCategoryId,
@@ -47,7 +45,6 @@ public class Product extends AggregateRoot<ProductID> {
         this.name = aName;
         this.description = aDescription;
         this.price = aPrice;
-        this.quantity = aQuantity;
         this.bannerImage = aBannerImage;
         this.images = aImages;
         this.categoryId = aCategoryId;
@@ -61,7 +58,6 @@ public class Product extends AggregateRoot<ProductID> {
             final String aName,
             final String aDescription,
             final BigDecimal aPrice,
-            final int aQuantity,
             final CategoryID aCategoryId,
             final Set<ProductAttributes> aAttributes
     ) {
@@ -72,7 +68,6 @@ public class Product extends AggregateRoot<ProductID> {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 null,
                 new HashSet<>(),
                 aCategoryId,
@@ -101,7 +96,6 @@ public class Product extends AggregateRoot<ProductID> {
             final String aName,
             final String aDescription,
             final BigDecimal aPrice,
-            final int aQuantity,
             final ProductImage aBannerImage,
             final Set<ProductImage> aImages,
             final String aCategoryId,
@@ -116,7 +110,6 @@ public class Product extends AggregateRoot<ProductID> {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aBannerImage,
                 new HashSet<>(aImages == null ? Collections.emptySet() : aImages),
                 CategoryID.from(aCategoryId),
@@ -134,7 +127,6 @@ public class Product extends AggregateRoot<ProductID> {
                 aProduct.getName(),
                 aProduct.getDescription(),
                 aProduct.getPrice(),
-                aProduct.getQuantity(),
                 aProduct.getBannerImage().orElse(null),
                 new HashSet<>(aProduct.getImages()),
                 aProduct.getCategoryId(),
@@ -168,13 +160,11 @@ public class Product extends AggregateRoot<ProductID> {
             final String aName,
             final String aDescription,
             final BigDecimal aPrice,
-            final int aQuantity,
             final CategoryID aCategoryId
     ) {
         this.name = aName;
         this.description = aDescription;
         this.price = aPrice;
-        this.quantity = aQuantity;
         this.categoryId = aCategoryId;
         this.updatedAt = InstantUtils.now();
         return this;
@@ -250,10 +240,6 @@ public class Product extends AggregateRoot<ProductID> {
         return price;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
     public Optional<ProductImage> getBannerImage() {
         return Optional.ofNullable(bannerImage);
     }
@@ -289,7 +275,6 @@ public class Product extends AggregateRoot<ProductID> {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
-                ", quantity=" + quantity +
                 ", bannerImage=" + getBannerImage().map(ProductImage::getLocation).orElse(null) +
                 ", images=" + images.size() +
                 ", categoryId=" + categoryId.getValue() +

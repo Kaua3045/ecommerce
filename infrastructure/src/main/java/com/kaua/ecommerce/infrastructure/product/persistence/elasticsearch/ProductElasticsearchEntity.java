@@ -32,9 +32,6 @@ public class ProductElasticsearchEntity {
 
     private BigDecimal price;
 
-    @Field(type = FieldType.Integer, name = "quantity")
-    private int quantity;
-
     @Field(type = FieldType.Nested, name = "banner_image")
     private ProductImageElasticsearchEntity bannerImage;
 
@@ -69,7 +66,6 @@ public class ProductElasticsearchEntity {
             final String name,
             final String description,
             final BigDecimal price,
-            final int quantity,
             final ProductImageElasticsearchEntity bannerImage,
             final String categoryId,
             final ProductStatus status,
@@ -81,7 +77,6 @@ public class ProductElasticsearchEntity {
         this.name = name;
         this.description = description;
         this.price = price;
-        this.quantity = quantity;
         this.bannerImage = bannerImage;
         this.images = new HashSet<>();
         this.categoryId = categoryId;
@@ -98,7 +93,6 @@ public class ProductElasticsearchEntity {
                 aProduct.getName(),
                 aProduct.getDescription(),
                 aProduct.getPrice(),
-                aProduct.getQuantity(),
                 aProduct.getBannerImage()
                         .map(ProductImageElasticsearchEntity::toEntity)
                         .orElse(null),
@@ -121,7 +115,6 @@ public class ProductElasticsearchEntity {
                 getName(),
                 getDescription(),
                 getPrice(),
-                getQuantity(),
                 getBannerImage().map(ProductImageElasticsearchEntity::toDomain).orElse(null),
                 getImages().stream()
                         .map(ProductImageElasticsearchEntity::toDomain)
@@ -182,14 +175,6 @@ public class ProductElasticsearchEntity {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
     }
 
     public Optional<ProductImageElasticsearchEntity> getBannerImage() {

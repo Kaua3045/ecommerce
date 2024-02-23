@@ -62,7 +62,6 @@ public class DefaultUpdateProductUseCase extends UpdateProductUseCase {
                 aName,
                 input.description(),
                 aPrice,
-                input.quantity(),
                 aCategoryId
         );
         aProductUpdated.validate(aNotification);

@@ -7,7 +7,6 @@ public record CreateProductCommand(
         String name,
         String description,
         BigDecimal price,
-        int quantity,
         String categoryId,
         List<CreateProductCommandAttributes> attributes
 ) {
@@ -16,7 +15,6 @@ public record CreateProductCommand(
             final String aName,
             final String aDescription,
             final BigDecimal aPrice,
-            final int aQuantity,
             final String aCategoryId,
             final List<CreateProductCommandAttributes> aAttributes
     ) {
@@ -24,7 +22,6 @@ public record CreateProductCommand(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 aAttributes
         );

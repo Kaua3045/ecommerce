@@ -52,14 +52,14 @@ public class CreateProductUseCaseIT {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aCommand = CreateProductCommand.with(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributes)
         );
@@ -78,7 +78,6 @@ public class CreateProductUseCaseIT {
         Assertions.assertEquals(aName, aPersistedProduct.getName());
         Assertions.assertEquals(aDescription, aPersistedProduct.getDescription());
         Assertions.assertEquals(aPrice, aPersistedProduct.getPrice());
-        Assertions.assertEquals(aQuantity, aPersistedProduct.getQuantity());
         Assertions.assertEquals(aCategoryId, aPersistedProduct.getCategoryId());
         Assertions.assertEquals(aColor, aPersistedProduct.getAttributes().stream().findFirst().get().getColor().getColor());
         Assertions.assertEquals(aSize, aPersistedProduct.getAttributes().stream().findFirst().get().getSize().getSize());
@@ -112,14 +111,14 @@ public class CreateProductUseCaseIT {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aCommand = CreateProductCommand.with(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributes)
         );
@@ -157,14 +156,14 @@ public class CreateProductUseCaseIT {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aCommand = CreateProductCommand.with(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributes)
         );
@@ -202,14 +201,14 @@ public class CreateProductUseCaseIT {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aCommand = CreateProductCommand.with(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributes)
         );
@@ -247,14 +246,14 @@ public class CreateProductUseCaseIT {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aCommand = CreateProductCommand.with(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributes)
         );
@@ -292,14 +291,14 @@ public class CreateProductUseCaseIT {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aCommand = CreateProductCommand.with(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributes)
         );
@@ -337,14 +336,14 @@ public class CreateProductUseCaseIT {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth
+                aDepth,
+                aQuantity
         );
 
         final var aCommand = CreateProductCommand.with(
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 List.of(aAttributes)
         );

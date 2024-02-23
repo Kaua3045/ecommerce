@@ -13,7 +13,6 @@ public record GetProductResponse(
         @JsonProperty("name") String name,
         @JsonProperty("description") String description,
         @JsonProperty("price") BigDecimal price,
-        @JsonProperty("quantity") int quantity,
         @JsonProperty("category_id") String categoryId,
         @JsonProperty("banner_image") GetProductByIdOutputImages bannerImage,
         @JsonProperty("gallery_images") Set<GetProductByIdOutputImages> galleryImages,

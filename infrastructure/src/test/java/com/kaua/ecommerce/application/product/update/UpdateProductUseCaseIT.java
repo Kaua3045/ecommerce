@@ -37,7 +37,6 @@ public class UpdateProductUseCaseIT {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = new BigDecimal("590.97");
-        final var aQuantity = 50;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var aCommand = UpdateProductCommand.with(
@@ -45,7 +44,6 @@ public class UpdateProductUseCaseIT {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -63,7 +61,6 @@ public class UpdateProductUseCaseIT {
         Assertions.assertEquals(aName, aPersistedProduct.getName());
         Assertions.assertEquals(aDescription, aPersistedProduct.getDescription());
         Assertions.assertEquals(aPrice, aPersistedProduct.getPrice());
-        Assertions.assertEquals(aQuantity, aPersistedProduct.getQuantity());
         Assertions.assertEquals(aCategoryId, aPersistedProduct.getCategoryId());
         Assertions.assertTrue(aPersistedProduct.getBannerImage().isEmpty());
         Assertions.assertTrue(aPersistedProduct.getImages().isEmpty());
@@ -82,7 +79,6 @@ public class UpdateProductUseCaseIT {
         final var aName = "Pr ";
         final String aDescription = null;
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
@@ -93,7 +89,6 @@ public class UpdateProductUseCaseIT {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 

@@ -1,12 +1,12 @@
 package com.kaua.ecommerce.application.usecases.product.update;
 
 import com.kaua.ecommerce.application.UseCaseTest;
+import com.kaua.ecommerce.application.adapters.TransactionManager;
+import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.CategoryGateway;
 import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
-import com.kaua.ecommerce.application.adapters.TransactionManager;
-import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
@@ -55,7 +55,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(55.86);
-        final var aQuantity = 3;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var aCommand = UpdateProductCommand.with(
@@ -63,7 +62,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -87,7 +85,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 Objects.equals(aCmd.getName(), aName)
                         && Objects.equals(aCmd.getDescription(), aDescription)
                         && Objects.equals(aCmd.getPrice(), aPrice)
-                        && Objects.equals(aCmd.getQuantity(), aQuantity)
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(1, aCmd.getAttributes().size())
@@ -105,7 +102,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(9.0);
-        final var aQuantity = 50;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Product.class, aProductId);
@@ -115,7 +111,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -140,7 +135,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = "1";
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aCategoryId);
@@ -150,7 +144,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -177,7 +170,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = " ";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var aCommand = UpdateProductCommand.with(
@@ -185,7 +177,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -209,7 +200,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 Objects.equals(aCmd.getName(), aProduct.getName())
                         && Objects.equals(aCmd.getDescription(), aDescription)
                         && Objects.equals(aCmd.getPrice(), aPrice)
-                        && Objects.equals(aCmd.getQuantity(), aQuantity)
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(1, aCmd.getAttributes().size())
@@ -225,7 +215,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final String aName = null;
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var aCommand = UpdateProductCommand.with(
@@ -233,7 +222,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -257,7 +245,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 Objects.equals(aCmd.getName(), aProduct.getName())
                         && Objects.equals(aCmd.getDescription(), aDescription)
                         && Objects.equals(aCmd.getPrice(), aPrice)
-                        && Objects.equals(aCmd.getQuantity(), aQuantity)
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(1, aCmd.getAttributes().size())
@@ -273,7 +260,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Pr ";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
@@ -284,7 +270,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -309,7 +294,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = RandomStringUtils.generateValue(256);
         final String aDescription = null;
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
@@ -320,7 +304,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -345,7 +328,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Product Name";
         final var aDescription = RandomStringUtils.generateValue(3001);
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
@@ -356,7 +338,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -381,7 +362,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final BigDecimal aPrice = null;
-        final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var aCommand = UpdateProductCommand.with(
@@ -389,7 +369,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -413,7 +392,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 Objects.equals(aCmd.getName(), aName)
                         && Objects.equals(aCmd.getDescription(), aDescription)
                         && Objects.equals(aCmd.getPrice(), aProduct.getPrice())
-                        && Objects.equals(aCmd.getQuantity(), aQuantity)
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aCategoryId)
                         && Objects.equals(1, aCmd.getAttributes().size())
@@ -429,7 +407,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(00.0);
-        final var aQuantity = 10;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("price", 0);
@@ -440,43 +417,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
-                aCategoryId
-        );
-
-        Mockito.when(this.productGateway.findById(Mockito.any())).thenReturn(Optional.of(aProduct));
-        Mockito.when(this.categoryGateway.findById(aCategoryId)).thenReturn(Optional.of(aCategory));
-
-        final var aOutput = this.updateProductUseCase.execute(aCommand).getLeft();
-
-        Assertions.assertEquals(expectedErrorCount, aOutput.getErrors().size());
-        Assertions.assertEquals(expectedErrorMessage, aOutput.getErrors().get(0).message());
-
-        Mockito.verify(productGateway, Mockito.times(1)).findById(aProduct.getId().getValue());
-        Mockito.verify(categoryGateway, Mockito.times(1)).findById(aCategoryId);
-        Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
-    }
-
-    @Test
-    void givenAnInvalidQuantityLessThanZero_whenCallExecute_shouldReturnDomainException() {
-        final var aCategory = Fixture.Categories.tech();
-        final var aProduct = Fixture.Products.tshirt();
-
-        final var aName = "Product Name";
-        final var aDescription = "Product Description";
-        final var aPrice = BigDecimal.valueOf(5.0);
-        final var aQuantity = -1;
-        final var aCategoryId = aCategory.getId().getValue();
-
-        final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
-        final var expectedErrorCount = 1;
-
-        final var aCommand = UpdateProductCommand.with(
-                aProduct.getId().getValue(),
-                aName,
-                aDescription,
-                aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -500,7 +440,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(5.0);
-        final var aQuantity = 10;
         final String aCategoryId = null;
 
         final var aCommand = UpdateProductCommand.with(
@@ -508,7 +447,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -531,7 +469,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 Objects.equals(aCmd.getName(), aName)
                         && Objects.equals(aCmd.getDescription(), aDescription)
                         && Objects.equals(aCmd.getPrice(), aPrice)
-                        && Objects.equals(aCmd.getQuantity(), aQuantity)
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aProduct.getCategoryId().getValue())
                         && Objects.equals(1, aCmd.getAttributes().size())
@@ -546,7 +483,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(5.0);
-        final var aQuantity = 10;
         final var aCategoryId = " ";
 
         final var aCommand = UpdateProductCommand.with(
@@ -554,7 +490,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 
@@ -577,7 +512,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 Objects.equals(aCmd.getName(), aName)
                         && Objects.equals(aCmd.getDescription(), aDescription)
                         && Objects.equals(aCmd.getPrice(), aPrice)
-                        && Objects.equals(aCmd.getQuantity(), aQuantity)
                         && aCmd.getImages().isEmpty()
                         && Objects.equals(aCmd.getCategoryId().getValue(), aProduct.getCategoryId().getValue())
                         && Objects.equals(1, aCmd.getAttributes().size())
@@ -599,7 +533,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 "Camiseta larga",
                 aProduct.getDescription(),
                 aProduct.getPrice(),
-                aProduct.getQuantity(),
                 aProduct.getCategoryId().getValue()
         );
 
@@ -624,7 +557,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(55.86);
-        final var aQuantity = 3;
         final var aCategoryId = aCategory.getId().getValue();
 
         final var expectedErrorMessage = "Error on publish event";
@@ -634,7 +566,6 @@ public class UpdateProductUseCaseTest extends UseCaseTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId
         );
 

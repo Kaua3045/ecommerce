@@ -121,9 +121,10 @@ public class InventoryJpaRepositoryTest {
         final var aEntity = InventoryJpaEntity.toEntity(aInventory);
         aEntity.setQuantity(1);
 
-        final var actualResult = Assertions.assertDoesNotThrow(() -> inventoryRepository.save(aEntity));
+        final var actualResult = Assertions.assertDoesNotThrow(() -> inventoryRepository.save(aEntity))
+                .toDomain();
 
-        Assertions.assertEquals(aEntity.getId(), actualResult.getId());
+        Assertions.assertEquals(aEntity.getId(), actualResult.getId().getValue());
         Assertions.assertEquals(aEntity.getProductId(), actualResult.getProductId());
         Assertions.assertEquals(aEntity.getSku(), actualResult.getSku());
         Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());

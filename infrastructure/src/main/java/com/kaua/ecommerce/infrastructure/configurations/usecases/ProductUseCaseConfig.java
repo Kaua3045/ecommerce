@@ -39,13 +39,16 @@ public class ProductUseCaseConfig {
     private final TransactionManager transactionManager;
     private final EventPublisher eventPublisher;
 
+    private final ProductInventoryGateway productInventoryGateway;
+
     public ProductUseCaseConfig(
             final ProductGateway productGateway,
             final CategoryGateway categoryGateway,
             final MediaResourceGateway mediaResourceGateway,
             final SearchGateway<Product> productSearchGateway,
             final TransactionManager transactionManager,
-            final EventPublisher eventPublisher
+            final EventPublisher eventPublisher,
+            final ProductInventoryGateway productInventoryGateway
     ) {
         this.productGateway = Objects.requireNonNull(productGateway);
         this.categoryGateway = Objects.requireNonNull(categoryGateway);
@@ -53,11 +56,18 @@ public class ProductUseCaseConfig {
         this.productSearchGateway = Objects.requireNonNull(productSearchGateway);
         this.transactionManager = Objects.requireNonNull(transactionManager);
         this.eventPublisher = Objects.requireNonNull(eventPublisher);
+        this.productInventoryGateway = Objects.requireNonNull(productInventoryGateway);
     }
 
     @Bean
     public CreateProductUseCase createProductUseCase() {
-        return new DefaultCreateProductUseCase(productGateway, categoryGateway, transactionManager, eventPublisher);
+        return new DefaultCreateProductUseCase(
+                productGateway,
+                categoryGateway,
+                transactionManager,
+                eventPublisher,
+                productInventoryGateway
+        );
     }
 
     @Bean

@@ -62,25 +62,6 @@ public class ProductJpaRepositoryTest {
     }
 
     @Test
-    void givenAValidQuantity_whenCallSave_shouldReturnProduct() {
-        final var aProduct = Fixture.Products.tshirt();
-
-        final var aEntity = ProductJpaEntity.toEntity(aProduct);
-        aEntity.setQuantity(1);
-
-        final var actualOutput = Assertions.assertDoesNotThrow(() -> productRepository.save(aEntity));
-
-        Assertions.assertEquals(aEntity.getId(), actualOutput.getId());
-        Assertions.assertEquals(aEntity.getName(), actualOutput.getName());
-        Assertions.assertEquals(aEntity.getDescription(), actualOutput.getDescription());
-        Assertions.assertEquals(aEntity.getPrice(), actualOutput.getPrice());
-        Assertions.assertEquals(aEntity.getQuantity(), actualOutput.getQuantity());
-        Assertions.assertEquals(aEntity.getCategoryId(), actualOutput.getCategoryId());
-        Assertions.assertEquals(aEntity.getCreatedAt(), actualOutput.getCreatedAt());
-        Assertions.assertEquals(aEntity.getUpdatedAt(), actualOutput.getUpdatedAt());
-    }
-
-    @Test
     void givenAnInvalidNullCategoryId_whenCallSave_shouldReturnAnException() {
         final var expectedPropertyName = "categoryId";
         final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity.categoryId";
@@ -164,7 +145,6 @@ public class ProductJpaRepositoryTest {
                 "Product Name",
                 "Product Description",
                 BigDecimal.valueOf(10.0),
-                10,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("1", "Red"),
@@ -181,7 +161,6 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getName(), actualResult.getName());
         Assertions.assertNull(actualResult.getDescription());
         Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
-        Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
         Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId().getValue());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
         Assertions.assertEquals(aEntity.getUpdatedAt(), actualResult.getUpdatedAt());
@@ -193,7 +172,6 @@ public class ProductJpaRepositoryTest {
                 "Product Name",
                 "Product Description",
                 BigDecimal.valueOf(10.0),
-                10,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("1", "Red"),
@@ -210,7 +188,6 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getName(), actualResult.getName());
         Assertions.assertEquals(aEntity.getDescription(), actualResult.getDescription());
         Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
-        Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
         Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId().getValue());
         Assertions.assertTrue(actualResult.getAttributes().isEmpty());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
@@ -285,7 +262,6 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getName(), actualResult.getName());
         Assertions.assertEquals(aEntity.getDescription(), actualResult.getDescription());
         Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
-        Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
         Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId().getValue());
         Assertions.assertEquals(1, actualResult.getAttributes().size());
         Assertions.assertEquals(aEntity.getCreatedAt(), actualResult.getCreatedAt());
@@ -298,7 +274,6 @@ public class ProductJpaRepositoryTest {
                 "Product Name",
                 "Product Description",
                 BigDecimal.valueOf(10.0),
-                10,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("1", "Red"),
@@ -316,7 +291,6 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getName(), actualResult.getName());
         Assertions.assertEquals(aEntity.getDescription(), actualResult.getDescription());
         Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
-        Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
         Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId().getValue());
         Assertions.assertTrue(actualResult.getImages().isEmpty());
         Assertions.assertEquals(1, actualResult.getAttributes().size());
@@ -370,7 +344,6 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getName(), actualResult.getName());
         Assertions.assertEquals(aEntity.getDescription(), actualResult.getDescription());
         Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
-        Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
         Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId());
         Assertions.assertEquals(1, actualResult.getImages().size());
         Assertions.assertNotNull(actualResult.getImages().stream().findFirst().get().getImage());
@@ -387,7 +360,6 @@ public class ProductJpaRepositoryTest {
                 "Product Name",
                 "Product Description",
                 BigDecimal.valueOf(10.0),
-                10,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("1", "Red"),
@@ -405,7 +377,6 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aEntity.getName(), actualResult.getName());
         Assertions.assertEquals(aEntity.getDescription(), actualResult.getDescription());
         Assertions.assertEquals(aEntity.getPrice(), actualResult.getPrice());
-        Assertions.assertEquals(aEntity.getQuantity(), actualResult.getQuantity());
         Assertions.assertEquals(aEntity.getCategoryId(), actualResult.getCategoryId().getValue());
         Assertions.assertTrue(actualResult.getBannerImage().isEmpty());
         Assertions.assertEquals(1, actualResult.getAttributes().size());

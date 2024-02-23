@@ -32,7 +32,6 @@ public class ProductGatewayTest {
         final var aName = "Product Name";
         final var aDescription = "Product Description";
         final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
         final var aCategoryId = CategoryID.unique();
         final var aColor = "RED";
         final var aSize = "M";
@@ -45,7 +44,6 @@ public class ProductGatewayTest {
                 aName,
                 aDescription,
                 aPrice,
-                aQuantity,
                 aCategoryId,
                 Set.of(ProductAttributes.create(
                         ProductColor.with(aColor),
@@ -66,7 +64,6 @@ public class ProductGatewayTest {
         Assertions.assertEquals(aProduct.getName(), aPersistedProduct.getName());
         Assertions.assertEquals(aProduct.getDescription(), aPersistedProduct.getDescription());
         Assertions.assertEquals(aProduct.getPrice(), aPersistedProduct.getPrice());
-        Assertions.assertEquals(aProduct.getQuantity(), aPersistedProduct.getQuantity());
         Assertions.assertEquals(aProduct.getCategoryId().getValue(), aPersistedProduct.getCategoryId());
         Assertions.assertEquals(0, aPersistedProduct.getImages().size());
         Assertions.assertNotNull(aPersistedProduct.getAttributes().stream().findFirst().get().getId());
@@ -83,7 +80,6 @@ public class ProductGatewayTest {
                 "Product Name",
                 null,
                 BigDecimal.valueOf(10.0),
-                10,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         ProductColor.with("Blue"),
@@ -104,7 +100,6 @@ public class ProductGatewayTest {
         Assertions.assertEquals(aProduct.getName(), aPersistedProduct.getName());
         Assertions.assertEquals(aProduct.getDescription(), aPersistedProduct.getDescription());
         Assertions.assertEquals(aProduct.getPrice(), aPersistedProduct.getPrice());
-        Assertions.assertEquals(aProduct.getQuantity(), aPersistedProduct.getQuantity());
         Assertions.assertTrue(aPersistedProduct.getBannerImage().isPresent());
         Assertions.assertEquals(aProduct.getCategoryId().getValue(), aPersistedProduct.getCategoryId().getValue());
         Assertions.assertEquals(1, aPersistedProduct.getImages().size());
@@ -171,7 +166,6 @@ public class ProductGatewayTest {
         Assertions.assertEquals(aProduct.getName(), aPersistedProduct.getName());
         Assertions.assertEquals(aProduct.getDescription(), aPersistedProduct.getDescription());
         Assertions.assertEquals(aProduct.getPrice(), aPersistedProduct.getPrice());
-        Assertions.assertEquals(aProduct.getQuantity(), aPersistedProduct.getQuantity());
         Assertions.assertEquals(aProduct.getCategoryId().getValue(), aPersistedProduct.getCategoryId());
         Assertions.assertEquals(1, aPersistedProduct.getImages().size());
         Assertions.assertNotNull(aPersistedProduct.getAttributes().stream().findFirst().get().getSku());
@@ -201,7 +195,6 @@ public class ProductGatewayTest {
                 "Product Name",
                 null,
                 BigDecimal.valueOf(10.0),
-                10,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         aProductColor,
@@ -215,7 +208,6 @@ public class ProductGatewayTest {
                 "Product Name",
                 null,
                 BigDecimal.valueOf(10.0),
-                10,
                 CategoryID.unique(),
                 Set.of(ProductAttributes.create(
                         aProductColor,

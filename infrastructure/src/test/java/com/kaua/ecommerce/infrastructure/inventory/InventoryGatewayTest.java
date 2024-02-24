@@ -126,4 +126,32 @@ public class InventoryGatewayTest {
 
         Assertions.assertEquals(1, this.inventoryRepository.count());
     }
+
+    @Test
+    void givenAValidSku_whenCallDeleteBySku_shouldBeOk() {
+        final var aProductId = ProductID.unique().getValue();
+        final var aSku = "sku";
+        final var aQuantity = 10;
+
+        final var aInventory = Inventory.newInventory(aProductId, aSku, aQuantity);
+
+        this.inventoryRepository.saveAndFlush(InventoryJpaEntity.toEntity(aInventory));
+
+        Assertions.assertEquals(1, this.inventoryRepository.count());
+
+        Assertions.assertDoesNotThrow(() -> this.inventoryGateway.deleteBySku(aSku));
+
+        Assertions.assertEquals(0, this.inventoryRepository.count());
+    }
+
+    @Test
+    void givenAnInvalidSku_whenCallDeleteBySku_shouldBeOk() {
+        final var aSku = "sku";
+
+        Assertions.assertEquals(0, this.inventoryRepository.count());
+
+        Assertions.assertDoesNotThrow(() -> this.inventoryGateway.deleteBySku(aSku));
+
+        Assertions.assertEquals(0, this.inventoryRepository.count());
+    }
 }

@@ -12,5 +12,9 @@ public interface InventoryJpaRepository extends JpaRepository<InventoryJpaEntity
 
     boolean existsByProductId(String productId);
 
+    boolean existsBySku(String sku);
+
     void deleteAllByProductId(String productId);
+
+    void deleteBySku(String sku);
 }

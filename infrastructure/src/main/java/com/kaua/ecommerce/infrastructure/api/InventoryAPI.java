@@ -34,4 +34,13 @@ public interface InventoryAPI {
     })
     @ResponseStatus(HttpStatus.OK)
     void deleteInventoriesByProductId(@PathVariable String productId);
+
+    @DeleteMapping(value = "/sku/{sku}")
+    @Operation(summary = "Delete a inventory by sku")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    void deleteInventoryBySku(@PathVariable String sku);
 }

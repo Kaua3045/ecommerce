@@ -78,6 +78,7 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
         final var aResult = this.createProduct(aProduct);
 
         if (aResult.isFailure()) {
+            this.productInventoryGateway.cleanInventoriesByProductId(aProduct.getId().getValue());
             throw TransactionFailureException.with(aResult.getErrorResult());
         }
 

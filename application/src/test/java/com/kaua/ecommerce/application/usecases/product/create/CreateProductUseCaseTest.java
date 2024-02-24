@@ -592,6 +592,8 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 .thenReturn(Either.right(null));
         Mockito.when(this.transactionManager.execute(Mockito.any())).thenReturn(TransactionResult
                 .failure(new Error(expectedErrorMessage)));
+        Mockito.when(this.productInventoryGateway.cleanInventoriesByProductId(Mockito.any()))
+                .thenReturn(Either.right(null));
 
         final var aOutput = Assertions.assertThrows(
                 TransactionFailureException.class,
@@ -605,5 +607,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         Mockito.verify(productGateway, Mockito.times(0)).create(Mockito.any());
         Mockito.verify(transactionManager, Mockito.times(1)).execute(Mockito.any());
         Mockito.verify(eventPublisher, Mockito.times(0)).publish(Mockito.any());
+        Mockito.verify(productInventoryGateway, Mockito.times(1))
+                .cleanInventoriesByProductId(Mockito.any());
     }
 }

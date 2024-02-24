@@ -31,7 +31,7 @@ public class InventoryMySQLGateway implements InventoryGateway {
                 .map(InventoryJpaEntity::toEntity)
                 .toList());
 
-        log.info("inserted inventories: {}", aResult.size());
+        log.info("inserted inventories: {}", aResult.stream().map(InventoryJpaEntity::getSku).toList());
         return inventories;
     }
 
@@ -46,6 +46,15 @@ public class InventoryMySQLGateway implements InventoryGateway {
         if (this.inventoryJpaRepository.existsByProductId(productId)) {
             this.inventoryJpaRepository.deleteAllByProductId(productId);
             log.info("deleted inventories by productId: {}", productId);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteBySku(String sku) {
+        if (this.inventoryJpaRepository.existsBySku(sku)) {
+            this.inventoryJpaRepository.deleteBySku(sku);
+            log.info("deleted inventory by sku: {}", sku);
         }
     }
 }

@@ -12,4 +12,6 @@ public interface InventoryGateway {
     List<String> existsBySkus(List<String> skus);
 
     void cleanByProductId(String productId);
+
+    void deleteBySku(String sku);
 }

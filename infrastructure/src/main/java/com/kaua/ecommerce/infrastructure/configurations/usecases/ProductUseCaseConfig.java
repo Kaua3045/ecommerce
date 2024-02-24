@@ -117,7 +117,12 @@ public class ProductUseCaseConfig {
 
     @Bean
     public RemoveProductUseCase removeProductUseCase() {
-        return new RemoveProductUseCase(productGateway, mediaResourceGateway, productSearchGateway);
+        return new RemoveProductUseCase(
+                productGateway,
+                mediaResourceGateway,
+                productSearchGateway,
+                productInventoryGateway
+        );
     }
 
     @Bean

@@ -9,5 +9,7 @@ public interface ProductInventoryGateway {
 
     Either<NotificationHandler, Void> createInventory(String productId, List<CreateInventoryParams> inventoryParams);
 
+    Either<NotificationHandler, Void> cleanInventoriesByProductId(String productId);
+
     record CreateInventoryParams(String sku, int quantity) {}
 }

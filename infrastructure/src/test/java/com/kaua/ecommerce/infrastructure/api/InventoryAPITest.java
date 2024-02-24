@@ -6,6 +6,7 @@ import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryU
 import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateInventoryCommand;
 import com.kaua.ecommerce.application.usecases.inventory.create.outputs.CreateInventoryOutput;
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.product.ProductID;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
@@ -46,6 +47,9 @@ public class InventoryAPITest {
 
     @MockBean
     private CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase;
+
+    @MockBean
+    private RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateInventory_thenReturnStatusOkAndIdAndSku() throws Exception {
@@ -231,5 +235,22 @@ public class InventoryAPITest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(cleanInventoriesByProductIdUseCase, Mockito.times(1)).execute(aProductId);
+    }
+
+    @Test
+    void givenAValidSku_whenCallDeleteInventoryBySku_thenReturnStatusOk() throws Exception {
+        final var aSku = Fixture.createSku("sku");
+
+        Mockito.doNothing().when(removeInventoryBySkuUseCase).execute(aSku);
+
+        final var request = MockMvcRequestBuilders.delete("/v1/inventories/sku/{sku}", aSku)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(1)).execute(aSku);
     }
 }

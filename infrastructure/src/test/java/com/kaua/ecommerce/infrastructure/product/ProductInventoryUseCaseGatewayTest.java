@@ -1,6 +1,8 @@
 package com.kaua.ecommerce.infrastructure.product;
 
 import com.kaua.ecommerce.application.gateways.ProductInventoryGateway;
+import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
@@ -9,6 +11,7 @@ import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -78,5 +81,50 @@ public class ProductInventoryUseCaseGatewayTest {
         Assertions.assertEquals(0, this.inventoryJpaRepository.count());
         Assertions.assertTrue(aOutput.isLeft());
         Assertions.assertEquals(expectedErrorMessage, aOutput.getLeft().getErrors().get(0).message());
+    }
+
+    @Test
+    void givenAValidProductId_whenCallCleanInventoriesByProductId_thenShouldCleanInventories() {
+        final var aProduct = Fixture.Products.book();
+        this.productJpaRepository.saveAndFlush(ProductJpaEntity.toEntity(aProduct));
+
+        final var aProductId = aProduct.getId().getValue();
+        final var aProductSku = aProduct.getAttributes().stream().findFirst().get().getSku();
+        final var aQuantity = 5;
+
+        final var aInventoryParams = new ProductInventoryGateway.CreateInventoryParams(
+                aProductSku,
+                aQuantity
+        );
+
+        this.productInventoryGateway.createInventory(
+                aProductId,
+                List.of(aInventoryParams)
+        );
+
+        Assertions.assertEquals(1, this.inventoryJpaRepository.count());
+
+        final var aOutput = this.productInventoryGateway.cleanInventoriesByProductId(aProductId);
+
+        Assertions.assertEquals(0, this.inventoryJpaRepository.count());
+        Assertions.assertTrue(aOutput.isRight());
+    }
+
+    @Test
+    void givenAnInvalidProductId_whenCallCleanInventoriesByProductId_thenReturnNotificationHandlerWithException() {
+        final var aMockCleanInventoriesByProductIdUseCase = Mockito.mock(CleanInventoriesByProductIdUseCase.class);
+        final var aMockProductInventoryGateway = new ProductInventoryUseCaseGateway(
+                Mockito.mock(CreateInventoryUseCase.class),
+                aMockCleanInventoriesByProductIdUseCase
+        );
+
+        final var aProductId = "invalid-id";
+
+        Mockito.doThrow(new RuntimeException()).when(aMockCleanInventoriesByProductIdUseCase).execute(aProductId);
+
+        final var aOutput = aMockProductInventoryGateway.cleanInventoriesByProductId(aProductId);
+
+        Assertions.assertTrue(aOutput.isLeft());
+        Assertions.assertEquals("error on clean inventories by product id", aOutput.getLeft().getErrors().get(0).message());
     }
 }

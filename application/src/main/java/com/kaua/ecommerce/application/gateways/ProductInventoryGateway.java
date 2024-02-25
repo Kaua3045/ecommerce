@@ -11,5 +11,7 @@ public interface ProductInventoryGateway {
 
     Either<NotificationHandler, Void> cleanInventoriesByProductId(String productId);
 
+    Either<NotificationHandler, Void> deleteInventoryBySku(String sku);
+
     record CreateInventoryParams(String sku, int quantity) {}
 }

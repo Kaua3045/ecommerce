@@ -6,6 +6,7 @@ import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryU
 import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateInventoryCommand;
 import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateInventoryCommandParams;
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import org.slf4j.Logger;
@@ -23,13 +24,16 @@ public class ProductInventoryUseCaseGateway implements ProductInventoryGateway {
 
     private final CreateInventoryUseCase createInventoryUseCase;
     private final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase;
+    private final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
 
     public ProductInventoryUseCaseGateway(
             final CreateInventoryUseCase createInventoryUseCase,
-            final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase
+            final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase,
+            final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase
     ) {
         this.createInventoryUseCase = Objects.requireNonNull(createInventoryUseCase);
         this.cleanInventoriesByProductIdUseCase = Objects.requireNonNull(cleanInventoriesByProductIdUseCase);
+        this.removeInventoryBySkuUseCase = Objects.requireNonNull(removeInventoryBySkuUseCase);
     }
 
     @Override
@@ -60,11 +64,25 @@ public class ProductInventoryUseCaseGateway implements ProductInventoryGateway {
     public Either<NotificationHandler, Void> cleanInventoriesByProductId(String productId) {
         try {
             this.cleanInventoriesByProductIdUseCase.execute(productId);
+            log.info("inventories success cleaned by product id: {}", productId);
             return Either.right(null);
         } catch (Exception e) {
             log.error("error on clean inventories by product id", e);
             return Either.left(NotificationHandler.create()
-                    .append(new Error("error on clean inventories by product id")));
+                    .append(new Error("error on clean inventories by product id %s".formatted(productId))));
+        }
+    }
+
+    @Override
+    public Either<NotificationHandler, Void> deleteInventoryBySku(String sku) {
+        try {
+            this.removeInventoryBySkuUseCase.execute(sku);
+            log.info("inventory success deleted by sku: {}", sku);
+            return Either.right(null);
+        } catch (Exception e) {
+            log.error("error on delete inventory by sku", e);
+            return Either.left(NotificationHandler.create()
+                    .append(new Error("error on delete inventory by sku %s".formatted(sku))));
         }
     }
 }

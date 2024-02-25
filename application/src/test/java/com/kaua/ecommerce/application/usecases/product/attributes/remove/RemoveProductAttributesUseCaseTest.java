@@ -3,13 +3,16 @@ package com.kaua.ecommerce.application.usecases.product.attributes.remove;
 import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.application.adapters.responses.TransactionResult;
+import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.gateways.ProductInventoryGateway;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.product.ProductStatus;
 import com.kaua.ecommerce.domain.validation.Error;
+import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -34,6 +37,9 @@ public class RemoveProductAttributesUseCaseTest extends UseCaseTest {
     @Mock
     private EventPublisher eventPublisher;
 
+    @Mock
+    private ProductInventoryGateway productInventoryGateway;
+
     @InjectMocks
     private DefaultRemoveProductAttributesUseCase removeProductAttributesUseCase;
 
@@ -57,6 +63,8 @@ public class RemoveProductAttributesUseCaseTest extends UseCaseTest {
             return TransactionResult.success(aSupplier.get());
         });
         Mockito.doNothing().when(this.eventPublisher).publish(Mockito.any());
+        Mockito.when(productInventoryGateway.deleteInventoryBySku(Mockito.any()))
+                .thenReturn(Either.right(null));
 
         Assertions.assertDoesNotThrow(() -> this.removeProductAttributesUseCase.execute(aCommand));
 
@@ -67,6 +75,7 @@ public class RemoveProductAttributesUseCaseTest extends UseCaseTest {
                         && aProductUpdatedAt.isBefore(aCmd.getUpdatedAt())));
         Mockito.verify(this.transactionManager, Mockito.times(1)).execute(Mockito.any());
         Mockito.verify(this.eventPublisher, Mockito.times(1)).publish(Mockito.any());
+        Mockito.verify(productInventoryGateway, Mockito.times(1)).deleteInventoryBySku(aSku);
     }
 
     @Test
@@ -133,6 +142,8 @@ public class RemoveProductAttributesUseCaseTest extends UseCaseTest {
         final var expectedErrorMessage = "Error on publish event";
 
         Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
+        Mockito.when(productInventoryGateway.deleteInventoryBySku(Mockito.any()))
+                .thenReturn(Either.right(null));
         Mockito.when(this.transactionManager.execute(Mockito.any())).thenReturn(TransactionResult
                 .failure(new Error(expectedErrorMessage)));
 
@@ -161,6 +172,35 @@ public class RemoveProductAttributesUseCaseTest extends UseCaseTest {
         Assertions.assertDoesNotThrow(() -> this.removeProductAttributesUseCase.execute(aCommand));
 
         Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
+        Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(this.transactionManager, Mockito.times(0)).execute(Mockito.any());
+        Mockito.verify(this.eventPublisher, Mockito.times(0)).publish(Mockito.any());
+    }
+
+    @Test
+    void givenAValidParams_whenCallExecuteButInventoryDeleteThrows_shouldThrowsDomainException() {
+        final var aProduct = Fixture.Products.tshirt();
+        final var aProductAttribute = Fixture.Products.productAttributes(aProduct.getName());
+        aProduct.addAttribute(aProductAttribute);
+
+        final var aProductId = aProduct.getId().getValue();
+        final var aSku = aProductAttribute.getSku();
+
+        final var aCommand = RemoveProductAttributesCommand.with(aProductId, aSku);
+
+        final var expectedErrorMessage = "Error on delete inventory";
+
+        Mockito.when(productGateway.findById(aProductId)).thenReturn(Optional.of(aProduct));
+        Mockito.when(productInventoryGateway.deleteInventoryBySku(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var aOutput = Assertions.assertThrows(DomainException.class,
+                () -> this.removeProductAttributesUseCase.execute(aCommand));
+
+        Assertions.assertEquals(expectedErrorMessage, aOutput.getErrors().get(0).message());
+
+        Mockito.verify(productGateway, Mockito.times(1)).findById(aProductId);
+        Mockito.verify(productInventoryGateway, Mockito.times(1)).deleteInventoryBySku(aSku);
         Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
         Mockito.verify(this.transactionManager, Mockito.times(0)).execute(Mockito.any());
         Mockito.verify(this.eventPublisher, Mockito.times(0)).publish(Mockito.any());

@@ -107,7 +107,7 @@ public class ProductUseCaseConfig {
 
     @Bean
     public RemoveProductAttributesUseCase removeProductAttributesUseCase() {
-        return new DefaultRemoveProductAttributesUseCase(productGateway, transactionManager, eventPublisher);
+        return new DefaultRemoveProductAttributesUseCase(productGateway, transactionManager, eventPublisher, productInventoryGateway);
     }
 
     @Bean

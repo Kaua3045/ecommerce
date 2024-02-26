@@ -1,11 +1,12 @@
 package com.kaua.ecommerce.domain.inventory;
 
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class InventoryValidationTest {
+public class InventoryValidationTest extends UnitTest {
 
     @Test
     void givenInvalidBlankProductId_whenCallNewInventory_shouldReturnDomainException() {

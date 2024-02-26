@@ -564,11 +564,12 @@ public class ProductTest extends UnitTest {
             aProduct.addAttribute(aOldAttributes);
         }
 
-        Assertions.assertThrows(
+        final var aException = Assertions.assertThrows(
                 DomainException.class,
-                () -> aProduct.addAttribute(aAttributes),
-                "Product can't have more than 20 attributes"
+                () -> aProduct.addAttribute(aAttributes)
         );
+
+        Assertions.assertEquals("Product can't have more than 10 attributes", aException.getMessage());
     }
 
     @Test
@@ -586,7 +587,7 @@ public class ProductTest extends UnitTest {
             aProductAttributes.add(aOldAttributes);
         }
 
-        Assertions.assertThrows(
+        final var aException = Assertions.assertThrows(
                 DomainException.class,
                 () -> Product.newProduct(
                         "Product Name",
@@ -594,9 +595,10 @@ public class ProductTest extends UnitTest {
                         aPrice,
                         aCategoryId,
                         aProductAttributes
-                ),
-                "Product can't have more than 20 attributes"
+                )
         );
+
+        Assertions.assertEquals("Product can't have more than 10 attributes", aException.getMessage());
     }
 
     @Test

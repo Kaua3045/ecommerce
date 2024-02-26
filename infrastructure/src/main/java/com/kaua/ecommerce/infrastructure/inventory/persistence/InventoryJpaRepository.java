@@ -13,7 +13,7 @@ public interface InventoryJpaRepository extends JpaRepository<InventoryJpaEntity
 
     Optional<InventoryJpaEntity> findBySku(String sku);
 
-    boolean existsByProductId(String productId);
+    List<InventoryJpaEntity> findByProductId(String productId);
 
     void deleteAllByProductId(String productId);
 

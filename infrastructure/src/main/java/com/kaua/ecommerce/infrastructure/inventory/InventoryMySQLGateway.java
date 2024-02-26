@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class InventoryMySQLGateway implements InventoryGateway {
@@ -48,13 +49,19 @@ public class InventoryMySQLGateway implements InventoryGateway {
                 .map(InventoryJpaEntity::toDomain);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
+    @Override
+    public Set<Inventory> findByProductId(String productId) {
+        return this.inventoryJpaRepository.findByProductId(productId)
+                .stream()
+                .map(InventoryJpaEntity::toDomain)
+                .collect(Collectors.toSet());
+    }
+
     @Override
     public void cleanByProductId(String productId) {
-        if (this.inventoryJpaRepository.existsByProductId(productId)) {
-            this.inventoryJpaRepository.deleteAllByProductId(productId);
-            log.info("deleted inventories by productId: {}", productId);
-        }
+        this.inventoryJpaRepository.deleteAllByProductId(productId);
+        log.info("deleted inventories by productId: {}", productId);
     }
 
     @Override

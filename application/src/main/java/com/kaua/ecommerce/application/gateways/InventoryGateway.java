@@ -14,6 +14,8 @@ public interface InventoryGateway {
 
     Optional<Inventory> findBySku(String sku);
 
+    Set<Inventory> findByProductId(String productId);
+
     void cleanByProductId(String productId);
 
     void deleteBySku(String sku);

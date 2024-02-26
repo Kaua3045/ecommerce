@@ -1,6 +1,8 @@
 package com.kaua.ecommerce.infrastructure.configurations.usecases;
 
+import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.application.gateways.InventoryGateway;
+import com.kaua.ecommerce.application.gateways.InventoryMovementGateway;
 import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.create.DefaultCreateInventoryUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
@@ -16,14 +18,22 @@ import java.util.Objects;
 public class InventoryUseCaseConfig {
 
     private final InventoryGateway inventoryGateway;
+    private final InventoryMovementGateway inventoryMovementGateway;
+    private final TransactionManager transactionManager;
 
-    public InventoryUseCaseConfig(final InventoryGateway inventoryGateway) {
+    public InventoryUseCaseConfig(
+            final InventoryGateway inventoryGateway,
+            final InventoryMovementGateway inventoryMovementGateway,
+            final TransactionManager transactionManager
+    ) {
         this.inventoryGateway = Objects.requireNonNull(inventoryGateway);
+        this.inventoryMovementGateway = Objects.requireNonNull(inventoryMovementGateway);
+        this.transactionManager = Objects.requireNonNull(transactionManager);
     }
 
     @Bean
     public CreateInventoryUseCase createInventoryUseCase() {
-        return new DefaultCreateInventoryUseCase(inventoryGateway);
+        return new DefaultCreateInventoryUseCase(inventoryGateway, inventoryMovementGateway, transactionManager);
     }
 
     @Bean

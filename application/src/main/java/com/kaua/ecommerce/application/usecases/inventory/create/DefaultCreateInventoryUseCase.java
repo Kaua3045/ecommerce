@@ -43,26 +43,11 @@ public class DefaultCreateInventoryUseCase extends CreateInventoryUseCase {
 
         final var aInventoryParams = this.returnWithSkusValid(input.inventoryParams());
 
-        final var aInventories = aInventoryParams.stream()
-                .map(aParam -> {
-                    final var aInventory = Inventory.newInventory(
-                            input.productId(),
-                            aParam.sku(),
-                            aParam.quantity());
-                    aInventory.validate(aNotification);
-
-                    final var aInventoryMovement = InventoryMovement
-                            .newInventoryMovement(
-                                    aInventory.getId(),
-                                    aInventory.getSku(),
-                                    aInventory.getQuantity(),
-                                    InventoryMovementStatus.IN
-                            );
-                    aInventoryMovement.validate(aNotification);
-
-                    return new AbstractMap.SimpleImmutableEntry<>(aInventory, aInventoryMovement);
-                })
-                .collect(Collectors.toSet());
+        final var aInventories = this.createInventoriesAndMovements(
+                aInventoryParams,
+                input.productId(),
+                aNotification
+        );
 
         if (aNotification.hasError()) {
             return Either.left(aNotification);
@@ -94,12 +79,42 @@ public class DefaultCreateInventoryUseCase extends CreateInventoryUseCase {
                 .map(CreateInventoryCommandParams::sku)
                 .toList());
 
-        if (input.size() == aExistsSkus.size()) {
+        final var aValidSkus = input.stream()
+                .filter(aParams -> !aExistsSkus.contains(aParams.sku()))
+                .collect(Collectors.toSet());
+
+        if (aValidSkus.isEmpty()) {
             throw DomainException.with(new Error("All skus already exists"));
         }
 
-        input.removeIf(aParams -> aExistsSkus.contains(aParams.sku()));
+        return aValidSkus;
+    }
 
-        return input;
+    private Set<AbstractMap.SimpleImmutableEntry<Inventory, InventoryMovement>> createInventoriesAndMovements(
+            final Set<CreateInventoryCommandParams> aInventoryParams,
+            final String aProductId,
+            final NotificationHandler aNotification
+    ) {
+        return aInventoryParams.stream()
+                .map(aParam -> {
+                    final var aInventory = Inventory.newInventory(
+                            aProductId,
+                            aParam.sku(),
+                            aParam.quantity());
+
+                    final var aInventoryMovement = InventoryMovement
+                            .newInventoryMovement(
+                                    aInventory.getId(),
+                                    aInventory.getSku(),
+                                    aInventory.getQuantity(),
+                                    InventoryMovementStatus.IN
+                            );
+
+                    aInventory.validate(aNotification);
+                    aInventoryMovement.validate(aNotification);
+
+                    return new AbstractMap.SimpleImmutableEntry<>(aInventory, aInventoryMovement);
+                })
+                .collect(Collectors.toSet());
     }
 }

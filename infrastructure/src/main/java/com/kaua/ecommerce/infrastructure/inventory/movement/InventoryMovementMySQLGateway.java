@@ -31,4 +31,13 @@ public class InventoryMovementMySQLGateway implements InventoryMovementGateway {
         log.info("inserted inventory movements: {}", aResult.stream().map(InventoryMovementJpaEntity::getSku).toList());
         return inventoryMovement;
     }
+
+    @Override
+    public InventoryMovement create(InventoryMovement inventoryMovement) {
+        final var aResult = this.inventoryMovementJpaRepository
+                .save(InventoryMovementJpaEntity.toEntity(inventoryMovement)).toDomain();
+
+        log.info("inserted inventory movement: {}", aResult);
+        return aResult;
+    }
 }

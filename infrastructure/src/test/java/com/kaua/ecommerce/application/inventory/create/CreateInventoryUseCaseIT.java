@@ -102,7 +102,7 @@ public class CreateInventoryUseCaseIT {
         final var aQuantity = 10;
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("sku");
-        final var expectedErrorCount = 1;
+        final var expectedErrorCount = 2;
 
         final var aParams = new HashSet<CreateInventoryCommandParams>();
         aParams.add(CreateInventoryCommandParams.with(aSku, aQuantity));
@@ -126,7 +126,7 @@ public class CreateInventoryUseCaseIT {
         final var aQuantity = -1;
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
-        final var expectedErrorCount = 1;
+        final var expectedErrorCount = 2;
 
         final var aParams = new HashSet<CreateInventoryCommandParams>();
         aParams.add(CreateInventoryCommandParams.with(aSku, aQuantity));

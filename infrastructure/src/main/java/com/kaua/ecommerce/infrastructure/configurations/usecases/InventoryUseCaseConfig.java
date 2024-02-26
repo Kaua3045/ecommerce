@@ -38,7 +38,7 @@ public class InventoryUseCaseConfig {
 
     @Bean
     public CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase() {
-        return new DefaultCleanInventoriesByProductIdUseCase(inventoryGateway);
+        return new DefaultCleanInventoriesByProductIdUseCase(inventoryGateway, inventoryMovementGateway, transactionManager);
     }
 
     @Bean

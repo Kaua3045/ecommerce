@@ -154,4 +154,33 @@ public class InventoryGatewayTest {
 
         Assertions.assertEquals(0, this.inventoryRepository.count());
     }
+
+    @Test
+    void givenAValidSku_whenCallFindBySku_shouldReturnInventory() {
+        final var aProductId = ProductID.unique().getValue();
+        final var aSku = "sku";
+        final var aQuantity = 10;
+
+        final var aInventory = Inventory.newInventory(aProductId, aSku, aQuantity);
+
+        this.inventoryRepository.saveAndFlush(InventoryJpaEntity.toEntity(aInventory));
+
+        final var aInventoryPersisted = this.inventoryGateway.findBySku(aSku).get();
+
+        Assertions.assertEquals(aInventory.getId().getValue(), aInventoryPersisted.getId().getValue());
+        Assertions.assertEquals(aInventory.getProductId(), aInventoryPersisted.getProductId());
+        Assertions.assertEquals(aInventory.getSku(), aInventoryPersisted.getSku());
+        Assertions.assertEquals(aInventory.getQuantity(), aInventoryPersisted.getQuantity());
+        Assertions.assertEquals(aInventory.getCreatedAt(), aInventoryPersisted.getCreatedAt());
+        Assertions.assertEquals(aInventory.getUpdatedAt(), aInventoryPersisted.getUpdatedAt());
+    }
+
+    @Test
+    void givenAnInvalidSku_whenCallFindBySku_shouldReturnEmpty() {
+        final var aSku = "sku";
+
+        final var aInventory = this.inventoryGateway.findBySku(aSku);
+
+        Assertions.assertTrue(aInventory.isEmpty());
+    }
 }

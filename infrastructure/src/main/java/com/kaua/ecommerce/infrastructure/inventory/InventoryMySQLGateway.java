@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -40,6 +41,13 @@ public class InventoryMySQLGateway implements InventoryGateway {
         return this.inventoryJpaRepository.existsBySkus(skus);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<Inventory> findBySku(String sku) {
+        return this.inventoryJpaRepository.findBySku(sku)
+                .map(InventoryJpaEntity::toDomain);
+    }
+
     @Transactional
     @Override
     public void cleanByProductId(String productId) {
@@ -49,12 +57,9 @@ public class InventoryMySQLGateway implements InventoryGateway {
         }
     }
 
-    @Transactional
     @Override
     public void deleteBySku(String sku) {
-        if (this.inventoryJpaRepository.existsBySku(sku)) {
-            this.inventoryJpaRepository.deleteBySku(sku);
-            log.info("deleted inventory by sku: {}", sku);
-        }
+        this.inventoryJpaRepository.deleteBySku(sku);
+        log.info("deleted inventory by sku: {}", sku);
     }
 }

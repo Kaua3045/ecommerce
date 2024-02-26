@@ -66,4 +66,30 @@ public class InventoryMovementGatewayTest {
         Assertions.assertEquals(aInventoryMovementTwo.getCreatedAt(), aPersistedInventoryMovementTwo.getCreatedAt());
         Assertions.assertEquals(aInventoryMovementTwo.getUpdatedAt(), aPersistedInventoryMovementTwo.getUpdatedAt());
     }
+
+    @Test
+    void givenAValidInventoryMovement_whenCallCreate_shouldPersistInventoryMovement() {
+        final var aInventoryId = InventoryID.unique();
+        final var aSku = "sku-one";
+        final var aQuantity = 10;
+        final var aStatus = InventoryMovementStatus.IN;
+
+        final var aInventoryMovement = InventoryMovement.newInventoryMovement(
+                aInventoryId, aSku, aQuantity, aStatus
+        );
+
+        Assertions.assertEquals(0, this.inventoryMovementRepository.count());
+
+        final var aResult = this.inventoryMovementGateway.create(aInventoryMovement);
+
+        Assertions.assertEquals(1, this.inventoryMovementRepository.count());
+
+        Assertions.assertEquals(aInventoryMovement.getId().getValue(), aResult.getId().getValue());
+        Assertions.assertEquals(aInventoryMovement.getInventoryId().getValue(), aResult.getInventoryId().getValue());
+        Assertions.assertEquals(aInventoryMovement.getSku(), aResult.getSku());
+        Assertions.assertEquals(aInventoryMovement.getQuantity(), aResult.getQuantity());
+        Assertions.assertEquals(aInventoryMovement.getStatus(), aResult.getStatus());
+        Assertions.assertEquals(aInventoryMovement.getCreatedAt(), aResult.getCreatedAt());
+        Assertions.assertEquals(aInventoryMovement.getUpdatedAt(), aResult.getUpdatedAt());
+    }
 }

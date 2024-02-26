@@ -9,6 +9,9 @@ import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.inventory.Inventory;
+import com.kaua.ecommerce.domain.inventory.InventoryID;
+import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
+import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.Resource;
@@ -253,6 +256,42 @@ public final class Fixture {
                             .findFirst().get().getSku(),
                     faker.random().nextInt(1, 500)
             );
+        }
+    }
+
+    public static final class InventoriesMovements {
+
+        private static final InventoryMovement IN = InventoryMovement.newInventoryMovement(
+                InventoryID.unique(),
+                "sku-tshirt",
+                faker.random().nextInt(1, 500),
+                InventoryMovementStatus.IN
+        );
+
+        private static final InventoryMovement OUT = InventoryMovement.newInventoryMovement(
+                InventoryID.unique(),
+                "sku-tshirt",
+                faker.random().nextInt(1, 500),
+                InventoryMovementStatus.OUT
+        );
+
+        private static final InventoryMovement REMOVED = InventoryMovement.newInventoryMovement(
+                InventoryID.unique(),
+                "sku-tshirt",
+                faker.random().nextInt(1, 500),
+                InventoryMovementStatus.REMOVED
+        );
+
+        public static InventoryMovement in() {
+            return InventoryMovement.with(IN);
+        }
+
+        public static InventoryMovement out() {
+            return InventoryMovement.with(OUT);
+        }
+
+        public static InventoryMovement removed() {
+            return InventoryMovement.with(REMOVED);
         }
     }
 }

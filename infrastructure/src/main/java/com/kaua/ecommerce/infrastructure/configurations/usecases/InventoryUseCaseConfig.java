@@ -43,6 +43,6 @@ public class InventoryUseCaseConfig {
 
     @Bean
     public RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase() {
-        return new DefaultRemoveInventoryBySkuUseCase(inventoryGateway);
+        return new DefaultRemoveInventoryBySkuUseCase(inventoryGateway, inventoryMovementGateway, transactionManager);
     }
 }

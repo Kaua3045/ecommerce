@@ -335,7 +335,7 @@ public class CreateProductUseCaseIT {
         final var aDepth = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
-        final var expectedErrorCount = 1;
+        final var expectedErrorCount = 2;
 
         final var aAttributes = CreateProductCommandAttributes.with(
                 aColor,

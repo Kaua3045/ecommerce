@@ -7,4 +7,6 @@ import java.util.Set;
 public interface InventoryMovementGateway {
 
     Set<InventoryMovement> createInBatch(Set<InventoryMovement> inventoryMovement);
+
+    InventoryMovement create(InventoryMovement inventoryMovement);
 }

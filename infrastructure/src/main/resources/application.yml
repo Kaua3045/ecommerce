@@ -48,6 +48,14 @@ kafka:
       group-id: products-group
       max-attempts: 4
       auto-create-topics: false
+    inventories:
+      auto-offset-reset: earliest
+      concurrency: 1
+      id: kafka-listener-inventories
+      topics: inventory-topic
+      group-id: inventories-group
+      max-attempts: 4
+      auto-create-topics: false
 
 server:
   port: 8080

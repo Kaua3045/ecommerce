@@ -40,7 +40,8 @@ public class AddProductAttributesUseCaseIT {
                         1.0,
                         1.0,
                         1.0,
-                        1.0
+                        1.0,
+                        3
                 ))
         );
 

@@ -1607,6 +1607,7 @@ public class ProductAPITest {
         final var aProductAttribute = Fixture.Products.productAttributes(aProduct.getName());
 
         final var aId = aProduct.getId().getValue();
+        final var aQuantity = 10;
 
         final var aInput = new AddProductAttributesInput(
                 List.of(new AddProductAttributesParamInput(
@@ -1615,7 +1616,8 @@ public class ProductAPITest {
                         aProductAttribute.getSize().getWeight(),
                         aProductAttribute.getSize().getHeight(),
                         aProductAttribute.getSize().getWidth(),
-                        aProductAttribute.getSize().getDepth()
+                        aProductAttribute.getSize().getDepth(),
+                        aQuantity
                 ))
         );
 

@@ -6,6 +6,7 @@ public record AddProductAttributesCommandParams(
         double weight,
         double height,
         double width,
-        double depth
+        double depth,
+        int quantity
 ) {
 }

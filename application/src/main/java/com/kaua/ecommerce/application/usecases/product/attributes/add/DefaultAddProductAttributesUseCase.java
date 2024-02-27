@@ -5,12 +5,15 @@ import com.kaua.ecommerce.application.exceptions.ProductIsDeletedException;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.gateways.ProductInventoryGateway;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkusEvent;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.domain.validation.Error;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class DefaultAddProductAttributesUseCase extends AddProductAttributesUseCase {
@@ -18,15 +21,18 @@ public class DefaultAddProductAttributesUseCase extends AddProductAttributesUseC
     private final ProductGateway productGateway;
     private final TransactionManager transactionManager;
     private final EventPublisher eventPublisher;
+    private final ProductInventoryGateway productInventoryGateway;
 
     public DefaultAddProductAttributesUseCase(
             final ProductGateway productGateway,
             final TransactionManager transactionManager,
-            final EventPublisher eventPublisher
+            final EventPublisher eventPublisher,
+            final ProductInventoryGateway productInventoryGateway
     ) {
         this.productGateway = Objects.requireNonNull(productGateway);
         this.transactionManager = Objects.requireNonNull(transactionManager);
         this.eventPublisher = Objects.requireNonNull(eventPublisher);
+        this.productInventoryGateway = Objects.requireNonNull(productInventoryGateway);
     }
 
     @Override
@@ -44,7 +50,8 @@ public class DefaultAddProductAttributesUseCase extends AddProductAttributesUseC
             throw DomainException.with(new Error("'attributes' must have at least one element"));
         }
 
-        // TODO: Add to create a inventory for each attribute
+        final var aAttributesToCreateInventories = new ArrayList<ProductInventoryGateway.CreateInventoryParams>();
+
         aAttributesParams.forEach(aParam -> {
             final var aColorName = aParam.colorName()
                     .toUpperCase();
@@ -64,7 +71,21 @@ public class DefaultAddProductAttributesUseCase extends AddProductAttributesUseC
                     aProduct.getName()
             );
             aProduct.addAttribute(aProductAttribute);
+
+            aAttributesToCreateInventories.add(new ProductInventoryGateway.CreateInventoryParams(
+                    aProductAttribute.getSku(),
+                    aParam.quantity()
+            ));
         });
+
+        final var aCreateInventoriesResult = this.productInventoryGateway.createInventory(
+                aProductId.getValue(),
+                aAttributesToCreateInventories
+        );
+
+        if (aCreateInventoriesResult.isLeft()) {
+            throw DomainException.with(aCreateInventoriesResult.getLeft().getErrors());
+        }
 
         final var aResult = this.transactionManager.execute(() -> {
             final var aProductSaved = this.productGateway.update(aProduct);
@@ -73,6 +94,11 @@ public class DefaultAddProductAttributesUseCase extends AddProductAttributesUseC
         });
 
         if (aResult.isFailure()) {
+            this.eventPublisher.publish(InventoryCreatedRollbackBySkusEvent.from(
+                    aAttributesToCreateInventories.stream()
+                            .map(ProductInventoryGateway.CreateInventoryParams::sku)
+                            .toList()
+            ));
             throw TransactionFailureException.with(aResult.getErrorResult());
         }
 

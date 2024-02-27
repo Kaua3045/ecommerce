@@ -11,6 +11,8 @@ kafka:
   consumers:
     products:
       auto-create-topics: false
+    inventories:
+      auto-create-topics: false
 
 spring:
   autoconfigure:

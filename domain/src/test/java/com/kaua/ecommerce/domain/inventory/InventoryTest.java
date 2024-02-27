@@ -2,9 +2,13 @@ package com.kaua.ecommerce.domain.inventory;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.UnitTest;
+import com.kaua.ecommerce.domain.event.EventsTypes;
+import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkusEvent;
 import com.kaua.ecommerce.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 public class InventoryTest extends UnitTest {
 
@@ -86,5 +90,17 @@ public class InventoryTest extends UnitTest {
         Assertions.assertTrue(aInventoryString.contains(String.valueOf(aInventory.getQuantity())));
         Assertions.assertTrue(aInventoryString.contains(aInventory.getCreatedAt().toString()));
         Assertions.assertTrue(aInventoryString.contains(aInventory.getUpdatedAt().toString()));
+    }
+
+    @Test
+    void givenAValidSkus_whenCallInventoryCreatedRollbackBySkusEventFrom_shouldReturnEvent() {
+        final var skus = Fixture.createSku("tshirt");
+
+        final var aEvent = InventoryCreatedRollbackBySkusEvent.from(List.of(skus));
+
+        Assertions.assertEquals(1, aEvent.skus().size());
+        Assertions.assertEquals(Inventory.class.getSimpleName().toLowerCase(), aEvent.aggregateName());
+        Assertions.assertEquals(EventsTypes.INVENTORY_CREATED_ROLLBACK_BY_SKUS, aEvent.eventType());
+        Assertions.assertNotNull(aEvent.occurredOn());
     }
 }

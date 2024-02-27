@@ -3,6 +3,7 @@ package com.kaua.ecommerce.application.inventory.delete.remove;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
+import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaRepository;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntity;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
 import org.junit.jupiter.api.Assertions;
@@ -14,6 +15,9 @@ public class RemoveInventoryBySkuUseCaseIT {
 
     @Autowired
     private InventoryJpaRepository inventoryRepository;
+
+    @Autowired
+    private InventoryMovementJpaRepository inventoryMovementRepository;
 
     @Autowired
     private RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
@@ -33,6 +37,7 @@ public class RemoveInventoryBySkuUseCaseIT {
         Assertions.assertDoesNotThrow(() -> this.removeInventoryBySkuUseCase.execute(aSku));
 
         Assertions.assertEquals(1, this.inventoryRepository.count());
+        Assertions.assertEquals(1, this.inventoryMovementRepository.count());
 
         Assertions.assertTrue(this.inventoryRepository.findById(aInventory.getId().getValue()).isEmpty());
     }

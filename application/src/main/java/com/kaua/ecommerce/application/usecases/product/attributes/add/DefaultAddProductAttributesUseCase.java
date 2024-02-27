@@ -44,9 +44,16 @@ public class DefaultAddProductAttributesUseCase extends AddProductAttributesUseC
             throw DomainException.with(new Error("'attributes' must have at least one element"));
         }
 
+        // TODO: Add to create a inventory for each attribute
         aAttributesParams.forEach(aParam -> {
+            final var aColorName = aParam.colorName()
+                    .toUpperCase();
+
+            final var aColor = this.productGateway.findColorByName(aColorName)
+                    .orElseGet(() -> ProductColor.with(aColorName));
+
             final var aProductAttribute = ProductAttributes.create(
-                    ProductColor.with(aParam.colorName()),
+                    aColor,
                     ProductSize.with(
                             aParam.sizeName(),
                             aParam.weight(),

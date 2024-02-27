@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class InventoryMySQLGateway implements InventoryGateway {
@@ -40,21 +42,31 @@ public class InventoryMySQLGateway implements InventoryGateway {
         return this.inventoryJpaRepository.existsBySkus(skus);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
-    public void cleanByProductId(String productId) {
-        if (this.inventoryJpaRepository.existsByProductId(productId)) {
-            this.inventoryJpaRepository.deleteAllByProductId(productId);
-            log.info("deleted inventories by productId: {}", productId);
-        }
+    public Optional<Inventory> findBySku(String sku) {
+        return this.inventoryJpaRepository.findBySku(sku)
+                .map(InventoryJpaEntity::toDomain);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
+    @Override
+    public Set<Inventory> findByProductId(String productId) {
+        return this.inventoryJpaRepository.findByProductId(productId)
+                .stream()
+                .map(InventoryJpaEntity::toDomain)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void cleanByProductId(String productId) {
+        this.inventoryJpaRepository.deleteAllByProductId(productId);
+        log.info("deleted inventories by productId: {}", productId);
+    }
+
     @Override
     public void deleteBySku(String sku) {
-        if (this.inventoryJpaRepository.existsBySku(sku)) {
-            this.inventoryJpaRepository.deleteBySku(sku);
-            log.info("deleted inventory by sku: {}", sku);
-        }
+        this.inventoryJpaRepository.deleteBySku(sku);
+        log.info("deleted inventory by sku: {}", sku);
     }
 }

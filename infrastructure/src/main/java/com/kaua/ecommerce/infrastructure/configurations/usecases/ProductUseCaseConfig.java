@@ -102,7 +102,7 @@ public class ProductUseCaseConfig {
 
     @Bean
     public AddProductAttributesUseCase addProductAttributesUseCase() {
-        return new DefaultAddProductAttributesUseCase(productGateway, transactionManager, eventPublisher);
+        return new DefaultAddProductAttributesUseCase(productGateway, transactionManager, eventPublisher, productInventoryGateway);
     }
 
     @Bean

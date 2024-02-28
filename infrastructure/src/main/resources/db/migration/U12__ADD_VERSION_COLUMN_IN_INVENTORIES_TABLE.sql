@@ -1,0 +1,1 @@
+ALTER TABLE inventories DROP COLUMN version;

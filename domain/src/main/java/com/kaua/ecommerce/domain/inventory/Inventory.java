@@ -20,9 +20,10 @@ public class Inventory extends AggregateRoot<InventoryID> {
             final String aSku,
             final int aQuantity,
             final Instant aCreatedAt,
-            final Instant aUpdatedAt
+            final Instant aUpdatedAt,
+            final long aVersion
     ) {
-        super(aInventoryID);
+        super(aInventoryID, aVersion);
         this.productId = aProductId;
         this.sku = aSku;
         this.quantity = aQuantity;
@@ -37,7 +38,7 @@ public class Inventory extends AggregateRoot<InventoryID> {
     ) {
         final var aId = InventoryID.unique();
         final var aNow = InstantUtils.now();
-        return new Inventory(aId, aProductId, aSku, aQuantity, aNow, aNow);
+        return new Inventory(aId, aProductId, aSku, aQuantity, aNow, aNow, 0);
     }
 
     public static Inventory with(
@@ -46,9 +47,18 @@ public class Inventory extends AggregateRoot<InventoryID> {
             final String aSku,
             final int aQuantity,
             final Instant aCreatedAt,
-            final Instant aUpdatedAt
+            final Instant aUpdatedAt,
+            final long aVersion
     ) {
-        return new Inventory(InventoryID.from(aInventoryID), aProductId, aSku, aQuantity, aCreatedAt, aUpdatedAt);
+        return new Inventory(
+                InventoryID.from(aInventoryID),
+                aProductId,
+                aSku,
+                aQuantity,
+                aCreatedAt,
+                aUpdatedAt,
+                aVersion
+        );
     }
 
     public static Inventory with(final Inventory aInventory) {
@@ -58,7 +68,8 @@ public class Inventory extends AggregateRoot<InventoryID> {
                 aInventory.getSku(),
                 aInventory.getQuantity(),
                 aInventory.getCreatedAt(),
-                aInventory.getUpdatedAt()
+                aInventory.getUpdatedAt(),
+                aInventory.getVersion()
         );
     }
 
@@ -96,6 +107,7 @@ public class Inventory extends AggregateRoot<InventoryID> {
                 ", quantity=" + quantity +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", version=" + getVersion() +
                 ')';
     }
 }

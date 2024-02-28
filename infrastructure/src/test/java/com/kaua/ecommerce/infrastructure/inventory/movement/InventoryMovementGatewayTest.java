@@ -4,6 +4,7 @@ import com.kaua.ecommerce.domain.inventory.InventoryID;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
 import com.kaua.ecommerce.infrastructure.DatabaseGatewayTest;
+import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntity;
 import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -91,5 +92,63 @@ public class InventoryMovementGatewayTest {
         Assertions.assertEquals(aInventoryMovement.getStatus(), aResult.getStatus());
         Assertions.assertEquals(aInventoryMovement.getCreatedAt(), aResult.getCreatedAt());
         Assertions.assertEquals(aInventoryMovement.getUpdatedAt(), aResult.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidSku_whenCallFindBySkuAndCreatedAtDescAndStatusRemoved_shouldReturnInventoryMovement() {
+        final var aInventoryId = InventoryID.unique();
+
+        this.inventoryMovementRepository.save(InventoryMovementJpaEntity.toEntity(
+                InventoryMovement.newInventoryMovement(
+                        aInventoryId, "sku", 10, InventoryMovementStatus.IN
+                )
+        ));
+
+        final var aInventoryMovement = InventoryMovement.newInventoryMovement(
+                aInventoryId, "sku", 10, InventoryMovementStatus.REMOVED
+        );
+
+        this.inventoryMovementRepository.save(InventoryMovementJpaEntity.toEntity(aInventoryMovement));
+
+        Assertions.assertEquals(2, this.inventoryMovementRepository.count());
+
+        final var aResult = this.inventoryMovementGateway.findBySkuAndCreatedAtDescAndStatusRemoved("sku");
+
+        Assertions.assertTrue(aResult.isPresent());
+        Assertions.assertEquals(aInventoryMovement.getId().getValue(), aResult.get().getId().getValue());
+    }
+
+    @Test
+    void givenAnInvalidSku_whenCallFindBySkuAndCreatedAtDescAndStatusRemoved_shouldReturnEmpty() {
+        final var aInventoryId = InventoryID.unique();
+
+        this.inventoryMovementRepository.save(InventoryMovementJpaEntity.toEntity(
+                InventoryMovement.newInventoryMovement(
+                        aInventoryId, "sku", 10, InventoryMovementStatus.IN
+                )
+        ));
+
+        Assertions.assertEquals(1, this.inventoryMovementRepository.count());
+
+        final var aResult = this.inventoryMovementGateway.findBySkuAndCreatedAtDescAndStatusRemoved("invalid-sku");
+
+        Assertions.assertTrue(aResult.isEmpty());
+    }
+
+    @Test
+    void givenAValidInventoryMovementId_whenCallDeleteById_shouldDeleteInventoryMovement() {
+        final var aInventoryId = InventoryID.unique();
+
+        final var aInventoryMovement = InventoryMovement.newInventoryMovement(
+                aInventoryId, "sku", 10, InventoryMovementStatus.IN
+        );
+
+        this.inventoryMovementRepository.save(InventoryMovementJpaEntity.toEntity(aInventoryMovement));
+
+        Assertions.assertEquals(1, this.inventoryMovementRepository.count());
+
+        this.inventoryMovementGateway.deleteById(aInventoryMovement.getId().getValue());
+
+        Assertions.assertEquals(0, this.inventoryMovementRepository.count());
     }
 }

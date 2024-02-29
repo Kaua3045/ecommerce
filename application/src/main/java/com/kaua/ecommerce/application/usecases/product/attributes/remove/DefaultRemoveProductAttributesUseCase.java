@@ -64,11 +64,9 @@ public class DefaultRemoveProductAttributesUseCase extends RemoveProductAttribut
             });
 
             if (aTransactionResult.isFailure()) {
-                // TODO: precisamos de uma forma para compensar o pagamento
-                // alguma forma de dar rollback, ou buscamos o inventory pra deixar in-memory
-                // ou então usamos o inventory movement para restaurar a versão antiga do inventory
-                // o inventory movement dai tem um IN, OUT e DELETED status, para sabermos quando
-                // um inventory foi removido, e podemos restaurar ele
+                this.productInventoryGateway.rollbackInventoryBySkuAndProductId(
+                        input.sku(), input.productId()
+                );
                 throw TransactionFailureException.with(aTransactionResult.getErrorResult());
             }
         }

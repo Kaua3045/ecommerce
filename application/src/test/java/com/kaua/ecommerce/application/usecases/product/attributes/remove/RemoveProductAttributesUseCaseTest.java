@@ -76,6 +76,8 @@ public class RemoveProductAttributesUseCaseTest extends UseCaseTest {
         Mockito.verify(this.transactionManager, Mockito.times(1)).execute(Mockito.any());
         Mockito.verify(this.eventPublisher, Mockito.times(1)).publish(Mockito.any());
         Mockito.verify(productInventoryGateway, Mockito.times(1)).deleteInventoryBySku(aSku);
+        Mockito.verify(productInventoryGateway, Mockito.times(0))
+                .rollbackInventoryBySkuAndProductId(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -146,6 +148,8 @@ public class RemoveProductAttributesUseCaseTest extends UseCaseTest {
                 .thenReturn(Either.right(null));
         Mockito.when(this.transactionManager.execute(Mockito.any())).thenReturn(TransactionResult
                 .failure(new Error(expectedErrorMessage)));
+        Mockito.doNothing().when(productInventoryGateway)
+                .rollbackInventoryBySkuAndProductId(Mockito.any(), Mockito.any());
 
         final var aOutput = Assertions.assertThrows(
                 TransactionFailureException.class,
@@ -155,6 +159,8 @@ public class RemoveProductAttributesUseCaseTest extends UseCaseTest {
 
         Mockito.verify(productGateway, Mockito.times(1)).findById(aProduct.getId().getValue());
         Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(productInventoryGateway, Mockito.times(1))
+                .rollbackInventoryBySkuAndProductId(aSku, aProductId);
     }
 
     @Test

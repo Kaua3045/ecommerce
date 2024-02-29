@@ -4,9 +4,17 @@ import com.kaua.ecommerce.application.gateways.ProductInventoryGateway;
 import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuCommand;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
+import com.kaua.ecommerce.domain.inventory.InventoryID;
+import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
+import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
+import com.kaua.ecommerce.infrastructure.exceptions.ProductInventoryException;
+import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntity;
+import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaRepository;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
@@ -22,6 +30,9 @@ public class ProductInventoryUseCaseGatewayTest {
 
     @Autowired
     private InventoryJpaRepository inventoryJpaRepository;
+
+    @Autowired
+    private InventoryMovementJpaRepository inventoryMovementJpaRepository;
 
     @Autowired
     private ProductJpaRepository productJpaRepository;
@@ -117,8 +128,8 @@ public class ProductInventoryUseCaseGatewayTest {
         final var aMockProductInventoryGateway = new ProductInventoryUseCaseGateway(
                 Mockito.mock(CreateInventoryUseCase.class),
                 aMockCleanInventoriesByProductIdUseCase,
-                Mockito.mock(RemoveInventoryBySkuUseCase.class)
-        );
+                Mockito.mock(RemoveInventoryBySkuUseCase.class),
+                Mockito.mock(RollbackInventoryBySkuUseCase.class));
 
         final var aProductId = "invalid-id";
 
@@ -163,8 +174,8 @@ public class ProductInventoryUseCaseGatewayTest {
         final var aMockProductInventoryGateway = new ProductInventoryUseCaseGateway(
                 Mockito.mock(CreateInventoryUseCase.class),
                 Mockito.mock(CleanInventoriesByProductIdUseCase.class),
-                aMockRemoveInventoryBySkuUseCase
-        );
+                aMockRemoveInventoryBySkuUseCase,
+                Mockito.mock(RollbackInventoryBySkuUseCase.class));
 
         final var aSku = "invalid-sku";
 
@@ -174,5 +185,57 @@ public class ProductInventoryUseCaseGatewayTest {
 
         Assertions.assertTrue(aOutput.isLeft());
         Assertions.assertEquals("error on delete inventory by sku %s".formatted(aSku), aOutput.getLeft().getErrors().get(0).message());
+    }
+
+    @Test
+    void givenAValidSkuAndProductId_whenCallRollbackInventoryBySkuAndProductId_thenShouldRollbackInventory() {
+        final var aProduct = Fixture.Products.book();
+        this.productJpaRepository.saveAndFlush(ProductJpaEntity.toEntity(aProduct));
+
+        final var aProductId = aProduct.getId().getValue();
+        final var aProductSku = aProduct.getAttributes().stream().findFirst().get().getSku();
+        final var aQuantity = 5;
+
+        this.inventoryMovementJpaRepository.save(InventoryMovementJpaEntity.toEntity(
+                InventoryMovement.newInventoryMovement(
+                        InventoryID.unique(),
+                        aProductSku,
+                        aQuantity,
+                        InventoryMovementStatus.REMOVED
+                )
+        ));
+
+        Assertions.assertEquals(1, this.inventoryMovementJpaRepository.count());
+        Assertions.assertEquals(0, this.inventoryJpaRepository.count());
+
+        this.productInventoryGateway.rollbackInventoryBySkuAndProductId(aProductSku, aProductId);
+
+        Assertions.assertEquals(1, this.inventoryJpaRepository.count());
+        Assertions.assertEquals(1, this.inventoryMovementJpaRepository.count());
+
+        Assertions.assertEquals(InventoryMovementStatus.IN,
+                this.inventoryMovementJpaRepository.findAll().get(0).getMovementType());
+    }
+
+    @Test
+    void givenAnInvalidSkuAndProductId_whenCallRollbackInventoryBySku_thenThrowProductInventoryException() {
+        final var aMockRollbackInventoryBySkuUseCase = Mockito.mock(RollbackInventoryBySkuUseCase.class);
+        final var aMockProductInventoryGateway = new ProductInventoryUseCaseGateway(
+                Mockito.mock(CreateInventoryUseCase.class),
+                Mockito.mock(CleanInventoriesByProductIdUseCase.class),
+                Mockito.mock(RemoveInventoryBySkuUseCase.class),
+                aMockRollbackInventoryBySkuUseCase);
+
+        final var aSku = "invalid-sku";
+        final var aProductId = "invalid-id";
+
+        final var aCommand = RollbackInventoryBySkuCommand.with(aSku, aProductId);
+
+        Mockito.doThrow(new RuntimeException("Test")).when(aMockRollbackInventoryBySkuUseCase).execute(aCommand);
+
+        final var aOutput = Assertions.assertThrows(ProductInventoryException.class,
+                () -> aMockProductInventoryGateway.rollbackInventoryBySkuAndProductId(aSku, aProductId));
+
+        Assertions.assertEquals("error on rollback inventory by sku %s and product id %s".formatted(aSku, aProductId), aOutput.getMessage());
     }
 }

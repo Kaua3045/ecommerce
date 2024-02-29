@@ -13,5 +13,7 @@ public interface ProductInventoryGateway {
 
     Either<NotificationHandler, Void> deleteInventoryBySku(String sku);
 
+    void rollbackInventoryBySkuAndProductId(String sku, String productId);
+
     record CreateInventoryParams(String sku, int quantity) {}
 }

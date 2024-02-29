@@ -3,6 +3,7 @@ package com.kaua.ecommerce.infrastructure.service.impl;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.Resource;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
+import com.kaua.ecommerce.infrastructure.exceptions.FileStorageException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ public class S3StorageServiceImplTest {
     }
 
     @Test
-    void givenAValidResourceButS3Throws_whenCallStore_thenShouldThrowRuntimeException() {
+    void givenAValidResourceButS3Throws_whenCallStore_thenShouldThrowFileStorageException() {
         // given
         final var aFileName = "avatar.png";
         final var aResource = Resource.with(
@@ -69,14 +70,19 @@ public class S3StorageServiceImplTest {
                 IdUtils.generate().replace("-", "")
                 + "-" + aFileName;
 
+        final var expectedErrorMessage = "Error on store file";
+
         // when
         Mockito.doThrow(S3Exception.class)
                 .when(s3Client)
                 .putObject(Mockito.any(PutObjectRequest.class), Mockito.any(RequestBody.class));
 
-        Assertions.assertThrows(RuntimeException.class, () -> this.target.store(aKey, aResource));
+        final var aOutput = Assertions.assertThrows(FileStorageException.class,
+                () -> this.target.store(aKey, aResource));
 
         // then
+        Assertions.assertEquals(expectedErrorMessage, aOutput.getMessage());
+
         final var captor = ArgumentCaptor.forClass(PutObjectRequest.class);
 
         Mockito.verify(s3Client, Mockito.times(1)).putObject(captor.capture(), Mockito.any(RequestBody.class));
@@ -100,18 +106,19 @@ public class S3StorageServiceImplTest {
     }
 
     @Test
-    void givenAValidLocationButS3Throws_whenCallDelete_thenShouldThrowRuntimeException() {
+    void givenAValidLocationButS3Throws_whenCallDelete_thenShouldThrowFileStorageException() {
         // given
         final var aLocation = IdUtils.generate() + "-" + "BANNER" + "-" +
                 IdUtils.generate().replace("-", "")
                 + "-" + "product.png";
-        final var expectedErrorMessage = "software.amazon.awssdk.services.s3.model.S3Exception";
+
+        final var expectedErrorMessage = "Error on delete file";
 
         // when
         Mockito.when(s3Client.deleteObject(Mockito.any(DeleteObjectRequest.class)))
                 .thenThrow(S3Exception.class);
 
-        final var aResult = Assertions.assertThrows(RuntimeException.class,
+        final var aResult = Assertions.assertThrows(FileStorageException.class,
                 () -> this.target.delete(aLocation));
 
         // then
@@ -142,7 +149,7 @@ public class S3StorageServiceImplTest {
     }
 
     @Test
-    void givenAValidLocationsButS3Throws_whenCallDeleteAllByLocation_thenShouldThrowRuntimeException() {
+    void givenAValidLocationsButS3Throws_whenCallDeleteAllByLocation_thenShouldThrowFileStorageException() {
         // given
         final var aLocationOne = IdUtils.generate() + "-" + "GALLERY" + "-" +
                 IdUtils.generate().replace("-", "")
@@ -153,13 +160,13 @@ public class S3StorageServiceImplTest {
 
         final var aLocations = List.of(aLocationOne, aLocationTwo);
 
-        final var expectedErrorMessage = "software.amazon.awssdk.services.s3.model.S3Exception";
+        final var expectedErrorMessage = "Error on delete files by locations";
 
         // when
         Mockito.when(s3Client.deleteObjects(Mockito.any(DeleteObjectsRequest.class)))
                 .thenThrow(S3Exception.class);
 
-        final var aResult = Assertions.assertThrows(RuntimeException.class,
+        final var aResult = Assertions.assertThrows(FileStorageException.class,
                 () -> this.target.deleteAllByLocation(aLocations));
 
         // then

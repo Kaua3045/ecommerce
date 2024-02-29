@@ -36,7 +36,7 @@ public interface InventoryAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     @ResponseStatus(HttpStatus.OK)
-    void rollbackInventoryBySku(@PathVariable String productId, @PathVariable String sku);
+    void rollbackInventoryBySkuAndProductId(@PathVariable String productId, @PathVariable String sku);
 
     @DeleteMapping(value = "{productId}")
     @Operation(summary = "Delete a inventories by it's identifier")

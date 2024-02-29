@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.service.impl;
 
 import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.infrastructure.exceptions.FileStorageException;
 import com.kaua.ecommerce.infrastructure.service.StorageService;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -31,8 +32,8 @@ public class S3StorageServiceImpl implements StorageService {
 
             this.s3Client.putObject(aRequest, RequestBody
                     .fromBytes(aResource.content()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (final Exception e) {
+            throw FileStorageException.with("Error on store file", e);
         }
     }
 
@@ -46,8 +47,8 @@ public class S3StorageServiceImpl implements StorageService {
                     .build();
 
             this.s3Client.deleteObject(aDeleteRequest);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (final Exception e) {
+            throw FileStorageException.with("Error on delete file", e);
         }
     }
 
@@ -71,7 +72,7 @@ public class S3StorageServiceImpl implements StorageService {
 
             this.s3Client.deleteObjects(aDeleteRequest);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw FileStorageException.with("Error on delete files by locations", e);
         }
     }
 }

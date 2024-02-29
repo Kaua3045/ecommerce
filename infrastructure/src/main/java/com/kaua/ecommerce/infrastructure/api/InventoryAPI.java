@@ -26,6 +26,18 @@ public interface InventoryAPI {
     })
     ResponseEntity<?> createInventory(@RequestBody CreateInventoryInput body);
 
+    @PostMapping(
+            value = "/rollback/{productId}/{sku}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Rollback inventory by sku and productId")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rollback successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    void rollbackInventoryBySkuAndProductId(@PathVariable String productId, @PathVariable String sku);
+
     @DeleteMapping(value = "{productId}")
     @Operation(summary = "Delete a inventories by it's identifier")
     @ApiResponses(value = {

@@ -1,0 +1,2 @@
+CREATE INDEX idx_inventories_movements_sku_status_created_at_desc
+ON inventories_movements (sku, movement_type, created_at DESC);

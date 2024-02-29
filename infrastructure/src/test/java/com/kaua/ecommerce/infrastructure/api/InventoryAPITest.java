@@ -7,6 +7,7 @@ import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateI
 import com.kaua.ecommerce.application.usecases.inventory.create.outputs.CreateInventoryOutput;
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.product.ProductID;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
@@ -50,6 +51,9 @@ public class InventoryAPITest {
 
     @MockBean
     private RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
+
+    @MockBean
+    private RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateInventory_thenReturnStatusOkAndIdAndSku() throws Exception {
@@ -252,5 +256,23 @@ public class InventoryAPITest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(1)).execute(aSku);
+    }
+
+    @Test
+    void givenAValidProductIdAndSku_whenCallRollbackInventoryBySku_thenReturnStatusOk() throws Exception {
+        final var aProductId = ProductID.unique().getValue();
+        final var aSku = Fixture.createSku("sku");
+
+        Mockito.doNothing().when(rollbackInventoryBySkuUseCase).execute(Mockito.any());
+
+        final var request = MockMvcRequestBuilders.post("/v1/inventories/rollback/{productId}/{sku}", aProductId, aSku)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(rollbackInventoryBySkuUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 }

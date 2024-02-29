@@ -53,7 +53,8 @@ public class InventoryTest extends UnitTest {
                 aInventory.getSku(),
                 aInventory.getQuantity(),
                 aInventory.getCreatedAt(),
-                aInventory.getUpdatedAt()
+                aInventory.getUpdatedAt(),
+                aInventory.getVersion()
         );
 
         Assertions.assertEquals(aInventory.getId(), aInventoryWith.getId());
@@ -62,6 +63,7 @@ public class InventoryTest extends UnitTest {
         Assertions.assertEquals(aInventory.getQuantity(), aInventoryWith.getQuantity());
         Assertions.assertEquals(aInventory.getCreatedAt(), aInventoryWith.getCreatedAt());
         Assertions.assertEquals(aInventory.getUpdatedAt(), aInventoryWith.getUpdatedAt());
+        Assertions.assertEquals(aInventory.getVersion(), aInventoryWith.getVersion());
     }
 
     @Test
@@ -90,6 +92,7 @@ public class InventoryTest extends UnitTest {
         Assertions.assertTrue(aInventoryString.contains(String.valueOf(aInventory.getQuantity())));
         Assertions.assertTrue(aInventoryString.contains(aInventory.getCreatedAt().toString()));
         Assertions.assertTrue(aInventoryString.contains(aInventory.getUpdatedAt().toString()));
+        Assertions.assertTrue(aInventoryString.contains(String.valueOf(aInventory.getVersion())));
     }
 
     @Test
@@ -102,5 +105,6 @@ public class InventoryTest extends UnitTest {
         Assertions.assertEquals(Inventory.class.getSimpleName().toLowerCase(), aEvent.aggregateName());
         Assertions.assertEquals(EventsTypes.INVENTORY_CREATED_ROLLBACK_BY_SKUS, aEvent.eventType());
         Assertions.assertNotNull(aEvent.occurredOn());
+        Assertions.assertEquals(0, aEvent.version());
     }
 }

@@ -1,10 +1,7 @@
 package com.kaua.ecommerce.infrastructure.inventory.persistence;
 
 import com.kaua.ecommerce.domain.inventory.Inventory;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 
@@ -30,6 +27,9 @@ public class InventoryJpaEntity {
     @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant updatedAt;
 
+    @Version
+    private long version;
+
     public InventoryJpaEntity() {
     }
 
@@ -39,7 +39,8 @@ public class InventoryJpaEntity {
             final String sku,
             final int quantity,
             final Instant createdAt,
-            final Instant updatedAt
+            final Instant updatedAt,
+            final long version
     ) {
         this.id = id;
         this.productId = productId;
@@ -47,6 +48,7 @@ public class InventoryJpaEntity {
         this.quantity = quantity;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.version = version;
     }
 
     public static InventoryJpaEntity toEntity(final Inventory inventory) {
@@ -56,7 +58,8 @@ public class InventoryJpaEntity {
                 inventory.getSku(),
                 inventory.getQuantity(),
                 inventory.getCreatedAt(),
-                inventory.getUpdatedAt()
+                inventory.getUpdatedAt(),
+                inventory.getVersion()
         );
     }
 
@@ -67,7 +70,8 @@ public class InventoryJpaEntity {
                 getSku(),
                 getQuantity(),
                 getCreatedAt(),
-                getUpdatedAt()
+                getUpdatedAt(),
+                getVersion()
         );
     }
 
@@ -117,5 +121,9 @@ public class InventoryJpaEntity {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public long getVersion() {
+        return version;
     }
 }

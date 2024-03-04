@@ -1,8 +1,45 @@
 package com.kaua.ecommerce.application.either;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public abstract class Either<L, R> {
+
+    public static <L, R> Either<L, R> right(R value) {
+        return new BaseMethods<L, R>().new Right(value);
+    }
+
+    public static <L, R> Either<L, R> left(L value) {
+        return new BaseMethods<L, R>().new Left(value);
+    }
+
+    public abstract boolean isLeft();
+
+    public abstract boolean isRight();
+
+    public abstract L getLeft();
+
+    public abstract R getRight();
+
+    public <T> T fold(Function<L, T> leftMapper, Function<R, T> rightMapper, Consumer<Object> logging) {
+        Objects.requireNonNull(leftMapper, "leftMapper is required");
+        Objects.requireNonNull(rightMapper, "rightMapper is required");
+        final Optional<Consumer<Object>> loggingOptional = Optional.ofNullable(logging);
+        if (isLeft()) {
+            loggingOptional.ifPresent(consumer -> consumer.accept(getLeft()));
+            return leftMapper.apply(getLeft());
+        } else {
+            loggingOptional.ifPresent(consumer -> consumer.accept(getRight()));
+            return rightMapper.apply(getRight());
+        }
+    }
+
+    public <T> T fold(Function<L, T> leftMapper, Function<R, T> rightMapper) {
+        return fold(leftMapper, rightMapper, null);
+    }
 
     public static class BaseMethods<L, R> extends Either<L, R> {
 
@@ -26,12 +63,6 @@ public abstract class Either<L, R> {
             throw new UnsupportedOperationException();
         }
     }
-
-    public abstract boolean isLeft();
-    public abstract boolean isRight();
-
-    public abstract L getLeft();
-    public abstract R getRight();
 
     class Left extends Either<L, R> {
 
@@ -89,13 +120,5 @@ public abstract class Either<L, R> {
         public R getRight() {
             return this.value;
         }
-    }
-
-    public static <L, R> Either<L, R> right(R value) {
-        return new BaseMethods<L, R>().new Right(value);
-    }
-
-    public static <L, R> Either<L, R> left(L value) {
-        return new BaseMethods<L, R>().new Left(value);
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface InventoryJpaRepository extends JpaRepository<InventoryJpaEntity, String> {
+public interface InventoryJpaEntityRepository extends JpaRepository<InventoryJpaEntity, String> {
 
     @Query(value = "SELECT i.sku FROM InventoryJpaEntity i WHERE i.sku IN :skus")
     List<String> existsBySkus(List<String> skus);

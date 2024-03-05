@@ -2,5 +2,5 @@ package com.kaua.ecommerce.infrastructure.category.persistence;
 
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-public interface CategoryElasticsearchRepository extends ElasticsearchRepository<CategoryElasticsearchEntity, String> {
+public interface CategoryElasticsearchEntityRepository extends ElasticsearchRepository<CategoryElasticsearchEntity, String> {
 }

@@ -2,8 +2,6 @@ package com.kaua.ecommerce.application.usecases.category.search.retrieve.list;
 
 import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.gateways.SearchGateway;
-import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.DefaultListCategoriesUseCase;
-import com.kaua.ecommerce.application.usecases.category.search.retrieve.list.ListCategoriesOutput;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.pagination.Pagination;

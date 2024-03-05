@@ -1,7 +1,6 @@
 package com.kaua.ecommerce.application.product.create;
 
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
-import com.kaua.ecommerce.application.gateways.EventPublisher;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommand;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductCommandAttributes;
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
@@ -10,12 +9,11 @@ import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
-import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaRepository;
-import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -28,13 +26,13 @@ public class CreateProductUseCaseIT {
     private CreateProductUseCase createProductUseCase;
 
     @Autowired
-    private ProductJpaRepository productRepository;
+    private ProductJpaEntityRepository productRepository;
 
     @Autowired
-    private CategoryJpaRepository categoryRepository;
+    private CategoryJpaEntityRepository categoryRepository;
 
     @Autowired
-    private InventoryJpaRepository inventoryRepository;
+    private InventoryJpaEntityRepository inventoryRepository;
 
     @Test
     void givenAValidValues_whenCallsCreateProductUseCase_thenProductShouldBeCreated() {

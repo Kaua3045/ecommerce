@@ -5,7 +5,7 @@ import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchEntity;
-import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchRepository;
+import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchEntityRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,21 +30,21 @@ public class CategoryElasticsearchGateway implements SearchGateway<Category> {
     private static final String NAME_PROP = "name";
     private static final String KEYWORD = ".keyword";
 
-    private final CategoryElasticsearchRepository categoryElasticsearchRepository;
+    private final CategoryElasticsearchEntityRepository categoryElasticsearchEntityRepository;
     private final SearchOperations searchOperations;
 
     public CategoryElasticsearchGateway(
-            final CategoryElasticsearchRepository categoryElasticsearchRepository,
+            final CategoryElasticsearchEntityRepository categoryElasticsearchEntityRepository,
             final SearchOperations searchOperations
     ) {
-        this.categoryElasticsearchRepository = Objects.requireNonNull(categoryElasticsearchRepository);
+        this.categoryElasticsearchEntityRepository = Objects.requireNonNull(categoryElasticsearchEntityRepository);
         this.searchOperations = Objects.requireNonNull(searchOperations);
     }
 
     @Transactional
     @Override
     public Category save(Category aCategory) {
-        this.categoryElasticsearchRepository.save(CategoryElasticsearchEntity.toEntity(aCategory));
+        this.categoryElasticsearchEntityRepository.save(CategoryElasticsearchEntity.toEntity(aCategory));
         log.info("inserted category in elasticsearch: {}", aCategory);
         return aCategory;
     }
@@ -83,13 +83,13 @@ public class CategoryElasticsearchGateway implements SearchGateway<Category> {
 
     @Override
     public Optional<Category> findById(String id) {
-        return this.categoryElasticsearchRepository.findById(id)
+        return this.categoryElasticsearchEntityRepository.findById(id)
                 .map(CategoryElasticsearchEntity::toDomain);
     }
 
     @Override
     public Optional<Category> findByIdNested(String id) {
-        final var aCategory = this.categoryElasticsearchRepository.findById(id)
+        final var aCategory = this.categoryElasticsearchEntityRepository.findById(id)
                 .map(CategoryElasticsearchEntity::toDomain);
 
         if (aCategory.isEmpty()) {
@@ -108,7 +108,7 @@ public class CategoryElasticsearchGateway implements SearchGateway<Category> {
     @Transactional
     @Override
     public void deleteById(String aId) {
-        this.categoryElasticsearchRepository.deleteById(aId);
+        this.categoryElasticsearchEntityRepository.deleteById(aId);
         log.info("deleted category in elasticsearch with id: {}", aId);
     }
 

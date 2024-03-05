@@ -1,11 +1,11 @@
 package com.kaua.ecommerce.application.usecases.customer.update.address;
 
 import com.kaua.ecommerce.application.UseCaseTest;
-import com.kaua.ecommerce.application.adapters.AddressAdapter;
-import com.kaua.ecommerce.application.adapters.responses.AddressResponse;
+import com.kaua.ecommerce.application.gateways.AddressDatabaseGateway;
 import com.kaua.ecommerce.application.gateways.AddressGateway;
 import com.kaua.ecommerce.application.gateways.CacheGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
+import com.kaua.ecommerce.application.gateways.responses.AddressResponse;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
@@ -28,10 +28,10 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
     private CustomerGateway customerGateway;
 
     @Mock
-    private AddressAdapter addressAdapter;
+    private AddressGateway addressGateway;
 
     @Mock
-    private AddressGateway addressGateway;
+    private AddressDatabaseGateway addressDatabaseGateway;
 
     @Mock
     private CacheGateway<Customer> customerCacheGateway;
@@ -63,7 +63,7 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
                 aZipCode);
 
         Mockito.when(customerGateway.findByAccountId(Mockito.any())).thenReturn(Optional.of(aCustomer));
-        Mockito.when(addressAdapter.findAddressByZipCode(aZipCode))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(aZipCode))
                 .thenReturn(Optional.of(makeAddressResponse()));
         Mockito.when(customerGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
         Mockito.doNothing().when(customerCacheGateway).delete(aAccountId);
@@ -74,25 +74,25 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(aAccountId, aResult.accountId());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(1)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aAccountId, aCmd.getAccountId())
-                && Objects.equals(aCustomer.getId(), aCmd.getId())
-                && Objects.equals(aCustomer.getFirstName(), aCmd.getFirstName())
-                && Objects.equals(aCustomer.getLastName(), aCmd.getLastName())
-                && Objects.equals(aCustomer.getEmail(), aCmd.getEmail())
-                && aCmd.getCpf().isEmpty()
-                && aCmd.getTelephone().isEmpty()
-                && Objects.equals(aStreet, aCmd.getAddress().get().getStreet())
-                && Objects.equals(aNumber, aCmd.getAddress().get().getNumber())
-                && Objects.equals(aComplement, aCmd.getAddress().get().getComplement())
-                && Objects.equals(aDistrict, aCmd.getAddress().get().getDistrict())
-                && Objects.equals(aCity, aCmd.getAddress().get().getCity())
-                && Objects.equals(aState, aCmd.getAddress().get().getState())
-                && Objects.equals(aZipCode, aCmd.getAddress().get().getZipCode())
-                && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
-                && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
+                        && Objects.equals(aCustomer.getId(), aCmd.getId())
+                        && Objects.equals(aCustomer.getFirstName(), aCmd.getFirstName())
+                        && Objects.equals(aCustomer.getLastName(), aCmd.getLastName())
+                        && Objects.equals(aCustomer.getEmail(), aCmd.getEmail())
+                        && aCmd.getCpf().isEmpty()
+                        && aCmd.getTelephone().isEmpty()
+                        && Objects.equals(aStreet, aCmd.getAddress().get().getStreet())
+                        && Objects.equals(aNumber, aCmd.getAddress().get().getNumber())
+                        && Objects.equals(aComplement, aCmd.getAddress().get().getComplement())
+                        && Objects.equals(aDistrict, aCmd.getAddress().get().getDistrict())
+                        && Objects.equals(aCity, aCmd.getAddress().get().getCity())
+                        && Objects.equals(aState, aCmd.getAddress().get().getState())
+                        && Objects.equals(aZipCode, aCmd.getAddress().get().getZipCode())
+                        && Objects.equals(aCustomer.getCreatedAt(), aCmd.getCreatedAt())
+                        && Objects.equals(aCustomer.getUpdatedAt(), aCmd.getUpdatedAt())));
         Mockito.verify(customerCacheGateway, Mockito.times(1)).delete(aAccountId);
     }
 
@@ -120,9 +120,9 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
                 aZipCode);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
-        Mockito.when(addressAdapter.findAddressByZipCode(aZipCode))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(aZipCode))
                 .thenReturn(Optional.of(makeAddressResponse()));
-        Mockito.doNothing().when(addressGateway).deleteById(Mockito.any());
+        Mockito.doNothing().when(addressDatabaseGateway).deleteById(Mockito.any());
         Mockito.when(customerGateway.update(Mockito.any())).thenAnswer(returnsFirstArg());
         Mockito.doNothing().when(customerCacheGateway).delete(aAccountId);
 
@@ -132,8 +132,8 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(aAccountId, aResult.accountId());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(1)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(1)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(1)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aAccountId, aCmd.getAccountId())
                         && Objects.equals(aCustomer.getId(), aCmd.getId())
@@ -186,8 +186,8 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorMessage, aResult.getMessage());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(0)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(0)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
         Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
@@ -219,7 +219,7 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
                 aZipCode);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
-        Mockito.when(addressAdapter.findAddressByZipCode(aZipCode)).thenReturn(Optional.empty());
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(aZipCode)).thenReturn(Optional.empty());
 
         final var aResult = useCase.execute(aCommand).getLeft();
 
@@ -227,8 +227,8 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(1)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
         Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
@@ -260,7 +260,7 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
                 aZipCode);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
-        Mockito.when(addressAdapter.findAddressByZipCode(aZipCode))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(aZipCode))
                 .thenReturn(Optional.of(makeAddressResponse()));
 
         final var aResult = useCase.execute(aCommand).getLeft();
@@ -269,8 +269,8 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(1)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
         Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
@@ -302,7 +302,7 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
                 aZipCode);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
-        Mockito.when(addressAdapter.findAddressByZipCode(aZipCode))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(aZipCode))
                 .thenReturn(Optional.of(makeAddressResponse()));
 
         final var aResult = useCase.execute(aCommand).getLeft();
@@ -311,8 +311,8 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(1)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
         Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
@@ -344,7 +344,7 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
                 aZipCode);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
-        Mockito.when(addressAdapter.findAddressByZipCode(aZipCode))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(aZipCode))
                 .thenReturn(Optional.of(makeAddressResponse()));
 
         final var aResult = useCase.execute(aCommand).getLeft();
@@ -353,8 +353,8 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(1)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
         Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
@@ -386,7 +386,7 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
                 aZipCode);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
-        Mockito.when(addressAdapter.findAddressByZipCode(aZipCode))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(aZipCode))
                 .thenReturn(Optional.of(makeAddressResponse()));
 
         final var aResult = useCase.execute(aCommand).getLeft();
@@ -395,8 +395,8 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(1)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
         Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
@@ -428,7 +428,7 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
                 aZipCode);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
-        Mockito.when(addressAdapter.findAddressByZipCode(aZipCode))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(aZipCode))
                 .thenReturn(Optional.of(makeAddressResponse()));
 
         final var aResult = useCase.execute(aCommand).getLeft();
@@ -437,8 +437,8 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(1)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
         Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }
@@ -470,7 +470,7 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
                 aZipCode);
 
         Mockito.when(customerGateway.findByAccountId(aAccountId)).thenReturn(Optional.of(aCustomer));
-        Mockito.when(addressAdapter.findAddressByZipCode(aZipCode))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(aZipCode))
                 .thenReturn(Optional.of(makeAddressResponse()));
 
         final var aResult = useCase.execute(aCommand).getLeft();
@@ -479,8 +479,8 @@ public class UpdateCustomerAddressUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
 
         Mockito.verify(customerGateway, Mockito.times(1)).findByAccountId(aAccountId);
-        Mockito.verify(addressAdapter, Mockito.times(1)).findAddressByZipCode(aZipCode);
-        Mockito.verify(addressGateway, Mockito.times(0)).deleteById(Mockito.any());
+        Mockito.verify(addressGateway, Mockito.times(1)).findAddressByZipCodeInExternalService(aZipCode);
+        Mockito.verify(addressDatabaseGateway, Mockito.times(0)).deleteById(Mockito.any());
         Mockito.verify(customerGateway, Mockito.times(0)).update(Mockito.any());
         Mockito.verify(customerCacheGateway, Mockito.times(0)).delete(aAccountId);
     }

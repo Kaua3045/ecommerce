@@ -4,11 +4,11 @@ import com.kaua.ecommerce.application.usecases.customer.delete.DeleteCustomerUse
 import com.kaua.ecommerce.config.CacheTestConfiguration;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.CacheGatewayTest;
-import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheEntityRepository;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +20,13 @@ public class DeleteCustomerUseCaseIT extends CacheTestConfiguration {
     private DeleteCustomerUseCase deleteCustomerUseCase;
 
     @Autowired
-    private CustomerJpaRepository customerRepository;
+    private CustomerJpaEntityRepository customerRepository;
 
     @Autowired
-    private CustomerCacheRepository customerCacheRepository;
+    private CustomerCacheEntityRepository customerCacheRepository;
 
     @Autowired
-    private AddressJpaRepository addressRepository;
+    private AddressJpaEntityRepository addressRepository;
 
     @Test
     void givenAValidAccountId_whenCallsDeleteCustomerUseCase_shouldBeOk() {

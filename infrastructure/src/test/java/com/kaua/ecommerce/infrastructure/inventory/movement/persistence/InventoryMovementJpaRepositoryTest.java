@@ -14,7 +14,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 public class InventoryMovementJpaRepositoryTest {
 
     @Autowired
-    private InventoryMovementJpaRepository inventoryMovementRepository;
+    private InventoryMovementJpaEntityRepository inventoryMovementRepository;
 
     @Test
     void givenAnInvalidNullInventoryId_whenCallSave_shouldReturnAnException() {

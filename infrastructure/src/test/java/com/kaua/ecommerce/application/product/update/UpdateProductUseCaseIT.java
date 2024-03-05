@@ -6,9 +6,9 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
-import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ public class UpdateProductUseCaseIT {
     private UpdateProductUseCase updateProductUseCase;
 
     @Autowired
-    private ProductJpaRepository productRepository;
+    private ProductJpaEntityRepository productRepository;
 
     @Autowired
-    private CategoryJpaRepository categoryRepository;
+    private CategoryJpaEntityRepository categoryRepository;
 
     @Test
     void givenAValidValues_whenCallsUpdateProductUseCase_thenProductShouldBeUpdated() {

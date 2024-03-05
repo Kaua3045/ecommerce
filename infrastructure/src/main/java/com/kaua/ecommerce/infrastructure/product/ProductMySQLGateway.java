@@ -4,9 +4,9 @@ import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductColor;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,15 +20,15 @@ public class ProductMySQLGateway implements ProductGateway {
 
     private static final Logger log = LoggerFactory.getLogger(ProductMySQLGateway.class);
 
-    private final ProductJpaRepository productRepository;
-    private final ProductColorJpaRepository productColorRepository;
+    private final ProductJpaEntityRepository productEntityRepository;
+    private final ProductColorJpaEntityRepository productColorEntityRepository;
 
     public ProductMySQLGateway(
-            final ProductJpaRepository productRepository,
-            final ProductColorJpaRepository productColorRepository
+            final ProductJpaEntityRepository productEntityRepository,
+            final ProductColorJpaEntityRepository productColorEntityRepository
     ) {
-        this.productRepository = Objects.requireNonNull(productRepository);
-        this.productColorRepository = Objects.requireNonNull(productColorRepository);
+        this.productEntityRepository = Objects.requireNonNull(productEntityRepository);
+        this.productColorEntityRepository = Objects.requireNonNull(productColorEntityRepository);
     }
 
     @Override
@@ -41,14 +41,14 @@ public class ProductMySQLGateway implements ProductGateway {
     @Transactional(readOnly = true)
     @Override
     public Optional<Product> findById(String aProductID) {
-        return this.productRepository.findById(aProductID)
+        return this.productEntityRepository.findById(aProductID)
                 .map(ProductJpaEntity::toDomain);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Optional<ProductColor> findColorByName(String aColorName) {
-        return this.productColorRepository.findByColorIgnoreCase(aColorName)
+        return this.productColorEntityRepository.findByColorIgnoreCase(aColorName)
                 .map(ProductColorJpaEntity::toDomain);
     }
 
@@ -61,12 +61,12 @@ public class ProductMySQLGateway implements ProductGateway {
 
     @Override
     public void delete(String aProductID) {
-        this.productRepository.deleteById(aProductID);
+        this.productEntityRepository.deleteById(aProductID);
         log.info("deleted product: {}", aProductID);
     }
 
     private Product save(final Product aProduct) {
-        return this.productRepository.saveAndFlush(ProductJpaEntity
+        return this.productEntityRepository.saveAndFlush(ProductJpaEntity
                 .toEntity(aProduct)).toDomain();
     }
 }

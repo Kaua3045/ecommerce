@@ -10,7 +10,7 @@ import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
-import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class UpdateSubCategoriesUseCaseIT {
     private UpdateSubCategoriesUseCase updateSubCategoriesUseCase;
 
     @Autowired
-    private CategoryJpaRepository categoryRepository;
+    private CategoryJpaEntityRepository categoryRepository;
 
     @Test
     void givenAValidValuesWithDescription_whenCallsUpdateSubCategoriesUseCase_thenCategoryShouldBeUpdated() {

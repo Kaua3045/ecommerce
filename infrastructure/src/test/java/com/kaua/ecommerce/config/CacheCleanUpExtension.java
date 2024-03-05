@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.config;
 
-import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressCacheRepository;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheRepository;
+import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressCacheEntityRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheEntityRepository;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.data.repository.CrudRepository;
@@ -17,8 +17,8 @@ public class CacheCleanUpExtension implements BeforeEachCallback {
         final var appContext = SpringExtension.getApplicationContext(context);
 
         cleanUp(List.of(
-                appContext.getBean(AddressCacheRepository.class),
-                appContext.getBean(CustomerCacheRepository.class)
+                appContext.getBean(AddressCacheEntityRepository.class),
+                appContext.getBean(CustomerCacheEntityRepository.class)
         ));
     }
 

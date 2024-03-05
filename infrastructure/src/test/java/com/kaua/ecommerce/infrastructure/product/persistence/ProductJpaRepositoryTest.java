@@ -19,7 +19,7 @@ import java.util.Set;
 public class ProductJpaRepositoryTest {
 
     @Autowired
-    private ProductJpaRepository productRepository;
+    private ProductJpaEntityRepository productRepository;
 
     @Test
     void givenAnInvalidNullName_whenCallSave_shouldReturnAnException() {

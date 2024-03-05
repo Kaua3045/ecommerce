@@ -5,7 +5,7 @@ import com.kaua.ecommerce.application.usecases.category.delete.DeleteCategoryUse
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
-import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class DeleteCategoryUseCaseIT {
     private DeleteCategoryUseCase deleteCategoryUseCase;
 
     @Autowired
-    private CategoryJpaRepository categoryRepository;
+    private CategoryJpaEntityRepository categoryRepository;
 
     @Test
     void givenAValidCategoryId_whenCallsDeleteCategoryUseCase_shouldBeOk() {

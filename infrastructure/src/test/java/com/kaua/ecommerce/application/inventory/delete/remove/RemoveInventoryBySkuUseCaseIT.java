@@ -3,9 +3,9 @@ package com.kaua.ecommerce.application.inventory.delete.remove;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
-import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaRepository;
+import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntity;
-import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class RemoveInventoryBySkuUseCaseIT {
 
     @Autowired
-    private InventoryJpaRepository inventoryRepository;
+    private InventoryJpaEntityRepository inventoryRepository;
 
     @Autowired
-    private InventoryMovementJpaRepository inventoryMovementRepository;
+    private InventoryMovementJpaEntityRepository inventoryMovementRepository;
 
     @Autowired
     private RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;

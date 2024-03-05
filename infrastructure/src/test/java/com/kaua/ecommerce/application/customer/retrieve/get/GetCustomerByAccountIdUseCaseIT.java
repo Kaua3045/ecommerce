@@ -8,9 +8,9 @@ import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.CacheGatewayTest;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheEntityRepository;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ public class GetCustomerByAccountIdUseCaseIT extends CacheTestConfiguration {
     private GetCustomerByAccountIdUseCase getCustomerByAccountIdUseCase;
 
     @Autowired
-    private CustomerJpaRepository customerRepository;
+    private CustomerJpaEntityRepository customerRepository;
 
     @Autowired
-    private CustomerCacheRepository customerCacheRepository;
+    private CustomerCacheEntityRepository customerCacheRepository;
 
     @Test
     void givenAValidAccountId_whenCallsGetCustomerByAccountIdFromDatabase_shouldReturnCustomer() {

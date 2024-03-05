@@ -14,10 +14,10 @@ import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.exceptions.ProductInventoryException;
 import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntity;
-import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaRepository;
-import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,13 +29,13 @@ import java.util.List;
 public class ProductInventoryUseCaseGatewayTest {
 
     @Autowired
-    private InventoryJpaRepository inventoryJpaRepository;
+    private InventoryJpaEntityRepository inventoryJpaRepository;
 
     @Autowired
-    private InventoryMovementJpaRepository inventoryMovementJpaRepository;
+    private InventoryMovementJpaEntityRepository inventoryMovementJpaRepository;
 
     @Autowired
-    private ProductJpaRepository productJpaRepository;
+    private ProductJpaEntityRepository productJpaRepository;
 
     @Autowired
     private ProductInventoryGateway productInventoryGateway;

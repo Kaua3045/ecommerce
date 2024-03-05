@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.infrastructure.configurations.usecases;
 
-import com.kaua.ecommerce.application.adapters.AddressAdapter;
 import com.kaua.ecommerce.application.adapters.TelephoneAdapter;
+import com.kaua.ecommerce.application.gateways.AddressDatabaseGateway;
 import com.kaua.ecommerce.application.gateways.AddressGateway;
 import com.kaua.ecommerce.application.gateways.CacheGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
@@ -28,21 +28,21 @@ public class CustomerUseCaseConfig {
 
     private final CustomerGateway customerGateway;
     private final TelephoneAdapter telephoneAdapter;
-    private final AddressAdapter addressAdapter;
     private final AddressGateway addressGateway;
+    private final AddressDatabaseGateway addressDatabaseGateway;
     private final CacheGateway<Customer> customerCacheGateway;
 
     public CustomerUseCaseConfig(
             final CustomerGateway customerGateway,
             final TelephoneAdapter telephoneAdapter,
-            final AddressAdapter addressAdapter,
             final AddressGateway addressGateway,
+            final AddressDatabaseGateway addressDatabaseGateway,
             final CacheGateway<Customer> customerCacheGateway
     ) {
         this.customerGateway = Objects.requireNonNull(customerGateway);
         this.telephoneAdapter = Objects.requireNonNull(telephoneAdapter);
-        this.addressAdapter = Objects.requireNonNull(addressAdapter);
         this.addressGateway = Objects.requireNonNull(addressGateway);
+        this.addressDatabaseGateway = Objects.requireNonNull(addressDatabaseGateway);
         this.customerCacheGateway = Objects.requireNonNull(customerCacheGateway);
     }
 
@@ -63,7 +63,7 @@ public class CustomerUseCaseConfig {
 
     @Bean
     public UpdateCustomerAddressUseCase updateCustomerAddressUseCase() {
-        return new DefaultUpdateCustomerAddressUseCase(customerGateway, addressGateway, addressAdapter, customerCacheGateway);
+        return new DefaultUpdateCustomerAddressUseCase(customerGateway, addressGateway, addressDatabaseGateway, customerCacheGateway);
     }
 
     @Bean

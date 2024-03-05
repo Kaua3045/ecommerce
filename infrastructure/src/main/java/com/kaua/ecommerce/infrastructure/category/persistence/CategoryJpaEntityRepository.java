@@ -6,7 +6,7 @@ import org.springframework.lang.NonNull;
 
 import java.util.Optional;
 
-public interface CategoryJpaRepository extends JpaRepository<CategoryJpaEntity, String> {
+public interface CategoryJpaEntityRepository extends JpaRepository<CategoryJpaEntity, String> {
 
     boolean existsByName(String name);
 

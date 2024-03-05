@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.application.usecases.customer.update.address;
 
-import com.kaua.ecommerce.application.adapters.AddressAdapter;
 import com.kaua.ecommerce.application.either.Either;
+import com.kaua.ecommerce.application.gateways.AddressDatabaseGateway;
 import com.kaua.ecommerce.application.gateways.AddressGateway;
 import com.kaua.ecommerce.application.gateways.CacheGateway;
 import com.kaua.ecommerce.application.gateways.CustomerGateway;
@@ -17,18 +17,18 @@ public class DefaultUpdateCustomerAddressUseCase extends UpdateCustomerAddressUs
 
     private final CustomerGateway customerGateway;
     private final AddressGateway addressGateway;
-    private final AddressAdapter addressAdapter;
+    private final AddressDatabaseGateway addressDatabaseGateway;
     private final CacheGateway<Customer> customerCacheGateway;
 
     public DefaultUpdateCustomerAddressUseCase(
             final CustomerGateway customerGateway,
             final AddressGateway addressGateway,
-            final AddressAdapter addressAdapter,
+            final AddressDatabaseGateway addressDatabaseGateway,
             final CacheGateway<Customer> customerCacheGateway
     ) {
         this.customerGateway = Objects.requireNonNull(customerGateway);
         this.addressGateway = Objects.requireNonNull(addressGateway);
-        this.addressAdapter = Objects.requireNonNull(addressAdapter);
+        this.addressDatabaseGateway = Objects.requireNonNull(addressDatabaseGateway);
         this.customerCacheGateway = Objects.requireNonNull(customerCacheGateway);
     }
 
@@ -66,7 +66,7 @@ public class DefaultUpdateCustomerAddressUseCase extends UpdateCustomerAddressUs
         this.customerGateway.update(aCustomerWithAddress);
 
         if (aOldAddressId != null) {
-            this.addressGateway.deleteById(aOldAddressId.getValue());
+            this.addressDatabaseGateway.deleteById(aOldAddressId.getValue());
         }
 
         this.customerCacheGateway.delete(aCustomerWithAddress.getAccountId());
@@ -77,7 +77,7 @@ public class DefaultUpdateCustomerAddressUseCase extends UpdateCustomerAddressUs
     private NotificationHandler checkAddress(final UpdateCustomerAddressCommand input) {
         final var aNotification = NotificationHandler.create();
 
-        final var aAddressResponse = this.addressAdapter.findAddressByZipCode(input.zipCode());
+        final var aAddressResponse = this.addressGateway.findAddressByZipCodeInExternalService(input.zipCode());
 
         if (aAddressResponse.isEmpty()) {
             return aNotification.append(new Error("'zipCode' not exists"));

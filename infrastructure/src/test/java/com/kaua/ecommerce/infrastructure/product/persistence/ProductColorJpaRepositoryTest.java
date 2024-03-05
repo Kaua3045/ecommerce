@@ -14,7 +14,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 public class ProductColorJpaRepositoryTest {
 
     @Autowired
-    private ProductColorJpaRepository productColorRepository;
+    private ProductColorJpaEntityRepository productColorRepository;
 
     @Test
     void givenAnInvalidNullColor_whenCallSave_shouldReturnAnException() {

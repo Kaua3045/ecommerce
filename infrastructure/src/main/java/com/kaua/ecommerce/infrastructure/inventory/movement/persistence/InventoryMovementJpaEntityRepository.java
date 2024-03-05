@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface InventoryMovementJpaRepository extends JpaRepository<InventoryMovementJpaEntity, String> {
+public interface InventoryMovementJpaEntityRepository extends JpaRepository<InventoryMovementJpaEntity, String> {
 
     Optional<InventoryMovementJpaEntity> findFirstBySkuAndMovementTypeOrderByCreatedAtDesc(String sku, InventoryMovementStatus status);
 

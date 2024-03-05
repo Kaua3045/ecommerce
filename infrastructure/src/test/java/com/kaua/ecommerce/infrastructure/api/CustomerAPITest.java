@@ -1,8 +1,8 @@
 package com.kaua.ecommerce.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kaua.ecommerce.application.adapters.AddressAdapter;
-import com.kaua.ecommerce.application.adapters.responses.AddressResponse;
+import com.kaua.ecommerce.application.gateways.AddressGateway;
+import com.kaua.ecommerce.application.gateways.responses.AddressResponse;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdOutput;
 import com.kaua.ecommerce.application.usecases.customer.retrieve.get.GetCustomerByAccountIdUseCase;
@@ -52,7 +52,7 @@ public class CustomerAPITest {
     private ObjectMapper mapper;
 
     @MockBean
-    private AddressAdapter addressAdapter;
+    private AddressGateway addressGateway;
 
     @MockBean
     private UpdateCustomerCpfUseCase updateCustomerCpfUseCase;
@@ -319,7 +319,7 @@ public class CustomerAPITest {
         final var aAccountId = aCustomer.getAccountId();
         final var aInput = getUpdateCustomerAddressInput();
 
-        Mockito.when(addressAdapter.findAddressByZipCode(Mockito.any()))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(Mockito.any()))
                         .thenReturn(Optional.of(getAddressResponse()));
         Mockito.when(updateCustomerAddressUseCase.execute(Mockito.any()))
                 .thenReturn(Either.right(UpdateCustomerAddressOutput.from(aCustomer)));
@@ -413,7 +413,7 @@ public class CustomerAPITest {
 
         );
 
-        Mockito.when(addressAdapter.findAddressByZipCode(Mockito.any()))
+        Mockito.when(addressGateway.findAddressByZipCodeInExternalService(Mockito.any()))
                 .thenReturn(Optional.of(getAddressResponse()));
         Mockito.when(updateCustomerAddressUseCase.execute(Mockito.any()))
                 .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));

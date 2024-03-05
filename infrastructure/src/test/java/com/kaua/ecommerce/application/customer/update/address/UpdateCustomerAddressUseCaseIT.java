@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.application.customer.update.address;
 
-import com.kaua.ecommerce.application.adapters.responses.AddressResponse;
+import com.kaua.ecommerce.application.gateways.responses.AddressResponse;
 import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCustomerAddressCommand;
 import com.kaua.ecommerce.application.usecases.customer.update.address.UpdateCustomerAddressUseCase;
 import com.kaua.ecommerce.config.CacheTestConfiguration;
@@ -10,10 +10,10 @@ import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.CacheGatewayTest;
 import com.kaua.ecommerce.infrastructure.api.ViaCepClient;
-import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaRepository;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheRepository;
+import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheEntityRepository;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -27,13 +27,13 @@ public class UpdateCustomerAddressUseCaseIT extends CacheTestConfiguration {
     private UpdateCustomerAddressUseCase updateCustomerAddressUseCase;
 
     @Autowired
-    private CustomerJpaRepository customerRepository;
+    private CustomerJpaEntityRepository customerRepository;
 
     @Autowired
-    private CustomerCacheRepository customerCacheRepository;
+    private CustomerCacheEntityRepository customerCacheRepository;
 
     @Autowired
-    private AddressJpaRepository addressRepository;
+    private AddressJpaEntityRepository addressRepository;
 
     @MockBean
     private ViaCepClient viaCepClient;

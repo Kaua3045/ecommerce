@@ -8,8 +8,8 @@ import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
 import com.kaua.ecommerce.domain.product.ProductID;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntity;
-import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaRepository;
-import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +24,10 @@ import java.util.concurrent.Executors;
 public class RollbackInventoryBySkuUseCaseIT {
 
     @Autowired
-    private InventoryMovementJpaRepository inventoryMovementJpaRepository;
+    private InventoryMovementJpaEntityRepository inventoryMovementJpaRepository;
 
     @Autowired
-    private InventoryJpaRepository inventoryJpaRepository;
+    private InventoryJpaEntityRepository inventoryJpaRepository;
 
     @Autowired
     private RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase;

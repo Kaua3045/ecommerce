@@ -8,7 +8,7 @@ import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.infrastructure.DatabaseGatewayTest;
 import com.kaua.ecommerce.infrastructure.customer.CustomerMySQLGateway;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class CustomerGatewayTest {
     private CustomerMySQLGateway customerGateway;
 
     @Autowired
-    private CustomerJpaRepository customerRepository;
+    private CustomerJpaEntityRepository customerRepository;
 
     @Test
     void givenAValidCustomer_whenCallCreate_shouldReturnACustomerCreated() {

@@ -6,7 +6,7 @@ import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.infrastructure.AbstractElasticsearchTest;
 import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchEntityRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ public class ProductElasticsearchGatewayTest extends AbstractElasticsearchTest {
     private ProductElasticsearchGateway productElasticsearchGateway;
 
     @Autowired
-    private ProductElasticsearchRepository productElasticsearchRepository;
+    private ProductElasticsearchEntityRepository productElasticsearchRepository;
 
     @Test
     void givenAValidProduct_whenCallSave_shouldReturnProductSaved() {

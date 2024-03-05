@@ -17,7 +17,7 @@ import java.util.Set;
 public class CategoryJpaRepositoryTest {
 
     @Autowired
-    private CategoryJpaRepository categoryRepository;
+    private CategoryJpaEntityRepository categoryRepository;
 
     @Test
     void givenAnInvalidNullName_whenCallSave_shouldReturnAnException() {

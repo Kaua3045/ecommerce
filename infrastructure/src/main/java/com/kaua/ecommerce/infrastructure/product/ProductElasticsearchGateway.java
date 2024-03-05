@@ -5,7 +5,7 @@ import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchEntityRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,21 +31,21 @@ public class ProductElasticsearchGateway implements SearchGateway<Product> {
     private static final String CATEGORY_ID_PROP = "category_id";
     private static final String KEYWORD = ".keyword";
 
-    private final ProductElasticsearchRepository productElasticsearchRepository;
+    private final ProductElasticsearchEntityRepository productElasticsearchEntityRepository;
     private final SearchOperations searchOperations;
 
     public ProductElasticsearchGateway(
-            final ProductElasticsearchRepository productElasticsearchRepository,
+            final ProductElasticsearchEntityRepository productElasticsearchEntityRepository,
             final SearchOperations searchOperations
     ) {
-        this.productElasticsearchRepository = Objects.requireNonNull(productElasticsearchRepository);
+        this.productElasticsearchEntityRepository = Objects.requireNonNull(productElasticsearchEntityRepository);
         this.searchOperations = Objects.requireNonNull(searchOperations);
     }
 
     @Transactional
     @Override
     public Product save(Product aggregateRoot) {
-        this.productElasticsearchRepository.save(ProductElasticsearchEntity.toEntity(aggregateRoot));
+        this.productElasticsearchEntityRepository.save(ProductElasticsearchEntity.toEntity(aggregateRoot));
         log.info("inserted or updated product in elasticsearch: {}", aggregateRoot);
         return aggregateRoot;
     }
@@ -96,7 +96,7 @@ public class ProductElasticsearchGateway implements SearchGateway<Product> {
     @Transactional
     @Override
     public void deleteById(String id) {
-        this.productElasticsearchRepository.deleteById(id);
+        this.productElasticsearchEntityRepository.deleteById(id);
         log.info("deleted product from elasticsearch: {}", id);
     }
 

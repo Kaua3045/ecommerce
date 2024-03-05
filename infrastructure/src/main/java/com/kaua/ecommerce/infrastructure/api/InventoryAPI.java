@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api;
 
 import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInput;
+import com.kaua.ecommerce.infrastructure.inventory.models.IncreaseInventoryQuantityInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -37,6 +38,19 @@ public interface InventoryAPI {
     })
     @ResponseStatus(HttpStatus.OK)
     void rollbackInventoryBySkuAndProductId(@PathVariable String productId, @PathVariable String sku);
+
+    @PatchMapping(
+            value = "/increase/{sku}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Increase inventory quantity by sku")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Increased successfully"),
+            @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    ResponseEntity<?> increaseInventoryQuantityBySku(@PathVariable String sku, @RequestBody IncreaseInventoryQuantityInput body);
 
     @DeleteMapping(value = "{productId}")
     @Operation(summary = "Delete a inventories by it's identifier")

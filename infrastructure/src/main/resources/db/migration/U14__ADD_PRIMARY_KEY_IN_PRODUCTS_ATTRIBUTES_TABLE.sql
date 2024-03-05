@@ -1,0 +1,1 @@
+ALTER TABLE products_attributes DROP PRIMARY KEY;

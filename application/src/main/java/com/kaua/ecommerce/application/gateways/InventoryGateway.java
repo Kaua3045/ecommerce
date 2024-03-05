@@ -10,6 +10,8 @@ public interface InventoryGateway {
 
     Set<Inventory> createInBatch(Set<Inventory> inventories);
 
+    Inventory update(Inventory inventory);
+
     List<String> existsBySkus(List<String> skus);
 
     Optional<Inventory> findBySku(String sku);

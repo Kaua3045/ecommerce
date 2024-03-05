@@ -217,4 +217,26 @@ public class InventoryGatewayTest {
 
         Assertions.assertTrue(aInventories.isEmpty());
     }
+
+    @Test
+    void givenAValidInventory_whenCallUpdate_shouldUpdateInventory() {
+        final var aProductId = ProductID.unique().getValue();
+        final var aSku = "sku";
+        final var aQuantity = 10;
+
+        final var aInventory = Inventory.newInventory(aProductId, aSku, aQuantity);
+
+        this.inventoryRepository.saveAndFlush(InventoryJpaEntity.toEntity(aInventory));
+
+        final var aInventoryToUpdate = aInventory.increaseQuantity(5);
+
+        final var aInventoryUpdated = this.inventoryGateway.update(aInventoryToUpdate);
+
+        Assertions.assertEquals(aInventory.getId().getValue(), aInventoryUpdated.getId().getValue());
+        Assertions.assertEquals(aInventory.getProductId(), aInventoryUpdated.getProductId());
+        Assertions.assertEquals(aInventory.getSku(), aInventoryUpdated.getSku());
+        Assertions.assertEquals(15, aInventoryUpdated.getQuantity());
+        Assertions.assertNotNull(aInventoryUpdated.getCreatedAt());
+        Assertions.assertNotNull(aInventoryUpdated.getUpdatedAt());
+    }
 }

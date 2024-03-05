@@ -4,11 +4,14 @@ import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryU
 import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateInventoryCommand;
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityCommand;
+import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuCommand;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.infrastructure.api.InventoryAPI;
 import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInput;
+import com.kaua.ecommerce.infrastructure.inventory.models.IncreaseInventoryQuantityInput;
 import com.kaua.ecommerce.infrastructure.utils.LogControllerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,17 +28,20 @@ public class InventoryController implements InventoryAPI {
     private final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase;
     private final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
     private final RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase;
+    private final IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase;
 
     public InventoryController(
             final CreateInventoryUseCase createInventoryUseCase,
             final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase,
             final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase,
-            final RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase
+            final RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase,
+            final IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase
     ) {
         this.createInventoryUseCase = createInventoryUseCase;
         this.cleanInventoriesByProductIdUseCase = cleanInventoriesByProductIdUseCase;
         this.removeInventoryBySkuUseCase = removeInventoryBySkuUseCase;
         this.rollbackInventoryBySkuUseCase = rollbackInventoryBySkuUseCase;
+        this.increaseInventoryQuantityUseCase = increaseInventoryQuantityUseCase;
     }
 
     @Override
@@ -66,6 +72,24 @@ public class InventoryController implements InventoryAPI {
                 "rollbackInventoryBySku",
                 productId + " " + sku + " rolled back"
         );
+    }
+
+    @Override
+    public ResponseEntity<?> increaseInventoryQuantityBySku(String sku, IncreaseInventoryQuantityInput body) {
+        final var aCommand = IncreaseInventoryQuantityCommand.with(sku, body.quantity());
+
+        final var aResult = this.increaseInventoryQuantityUseCase.execute(aCommand);
+
+        LogControllerResult.logResult(
+                log,
+                Inventory.class,
+                "increaseInventoryQuantityBySku",
+                aResult
+        );
+
+        return aResult.isLeft()
+                ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
+                : ResponseEntity.ok(aResult.getRight());
     }
 
     @Override

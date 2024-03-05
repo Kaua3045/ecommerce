@@ -7,6 +7,9 @@ import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateI
 import com.kaua.ecommerce.application.usecases.inventory.create.outputs.CreateInventoryOutput;
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityCommand;
+import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityOutput;
+import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.product.ProductID;
@@ -16,6 +19,7 @@ import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import com.kaua.ecommerce.infrastructure.ControllerTest;
 import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInput;
 import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInputParams;
+import com.kaua.ecommerce.infrastructure.inventory.models.IncreaseInventoryQuantityInput;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -54,6 +58,9 @@ public class InventoryAPITest {
 
     @MockBean
     private RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase;
+
+    @MockBean
+    private IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateInventory_thenReturnStatusOkAndIdAndSku() throws Exception {
@@ -274,5 +281,78 @@ public class InventoryAPITest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(rollbackInventoryBySkuUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidInput_whenCallIncreaseInventoryQuantity_thenReturnStatusOkAndIdAndSkuAndProductId() throws Exception {
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+
+        final var aSku = "sku";
+        final var aQuantity = 10;
+
+        final var aInput = new IncreaseInventoryQuantityInput(
+                aQuantity
+        );
+
+        Mockito.when(increaseInventoryQuantityUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(IncreaseInventoryQuantityOutput.from(aInventory)));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/inventories/increase/{sku}", aSku)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.product_id", equalTo(aInventory.getProductId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.inventory_id", equalTo(aInventory.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sku", equalTo(aInventory.getSku())));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(IncreaseInventoryQuantityCommand.class);
+
+        Mockito.verify(increaseInventoryQuantityUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aSku, actualCmd.sku());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
+    }
+
+    @Test
+    void givenAnInvalidInputQuantity_whenCallIncreaseInventoryQuantity_thenReturnDomainException() throws Exception {
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+
+        final var aSku = "sku";
+        final var aQuantity = 0;
+
+        final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", 0);
+
+        final var aInput = new IncreaseInventoryQuantityInput(
+                aQuantity
+        );
+
+        Mockito.when(increaseInventoryQuantityUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/inventories/increase/{sku}", aSku)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(IncreaseInventoryQuantityCommand.class);
+
+        Mockito.verify(increaseInventoryQuantityUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aSku, actualCmd.sku());
+        Assertions.assertEquals(aQuantity, actualCmd.quantity());
     }
 }

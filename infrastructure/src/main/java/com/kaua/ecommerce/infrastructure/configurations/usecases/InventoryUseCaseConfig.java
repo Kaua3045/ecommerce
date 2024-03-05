@@ -9,6 +9,8 @@ import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInven
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.DefaultCleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.DefaultRemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.increase.DefaultIncreaseInventoryQuantityUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.DefaultRollbackInventoryBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +43,11 @@ public class InventoryUseCaseConfig {
     @Bean
     public CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase() {
         return new DefaultCleanInventoriesByProductIdUseCase(inventoryGateway, inventoryMovementGateway, transactionManager);
+    }
+
+    @Bean
+    public IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase() {
+        return new DefaultIncreaseInventoryQuantityUseCase(inventoryGateway, inventoryMovementGateway, transactionManager);
     }
 
     @Bean

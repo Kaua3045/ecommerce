@@ -38,6 +38,14 @@ public class InventoryMySQLGateway implements InventoryGateway {
     }
 
     @Override
+    public Inventory update(Inventory inventory) {
+        final var aResult = this.inventoryJpaEntityRepository.save(InventoryJpaEntity.toEntity(inventory))
+                .toDomain();
+        log.info("updated inventory: {}", aResult);
+        return aResult;
+    }
+
+    @Override
     public List<String> existsBySkus(List<String> skus) {
         return this.inventoryJpaEntityRepository.existsBySkus(skus);
     }

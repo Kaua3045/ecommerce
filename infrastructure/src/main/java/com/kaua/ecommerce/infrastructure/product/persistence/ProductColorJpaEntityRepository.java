@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ProductColorJpaRepository extends JpaRepository<ProductColorJpaEntity, String> {
+public interface ProductColorJpaEntityRepository extends JpaRepository<ProductColorJpaEntity, String> {
 
     Optional<ProductColorJpaEntity> findByColorIgnoreCase(String color);
 }

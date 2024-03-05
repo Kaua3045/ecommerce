@@ -7,7 +7,7 @@ import com.kaua.ecommerce.application.usecases.product.attributes.remove.RemoveP
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 public class RemoveProductAttributesUseCaseIT {
 
     @Autowired
-    private ProductJpaRepository productJpaRepository;
+    private ProductJpaEntityRepository productJpaRepository;
 
     @MockBean
     private ProductInventoryGateway productInventoryGateway;

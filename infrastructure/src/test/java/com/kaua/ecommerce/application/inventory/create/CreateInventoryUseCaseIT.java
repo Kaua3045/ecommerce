@@ -7,7 +7,7 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.product.ProductID;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
-import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class CreateInventoryUseCaseIT {
     private CreateInventoryUseCase createInventoryUseCase;
 
     @Autowired
-    private InventoryJpaRepository inventoryRepository;
+    private InventoryJpaEntityRepository inventoryRepository;
 
     @Test
     void givenAValidValues_whenCallsCreateInventoryUseCase_thenInventoriesShouldBeCreated() {

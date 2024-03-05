@@ -5,9 +5,9 @@ import com.kaua.ecommerce.domain.category.CategoryID;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.infrastructure.DatabaseGatewayTest;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ public class ProductGatewayTest {
     private ProductMySQLGateway productGateway;
 
     @Autowired
-    private ProductJpaRepository productRepository;
+    private ProductJpaEntityRepository productRepository;
 
     @Autowired
-    private ProductColorJpaRepository productColorRepository;
+    private ProductColorJpaEntityRepository productColorRepository;
 
     @Test
     void givenAValidProduct_whenCallCreate_shouldPersistProduct() {

@@ -17,7 +17,7 @@ import java.util.Set;
 public class ProductElasticsearchRepositoryTest extends AbstractElasticsearchTest {
 
     @Autowired
-    private ProductElasticsearchRepository productElasticsearchRepository;
+    private ProductElasticsearchEntityRepository productElasticsearchRepository;
 
     @Test
     void givenAValidProduct_whenCallSave_shouldPersistProduct() {

@@ -2,5 +2,5 @@ package com.kaua.ecommerce.infrastructure.customer.address.persistence;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface AddressCacheRepository extends CrudRepository<AddressCacheEntity, String> {
+public interface AddressCacheEntityRepository extends CrudRepository<AddressCacheEntity, String> {
 }

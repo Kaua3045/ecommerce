@@ -3,7 +3,7 @@ package com.kaua.ecommerce.infrastructure.inventory;
 import com.kaua.ecommerce.application.gateways.InventoryGateway;
 import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntity;
-import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,16 +20,16 @@ public class InventoryMySQLGateway implements InventoryGateway {
 
     private static final Logger log = LoggerFactory.getLogger(InventoryMySQLGateway.class);
 
-    private final InventoryJpaRepository inventoryJpaRepository;
+    private final InventoryJpaEntityRepository inventoryJpaEntityRepository;
 
-    public InventoryMySQLGateway(final InventoryJpaRepository inventoryJpaRepository) {
-        this.inventoryJpaRepository = Objects.requireNonNull(inventoryJpaRepository);
+    public InventoryMySQLGateway(final InventoryJpaEntityRepository inventoryJpaEntityRepository) {
+        this.inventoryJpaEntityRepository = Objects.requireNonNull(inventoryJpaEntityRepository);
     }
 
     @Transactional
     @Override
     public Set<Inventory> createInBatch(Set<Inventory> inventories) {
-        final var aResult = this.inventoryJpaRepository.saveAll(inventories.stream()
+        final var aResult = this.inventoryJpaEntityRepository.saveAll(inventories.stream()
                 .map(InventoryJpaEntity::toEntity)
                 .toList());
 
@@ -39,20 +39,20 @@ public class InventoryMySQLGateway implements InventoryGateway {
 
     @Override
     public List<String> existsBySkus(List<String> skus) {
-        return this.inventoryJpaRepository.existsBySkus(skus);
+        return this.inventoryJpaEntityRepository.existsBySkus(skus);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Optional<Inventory> findBySku(String sku) {
-        return this.inventoryJpaRepository.findBySku(sku)
+        return this.inventoryJpaEntityRepository.findBySku(sku)
                 .map(InventoryJpaEntity::toDomain);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Set<Inventory> findByProductId(String productId) {
-        return this.inventoryJpaRepository.findByProductId(productId)
+        return this.inventoryJpaEntityRepository.findByProductId(productId)
                 .stream()
                 .map(InventoryJpaEntity::toDomain)
                 .collect(Collectors.toSet());
@@ -60,13 +60,13 @@ public class InventoryMySQLGateway implements InventoryGateway {
 
     @Override
     public void cleanByProductId(String productId) {
-        this.inventoryJpaRepository.deleteAllByProductId(productId);
+        this.inventoryJpaEntityRepository.deleteAllByProductId(productId);
         log.info("deleted inventories by productId: {}", productId);
     }
 
     @Override
     public void deleteBySku(String sku) {
-        this.inventoryJpaRepository.deleteBySku(sku);
+        this.inventoryJpaEntityRepository.deleteBySku(sku);
         log.info("deleted inventory by sku: {}", sku);
     }
 }

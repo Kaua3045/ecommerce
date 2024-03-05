@@ -1,4 +1,4 @@
-package com.kaua.ecommerce.application.adapters.responses;
+package com.kaua.ecommerce.application.gateways.responses;
 
 public record AddressResponse(
         String cep,

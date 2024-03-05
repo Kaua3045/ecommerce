@@ -4,7 +4,7 @@ import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInven
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntity;
-import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CleanInventoriesByProductIdUseCaseIT {
 
     @Autowired
-    private InventoryJpaRepository inventoryRepository;
+    private InventoryJpaEntityRepository inventoryRepository;
 
     @Autowired
     private CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase;

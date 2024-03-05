@@ -1,19 +1,19 @@
 package com.kaua.ecommerce.config;
 
-import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchRepository;
-import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchRepository;
+import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchEntityRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.elasticsearch.ProductElasticsearchEntityRepository;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 
 public class IntegrationTestConfiguration {
 
     @Bean
-    public CategoryElasticsearchRepository categoryElasticsearchRepository() {
-        return Mockito.mock(CategoryElasticsearchRepository.class);
+    public CategoryElasticsearchEntityRepository categoryElasticsearchRepository() {
+        return Mockito.mock(CategoryElasticsearchEntityRepository.class);
     }
 
     @Bean
-    public ProductElasticsearchRepository productElasticsearchRepository() {
-        return Mockito.mock(ProductElasticsearchRepository.class);
+    public ProductElasticsearchEntityRepository productElasticsearchRepository() {
+        return Mockito.mock(ProductElasticsearchEntityRepository.class);
     }
 }

@@ -4,19 +4,19 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.address.AddressMySQLGateway;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @IntegrationTest
-public class AddressGatewayTest {
+public class AddressDatabaseGatewayTest {
 
     @Autowired
     private AddressMySQLGateway addressGateway;
 
     @Autowired
-    private AddressJpaRepository addressRepository;
+    private AddressJpaEntityRepository addressRepository;
 
     @Test
     void givenAValidAddressId_whenCallDeleteById_shouldBeOk() {

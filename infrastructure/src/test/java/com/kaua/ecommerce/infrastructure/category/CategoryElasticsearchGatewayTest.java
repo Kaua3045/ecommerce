@@ -5,7 +5,7 @@ import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.AbstractElasticsearchTest;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchEntity;
-import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchRepository;
+import com.kaua.ecommerce.infrastructure.category.persistence.CategoryElasticsearchEntityRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
     private CategoryElasticsearchGateway categoryElasticsearchGateway;
 
     @Autowired
-    private CategoryElasticsearchRepository categoryElasticsearchRepository;
+    private CategoryElasticsearchEntityRepository categoryElasticsearchRepository;
 
     @Test
     void givenAValidCategoryWithSubCategories_whenCallSave_shouldReturnCategorySaved() {

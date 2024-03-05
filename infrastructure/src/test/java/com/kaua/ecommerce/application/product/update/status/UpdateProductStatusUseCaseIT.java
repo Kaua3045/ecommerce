@@ -6,7 +6,7 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.product.ProductStatus;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class UpdateProductStatusUseCaseIT {
     private UpdateProductStatusUseCase updateProductStatusUseCase;
 
     @Autowired
-    private ProductJpaRepository productRepository;
+    private ProductJpaEntityRepository productRepository;
 
     @Test
     void givenAValidValues_whenCallsUpdateProductStatusUseCase_thenProductStatusShouldBeUpdated() {

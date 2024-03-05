@@ -1,13 +1,13 @@
 package com.kaua.ecommerce.config;
 
-import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaRepository;
-import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaRepository;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaRepository;
-import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaRepository;
-import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaRepository;
+import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventRepository;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaRepository;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntityRepository;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.data.repository.CrudRepository;
@@ -24,13 +24,13 @@ public class JpaCleanUpExtension implements BeforeEachCallback {
 
         cleanUp(List.of(
                 appContext.getBean(OutboxEventRepository.class),
-                appContext.getBean(ProductJpaRepository.class),
-                appContext.getBean(ProductColorJpaRepository.class),
-                appContext.getBean(CategoryJpaRepository.class),
-                appContext.getBean(CustomerJpaRepository.class),
-                appContext.getBean(AddressJpaRepository.class),
-                appContext.getBean(InventoryJpaRepository.class),
-                appContext.getBean(InventoryMovementJpaRepository.class)
+                appContext.getBean(ProductJpaEntityRepository.class),
+                appContext.getBean(ProductColorJpaEntityRepository.class),
+                appContext.getBean(CategoryJpaEntityRepository.class),
+                appContext.getBean(CustomerJpaEntityRepository.class),
+                appContext.getBean(AddressJpaEntityRepository.class),
+                appContext.getBean(InventoryJpaEntityRepository.class),
+                appContext.getBean(InventoryMovementJpaEntityRepository.class)
         ));
     }
 

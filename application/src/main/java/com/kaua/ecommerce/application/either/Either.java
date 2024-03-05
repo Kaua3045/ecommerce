@@ -4,6 +4,22 @@ import java.util.NoSuchElementException;
 
 public abstract class Either<L, R> {
 
+    public static <L, R> Either<L, R> right(R value) {
+        return new BaseMethods<L, R>().new Right(value);
+    }
+
+    public static <L, R> Either<L, R> left(L value) {
+        return new BaseMethods<L, R>().new Left(value);
+    }
+
+    public abstract boolean isLeft();
+
+    public abstract boolean isRight();
+
+    public abstract L getLeft();
+
+    public abstract R getRight();
+
     public static class BaseMethods<L, R> extends Either<L, R> {
 
         @Override
@@ -26,12 +42,6 @@ public abstract class Either<L, R> {
             throw new UnsupportedOperationException();
         }
     }
-
-    public abstract boolean isLeft();
-    public abstract boolean isRight();
-
-    public abstract L getLeft();
-    public abstract R getRight();
 
     class Left extends Either<L, R> {
 
@@ -89,13 +99,5 @@ public abstract class Either<L, R> {
         public R getRight() {
             return this.value;
         }
-    }
-
-    public static <L, R> Either<L, R> right(R value) {
-        return new BaseMethods<L, R>().new Right(value);
-    }
-
-    public static <L, R> Either<L, R> left(L value) {
-        return new BaseMethods<L, R>().new Left(value);
     }
 }

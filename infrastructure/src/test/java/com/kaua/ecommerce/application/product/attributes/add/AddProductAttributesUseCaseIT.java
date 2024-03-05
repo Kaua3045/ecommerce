@@ -6,7 +6,7 @@ import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProduct
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntity;
-import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaRepository;
+import com.kaua.ecommerce.infrastructure.product.persistence.ProductJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.List;
 public class AddProductAttributesUseCaseIT {
 
     @Autowired
-    private ProductJpaRepository productJpaRepository;
+    private ProductJpaEntityRepository productJpaRepository;
 
     @Autowired
     private AddProductAttributesUseCase addProductAttributesUseCase;

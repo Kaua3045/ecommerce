@@ -8,7 +8,7 @@ import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.infrastructure.CacheGatewayTest;
 import com.kaua.ecommerce.infrastructure.customer.CustomerCacheGateway;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheEntity;
-import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheRepository;
+import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerCacheEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
     private CustomerCacheGateway customerCacheGateway;
 
     @Autowired
-    private CustomerCacheRepository customerRepository;
+    private CustomerCacheEntityRepository customerRepository;
 
     @Test
     void givenAValidCustomer_whenCallSave_shouldReturnACustomerSavedInCache() {

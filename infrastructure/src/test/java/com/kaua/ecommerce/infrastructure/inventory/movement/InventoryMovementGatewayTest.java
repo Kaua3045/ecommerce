@@ -5,7 +5,7 @@ import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
 import com.kaua.ecommerce.infrastructure.DatabaseGatewayTest;
 import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntity;
-import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaRepository;
+import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class InventoryMovementGatewayTest {
     private InventoryMovementMySQLGateway inventoryMovementGateway;
 
     @Autowired
-    private InventoryMovementJpaRepository inventoryMovementRepository;
+    private InventoryMovementJpaEntityRepository inventoryMovementRepository;
 
     @Test
     void givenAValidInventoriesMovements_whenCallCreateInBatch_shouldPersistInventoriesMovements() {

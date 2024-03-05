@@ -3,7 +3,7 @@ package com.kaua.ecommerce.infrastructure.costumer.address.persistence;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntity;
-import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaRepository;
+import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntityRepository;
 import org.hibernate.PropertyValueException;
 import org.hibernate.id.IdentifierGenerationException;
 import org.junit.jupiter.api.Assertions;
@@ -16,7 +16,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 public class AddressJpaRepositoryTest {
 
     @Autowired
-    private AddressJpaRepository addressRepository;
+    private AddressJpaEntityRepository addressRepository;
 
     @Test
     void givenAnInvalidNullStreet_whenCallSave_shouldReturnAnException() {

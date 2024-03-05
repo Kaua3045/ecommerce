@@ -107,4 +107,22 @@ public class InventoryTest extends UnitTest {
         Assertions.assertNotNull(aEvent.occurredOn());
         Assertions.assertEquals(0, aEvent.version());
     }
+
+    @Test
+    void givenAValidQuantity_whenCallIncreaseQuantity_shouldReturnInventoryUpdated() {
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+
+        final var expectedQuantity = aInventory.getQuantity() + 10;
+
+        final var aInventoryUpdatedAt = aInventory.getUpdatedAt();
+
+        final var aInventoryUpdated = aInventory.increaseQuantity(10);
+
+        Assertions.assertEquals(aInventory.getId(), aInventoryUpdated.getId());
+        Assertions.assertEquals(aInventory.getProductId(), aInventoryUpdated.getProductId());
+        Assertions.assertEquals(aInventory.getSku(), aInventoryUpdated.getSku());
+        Assertions.assertEquals(expectedQuantity, aInventoryUpdated.getQuantity());
+        Assertions.assertEquals(aInventory.getCreatedAt(), aInventoryUpdated.getCreatedAt());
+        Assertions.assertTrue(aInventoryUpdated.getUpdatedAt().isAfter(aInventoryUpdatedAt));
+    }
 }

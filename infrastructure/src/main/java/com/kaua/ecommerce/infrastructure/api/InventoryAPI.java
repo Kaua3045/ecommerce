@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api;
 
 import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInput;
+import com.kaua.ecommerce.infrastructure.inventory.models.DecreaseInventoryQuantityInput;
 import com.kaua.ecommerce.infrastructure.inventory.models.IncreaseInventoryQuantityInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -49,8 +50,20 @@ public interface InventoryAPI {
             @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
-    @ResponseStatus(HttpStatus.OK)
     ResponseEntity<?> increaseInventoryQuantityBySku(@PathVariable String sku, @RequestBody IncreaseInventoryQuantityInput body);
+
+    @PatchMapping(
+            value = "/decrease/{sku}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Decrease inventory quantity by sku")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Decreased successfully"),
+            @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> decreaseInventoryQuantityBySku(@PathVariable String sku, @RequestBody DecreaseInventoryQuantityInput body);
+
 
     @DeleteMapping(value = "{productId}")
     @Operation(summary = "Delete a inventories by it's identifier")

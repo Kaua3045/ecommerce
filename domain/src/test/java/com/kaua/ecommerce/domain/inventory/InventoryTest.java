@@ -125,4 +125,22 @@ public class InventoryTest extends UnitTest {
         Assertions.assertEquals(aInventory.getCreatedAt(), aInventoryUpdated.getCreatedAt());
         Assertions.assertTrue(aInventoryUpdated.getUpdatedAt().isAfter(aInventoryUpdatedAt));
     }
+
+    @Test
+    void givenAValidQuantity_whenCallDecreaseQuantity_shouldReturnInventoryUpdated() {
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+
+        final var expectedQuantity = aInventory.getQuantity() - 10;
+
+        final var aInventoryUpdatedAt = aInventory.getUpdatedAt();
+
+        final var aInventoryUpdated = aInventory.decreaseQuantity(10);
+
+        Assertions.assertEquals(aInventory.getId(), aInventoryUpdated.getId());
+        Assertions.assertEquals(aInventory.getProductId(), aInventoryUpdated.getProductId());
+        Assertions.assertEquals(aInventory.getSku(), aInventoryUpdated.getSku());
+        Assertions.assertEquals(expectedQuantity, aInventoryUpdated.getQuantity());
+        Assertions.assertEquals(aInventory.getCreatedAt(), aInventoryUpdated.getCreatedAt());
+        Assertions.assertTrue(aInventoryUpdated.getUpdatedAt().isAfter(aInventoryUpdatedAt));
+    }
 }

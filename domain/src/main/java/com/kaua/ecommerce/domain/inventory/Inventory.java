@@ -47,6 +47,12 @@ public class Inventory extends AggregateRoot<InventoryID> {
         return this;
     }
 
+    public Inventory decreaseQuantity(final int aQuantity) {
+        this.quantity -= aQuantity;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
     public static Inventory with(
             final String aInventoryID,
             final String aProductId,

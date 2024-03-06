@@ -5,6 +5,8 @@ import com.kaua.ecommerce.application.gateways.InventoryGateway;
 import com.kaua.ecommerce.application.gateways.InventoryMovementGateway;
 import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.create.DefaultCreateInventoryUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.decrease.DecreaseInventoryQuantityUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.decrease.DefaultDecreaseInventoryQuantityUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.DefaultCleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.DefaultRemoveInventoryBySkuUseCase;
@@ -48,6 +50,11 @@ public class InventoryUseCaseConfig {
     @Bean
     public IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase() {
         return new DefaultIncreaseInventoryQuantityUseCase(inventoryGateway, inventoryMovementGateway, transactionManager);
+    }
+
+    @Bean
+    public DecreaseInventoryQuantityUseCase decreaseInventoryQuantityUseCase() {
+        return new DefaultDecreaseInventoryQuantityUseCase(inventoryGateway, inventoryMovementGateway, transactionManager);
     }
 
     @Bean

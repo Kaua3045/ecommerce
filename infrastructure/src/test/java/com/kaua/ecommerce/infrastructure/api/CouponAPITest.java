@@ -47,7 +47,7 @@ public class CouponAPITest {
     void givenAValidInput_whenCallCreateCoupon_thenReturnStatusOkAndIdAndCode() throws Exception {
         final var aCoupon = Fixture.Coupons.unlimitedCouponActivated();
 
-        final var aCode = aCoupon.getCode();
+        final var aCode = aCoupon.getCode().getValue();
         final var aPercentage = 15.5f;
         final var aExpirationDate = InstantUtils.now().toString();
         final var aIsActive = true;

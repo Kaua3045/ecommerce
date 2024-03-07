@@ -66,7 +66,7 @@ public class CouponJpaEntity {
     public static CouponJpaEntity toEntity(final Coupon aCoupon) {
         return new CouponJpaEntity(
                 aCoupon.getId().getValue(),
-                aCoupon.getCode(),
+                aCoupon.getCode().getValue(),
                 aCoupon.getPercentage(),
                 aCoupon.getExpirationDate(),
                 aCoupon.isActive(),

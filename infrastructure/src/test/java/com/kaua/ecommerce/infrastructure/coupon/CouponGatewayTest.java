@@ -40,7 +40,7 @@ public class CouponGatewayTest {
 
         Assertions.assertNotNull(aOutput);
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.getId().getValue());
-        Assertions.assertEquals(aCode, aOutput.getCode());
+        Assertions.assertEquals(aCode, aOutput.getCode().getValue());
         Assertions.assertEquals(aPercentage, aOutput.getPercentage());
         Assertions.assertEquals(aExpirationDate, aOutput.getExpirationDate());
         Assertions.assertEquals(aIsActive, aOutput.isActive());

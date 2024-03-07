@@ -8,6 +8,6 @@ public record CreateCouponOutput(
 ) {
 
     public static CreateCouponOutput from(final Coupon aCoupon) {
-        return new CreateCouponOutput(aCoupon.getId().getValue(), aCoupon.getCode());
+        return new CreateCouponOutput(aCoupon.getId().getValue(), aCoupon.getCode().getValue());
     }
 }

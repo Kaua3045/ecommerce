@@ -72,7 +72,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         Mockito.verify(couponGateway, Mockito.times(1))
                 .existsByCode(Mockito.any());
         Mockito.verify(couponGateway, Mockito.times(1)).create(argThat(aCmd ->
-                Objects.equals(aCode, aCmd.getCode())
+                Objects.equals(aCode, aCmd.getCode().getValue())
                         && Objects.equals(aPercentage, aCmd.getPercentage())
                         && Objects.equals(aIsActive, aCmd.isActive())
                         && Objects.equals(aType, aCmd.getType().name())));
@@ -113,7 +113,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         Mockito.verify(couponGateway, Mockito.times(1))
                 .existsByCode(Mockito.any());
         Mockito.verify(couponGateway, Mockito.times(1)).create(argThat(aCmd ->
-                Objects.equals(aCode, aCmd.getCode())
+                Objects.equals(aCode, aCmd.getCode().getValue())
                         && Objects.equals(aPercentage, aCmd.getPercentage())
                         && Objects.equals(aIsActive, aCmd.isActive())
                         && Objects.equals(aType, aCmd.getType().name())));

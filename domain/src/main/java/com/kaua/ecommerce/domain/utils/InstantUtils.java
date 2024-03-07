@@ -14,4 +14,8 @@ public final class InstantUtils {
     public static Instant fromTimestamp(final Long timestamp) {
         return Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.MICROS);
     }
+
+    public static Instant parse(final String instant) {
+        return Instant.parse(instant).truncatedTo(ChronoUnit.MICROS);
+    }
 }

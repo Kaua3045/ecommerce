@@ -24,12 +24,13 @@ public class CouponValidation extends Validator {
     }
 
     private void checkCodeConstraints() {
-        if (this.coupon.getCode() == null || this.coupon.getCode().isBlank()) {
+        if (this.coupon.getCode().getValue() == null ||
+                this.coupon.getCode().getValue().isBlank()) {
             this.validationHandler().append(new Error(CommonErrorMessage.nullOrBlank("code")));
             return;
         }
 
-        if (this.coupon.getCode().length() > 100) {
+        if (this.coupon.getCode().getValue().length() > 100) {
             this.validationHandler().append(new Error(CommonErrorMessage.maxSize("code", 100)));
         }
     }

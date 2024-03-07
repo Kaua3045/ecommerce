@@ -17,7 +17,15 @@ public final class CommonErrorMessage {
         return "'" + fieldName + "' must be between " + min + " and " + max + " characters";
     }
 
+    public static String maxSize(final String fieldName, final int max) {
+        return "'" + fieldName + "' must be less than " + max + " characters";
+    }
+
     public static String greaterThan(final String fieldName, final int value) {
         return "'" + fieldName + "' must be greater than " + value;
+    }
+
+    public static String dateMustBeFuture(final String fieldName) {
+        return "'" + fieldName + "' must be a future date";
     }
 }

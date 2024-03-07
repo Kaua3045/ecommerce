@@ -2,6 +2,9 @@ package com.kaua.ecommerce.domain;
 
 import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.category.CategoryID;
+import com.kaua.ecommerce.domain.coupon.Coupon;
+import com.kaua.ecommerce.domain.coupon.CouponSlot;
+import com.kaua.ecommerce.domain.coupon.CouponType;
 import com.kaua.ecommerce.domain.customer.Cpf;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.customer.CustomerID;
@@ -14,6 +17,7 @@ import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.utils.IdUtils;
+import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.utils.Resource;
 import net.datafaker.Faker;
 
@@ -292,6 +296,41 @@ public final class Fixture {
 
         public static InventoryMovement removed() {
             return InventoryMovement.with(REMOVED);
+        }
+    }
+
+    public static final class Coupons {
+
+        private static final Coupon UNLIMITED_COUPON_ACTIVATED = Coupon.newCoupon(
+                faker.options()
+                        .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
+                (float) faker.random().nextDouble(1, 100),
+                InstantUtils.now(),
+                true,
+                CouponType.UNLIMITED
+        );
+
+        private static final Coupon LIMITED_COUPON_ACTIVATED = Coupon.newCoupon(
+                faker.options()
+                        .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
+                (float) faker.random().nextDouble(1, 100),
+                InstantUtils.now(),
+                true,
+                CouponType.LIMITED
+        );
+
+        public static Coupon unlimitedCouponActivated() {
+            return Coupon.with(UNLIMITED_COUPON_ACTIVATED);
+        }
+
+        public static Coupon limitedCouponActivated() {
+            return Coupon.with(LIMITED_COUPON_ACTIVATED);
+        }
+
+        public static CouponSlot generateValidCouponSlot(final Coupon aCoupon) {
+            return CouponSlot.newCouponSlot(
+                    aCoupon.getId().getValue()
+            );
         }
     }
 }

@@ -27,4 +27,15 @@ public class InstantUtilsTest extends UnitTest {
         Assertions.assertNotNull(aInstantFromTimestamp);
         Assertions.assertEquals(aInstantNowMillis, aInstantFromTimestamp);
     }
+
+    @Test
+    void testCallInstantUtilsParse() {
+        final var aInstantNow = InstantUtils.now();
+        final var aInstantNowString = aInstantNow.toString();
+
+        final var aInstantFromTimestamp = InstantUtils.parse(aInstantNowString);
+
+        Assertions.assertNotNull(aInstantFromTimestamp);
+        Assertions.assertEquals(aInstantNow, aInstantFromTimestamp);
+    }
 }

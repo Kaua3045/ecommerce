@@ -7,9 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Coupon")
 @RequestMapping(value = "v1/coupons")
@@ -26,4 +24,28 @@ public interface CouponAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     ResponseEntity<?> createCoupon(@RequestBody CreateCouponInput body);
+
+    @PatchMapping(
+            value = "activate/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Activate a coupon")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Activated successfully"),
+            @ApiResponse(responseCode = "404", description = "Coupon not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> activateCoupon(@PathVariable String id);
+
+    @PatchMapping(
+            value = "deactivate/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Deactivate a coupon")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deactivated successfully"),
+            @ApiResponse(responseCode = "404", description = "Coupon not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> deactivateCoupon(@PathVariable String id);
 }

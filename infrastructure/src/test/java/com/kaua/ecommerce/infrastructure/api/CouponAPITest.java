@@ -9,6 +9,7 @@ import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.domain.coupon.CouponType;
@@ -54,6 +55,9 @@ public class CouponAPITest {
 
     @MockBean
     private DeactivateCouponUseCase deactivateCouponUseCase;
+
+    @MockBean
+    private DeleteCouponUseCase deleteCouponUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateCoupon_thenReturnStatusOkAndIdAndCode() throws Exception {
@@ -242,5 +246,22 @@ public class CouponAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
 
         Mockito.verify(deactivateCouponUseCase, Mockito.times(1)).execute(aId);
+    }
+
+    @Test
+    void givenAValidId_whenCallDeleteCoupon_thenReturnStatusOk() throws Exception {
+        final var aCoupon = Fixture.Coupons.unlimitedCouponActivated();
+
+        final var aId = aCoupon.getId().getValue();
+
+        final var request = MockMvcRequestBuilders.delete("/v1/coupons/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(deleteCouponUseCase, Mockito.times(1)).execute(aId);
     }
 }

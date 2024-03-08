@@ -4,6 +4,7 @@ import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponUse
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.infrastructure.api.CouponAPI;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
@@ -22,15 +23,18 @@ public class CouponController implements CouponAPI {
     private final CreateCouponUseCase createCouponUseCase;
     private final ActivateCouponUseCase activateCouponUseCase;
     private final DeactivateCouponUseCase deactivateCouponUseCase;
+    private final DeleteCouponUseCase deleteCouponUseCase;
 
     public CouponController(
             final CreateCouponUseCase createCouponUseCase,
             final ActivateCouponUseCase activateCouponUseCase,
-            final DeactivateCouponUseCase deactivateCouponUseCase
+            final DeactivateCouponUseCase deactivateCouponUseCase,
+            final DeleteCouponUseCase deleteCouponUseCase
     ) {
         this.createCouponUseCase = createCouponUseCase;
         this.activateCouponUseCase = activateCouponUseCase;
         this.deactivateCouponUseCase = deactivateCouponUseCase;
+        this.deleteCouponUseCase = deleteCouponUseCase;
     }
 
     @Override
@@ -84,5 +88,16 @@ public class CouponController implements CouponAPI {
         );
 
         return ResponseEntity.ok(aResult);
+    }
+
+    @Override
+    public void deleteCoupon(String id) {
+        this.deleteCouponUseCase.execute(id);
+        LogControllerResult.logResult(
+                log,
+                Coupon.class,
+                "deleteCoupon",
+                id + " deleted coupon"
+        );
     }
 }

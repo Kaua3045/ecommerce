@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class CouponMySQLGateway implements CouponGateway {
@@ -33,5 +34,20 @@ public class CouponMySQLGateway implements CouponGateway {
     @Override
     public boolean existsByCode(final String code) {
         return this.couponJpaEntityRepository.existsByCode(code);
+    }
+
+    @Override
+    public Coupon update(Coupon coupon) {
+        final var aResult = this.couponJpaEntityRepository.save(CouponJpaEntity.toEntity(coupon))
+                .toDomain();
+
+        log.info("updated coupon: {}", aResult);
+        return aResult;
+    }
+
+    @Override
+    public Optional<Coupon> findById(String id) {
+        return this.couponJpaEntityRepository.findById(id)
+                .map(CouponJpaEntity::toDomain);
     }
 }

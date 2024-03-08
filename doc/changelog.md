@@ -1,3 +1,11 @@
+# 0.4.0
+- Adicionado a feature de criar um inventory pelo sku
+- Adicionado a feature de limpar todos os inventories de um produto
+- Adicionado a feature de deleter um inventory específico
+- Adicionado a feature de rollback pelo sku usando o inventory movement
+- Adicionado a feature de aumentar a quantidade em inventory
+- Adicionado a feature de diminuir a quantidade em inventory
+
 # 0.3.0
 - Adicionado a feature de criar um produto
 - Adicionado a feature de atualizar um produto

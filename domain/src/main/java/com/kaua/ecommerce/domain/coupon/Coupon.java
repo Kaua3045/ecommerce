@@ -8,8 +8,6 @@ import java.time.Instant;
 
 public class Coupon extends AggregateRoot<CouponID> {
 
-    // TODO: In future create coupon code to replace blank spaces to hyphen
-
     private CouponCode code;
     private float percentage;
     private Instant expirationDate;

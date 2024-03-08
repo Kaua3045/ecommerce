@@ -9,6 +9,8 @@ import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase
 import com.kaua.ecommerce.application.usecases.coupon.create.DefaultCreateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DefaultDeactivateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.delete.DefaultDeleteCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,5 +46,10 @@ public class CouponUseCaseConfig {
     @Bean
     public DeactivateCouponUseCase deactivateCouponUseCase() {
         return new DefaultDeactivateCouponUseCase(couponGateway);
+    }
+
+    @Bean
+    public DeleteCouponUseCase deleteCouponUseCase() {
+        return new DefaultDeleteCouponUseCase(couponGateway, couponSlotGateway, transactionManager);
     }
 }

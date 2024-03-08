@@ -149,4 +149,36 @@ public class CouponGatewayTest {
         Assertions.assertNotNull(aOutput.getCreatedAt());
         Assertions.assertNotNull(aOutput.getUpdatedAt());
     }
+
+    @Test
+    void givenAValidId_whenCallDelete_thenShouldDeleteCoupon() {
+        final var aCode = "BLACK_FRIDAY";
+        final var aPercentage = 10.5f;
+        final var aExpirationDate = InstantUtils.now();
+        final var aIsActive = true;
+        final var aType = CouponType.UNLIMITED;
+
+        final var aCoupon = Coupon.newCoupon(
+                aCode,
+                aPercentage,
+                aExpirationDate,
+                aIsActive,
+                aType
+        );
+
+        this.couponGateway.create(aCoupon);
+
+        Assertions.assertEquals(1, this.couponJpaRepository.count());
+
+        this.couponGateway.deleteById(aCoupon.getId().getValue());
+
+        Assertions.assertEquals(0, this.couponJpaRepository.count());
+    }
+
+    @Test
+    void givenAnInvalidId_whenCallDelete_thenShouldDoNothing() {
+        Assertions.assertEquals(0, this.couponJpaRepository.count());
+        this.couponGateway.deleteById("invalid-id");
+        Assertions.assertEquals(0, this.couponJpaRepository.count());
+    }
 }

@@ -50,4 +50,12 @@ public class CouponMySQLGateway implements CouponGateway {
         return this.couponJpaEntityRepository.findById(id)
                 .map(CouponJpaEntity::toDomain);
     }
+
+    @Override
+    public void deleteById(String id) {
+        if (this.couponJpaEntityRepository.existsById(id)) {
+            this.couponJpaEntityRepository.deleteById(id);
+            log.info("deleted coupon with id: {}", id);
+        }
+    }
 }

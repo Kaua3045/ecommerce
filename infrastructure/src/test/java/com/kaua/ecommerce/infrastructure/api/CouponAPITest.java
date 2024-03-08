@@ -2,11 +2,17 @@ package com.kaua.ecommerce.infrastructure.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
+import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponOutput;
+import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponOutput;
+import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.domain.Fixture;
+import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.domain.coupon.CouponType;
+import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.Error;
@@ -42,6 +48,12 @@ public class CouponAPITest {
 
     @MockBean
     private CreateCouponUseCase createCouponUseCase;
+
+    @MockBean
+    private ActivateCouponUseCase activateCouponUseCase;
+
+    @MockBean
+    private DeactivateCouponUseCase deactivateCouponUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateCoupon_thenReturnStatusOkAndIdAndCode() throws Exception {
@@ -144,5 +156,91 @@ public class CouponAPITest {
         Assertions.assertEquals(aIsActive, actualCmd.isActive());
         Assertions.assertEquals(aType, actualCmd.type());
         Assertions.assertEquals(0, actualCmd.maxUses());
+    }
+
+    @Test
+    void givenAValidId_whenCallActivateCoupon_thenReturnStatusOkAndCouponActivated() throws Exception {
+        final var aCoupon = Fixture.Coupons.unlimitedCouponActivated();
+
+        final var aId = aCoupon.getId().getValue();
+
+        Mockito.when(activateCouponUseCase.execute(aId))
+                .thenReturn(ActivateCouponOutput.from(aCoupon));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/coupons/activate/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_id", equalTo(aCoupon.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code", equalTo(aCoupon.getCode().getValue())));
+
+        Mockito.verify(activateCouponUseCase, Mockito.times(1)).execute(aId);
+    }
+
+    @Test
+    void givenAnInvalidId_whenCallActivateCoupon_thenReturnDomainException() throws Exception {
+        final var aId = "invalid-id";
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Coupon.class, aId);
+
+        Mockito.when(activateCouponUseCase.execute(aId))
+                .thenThrow(NotFoundException.with(Coupon.class, aId).get());
+
+        final var request = MockMvcRequestBuilders.patch("/v1/coupons/activate/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        Mockito.verify(activateCouponUseCase, Mockito.times(1)).execute(aId);
+    }
+
+    @Test
+    void givenAValidId_whenCallDeactivateCoupon_thenReturnStatusOkAndCouponDeactivated() throws Exception {
+        final var aCoupon = Fixture.Coupons.unlimitedCouponActivated();
+
+        final var aId = aCoupon.getId().getValue();
+
+        Mockito.when(deactivateCouponUseCase.execute(aId))
+                .thenReturn(DeactivateCouponOutput.from(aCoupon));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/coupons/deactivate/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_id", equalTo(aCoupon.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code", equalTo(aCoupon.getCode().getValue())));
+
+        Mockito.verify(deactivateCouponUseCase, Mockito.times(1)).execute(aId);
+    }
+
+    @Test
+    void givenAnInvalidId_whenCallDeactivateCoupon_thenReturnDomainException() throws Exception {
+        final var aId = "invalid-id";
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Coupon.class, aId);
+
+        Mockito.when(deactivateCouponUseCase.execute(aId))
+                .thenThrow(NotFoundException.with(Coupon.class, aId).get());
+
+        final var request = MockMvcRequestBuilders.patch("/v1/coupons/deactivate/{id}", aId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        Mockito.verify(deactivateCouponUseCase, Mockito.times(1)).execute(aId);
     }
 }

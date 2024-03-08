@@ -166,8 +166,6 @@ public class UpdateSubCategoriesUseCaseTest extends UseCaseTest {
 
         final var aOutput = useCase.execute(aCommand).getLeft();
 
-        System.out.println(aOutput.getErrors().get(0).message());
-
         Assertions.assertEquals(expectedErrorCount, aOutput.getErrors().size());
         Assertions.assertEquals(expectedErrorMessageOne, aOutput.getErrors().get(0).message());
         Assertions.assertEquals(expectedErrorMessageTwo, aOutput.getErrors().get(1).message());

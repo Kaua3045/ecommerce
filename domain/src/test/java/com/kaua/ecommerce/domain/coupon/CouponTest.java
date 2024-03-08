@@ -22,7 +22,7 @@ public class CouponTest extends UnitTest {
 
         Assertions.assertNotNull(aCoupon);
         Assertions.assertNotNull(aCoupon.getId());
-        Assertions.assertEquals(aCode, aCoupon.getCode());
+        Assertions.assertEquals(aCode, aCoupon.getCode().getValue());
         Assertions.assertEquals(aPercentage, aCoupon.getPercentage());
         Assertions.assertEquals(aExpirationDate, aCoupon.getExpirationDate());
         Assertions.assertEquals(aIsActive, aCoupon.isActive());
@@ -69,7 +69,7 @@ public class CouponTest extends UnitTest {
         Assertions.assertNotNull(aCoupon);
         Assertions.assertNotNull(aCoupon.getId());
         Assertions.assertEquals(aCouponID, aCoupon.getId().getValue());
-        Assertions.assertEquals(aCode, aCoupon.getCode());
+        Assertions.assertEquals(aCode, aCoupon.getCode().getValue());
         Assertions.assertEquals(aPercentage, aCoupon.getPercentage());
         Assertions.assertEquals(aExpirationDate, aCoupon.getExpirationDate());
         Assertions.assertEquals(aIsActive, aCoupon.isActive());
@@ -93,7 +93,7 @@ public class CouponTest extends UnitTest {
         Assertions.assertNotNull(aCouponWith);
         Assertions.assertNotNull(aCouponWith.getId());
         Assertions.assertEquals(aCoupon.getId().getValue(), aCouponWith.getId().getValue());
-        Assertions.assertEquals(aCode, aCouponWith.getCode());
+        Assertions.assertEquals(aCode, aCouponWith.getCode().getValue());
         Assertions.assertEquals(aPercentage, aCouponWith.getPercentage());
         Assertions.assertEquals(aExpirationDate, aCouponWith.getExpirationDate());
         Assertions.assertEquals(aIsActive, aCouponWith.isActive());
@@ -183,5 +183,37 @@ public class CouponTest extends UnitTest {
         final var expectedToString = "Coupon(id='" + aCoupon.getId().getValue() + "', code='BLACKFRIDAY', percentage=10.0, expirationDate=" + aExpirationDate + ", isActive=true, type=UNLIMITED, createdAt=" + aCoupon.getCreatedAt() + ", updatedAt=" + aCoupon.getUpdatedAt() + ", version=0)";
 
         Assertions.assertEquals(expectedToString, aCoupon.toString());
+    }
+
+    @Test
+    void givenAValidCoupon_whenCallActivate_thenCouponShouldBeActivated() {
+        final var aCode = "BLACKFRIDAY";
+        final var aPercentage = 10.0f;
+        final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
+        final var aIsActive = false;
+        final var aType = CouponType.UNLIMITED;
+
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+
+        aCoupon.activate();
+
+        Assertions.assertTrue(aCoupon.isActive());
+        Assertions.assertNotNull(aCoupon.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidCoupon_whenCallDeactivate_thenCouponShouldBeDeactivated() {
+        final var aCode = "BLACKFRIDAY";
+        final var aPercentage = 10.0f;
+        final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
+        final var aIsActive = true;
+        final var aType = CouponType.UNLIMITED;
+
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+
+        aCoupon.deactivate();
+
+        Assertions.assertFalse(aCoupon.isActive());
+        Assertions.assertNotNull(aCoupon.getUpdatedAt());
     }
 }

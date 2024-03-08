@@ -68,8 +68,6 @@ public class InventoryGatewayTest {
         final var aInventoryOne = Inventory.newInventory(aProductId, aSkuOne, aQuantityOne);
         final var aInventoryTwo = Inventory.newInventory(aProductId, aSkuTwo, aQuantityTwo);
 
-        System.out.println(inventoryRepository.count());
-
         this.inventoryRepository.saveAllAndFlush(Set.of(aInventoryOne, aInventoryTwo)
                 .stream().map(InventoryJpaEntity::toEntity).toList());
 

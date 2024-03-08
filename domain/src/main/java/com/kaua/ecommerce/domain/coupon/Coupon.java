@@ -8,7 +8,7 @@ import java.time.Instant;
 
 public class Coupon extends AggregateRoot<CouponID> {
 
-    private String code;
+    private CouponCode code;
     private float percentage;
     private Instant expirationDate;
     private boolean isActive;
@@ -18,7 +18,7 @@ public class Coupon extends AggregateRoot<CouponID> {
 
     private Coupon(
             final CouponID aCouponID,
-            final String aCode,
+            final CouponCode aCode,
             final float aPercentage,
             final Instant aExpirationDate,
             final boolean aIsActive,
@@ -46,7 +46,8 @@ public class Coupon extends AggregateRoot<CouponID> {
     ) {
         final var aId = CouponID.unique();
         final var aNow = InstantUtils.now();
-        return new Coupon(aId, aCode, aPercentage, aExpirationDate, aIsActive, aType, aNow, aNow, 0);
+        final var aCouponCode = CouponCode.create(aCode);
+        return new Coupon(aId, aCouponCode, aPercentage, aExpirationDate, aIsActive, aType, aNow, aNow, 0);
     }
 
     public static Coupon with(
@@ -62,7 +63,7 @@ public class Coupon extends AggregateRoot<CouponID> {
     ) {
         return new Coupon(
                 CouponID.from(aCouponID),
-                aCode,
+                CouponCode.create(aCode),
                 aPercentage,
                 aExpirationDate,
                 aIsActive,
@@ -99,12 +100,24 @@ public class Coupon extends AggregateRoot<CouponID> {
         return (total * this.percentage) / 100.0;
     }
 
+    public Coupon activate() {
+        this.isActive = true;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
+    public Coupon deactivate() {
+        this.isActive = false;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new CouponValidation(handler, this).validate();
     }
 
-    public String getCode() {
+    public CouponCode getCode() {
         return code;
     }
 
@@ -136,7 +149,7 @@ public class Coupon extends AggregateRoot<CouponID> {
     public String toString() {
         return "Coupon(" +
                 "id='" + getId().getValue() + '\'' +
-                ", code='" + code + '\'' +
+                ", code='" + code.getValue() + '\'' +
                 ", percentage=" + percentage +
                 ", expirationDate=" + expirationDate +
                 ", isActive=" + isActive +

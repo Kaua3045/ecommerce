@@ -172,7 +172,6 @@ public class UpdateCategoryUseCaseTest extends UseCaseTest {
         Assertions.assertNotNull(aOutput);
         Assertions.assertNotNull(aOutput.id());
 
-        System.out.println(aCategory.getSubCategories().stream().findFirst().get().getSubCategories().stream().findFirst().get().getName());
         Mockito.verify(categoryGateway, Mockito.times(1)).existsByName(aName);
         Mockito.verify(categoryGateway, Mockito.times(1)).findById(aId);
         Mockito.verify(categoryGateway, Mockito.times(1)).update(argThat(aCategoryUpdated ->

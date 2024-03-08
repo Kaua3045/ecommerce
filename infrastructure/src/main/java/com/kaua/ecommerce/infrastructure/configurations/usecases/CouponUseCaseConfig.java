@@ -3,8 +3,12 @@ package com.kaua.ecommerce.infrastructure.configurations.usecases;
 import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.application.gateways.CouponGateway;
 import com.kaua.ecommerce.application.gateways.CouponSlotGateway;
+import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.activate.DefaultActivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.create.DefaultCreateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.deactivate.DefaultDeactivateCouponUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,5 +34,15 @@ public class CouponUseCaseConfig {
     @Bean
     public CreateCouponUseCase createCouponUseCase() {
         return new DefaultCreateCouponUseCase(couponGateway, couponSlotGateway, transactionManager);
+    }
+
+    @Bean
+    public ActivateCouponUseCase activateCouponUseCase() {
+        return new DefaultActivateCouponUseCase(couponGateway);
+    }
+
+    @Bean
+    public DeactivateCouponUseCase deactivateCouponUseCase() {
+        return new DefaultDeactivateCouponUseCase(couponGateway);
     }
 }

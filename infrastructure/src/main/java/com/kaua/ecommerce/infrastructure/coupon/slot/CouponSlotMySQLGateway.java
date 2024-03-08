@@ -33,4 +33,12 @@ public class CouponSlotMySQLGateway implements CouponSlotGateway {
         log.info("inserted coupon slots: {}", aResult.size());
         return couponSlots;
     }
+
+    @Override
+    public void deleteAllByCouponId(String couponId) {
+        if (this.couponSlotJpaEntityRepository.existsByCouponId(couponId)) {
+            this.couponSlotJpaEntityRepository.deleteAllByCouponId(couponId);
+            log.info("deleted coupon slots with coupon id: {}", couponId);
+        }
+    }
 }

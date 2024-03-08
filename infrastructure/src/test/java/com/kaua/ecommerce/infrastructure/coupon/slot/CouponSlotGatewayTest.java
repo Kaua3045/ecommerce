@@ -4,6 +4,7 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.DatabaseGatewayTest;
 import com.kaua.ecommerce.infrastructure.coupon.persistence.CouponJpaEntity;
 import com.kaua.ecommerce.infrastructure.coupon.persistence.CouponJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.coupon.slot.persistence.CouponSlotJpaEntity;
 import com.kaua.ecommerce.infrastructure.coupon.slot.persistence.CouponSlotJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -49,5 +50,47 @@ public class CouponSlotGatewayTest {
         final var actualAnotherCouponSlot = this.couponSlotJpaRepository.findById(anotherCouponSlot.getSlotId()).get();
 
         Assertions.assertEquals(anotherCouponSlot.getSlotId(), actualAnotherCouponSlot.getId());
+    }
+
+    @Test
+    void givenAValidCouponId_whenCallDeleteAllByCouponId_shouldDeleteAllCouponSlots() {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+        final var aEntity = CouponJpaEntity.toEntity(aCoupon);
+        this.couponJpaRepository.save(aEntity);
+
+        final var aCouponSlot = Fixture.Coupons.generateValidCouponSlot(aCoupon);
+        final var anotherCouponSlot = Fixture.Coupons.generateValidCouponSlot(aCoupon);
+
+        this.couponSlotJpaRepository.saveAll(Set.of(
+                CouponSlotJpaEntity.toEntity(aCouponSlot),
+                CouponSlotJpaEntity.toEntity(anotherCouponSlot)
+        ));
+
+        Assertions.assertEquals(2, this.couponSlotJpaRepository.count());
+
+        this.couponSlotGateway.deleteAllByCouponId(aCoupon.getId().getValue());
+
+        Assertions.assertEquals(0, this.couponSlotJpaRepository.count());
+    }
+
+    @Test
+    void givenAValidCouponId_whenCallDeleteAllByCouponIdAndCouponSlotsDoesNotExist_shouldNotDeleteAnyCouponSlots() {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+        final var aEntity = CouponJpaEntity.toEntity(aCoupon);
+        this.couponJpaRepository.save(aEntity);
+
+        final var aCouponSlot = Fixture.Coupons.generateValidCouponSlot(aCoupon);
+        final var anotherCouponSlot = Fixture.Coupons.generateValidCouponSlot(aCoupon);
+
+        this.couponSlotJpaRepository.saveAll(Set.of(
+                CouponSlotJpaEntity.toEntity(aCouponSlot),
+                CouponSlotJpaEntity.toEntity(anotherCouponSlot)
+        ));
+
+        Assertions.assertEquals(2, this.couponSlotJpaRepository.count());
+
+        this.couponSlotGateway.deleteAllByCouponId("invalid-coupon-id");
+
+        Assertions.assertEquals(2, this.couponSlotJpaRepository.count());
     }
 }

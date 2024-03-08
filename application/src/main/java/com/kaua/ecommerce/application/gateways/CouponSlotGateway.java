@@ -7,4 +7,6 @@ import java.util.Set;
 public interface CouponSlotGateway {
 
     Set<CouponSlot> createInBatch(Set<CouponSlot> couponSlots);
+
+    void deleteAllByCouponId(String couponId);
 }

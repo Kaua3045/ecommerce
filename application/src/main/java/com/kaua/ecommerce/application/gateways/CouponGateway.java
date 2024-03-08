@@ -13,4 +13,6 @@ public interface CouponGateway {
     Coupon update(Coupon coupon);
 
     Optional<Coupon> findById(String id);
+
+    void deleteById(String id);
 }

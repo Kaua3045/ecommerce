@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public interface CouponAPI {
             value = "activate/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @Operation(summary = "Activate a coupon")
+    @Operation(summary = "Activate a coupon by it's identifier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Activated successfully"),
             @ApiResponse(responseCode = "404", description = "Coupon not found"),
@@ -41,11 +42,20 @@ public interface CouponAPI {
             value = "deactivate/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @Operation(summary = "Deactivate a coupon")
+    @Operation(summary = "Deactivate a coupon by it's identifier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deactivated successfully"),
             @ApiResponse(responseCode = "404", description = "Coupon not found"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     ResponseEntity<?> deactivateCoupon(@PathVariable String id);
+
+    @DeleteMapping(value = "{id}")
+    @Operation(summary = "Delete a coupon by it's identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    void deleteCoupon(@PathVariable String id);
 }

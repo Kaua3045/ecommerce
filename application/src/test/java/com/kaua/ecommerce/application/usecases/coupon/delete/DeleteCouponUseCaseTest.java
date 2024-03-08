@@ -35,7 +35,7 @@ public class DeleteCouponUseCaseTest extends UseCaseTest {
         final var aCoupon = Fixture.Coupons.limitedCouponActivated();
         final var aId = aCoupon.getId().getValue();
 
-        Mockito.doNothing().when(couponGateway).delete(aId);
+        Mockito.doNothing().when(couponGateway).deleteById(aId);
         Mockito.doNothing().when(couponSlotGateway).deleteAllByCouponId(aId);
         Mockito.when(transactionManager.execute(Mockito.any())).thenAnswer(it -> {
             final var aSupplier = it.getArgument(0, Supplier.class);
@@ -44,7 +44,7 @@ public class DeleteCouponUseCaseTest extends UseCaseTest {
 
         Assertions.assertDoesNotThrow(() -> this.deleteCouponUseCase.execute(aId));
 
-        Mockito.verify(couponGateway, Mockito.times(1)).delete(aId);
+        Mockito.verify(couponGateway, Mockito.times(1)).deleteById(aId);
         Mockito.verify(couponSlotGateway, Mockito.times(1)).deleteAllByCouponId(aId);
     }
 
@@ -63,7 +63,7 @@ public class DeleteCouponUseCaseTest extends UseCaseTest {
 
         Assertions.assertEquals(expectedErrorMessage, aOutput.getMessage());
 
-        Mockito.verify(couponGateway, Mockito.times(0)).delete(aId);
+        Mockito.verify(couponGateway, Mockito.times(0)).deleteById(aId);
         Mockito.verify(couponSlotGateway, Mockito.times(0)).deleteAllByCouponId(aId);
     }
 }

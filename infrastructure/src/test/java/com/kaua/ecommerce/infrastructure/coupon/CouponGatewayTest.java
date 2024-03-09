@@ -181,4 +181,41 @@ public class CouponGatewayTest {
         this.couponGateway.deleteById("invalid-id");
         Assertions.assertEquals(0, this.couponJpaRepository.count());
     }
+
+    @Test
+    void givenAValidCode_whenCallFindByCode_thenShouldReturnCoupon() {
+        final var aCode = "BLACK_FRIDAY";
+        final var aPercentage = 10.5f;
+        final var aExpirationDate = InstantUtils.now();
+        final var aIsActive = true;
+        final var aType = CouponType.UNLIMITED;
+
+        final var aCoupon = Coupon.newCoupon(
+                aCode,
+                aPercentage,
+                aExpirationDate,
+                aIsActive,
+                aType
+        );
+
+        this.couponGateway.create(aCoupon);
+
+        final var aOutput = this.couponGateway.findByCode(aCode);
+
+        Assertions.assertTrue(aOutput.isPresent());
+        Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.get().getId().getValue());
+        Assertions.assertEquals(aCode, aOutput.get().getCode().getValue());
+        Assertions.assertEquals(aPercentage, aOutput.get().getPercentage());
+        Assertions.assertEquals(aExpirationDate, aOutput.get().getExpirationDate());
+        Assertions.assertEquals(aIsActive, aOutput.get().isActive());
+        Assertions.assertEquals(aType, aOutput.get().getType());
+        Assertions.assertNotNull(aOutput.get().getCreatedAt());
+        Assertions.assertNotNull(aOutput.get().getUpdatedAt());
+    }
+
+    @Test
+    void givenAnInvalidCode_whenCallFindByCode_thenShouldReturnEmpty() {
+        final var aOutput = this.couponGateway.findByCode("invalid-code");
+        Assertions.assertTrue(aOutput.isEmpty());
+    }
 }

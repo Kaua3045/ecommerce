@@ -7,6 +7,7 @@ import com.kaua.ecommerce.infrastructure.coupon.slot.persistence.CouponSlotJpaEn
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Set;
@@ -45,5 +46,13 @@ public class CouponSlotMySQLGateway implements CouponSlotGateway {
             this.couponSlotJpaEntityRepository.deleteAllByCouponId(couponId);
             log.info("deleted coupon slots with coupon id: {}", couponId);
         }
+    }
+
+    @Transactional
+    @Override
+    public boolean deleteFirstSlotByCouponId(String couponId) {
+        final var aResult = this.couponSlotJpaEntityRepository.deleteFirstSlotByCouponId(couponId);
+        log.info("deleted first coupon slot with coupon id: {}", couponId);
+        return aResult == 1;
     }
 }

@@ -1,5 +1,8 @@
 package com.kaua.ecommerce.infrastructure.inventory.persistence;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,6 +17,8 @@ public interface InventoryJpaEntityRepository extends JpaRepository<InventoryJpa
     Optional<InventoryJpaEntity> findBySku(String sku);
 
     List<InventoryJpaEntity> findByProductId(String productId);
+
+    Page<InventoryJpaEntity> findAll(Specification<InventoryJpaEntity> whereClause, Pageable pageable);
 
     void deleteAllByProductId(String productId);
 

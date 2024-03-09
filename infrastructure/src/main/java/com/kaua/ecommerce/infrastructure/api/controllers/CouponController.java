@@ -5,6 +5,7 @@ import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponCommand
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.infrastructure.api.CouponAPI;
@@ -26,19 +27,22 @@ public class CouponController implements CouponAPI {
     private final DeactivateCouponUseCase deactivateCouponUseCase;
     private final DeleteCouponUseCase deleteCouponUseCase;
     private final ValidateCouponUseCase validateCouponUseCase;
+    private final RemoveCouponSlotUseCase removeCouponSlotUseCase;
 
     public CouponController(
             final CreateCouponUseCase createCouponUseCase,
             final ActivateCouponUseCase activateCouponUseCase,
             final DeactivateCouponUseCase deactivateCouponUseCase,
             final DeleteCouponUseCase deleteCouponUseCase,
-            final ValidateCouponUseCase validateCouponUseCase
+            final ValidateCouponUseCase validateCouponUseCase,
+            final RemoveCouponSlotUseCase removeCouponSlotUseCase
     ) {
         this.createCouponUseCase = createCouponUseCase;
         this.activateCouponUseCase = activateCouponUseCase;
         this.deactivateCouponUseCase = deactivateCouponUseCase;
         this.deleteCouponUseCase = deleteCouponUseCase;
         this.validateCouponUseCase = validateCouponUseCase;
+        this.removeCouponSlotUseCase = removeCouponSlotUseCase;
     }
 
     @Override
@@ -102,6 +106,20 @@ public class CouponController implements CouponAPI {
                 log,
                 Coupon.class,
                 "deactivateCoupon",
+                aResult
+        );
+
+        return ResponseEntity.ok(aResult);
+    }
+
+    @Override
+    public ResponseEntity<?> removeCouponSlot(String code) {
+        final var aResult = this.removeCouponSlotUseCase.execute(code);
+
+        LogControllerResult.logResult(
+                log,
+                Coupon.class,
+                "removeCouponSlot",
                 aResult
         );
 

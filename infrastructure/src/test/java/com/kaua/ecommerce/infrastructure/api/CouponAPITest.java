@@ -10,6 +10,8 @@ import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotOutput;
+import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
 import com.kaua.ecommerce.domain.Fixture;
@@ -62,6 +64,9 @@ public class CouponAPITest {
 
     @MockBean
     private ValidateCouponUseCase validateCouponUseCase;
+
+    @MockBean
+    private RemoveCouponSlotUseCase removeCouponSlotUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateCoupon_thenReturnStatusOkAndIdAndCode() throws Exception {
@@ -293,5 +298,27 @@ public class CouponAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_valid", equalTo(true)));
 
         Mockito.verify(validateCouponUseCase, Mockito.times(1)).execute(aCode);
+    }
+
+    @Test
+    void givenAValidCode_whenCallRemoveCouponSlot_thenReturnStatusOkAndCouponSlotRemoved() throws Exception {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+
+        final var aCouponCode = aCoupon.getCode().getValue();
+
+        Mockito.when(removeCouponSlotUseCase.execute(aCouponCode))
+                .thenReturn(RemoveCouponSlotOutput.from(aCoupon));
+
+        final var request = MockMvcRequestBuilders.delete("/v1/coupons/slots/{code}", aCouponCode)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_id", equalTo(aCoupon.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_code", equalTo(aCoupon.getCode().getValue())));
+
+        Mockito.verify(removeCouponSlotUseCase, Mockito.times(1)).execute(aCouponCode);
     }
 }

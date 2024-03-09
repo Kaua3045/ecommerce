@@ -35,6 +35,11 @@ public class CouponSlotMySQLGateway implements CouponSlotGateway {
     }
 
     @Override
+    public boolean existsByCouponId(String couponId) {
+        return this.couponSlotJpaEntityRepository.existsByCouponId(couponId);
+    }
+
+    @Override
     public void deleteAllByCouponId(String couponId) {
         if (this.couponSlotJpaEntityRepository.existsByCouponId(couponId)) {
             this.couponSlotJpaEntityRepository.deleteAllByCouponId(couponId);

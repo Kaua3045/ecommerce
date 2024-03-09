@@ -96,10 +96,6 @@ public class Coupon extends AggregateRoot<CouponID> {
         return this.isActive && !this.isExpired();
     }
 
-    public double getDiscount(final double total) {
-        return (total * this.percentage) / 100.0;
-    }
-
     public Coupon activate() {
         this.isActive = true;
         this.updatedAt = InstantUtils.now();

@@ -14,5 +14,7 @@ public interface CouponGateway {
 
     Optional<Coupon> findById(String id);
 
+    Optional<Coupon> findByCode(String code);
+
     void deleteById(String id);
 }

@@ -5,6 +5,7 @@ import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponCommand
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.infrastructure.api.CouponAPI;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
@@ -24,17 +25,20 @@ public class CouponController implements CouponAPI {
     private final ActivateCouponUseCase activateCouponUseCase;
     private final DeactivateCouponUseCase deactivateCouponUseCase;
     private final DeleteCouponUseCase deleteCouponUseCase;
+    private final ValidateCouponUseCase validateCouponUseCase;
 
     public CouponController(
             final CreateCouponUseCase createCouponUseCase,
             final ActivateCouponUseCase activateCouponUseCase,
             final DeactivateCouponUseCase deactivateCouponUseCase,
-            final DeleteCouponUseCase deleteCouponUseCase
+            final DeleteCouponUseCase deleteCouponUseCase,
+            final ValidateCouponUseCase validateCouponUseCase
     ) {
         this.createCouponUseCase = createCouponUseCase;
         this.activateCouponUseCase = activateCouponUseCase;
         this.deactivateCouponUseCase = deactivateCouponUseCase;
         this.deleteCouponUseCase = deleteCouponUseCase;
+        this.validateCouponUseCase = validateCouponUseCase;
     }
 
     @Override
@@ -60,6 +64,20 @@ public class CouponController implements CouponAPI {
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.status(HttpStatus.CREATED).body(aResult.getRight());
+    }
+
+    @Override
+    public ResponseEntity<?> validateCouponByCode(String code) {
+        final var aResult = this.validateCouponUseCase.execute(code);
+
+        LogControllerResult.logResult(
+                log,
+                Coupon.class,
+                "validateCouponByCode",
+                aResult
+        );
+
+        return ResponseEntity.ok(aResult);
     }
 
     @Override

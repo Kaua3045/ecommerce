@@ -26,6 +26,18 @@ public interface CouponAPI {
     })
     ResponseEntity<?> createCoupon(@RequestBody CreateCouponInput body);
 
+    @GetMapping(
+            value = "/validate/{code}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Validate a coupon by it's code")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Coupon success validated"),
+            @ApiResponse(responseCode = "404", description = "Coupon not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> validateCouponByCode(@PathVariable String code);
+
     @PatchMapping(
             value = "activate/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE

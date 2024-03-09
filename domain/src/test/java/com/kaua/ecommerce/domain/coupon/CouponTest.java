@@ -155,22 +155,6 @@ public class CouponTest extends UnitTest {
     }
 
     @Test
-    void givenAValidCoupon_whenCallGetDiscount_thenShouldReturnDiscount() {
-        final var aCode = "BLACKFRIDAY";
-        final var aPercentage = 10.0f;
-        final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
-        final var aIsActive = true;
-        final var aType = CouponType.UNLIMITED;
-
-        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
-
-        final var total = 100.0;
-        final var expectedDiscount = 10.0;
-
-        Assertions.assertEquals(expectedDiscount, aCoupon.getDiscount(total));
-    }
-
-    @Test
     void givenAValidCoupon_whenCallToString_thenShouldReturnString() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = 10.0f;

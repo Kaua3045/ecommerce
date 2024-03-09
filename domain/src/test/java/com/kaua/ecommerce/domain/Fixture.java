@@ -22,6 +22,7 @@ import com.kaua.ecommerce.domain.utils.Resource;
 import net.datafaker.Faker;
 
 import java.math.BigDecimal;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -304,18 +305,36 @@ public final class Fixture {
         private static final Coupon UNLIMITED_COUPON_ACTIVATED = Coupon.newCoupon(
                 faker.options()
                         .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
-                (float) faker.random().nextDouble(1, 100),
-                InstantUtils.now(),
+                (float) Math.round(faker.random().nextDouble(1, 100)),
+                InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 true,
+                CouponType.UNLIMITED
+        );
+
+        private static final Coupon UNLIMITED_COUPON_DEACTIVATED = Coupon.newCoupon(
+                faker.options()
+                        .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
+                (float) Math.round(faker.random().nextDouble(1, 100)),
+                InstantUtils.now().plus(1, ChronoUnit.DAYS),
+                false,
                 CouponType.UNLIMITED
         );
 
         private static final Coupon LIMITED_COUPON_ACTIVATED = Coupon.newCoupon(
                 faker.options()
                         .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
-                (float) faker.random().nextDouble(1, 100),
-                InstantUtils.now(),
+                (float) Math.round(faker.random().nextDouble(1, 100)),
+                InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 true,
+                CouponType.LIMITED
+        );
+
+        private static final Coupon LIMITED_COUPON_DEACTIVATED = Coupon.newCoupon(
+                faker.options()
+                        .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
+                (float) Math.round(faker.random().nextDouble(1, 100)),
+                InstantUtils.now().plus(1, ChronoUnit.DAYS),
+                false,
                 CouponType.LIMITED
         );
 
@@ -323,8 +342,16 @@ public final class Fixture {
             return Coupon.with(UNLIMITED_COUPON_ACTIVATED);
         }
 
+        public static Coupon unlimitedCouponDeactivated() {
+            return Coupon.with(UNLIMITED_COUPON_DEACTIVATED);
+        }
+
         public static Coupon limitedCouponActivated() {
             return Coupon.with(LIMITED_COUPON_ACTIVATED);
+        }
+
+        public static Coupon limitedCouponDeactivated() {
+            return Coupon.with(LIMITED_COUPON_DEACTIVATED);
         }
 
         public static CouponSlot generateValidCouponSlot(final Coupon aCoupon) {

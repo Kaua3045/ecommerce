@@ -2,10 +2,16 @@ package com.kaua.ecommerce.infrastructure.inventory;
 
 import com.kaua.ecommerce.application.gateways.InventoryGateway;
 import com.kaua.ecommerce.domain.inventory.Inventory;
+import com.kaua.ecommerce.domain.pagination.Pagination;
+import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntity;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.utils.SpecificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +73,36 @@ public class InventoryMySQLGateway implements InventoryGateway {
     }
 
     @Override
+    public Pagination<Inventory> findAllByProductId(SearchQuery aQuery, String productId) {
+        final var aPage = PageRequest.of(
+                aQuery.page(),
+                aQuery.perPage(),
+                Sort.by(Sort.Direction.fromString(aQuery.direction()), aQuery.sort())
+        );
+
+        final var aSpecificationLike = Optional.ofNullable(aQuery.terms())
+                .filter(str -> !str.isBlank())
+                .map(this::assembleSpecificationLike)
+                .orElse(null);
+
+        final var aSpecification = Specification.where(assembleWhereEqual(productId))
+                .and(aSpecificationLike);
+
+        final var aPageResult = this.inventoryJpaEntityRepository.findAll(
+                aSpecification,
+                aPage
+        );
+
+        return new Pagination<>(
+                aPageResult.getNumber(),
+                aPageResult.getSize(),
+                aPageResult.getTotalPages(),
+                aPageResult.getTotalElements(),
+                aPageResult.map(InventoryJpaEntity::toDomain).toList()
+        );
+    }
+
+    @Override
     public void cleanByProductId(String productId) {
         this.inventoryJpaEntityRepository.deleteAllByProductId(productId);
         log.info("deleted inventories by productId: {}", productId);
@@ -76,5 +112,13 @@ public class InventoryMySQLGateway implements InventoryGateway {
     public void deleteBySku(String sku) {
         this.inventoryJpaEntityRepository.deleteBySku(sku);
         log.info("deleted inventory by sku: {}", sku);
+    }
+
+    private Specification<InventoryJpaEntity> assembleSpecificationLike(final String terms) {
+        return SpecificationUtils.like("sku", terms);
+    }
+
+    private Specification<InventoryJpaEntity> assembleWhereEqual(final String aProductId) {
+        return SpecificationUtils.equal("productId", aProductId);
     }
 }

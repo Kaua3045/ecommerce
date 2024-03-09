@@ -13,8 +13,11 @@ import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInv
 import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityCommand;
 import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityOutput;
 import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdOutput;
+import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
+import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.product.ProductID;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
@@ -37,10 +40,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.argThat;
 
 @ControllerTest(controllers = InventoryAPI.class)
 public class InventoryAPITest {
@@ -68,6 +73,9 @@ public class InventoryAPITest {
 
     @MockBean
     private DecreaseInventoryQuantityUseCase decreaseInventoryQuantityUseCase;
+
+    @MockBean
+    private ListInventoriesByProductIdUseCase listInventoriesByProductIdUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateInventory_thenReturnStatusOkAndIdAndSku() throws Exception {
@@ -430,5 +438,58 @@ public class InventoryAPITest {
 
         Assertions.assertEquals(aSku, actualCmd.sku());
         Assertions.assertEquals(aQuantity, actualCmd.quantity());
+    }
+
+    @Test
+    void givenValidParams_whenCallsListInventoriesByProductId_shouldReturnInventories() throws Exception {
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+        final var aProductId = aInventory.getProductId();
+
+        final var aPage = 0;
+        final var aPerPage = 10;
+        final var aTerms = "tshir";
+        final var aSort = "sku";
+        final var aDirection = "desc";
+        final var aItemsCount = 1;
+        final var aTotalPages = 1;
+        final var aTotal = 1;
+
+        final var aItems = List.of(ListInventoriesByProductIdOutput.from(aInventory));
+
+        Mockito.when(listInventoriesByProductIdUseCase.execute(Mockito.any()))
+                .thenReturn(new Pagination<>(aPage, aPerPage, aTotalPages, aTotal, aItems));
+
+        final var request = MockMvcRequestBuilders.get("/v1/inventories/list/{productId}", aProductId)
+                .queryParam("page", String.valueOf(aPage))
+                .queryParam("perPage", String.valueOf(aPerPage))
+                .queryParam("sort", aSort)
+                .queryParam("dir", aDirection)
+                .queryParam("search", aTerms)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.current_page", equalTo(aPage)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.per_page", equalTo(aPerPage)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_pages", equalTo(aTotalPages)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_items", equalTo(aTotal)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items", hasSize(aItemsCount)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id", equalTo(aInventory.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].product_id", equalTo(aInventory.getProductId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].sku", equalTo(aInventory.getSku())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].quantity", equalTo(aInventory.getQuantity())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].created_at", equalTo(aInventory.getUpdatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].updated_at", equalTo(aInventory.getUpdatedAt().toString())));
+
+        Mockito.verify(listInventoriesByProductIdUseCase, Mockito.times(1)).execute(argThat(query ->
+                Objects.equals(aPage, query.searchQuery().page())
+                        && Objects.equals(aPerPage, query.searchQuery().perPage())
+                        && Objects.equals(aDirection, query.searchQuery().direction())
+                        && Objects.equals(aSort, query.searchQuery().sort())
+                        && Objects.equals(aTerms, query.searchQuery().terms())
+                        && Objects.equals(aProductId, query.productId())
+        ));
     }
 }

@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.inventory;
 
 import com.kaua.ecommerce.domain.inventory.Inventory;
+import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.domain.product.ProductID;
 import com.kaua.ecommerce.infrastructure.DatabaseGatewayTest;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntity;
@@ -236,5 +237,75 @@ public class InventoryGatewayTest {
         Assertions.assertEquals(15, aInventoryUpdated.getQuantity());
         Assertions.assertNotNull(aInventoryUpdated.getCreatedAt());
         Assertions.assertNotNull(aInventoryUpdated.getUpdatedAt());
+    }
+
+    @Test
+    void givenAValidProductIdAndQuery_whenCallFindAllByProductId_shouldReturnAPaginationOfInventories() {
+        final var aInventory = Inventory.newInventory("1", "sku", 10);
+        final var anotherInventory = Inventory.newInventory("1", "abablabla", 10);
+        final var aInventories = List.of(aInventory, anotherInventory);
+
+        this.inventoryRepository.saveAll(aInventories.stream().map(InventoryJpaEntity::toEntity).toList());
+
+        final var aPage = 0;
+        final var aPerPage = 1;
+        final var aTotalPages = 2;
+        final var aTotalItems = 2;
+
+        Assertions.assertEquals(2, this.inventoryRepository.count());
+
+        final var aQuery = new SearchQuery(0, 1, "", "sku", "ASC");
+        final var actualResult = this.inventoryGateway.findAllByProductId(aQuery, aInventory.getProductId());
+
+        Assertions.assertEquals(aPage, actualResult.currentPage());
+        Assertions.assertEquals(aPerPage, actualResult.perPage());
+        Assertions.assertEquals(aTotalPages, actualResult.totalPages());
+        Assertions.assertEquals(aTotalItems, actualResult.totalItems());
+        Assertions.assertEquals(aPerPage, actualResult.items().size());
+        Assertions.assertEquals(anotherInventory.getSku(), actualResult.items().get(0).getSku());
+    }
+
+    @Test
+    void givenAValidProductIdAndQueryButHasNoData_whenCallFindAllByProductId_shouldReturnEmptyInventories() {
+        final var aPage = 0;
+        final var aPerPage = 1;
+        final var aTotalPages = 0;
+        final var aTotalItems = 0;
+
+        final var aQuery = new SearchQuery(aPage, aPerPage, "", "sku", "ASC");
+        final var actualResult = this.inventoryGateway.findAllByProductId(aQuery, "1");
+
+        Assertions.assertEquals(aPage, actualResult.currentPage());
+        Assertions.assertEquals(aPerPage, actualResult.perPage());
+        Assertions.assertEquals(aTotalPages, actualResult.totalPages());
+        Assertions.assertEquals(aTotalItems, actualResult.totalItems());
+        Assertions.assertEquals(0, actualResult.items().size());
+    }
+
+    @Test
+    void givenAValidProductIdAndQueryAndTerms_whenCallFindAllByProductId_shouldReturnAPaginationOfInventories() {
+        final var aInventory = Inventory.newInventory("1", "xpto", 10);
+        final var aInventories = List.of(
+                aInventory,
+                Inventory.newInventory("1", "abablabla", 10));
+
+        this.inventoryRepository.saveAll(aInventories.stream().map(InventoryJpaEntity::toEntity).toList());
+
+        final var aPage = 0;
+        final var aPerPage = 1;
+        final var aTotalPages = 1;
+        final var aTotalItems = 1;
+
+        Assertions.assertEquals(2, this.inventoryRepository.count());
+
+        final var aQuery = new SearchQuery(0, 1, "xp", "sku", "ASC");
+        final var actualResult = this.inventoryGateway.findAllByProductId(aQuery, aInventory.getProductId());
+
+        Assertions.assertEquals(aPage, actualResult.currentPage());
+        Assertions.assertEquals(aPerPage, actualResult.perPage());
+        Assertions.assertEquals(aTotalPages, actualResult.totalPages());
+        Assertions.assertEquals(aTotalItems, actualResult.totalItems());
+        Assertions.assertEquals(aPerPage, actualResult.items().size());
+        Assertions.assertEquals(aInventory.getSku(), actualResult.items().get(0).getSku());
     }
 }

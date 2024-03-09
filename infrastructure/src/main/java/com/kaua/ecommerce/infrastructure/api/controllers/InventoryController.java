@@ -8,13 +8,19 @@ import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInven
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityCommand;
 import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdCommand;
+import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuCommand;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.inventory.Inventory;
+import com.kaua.ecommerce.domain.pagination.Pagination;
+import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.api.InventoryAPI;
 import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInput;
 import com.kaua.ecommerce.infrastructure.inventory.models.DecreaseInventoryQuantityInput;
 import com.kaua.ecommerce.infrastructure.inventory.models.IncreaseInventoryQuantityInput;
+import com.kaua.ecommerce.infrastructure.inventory.models.ListInventoriesResponse;
+import com.kaua.ecommerce.infrastructure.inventory.presenter.InventoryApiPresenter;
 import com.kaua.ecommerce.infrastructure.utils.LogControllerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +39,7 @@ public class InventoryController implements InventoryAPI {
     private final RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase;
     private final IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase;
     private final DecreaseInventoryQuantityUseCase decreaseInventoryQuantityUseCase;
+    private final ListInventoriesByProductIdUseCase listInventoriesByProductIdUseCase;
 
     public InventoryController(
             final CreateInventoryUseCase createInventoryUseCase,
@@ -40,7 +47,8 @@ public class InventoryController implements InventoryAPI {
             final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase,
             final RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase,
             final IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase,
-            final DecreaseInventoryQuantityUseCase decreaseInventoryQuantityUseCase
+            final DecreaseInventoryQuantityUseCase decreaseInventoryQuantityUseCase,
+            final ListInventoriesByProductIdUseCase listInventoriesByProductIdUseCase
     ) {
         this.createInventoryUseCase = createInventoryUseCase;
         this.cleanInventoriesByProductIdUseCase = cleanInventoriesByProductIdUseCase;
@@ -48,6 +56,7 @@ public class InventoryController implements InventoryAPI {
         this.rollbackInventoryBySkuUseCase = rollbackInventoryBySkuUseCase;
         this.increaseInventoryQuantityUseCase = increaseInventoryQuantityUseCase;
         this.decreaseInventoryQuantityUseCase = decreaseInventoryQuantityUseCase;
+        this.listInventoriesByProductIdUseCase = listInventoriesByProductIdUseCase;
     }
 
     @Override
@@ -67,6 +76,21 @@ public class InventoryController implements InventoryAPI {
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.status(HttpStatus.CREATED).body(aResult.getRight());
+    }
+
+    @Override
+    public Pagination<ListInventoriesResponse> listInventoriesByProductId(
+            String productId,
+            String search,
+            int page,
+            int perPage,
+            String sort,
+            String direction
+    ) {
+        final var aQuery = new SearchQuery(page, perPage, search, sort, direction);
+        final var aCommand = ListInventoriesByProductIdCommand.with(productId, aQuery);
+        return this.listInventoriesByProductIdUseCase.execute(aCommand)
+                .map(InventoryApiPresenter::present);
     }
 
     @Override

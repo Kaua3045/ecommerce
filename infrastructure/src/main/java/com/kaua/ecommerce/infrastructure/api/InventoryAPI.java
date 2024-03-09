@@ -1,8 +1,10 @@
 package com.kaua.ecommerce.infrastructure.api;
 
+import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInput;
 import com.kaua.ecommerce.infrastructure.inventory.models.DecreaseInventoryQuantityInput;
 import com.kaua.ecommerce.infrastructure.inventory.models.IncreaseInventoryQuantityInput;
+import com.kaua.ecommerce.infrastructure.inventory.models.ListInventoriesResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,6 +29,24 @@ public interface InventoryAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     ResponseEntity<?> createInventory(@RequestBody CreateInventoryInput body);
+
+    @GetMapping(
+            value = "list/{productId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Get all inventories by productId")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    Pagination<ListInventoriesResponse> listInventoriesByProductId(
+            @PathVariable String productId,
+            @RequestParam(name = "search", required = false, defaultValue = "") final String search,
+            @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
+            @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
+            @RequestParam(name = "sort", required = false, defaultValue = "sku") final String sort,
+            @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction
+    );
 
     @PostMapping(
             value = "/rollback/{productId}/{sku}",

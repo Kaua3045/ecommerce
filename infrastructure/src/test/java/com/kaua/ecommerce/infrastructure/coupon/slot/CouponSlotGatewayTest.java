@@ -93,4 +93,32 @@ public class CouponSlotGatewayTest {
 
         Assertions.assertEquals(2, this.couponSlotJpaRepository.count());
     }
+
+    @Test
+    void givenAValidCouponId_whenCallExistsByCouponId_shouldReturnTrue() {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+        final var aEntity = CouponJpaEntity.toEntity(aCoupon);
+        this.couponJpaRepository.save(aEntity);
+
+        final var aCouponSlot = Fixture.Coupons.generateValidCouponSlot(aCoupon);
+        this.couponSlotJpaRepository.save(CouponSlotJpaEntity.toEntity(aCouponSlot));
+
+        final var actual = this.couponSlotGateway.existsByCouponId(aCoupon.getId().getValue());
+
+        Assertions.assertTrue(actual);
+    }
+
+    @Test
+    void givenAnInvalidCouponId_whenCallExistsByCouponId_shouldReturnFalse() {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+        final var aEntity = CouponJpaEntity.toEntity(aCoupon);
+        this.couponJpaRepository.save(aEntity);
+
+        final var aCouponSlot = Fixture.Coupons.generateValidCouponSlot(aCoupon);
+        this.couponSlotJpaRepository.save(CouponSlotJpaEntity.toEntity(aCouponSlot));
+
+        final var actual = this.couponSlotGateway.existsByCouponId("invalid-coupon-id");
+
+        Assertions.assertFalse(actual);
+    }
 }

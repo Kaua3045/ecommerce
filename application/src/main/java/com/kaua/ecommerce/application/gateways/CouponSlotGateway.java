@@ -11,4 +11,6 @@ public interface CouponSlotGateway {
     boolean existsByCouponId(String couponId);
 
     void deleteAllByCouponId(String couponId);
+
+    boolean deleteFirstSlotByCouponId(String couponId);
 }

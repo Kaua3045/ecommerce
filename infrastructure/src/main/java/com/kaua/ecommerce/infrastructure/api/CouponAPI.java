@@ -62,6 +62,18 @@ public interface CouponAPI {
     })
     ResponseEntity<?> deactivateCoupon(@PathVariable String id);
 
+    @DeleteMapping(
+            value = "slots/{code}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Remove a coupon slot by it's code")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Removed successfully"),
+            @ApiResponse(responseCode = "404", description = "Coupon not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> removeCouponSlot(@PathVariable String code);
+
     @DeleteMapping(value = "{id}")
     @Operation(summary = "Delete a coupon by it's identifier")
     @ApiResponses(value = {

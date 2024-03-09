@@ -121,4 +121,25 @@ public class CouponSlotGatewayTest {
 
         Assertions.assertFalse(actual);
     }
+
+    @Test
+    void givenAValidCouponId_whenCallDeleteFirstSlotByCouponId_shouldDeleteFirstCouponSlot() {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+        final var aEntity = CouponJpaEntity.toEntity(aCoupon);
+        this.couponJpaRepository.save(aEntity);
+
+        final var aCouponSlot = Fixture.Coupons.generateValidCouponSlot(aCoupon);
+        final var anotherCouponSlot = Fixture.Coupons.generateValidCouponSlot(aCoupon);
+
+        this.couponSlotJpaRepository.saveAll(Set.of(
+                CouponSlotJpaEntity.toEntity(aCouponSlot),
+                CouponSlotJpaEntity.toEntity(anotherCouponSlot)
+        ));
+
+        Assertions.assertEquals(2, this.couponSlotJpaRepository.count());
+
+        this.couponSlotGateway.deleteFirstSlotByCouponId(aCoupon.getId().getValue());
+
+        Assertions.assertEquals(1, this.couponSlotJpaRepository.count());
+    }
 }

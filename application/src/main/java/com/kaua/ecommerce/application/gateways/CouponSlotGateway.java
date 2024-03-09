@@ -8,5 +8,7 @@ public interface CouponSlotGateway {
 
     Set<CouponSlot> createInBatch(Set<CouponSlot> couponSlots);
 
+    boolean existsByCouponId(String couponId);
+
     void deleteAllByCouponId(String couponId);
 }

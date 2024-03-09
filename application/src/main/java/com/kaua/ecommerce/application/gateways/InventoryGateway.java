@@ -1,6 +1,8 @@
 package com.kaua.ecommerce.application.gateways;
 
 import com.kaua.ecommerce.domain.inventory.Inventory;
+import com.kaua.ecommerce.domain.pagination.Pagination;
+import com.kaua.ecommerce.domain.pagination.SearchQuery;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,8 @@ public interface InventoryGateway {
     Optional<Inventory> findBySku(String sku);
 
     Set<Inventory> findByProductId(String productId);
+
+    Pagination<Inventory> findAllByProductId(SearchQuery aQuery, String productId);
 
     void cleanByProductId(String productId);
 

@@ -7,6 +7,7 @@ import com.kaua.ecommerce.infrastructure.coupon.persistence.CouponJpaEntityRepos
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -45,9 +46,17 @@ public class CouponMySQLGateway implements CouponGateway {
         return aResult;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Coupon> findById(String id) {
         return this.couponJpaEntityRepository.findById(id)
+                .map(CouponJpaEntity::toDomain);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<Coupon> findByCode(String code) {
+        return this.couponJpaEntityRepository.findByCode(code)
                 .map(CouponJpaEntity::toDomain);
     }
 

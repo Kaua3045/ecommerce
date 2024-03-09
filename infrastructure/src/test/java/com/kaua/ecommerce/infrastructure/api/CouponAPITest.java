@@ -10,6 +10,8 @@ import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponOutput;
+import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.domain.coupon.CouponType;
@@ -35,8 +37,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 @ControllerTest(controllers = CouponAPI.class)
 public class CouponAPITest {
@@ -58,6 +59,9 @@ public class CouponAPITest {
 
     @MockBean
     private DeleteCouponUseCase deleteCouponUseCase;
+
+    @MockBean
+    private ValidateCouponUseCase validateCouponUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateCoupon_thenReturnStatusOkAndIdAndCode() throws Exception {
@@ -254,6 +258,8 @@ public class CouponAPITest {
 
         final var aId = aCoupon.getId().getValue();
 
+        Mockito.doNothing().when(deleteCouponUseCase).execute(aId);
+
         final var request = MockMvcRequestBuilders.delete("/v1/coupons/{id}", aId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -263,5 +269,29 @@ public class CouponAPITest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(deleteCouponUseCase, Mockito.times(1)).execute(aId);
+    }
+
+    @Test
+    void givenAValidCouponCode_whenCallValidateCouponByCode_thenReturnStatusOkAndCouponValid() throws Exception {
+        final var aCoupon = Fixture.Coupons.unlimitedCouponActivated();
+
+        final var aCode = aCoupon.getCode().getValue();
+
+        Mockito.when(validateCouponUseCase.execute(aCode))
+                .thenReturn(ValidateCouponOutput.from(aCoupon, true));
+
+        final var request = MockMvcRequestBuilders.get("/v1/coupons/validate/{code}", aCode)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_id", equalTo(aCoupon.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_code", equalTo(aCoupon.getCode().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_percentage", is((double) aCoupon.getPercentage())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_valid", equalTo(true)));
+
+        Mockito.verify(validateCouponUseCase, Mockito.times(1)).execute(aCode);
     }
 }

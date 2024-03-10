@@ -15,6 +15,8 @@ import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.DefaultListC
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.slot.remove.DefaultRemoveCouponSlotUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.update.DefaultUpdateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.DefaultValidateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
 import org.springframework.context.annotation.Bean;
@@ -72,5 +74,10 @@ public class CouponUseCaseConfig {
     @Bean
     public ListCouponsUseCase listCouponsUseCase() {
         return new DefaultListCouponsUseCase(couponGateway);
+    }
+
+    @Bean
+    public UpdateCouponUseCase updateCouponUseCase() {
+        return new DefaultUpdateCouponUseCase(couponGateway);
     }
 }

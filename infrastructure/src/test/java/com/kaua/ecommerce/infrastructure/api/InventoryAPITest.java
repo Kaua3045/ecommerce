@@ -487,7 +487,7 @@ public class InventoryAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].product_id", equalTo(aInventory.getProductId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].sku", equalTo(aInventory.getSku())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].quantity", equalTo(aInventory.getQuantity())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].created_at", equalTo(aInventory.getUpdatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].created_at", equalTo(aInventory.getCreatedAt().toString())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].updated_at", equalTo(aInventory.getUpdatedAt().toString())));
 
         Mockito.verify(listInventoriesByProductIdUseCase, Mockito.times(1)).execute(argThat(query ->

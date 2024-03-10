@@ -200,4 +200,28 @@ public class CouponTest extends UnitTest {
         Assertions.assertFalse(aCoupon.isActive());
         Assertions.assertNotNull(aCoupon.getUpdatedAt());
     }
+
+    @Test
+    void givenAValidCoupon_whenCallUpdate_thenCouponShouldBeUpdated() {
+        final var aCode = "BLACKFRIDAY";
+        final var aPercentage = 10.0f;
+        final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
+        final var aIsActive = true;
+        final var aType = CouponType.UNLIMITED;
+
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+
+        final var aCouponUpdatedAt = aCoupon.getUpdatedAt();
+
+        final var newCode = "CYBERMONDAY";
+        final var newPercentage = 20.0f;
+        final var newExpirationDate = InstantUtils.now().plus(2, ChronoUnit.DAYS);
+
+        final var aCouponUpdated = aCoupon.update(newCode, newPercentage, newExpirationDate);
+
+        Assertions.assertEquals(newCode, aCouponUpdated.getCode().getValue());
+        Assertions.assertEquals(newPercentage, aCouponUpdated.getPercentage());
+        Assertions.assertEquals(newExpirationDate, aCouponUpdated.getExpirationDate());
+        Assertions.assertTrue(aCouponUpdatedAt.isBefore(aCouponUpdated.getUpdatedAt()));
+    }
 }

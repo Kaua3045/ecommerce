@@ -152,4 +152,84 @@ public class CouponValidationTest extends UnitTest {
         Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
     }
+
+    @Test
+    void givenAnInvalidCode_whenCallUpdate_shouldReturnDomainException() {
+        final var aCode = " ";
+        final var aPercentage = 10.0f;
+        final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("code");
+        final var expectedErrorCount = 1;
+
+        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
+
+        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aExpirationDate);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCouponUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenAnInvalidNegativePercentage_whenCallUpdate_shouldReturnDomainException() {
+        final var aCode = "BLACKFRIDAY";
+        final var aPercentage = -10.0f;
+        final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
+
+        final var expectedErrorMessage = CommonErrorMessage.greaterThan("percentage", 0);
+        final var expectedErrorCount = 1;
+
+        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
+
+        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aExpirationDate);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCouponUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenAnInvalidNullExpirationDate_whenCallUpdate_shouldReturnDomainException() {
+        final var aCode = "BLACKFRIDAY";
+        final var aPercentage = 10.0f;
+        final Instant aExpirationDate = null;
+
+        final var expectedErrorMessage = CommonErrorMessage.nullMessage("expirationDate");
+        final var expectedErrorCount = 1;
+
+        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
+
+        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aExpirationDate);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCouponUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenAnInvalidExpirationDateInThePast_whenCallUpdate_shouldReturnDomainException() {
+        final var aCode = "BLACKFRIDAY";
+        final var aPercentage = 10.0f;
+        final var aExpirationDate = InstantUtils.now().minus(1, ChronoUnit.DAYS);
+
+        final var expectedErrorMessage = CommonErrorMessage.dateMustBeFuture("expirationDate");
+        final var expectedErrorCount = 1;
+
+        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
+
+        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aExpirationDate);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCouponUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
 }

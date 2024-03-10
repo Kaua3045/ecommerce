@@ -13,10 +13,14 @@ import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInv
 import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityCommand;
 import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityOutput;
 import com.kaua.ecommerce.application.usecases.inventory.increase.IncreaseInventoryQuantityUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.retrieve.get.GetInventoryBySkuOutput;
+import com.kaua.ecommerce.application.usecases.inventory.retrieve.get.GetInventoryBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdOutput;
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
+import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.product.ProductID;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
@@ -76,6 +80,9 @@ public class InventoryAPITest {
 
     @MockBean
     private ListInventoriesByProductIdUseCase listInventoriesByProductIdUseCase;
+
+    @MockBean
+    private GetInventoryBySkuUseCase getInventoryBySkuUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateInventory_thenReturnStatusOkAndIdAndSku() throws Exception {
@@ -491,5 +498,52 @@ public class InventoryAPITest {
                         && Objects.equals(aTerms, query.searchQuery().terms())
                         && Objects.equals(aProductId, query.productId())
         ));
+    }
+
+    @Test
+    void givenAValidSku_whenCallGetInventoryBySku_thenReturnInventory() throws Exception {
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+        final var aSku = aInventory.getSku();
+
+        Mockito.when(getInventoryBySkuUseCase.execute(aSku))
+                .thenReturn(GetInventoryBySkuOutput.from(aInventory));
+
+        final var request = MockMvcRequestBuilders.get("/v1/inventories/{sku}", aSku)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aInventory.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.product_id", equalTo(aInventory.getProductId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sku", equalTo(aInventory.getSku())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", equalTo(aInventory.getQuantity())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.created_at", equalTo(aInventory.getCreatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.updated_at", equalTo(aInventory.getUpdatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.version", equalTo((int) aInventory.getVersion())));
+
+        Mockito.verify(getInventoryBySkuUseCase, Mockito.times(1)).execute(aSku);
+    }
+
+    @Test
+    void givenAnInvalidSku_whenCallGetInventoryBySku_thenThrowNotFoundException() throws Exception {
+        final var aSku = "invalid-sku";
+
+        final var expectedErrorMessage = Fixture.notFoundMessage(Inventory.class, aSku);
+
+        Mockito.when(getInventoryBySkuUseCase.execute(aSku))
+                .thenThrow(NotFoundException.with(Inventory.class, aSku).get());
+
+        final var request = MockMvcRequestBuilders.get("/v1/inventories/{sku}", aSku)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        Mockito.verify(getInventoryBySkuUseCase, Mockito.times(1)).execute(aSku);
     }
 }

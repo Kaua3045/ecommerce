@@ -5,11 +5,17 @@ import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponCommand
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
 import com.kaua.ecommerce.domain.coupon.Coupon;
+import com.kaua.ecommerce.domain.pagination.Pagination;
+import com.kaua.ecommerce.domain.pagination.Period;
+import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.api.CouponAPI;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
+import com.kaua.ecommerce.infrastructure.coupon.models.ListCouponsResponse;
+import com.kaua.ecommerce.infrastructure.coupon.presenter.CouponApiPresenter;
 import com.kaua.ecommerce.infrastructure.utils.LogControllerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +34,7 @@ public class CouponController implements CouponAPI {
     private final DeleteCouponUseCase deleteCouponUseCase;
     private final ValidateCouponUseCase validateCouponUseCase;
     private final RemoveCouponSlotUseCase removeCouponSlotUseCase;
+    private final ListCouponsUseCase listCouponsUseCase;
 
     public CouponController(
             final CreateCouponUseCase createCouponUseCase,
@@ -35,7 +42,8 @@ public class CouponController implements CouponAPI {
             final DeactivateCouponUseCase deactivateCouponUseCase,
             final DeleteCouponUseCase deleteCouponUseCase,
             final ValidateCouponUseCase validateCouponUseCase,
-            final RemoveCouponSlotUseCase removeCouponSlotUseCase
+            final RemoveCouponSlotUseCase removeCouponSlotUseCase,
+            final ListCouponsUseCase listCouponsUseCase
     ) {
         this.createCouponUseCase = createCouponUseCase;
         this.activateCouponUseCase = activateCouponUseCase;
@@ -43,6 +51,7 @@ public class CouponController implements CouponAPI {
         this.deleteCouponUseCase = deleteCouponUseCase;
         this.validateCouponUseCase = validateCouponUseCase;
         this.removeCouponSlotUseCase = removeCouponSlotUseCase;
+        this.listCouponsUseCase = listCouponsUseCase;
     }
 
     @Override
@@ -68,6 +77,22 @@ public class CouponController implements CouponAPI {
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.status(HttpStatus.CREATED).body(aResult.getRight());
+    }
+
+    @Override
+    public Pagination<ListCouponsResponse> listCoupons(
+            final String search,
+            final int page,
+            final int perPage,
+            final String sort,
+            final String direction,
+            final String startDate,
+            final String endDate
+    ) {
+        final var aPeriod = new Period(startDate, endDate);
+        final var aQuery = new SearchQuery(page, perPage, search, sort, direction, aPeriod);
+        return this.listCouponsUseCase.execute(aQuery)
+                .map(CouponApiPresenter::present);
     }
 
     @Override

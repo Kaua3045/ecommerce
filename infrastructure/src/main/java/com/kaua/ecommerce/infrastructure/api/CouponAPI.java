@@ -1,6 +1,8 @@
 package com.kaua.ecommerce.infrastructure.api;
 
+import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
+import com.kaua.ecommerce.infrastructure.coupon.models.ListCouponsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -25,6 +27,23 @@ public interface CouponAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     ResponseEntity<?> createCoupon(@RequestBody CreateCouponInput body);
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get all coupons")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found successfully"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    Pagination<ListCouponsResponse> listCoupons(
+            @RequestParam(name = "search", required = false, defaultValue = "") final String search,
+            @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
+            @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
+            @RequestParam(name = "sort", required = false, defaultValue = "code") final String sort,
+            @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction,
+            @RequestParam(name = "startDate", required = false, defaultValue = "") final String startDate,
+            @RequestParam(name = "endDate", required = false, defaultValue = "") final String endDate
+    );
+
 
     @GetMapping(
             value = "/validate/{code}",

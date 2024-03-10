@@ -304,7 +304,7 @@ public final class Fixture {
 
         private static final Coupon UNLIMITED_COUPON_ACTIVATED = Coupon.newCoupon(
                 faker.options()
-                        .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
+                        .option("BLACK_FRIDAY", "CYBER_MONDAY"),
                 (float) Math.round(faker.random().nextDouble(1, 100)),
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 true,
@@ -313,7 +313,7 @@ public final class Fixture {
 
         private static final Coupon UNLIMITED_COUPON_DEACTIVATED = Coupon.newCoupon(
                 faker.options()
-                        .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
+                        .option("CHRISTMAS", "NEW_YEAR", "EASTER"),
                 (float) Math.round(faker.random().nextDouble(1, 100)),
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 false,
@@ -322,7 +322,7 @@ public final class Fixture {
 
         private static final Coupon LIMITED_COUPON_ACTIVATED = Coupon.newCoupon(
                 faker.options()
-                        .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
+                        .option("TEST_FREE_2024", "TEST_FREE_2025", "OFFER5", "OFFER10"),
                 (float) Math.round(faker.random().nextDouble(1, 100)),
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 true,
@@ -331,7 +331,7 @@ public final class Fixture {
 
         private static final Coupon LIMITED_COUPON_DEACTIVATED = Coupon.newCoupon(
                 faker.options()
-                        .option("BLACK_FRIDAY", "CYBER_MONDAY", "CHRISTMAS", "NEW_YEAR", "EASTER"),
+                        .option("VIP_DISCOUNT", "CUSTOMER10OFF", "WELCOME10"),
                 (float) Math.round(faker.random().nextDouble(1, 100)),
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 false,

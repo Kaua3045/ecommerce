@@ -102,7 +102,7 @@ public class ProductAPITest {
     private RemoveProductAttributesUseCase removeProductAttributesUseCase;
 
     @Test
-    void givenAValidInputWithDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
+    void givenAValidInput_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
         final var aProduct = Fixture.Products.tshirt();
         final var aId = aProduct.getId().getValue();
 
@@ -163,130 +163,8 @@ public class ProductAPITest {
     }
 
     @Test
-    void givenAValidInputWithoutDescription_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
-        final var aProduct = Fixture.Products.tshirt();
-        final var aId = aProduct.getId().getValue();
-
-        final var aName = "Tshirt Test";
-        final String aDescription = null;
-        final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
-        final var aCategoryId = "123";
-        final var aColorName = "Red";
-        final var aSizeName = "M";
-        final var aWeight = 0.5;
-        final var aHeight = 0.5;
-        final var aWidth = 0.5;
-        final var aDepth = 0.5;
-
-        final var aAttributesInput = new CreateProductInputAttributes(
-                aColorName,
-                aSizeName,
-                aWeight,
-                aHeight,
-                aWidth,
-                aDepth,
-                aQuantity
-        );
-
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aCategoryId,
-                List.of(aAttributesInput)
-        );
-
-        Mockito.when(createProductUseCase.execute(Mockito.any()))
-                .thenReturn(Either.right(CreateProductOutput.from(aProduct)));
-
-        final var request = MockMvcRequestBuilders.post("/v1/products")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(this.mapper.writeValueAsString(aInput));
-
-        this.mvc.perform(request)
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", equalTo(aId)));
-
-        final var cmdCaptor = ArgumentCaptor.forClass(CreateProductCommand.class);
-
-        Mockito.verify(createProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
-
-        final var actualCmd = cmdCaptor.getValue();
-
-        Assertions.assertEquals(aName, actualCmd.name());
-        Assertions.assertEquals(aDescription, actualCmd.description());
-        Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(1, actualCmd.attributes().size());
-    }
-
-    @Test
     void givenAnInvalidInputNullName_whenCallCreateProduct_thenReturnDomainException() throws Exception {
         final String aName = null;
-        final var aDescription = "Product Test Description";
-        final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
-        final var aCategoryId = "123";
-        final var aColorName = "Red";
-        final var aSizeName = "M";
-        final var aWeight = 0.5;
-        final var aHeight = 0.5;
-        final var aWidth = 0.5;
-        final var aDepth = 0.5;
-
-        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
-
-        final var aAttributesInput = new CreateProductInputAttributes(
-                aColorName,
-                aSizeName,
-                aWeight,
-                aHeight,
-                aWidth,
-                aDepth,
-                aQuantity
-        );
-
-        final var aInput = new CreateProductInput(
-                aName,
-                aDescription,
-                aPrice,
-                aCategoryId,
-                List.of(aAttributesInput)
-        );
-
-        Mockito.when(createProductUseCase.execute(Mockito.any()))
-                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
-
-        final var request = MockMvcRequestBuilders.post("/v1/products")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(this.mapper.writeValueAsString(aInput));
-
-        this.mvc.perform(request)
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
-
-        final var cmdCaptor = ArgumentCaptor.forClass(CreateProductCommand.class);
-
-        Mockito.verify(createProductUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
-
-        final var actualCmd = cmdCaptor.getValue();
-
-        Assertions.assertEquals(aName, actualCmd.name());
-        Assertions.assertEquals(aDescription, actualCmd.description());
-        Assertions.assertEquals(aPrice, actualCmd.price());
-        Assertions.assertEquals(aCategoryId, actualCmd.categoryId());
-        Assertions.assertEquals(1, actualCmd.attributes().size());
-    }
-
-    @Test
-    void givenAnInvalidInputBlankName_whenCallCreateProduct_thenReturnDomainException() throws Exception {
-        final var aName = " ";
         final var aDescription = "Product Test Description";
         final var aPrice = BigDecimal.valueOf(10.0);
         final var aQuantity = 10;

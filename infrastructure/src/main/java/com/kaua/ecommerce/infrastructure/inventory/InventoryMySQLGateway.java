@@ -119,6 +119,6 @@ public class InventoryMySQLGateway implements InventoryGateway {
     }
 
     private Specification<InventoryJpaEntity> assembleWhereEqual(final String aProductId) {
-        return SpecificationUtils.equal("productId", aProductId);
+        return SpecificationUtils.whereEqual("productId", aProductId);
     }
 }

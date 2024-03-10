@@ -10,6 +10,8 @@ import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsOutput;
+import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotOutput;
 import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponOutput;
@@ -18,6 +20,7 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.domain.coupon.CouponType;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.Error;
@@ -38,8 +41,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.argThat;
 
 @ControllerTest(controllers = CouponAPI.class)
 public class CouponAPITest {
@@ -67,6 +72,9 @@ public class CouponAPITest {
 
     @MockBean
     private RemoveCouponSlotUseCase removeCouponSlotUseCase;
+
+    @MockBean
+    private ListCouponsUseCase listCouponsUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateCoupon_thenReturnStatusOkAndIdAndCode() throws Exception {
@@ -320,5 +328,57 @@ public class CouponAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_code", equalTo(aCoupon.getCode().getValue())));
 
         Mockito.verify(removeCouponSlotUseCase, Mockito.times(1)).execute(aCouponCode);
+    }
+
+    @Test
+    void givenValidParams_whenCallsListCoupons_shouldReturnCoupons() throws Exception {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+
+        final var aPage = 0;
+        final var aPerPage = 10;
+        final var aTerms = "LIMITED";
+        final var aSort = "code";
+        final var aDirection = "desc";
+        final var aItemsCount = 1;
+        final var aTotalPages = 1;
+        final var aTotal = 1;
+
+        final var aItems = List.of(ListCouponsOutput.from(aCoupon));
+
+        Mockito.when(listCouponsUseCase.execute(Mockito.any()))
+                .thenReturn(new Pagination<>(aPage, aPerPage, aTotalPages, aTotal, aItems));
+
+        final var request = MockMvcRequestBuilders.get("/v1/coupons")
+                .queryParam("page", String.valueOf(aPage))
+                .queryParam("perPage", String.valueOf(aPerPage))
+                .queryParam("sort", aSort)
+                .queryParam("dir", aDirection)
+                .queryParam("search", aTerms)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.current_page", equalTo(aPage)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.per_page", equalTo(aPerPage)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_pages", equalTo(aTotalPages)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_items", equalTo(aTotal)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items", hasSize(aItemsCount)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id", equalTo(aCoupon.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].code", equalTo(aCoupon.getCode().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].percentage", equalTo((double) aCoupon.getPercentage())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].expiration_date", equalTo(aCoupon.getExpirationDate().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].is_active", equalTo(aCoupon.isActive())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].type", equalTo(aCoupon.getType().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].created_at", equalTo(aCoupon.getCreatedAt().toString())));
+
+        Mockito.verify(listCouponsUseCase, Mockito.times(1)).execute(argThat(query ->
+                Objects.equals(aPage, query.page())
+                        && Objects.equals(aPerPage, query.perPage())
+                        && Objects.equals(aDirection, query.direction())
+                        && Objects.equals(aSort, query.sort())
+                        && Objects.equals(aTerms, query.terms())
+        ));
     }
 }

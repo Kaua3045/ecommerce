@@ -108,6 +108,14 @@ public class Coupon extends AggregateRoot<CouponID> {
         return this;
     }
 
+    public Coupon update(final String aCode, final float aPercentage, final Instant aExpirationDate) {
+        this.code = CouponCode.create(aCode);
+        this.percentage = aPercentage;
+        this.expirationDate = aExpirationDate;
+        this.updatedAt = InstantUtils.now();
+        return this;
+    }
+
     @Override
     public void validate(ValidationHandler handler) {
         new CouponValidation(handler, this).validate();

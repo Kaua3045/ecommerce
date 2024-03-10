@@ -3,6 +3,7 @@ package com.kaua.ecommerce.infrastructure.api;
 import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
 import com.kaua.ecommerce.infrastructure.coupon.models.ListCouponsResponse;
+import com.kaua.ecommerce.infrastructure.coupon.models.UpdateCouponInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -80,6 +81,19 @@ public interface CouponAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     ResponseEntity<?> deactivateCoupon(@PathVariable String id);
+
+    @PatchMapping(
+            value = "{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Update a coupon by it's identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Coupon not found"),
+            @ApiResponse(responseCode = "422", description = "A validation error was thrown"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ResponseEntity<?> updateCouponById(@PathVariable String id, @RequestBody UpdateCouponInput body);
 
     @DeleteMapping(
             value = "slots/{code}",

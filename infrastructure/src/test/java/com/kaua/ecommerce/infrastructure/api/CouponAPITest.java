@@ -14,6 +14,9 @@ import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsO
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotOutput;
 import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponCommand;
+import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponOutput;
+import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
 import com.kaua.ecommerce.domain.Fixture;
@@ -27,6 +30,7 @@ import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import com.kaua.ecommerce.infrastructure.ControllerTest;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
+import com.kaua.ecommerce.infrastructure.coupon.models.UpdateCouponInput;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -75,6 +79,9 @@ public class CouponAPITest {
 
     @MockBean
     private ListCouponsUseCase listCouponsUseCase;
+
+    @MockBean
+    private UpdateCouponUseCase updateCouponUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateCoupon_thenReturnStatusOkAndIdAndCode() throws Exception {
@@ -380,5 +387,98 @@ public class CouponAPITest {
                         && Objects.equals(aSort, query.sort())
                         && Objects.equals(aTerms, query.terms())
         ));
+    }
+
+    @Test
+    void givenAValidValues_whenCallUpdateCoupon_thenReturnStatusOkAndCouponUpdated() throws Exception {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+
+        final var aCouponId = aCoupon.getId().getValue();
+
+        final var aCode = "NEWCODE";
+        final var aPercentage = 200.0f;
+        final var aExpirationDate = InstantUtils.now().plus(5, ChronoUnit.DAYS).toString();
+
+        final var aInput = new UpdateCouponInput(
+                aCode,
+                aPercentage,
+                aExpirationDate
+        );
+
+        Mockito.when(updateCouponUseCase.execute(Mockito.any()))
+                .thenReturn(Either.right(UpdateCouponOutput.from(Coupon.with(
+                        aCoupon.getId().getValue(),
+                        aCode,
+                        aPercentage,
+                        aCoupon.getExpirationDate(),
+                        aCoupon.isActive(),
+                        aCoupon.getType(),
+                        aCoupon.getCreatedAt(),
+                        aCoupon.getUpdatedAt(),
+                        aCoupon.getVersion()))));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/coupons/{id}", aCouponId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_id", equalTo(aCoupon.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code", equalTo(aCode)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCouponCommand.class);
+
+        Mockito.verify(updateCouponUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aCode, actualCmd.code());
+        Assertions.assertEquals(aPercentage, actualCmd.percentage());
+        Assertions.assertEquals(aExpirationDate, actualCmd.expirationDate());
+    }
+
+    @Test
+    void givenAnInvalidNullCode_whenCallUpdateCouponById_thenReturnDomainException() throws Exception {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+
+        final var aCouponId = aCoupon.getId().getValue();
+
+        final String aCode = null;
+        final var aPercentage = 200.0f;
+        final var aExpirationDate = InstantUtils.now().plus(5, ChronoUnit.DAYS).toString();
+
+        final var aInput = new UpdateCouponInput(
+                aCode,
+                aPercentage,
+                aExpirationDate
+        );
+
+        final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("code");
+
+        Mockito.when(updateCouponUseCase.execute(Mockito.any()))
+                .thenReturn(Either.left(NotificationHandler.create(new Error(expectedErrorMessage))));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/coupons/{id}", aCouponId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+
+        final var cmdCaptor = ArgumentCaptor.forClass(UpdateCouponCommand.class);
+
+        Mockito.verify(updateCouponUseCase, Mockito.times(1)).execute(cmdCaptor.capture());
+
+        final var actualCmd = cmdCaptor.getValue();
+
+        Assertions.assertEquals(aCode, actualCmd.code());
+        Assertions.assertEquals(aPercentage, actualCmd.percentage());
+        Assertions.assertEquals(aExpirationDate, actualCmd.expirationDate());
     }
 }

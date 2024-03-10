@@ -36,7 +36,7 @@ public class CouponValidation extends Validator {
     }
 
     private void checkPercentageConstraints() {
-        if (this.coupon.getPercentage() < 0) {
+        if (this.coupon.getPercentage() <= 0) {
             this.validationHandler().append(new Error(CommonErrorMessage.greaterThan("percentage", 0)));
         }
     }

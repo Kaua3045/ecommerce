@@ -2,6 +2,8 @@ package com.kaua.ecommerce.infrastructure.utils;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.Instant;
+
 public final class SpecificationUtils {
 
     private SpecificationUtils() {
@@ -17,5 +19,9 @@ public final class SpecificationUtils {
 
     public static <T> Specification<T> whereEqual(final String property, final Enum<?> value) {
         return (root, query, cb) -> cb.equal(root.get(property), value);
+    }
+
+    public static <T> Specification<T> between(final String property, final Instant start, final Instant end) {
+        return (root, query, cb) -> cb.between(root.get(property), start, end);
     }
 }

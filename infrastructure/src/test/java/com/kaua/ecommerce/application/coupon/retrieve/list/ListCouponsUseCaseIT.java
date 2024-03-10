@@ -40,7 +40,7 @@ public class ListCouponsUseCaseIT {
         Assertions.assertEquals(0, aResult.currentPage());
         Assertions.assertEquals(10, aResult.perPage());
         Assertions.assertEquals(1, aResult.totalPages());
-        Assertions.assertEquals(2, aResult.totalItems());
+        Assertions.assertEquals(1, aResult.totalItems());
         Assertions.assertEquals(1, aResult.items().size());
 
         final var aCoupon = aResult.items().get(0);
@@ -70,7 +70,7 @@ public class ListCouponsUseCaseIT {
         Assertions.assertEquals(0, aResult.currentPage());
         Assertions.assertEquals(10, aResult.perPage());
         Assertions.assertEquals(1, aResult.totalPages());
-        Assertions.assertEquals(2, aResult.totalItems());
+        Assertions.assertEquals(1, aResult.totalItems());
         Assertions.assertEquals(1, aResult.items().size());
 
         final var aCoupon = aResult.items().get(0);

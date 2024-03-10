@@ -1,13 +1,19 @@
 package com.kaua.ecommerce.infrastructure.coupon;
 
+import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.domain.coupon.CouponType;
+import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.infrastructure.DatabaseGatewayTest;
+import com.kaua.ecommerce.infrastructure.coupon.persistence.CouponJpaEntity;
 import com.kaua.ecommerce.infrastructure.coupon.persistence.CouponJpaEntityRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @DatabaseGatewayTest
 public class CouponGatewayTest {
@@ -217,5 +223,86 @@ public class CouponGatewayTest {
     void givenAnInvalidCode_whenCallFindByCode_thenShouldReturnEmpty() {
         final var aOutput = this.couponGateway.findByCode("invalid-code");
         Assertions.assertTrue(aOutput.isEmpty());
+    }
+
+    @Test
+    void givenAValidQuery_whenCallFindAll_shouldReturnAPaginationOfCoupons() {
+        final var aCouponLimited = Fixture.Coupons.limitedCouponActivated();
+        final var aCouponUnlimited = Coupon.newCoupon(
+                "Z_FREE_SHIPPING50",
+                50.0f,
+                InstantUtils.now().plus(1, ChronoUnit.DAYS),
+                true,
+                CouponType.UNLIMITED
+        );
+        final var aCoupons = List.of(aCouponLimited, aCouponUnlimited);
+
+        this.couponJpaRepository.saveAll(aCoupons.stream().map(CouponJpaEntity::toEntity).toList());
+
+        final var aPage = 0;
+        final var aPerPage = 1;
+        final var aTotalPages = 2;
+        final var aTotalItems = 2;
+
+        Assertions.assertEquals(2, this.couponJpaRepository.count());
+
+        final var aQuery = new SearchQuery(0, 1, "", "code", "ASC");
+        final var actualResult = this.couponGateway.findAll(aQuery);
+
+        Assertions.assertEquals(aPage, actualResult.currentPage());
+        Assertions.assertEquals(aPerPage, actualResult.perPage());
+        Assertions.assertEquals(aTotalPages, actualResult.totalPages());
+        Assertions.assertEquals(aTotalItems, actualResult.totalItems());
+        Assertions.assertEquals(aPerPage, actualResult.items().size());
+        Assertions.assertEquals(aCouponLimited.getCode().getValue(), actualResult.items().get(0).getCode().getValue());
+    }
+
+    @Test
+    void givenAValidQueryButHasNoData_whenCallFindAll_shouldReturnEmptyCoupons() {
+        final var aPage = 0;
+        final var aPerPage = 1;
+        final var aTotalPages = 0;
+        final var aTotalItems = 0;
+
+        final var aQuery = new SearchQuery(aPage, aPerPage, "", "code", "ASC");
+        final var actualResult = this.couponGateway.findAll(aQuery);
+
+        Assertions.assertEquals(aPage, actualResult.currentPage());
+        Assertions.assertEquals(aPerPage, actualResult.perPage());
+        Assertions.assertEquals(aTotalPages, actualResult.totalPages());
+        Assertions.assertEquals(aTotalItems, actualResult.totalItems());
+        Assertions.assertEquals(0, actualResult.items().size());
+    }
+
+    @Test
+    void givenAValidQueryAndTerms_whenCallFindAll_shouldReturnAPaginationOfCoupons() {
+        final var aCouponLimited = Fixture.Coupons.limitedCouponActivated();
+        final var aCouponUnlimited = Coupon.newCoupon(
+                "Z_FREE_SHIPPING50",
+                50.0f,
+                InstantUtils.now().plus(1, ChronoUnit.DAYS),
+                true,
+                CouponType.UNLIMITED
+        );
+        final var aCoupons = List.of(aCouponLimited, aCouponUnlimited);
+
+        this.couponJpaRepository.saveAll(aCoupons.stream().map(CouponJpaEntity::toEntity).toList());
+
+        final var aPage = 0;
+        final var aPerPage = 1;
+        final var aTotalPages = 1;
+        final var aTotalItems = 1;
+
+        Assertions.assertEquals(2, this.couponJpaRepository.count());
+
+        final var aQuery = new SearchQuery(0, 1, "Z", "code", "ASC");
+        final var actualResult = this.couponGateway.findAll(aQuery);
+
+        Assertions.assertEquals(aPage, actualResult.currentPage());
+        Assertions.assertEquals(aPerPage, actualResult.perPage());
+        Assertions.assertEquals(aTotalPages, actualResult.totalPages());
+        Assertions.assertEquals(aTotalItems, actualResult.totalItems());
+        Assertions.assertEquals(aPerPage, actualResult.items().size());
+        Assertions.assertEquals(aCouponUnlimited.getCode().getValue(), actualResult.items().get(0).getCode().getValue());
     }
 }

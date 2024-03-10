@@ -10,6 +10,7 @@ import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSl
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.domain.pagination.Pagination;
+import com.kaua.ecommerce.domain.pagination.Period;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.api.CouponAPI;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
@@ -84,9 +85,12 @@ public class CouponController implements CouponAPI {
             final int page,
             final int perPage,
             final String sort,
-            final String direction
+            final String direction,
+            final String startDate,
+            final String endDate
     ) {
-        final var aQuery = new SearchQuery(page, perPage, search, sort, direction);
+        final var aPeriod = new Period(startDate, endDate);
+        final var aQuery = new SearchQuery(page, perPage, search, sort, direction, aPeriod);
         return this.listCouponsUseCase.execute(aQuery)
                 .map(CouponApiPresenter::present);
     }

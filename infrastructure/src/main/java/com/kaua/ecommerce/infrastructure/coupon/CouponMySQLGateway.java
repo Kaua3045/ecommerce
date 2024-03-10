@@ -125,7 +125,7 @@ public class CouponMySQLGateway implements CouponGateway {
         final var aStartDate = aPeriod.startDateInstant()
                 .orElse(InstantUtils.now().minus(30, ChronoUnit.DAYS));
         final var aEndDate = aPeriod.endDateInstant()
-                .orElse(InstantUtils.now());
+                .orElse(InstantUtils.now().plus(30, ChronoUnit.DAYS));
 
         return SpecificationUtils.between("expirationDate", aStartDate, aEndDate);
     }

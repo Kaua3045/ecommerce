@@ -11,7 +11,11 @@ public final class SpecificationUtils {
         return (root, query, cb) -> cb.like(cb.upper(root.get(property)), "%" + value.toUpperCase() + "%");
     }
 
-    public static <T> Specification<T> equal(final String property, final String value) {
+    public static <T> Specification<T> whereEqual(final String property, final String value) {
+        return (root, query, cb) -> cb.equal(root.get(property), value);
+    }
+
+    public static <T> Specification<T> whereEqual(final String property, final Enum<?> value) {
         return (root, query, cb) -> cb.equal(root.get(property), value);
     }
 }

@@ -1,10 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api;
 
 import com.kaua.ecommerce.domain.pagination.Pagination;
-import com.kaua.ecommerce.infrastructure.inventory.models.CreateInventoryInput;
-import com.kaua.ecommerce.infrastructure.inventory.models.DecreaseInventoryQuantityInput;
-import com.kaua.ecommerce.infrastructure.inventory.models.IncreaseInventoryQuantityInput;
-import com.kaua.ecommerce.infrastructure.inventory.models.ListInventoriesResponse;
+import com.kaua.ecommerce.infrastructure.inventory.models.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -47,6 +44,18 @@ public interface InventoryAPI {
             @RequestParam(name = "sort", required = false, defaultValue = "sku") final String sort,
             @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction
     );
+
+    @GetMapping(
+            value = "{sku}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Get inventory by it's sku")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Inventory found successfully"),
+            @ApiResponse(responseCode = "404", description = "Inventory was not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    GetInventoryResponse getInventoryBySku(@PathVariable String sku);
 
     @PostMapping(
             value = "/rollback/{productId}/{sku}",

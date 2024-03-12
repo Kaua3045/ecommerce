@@ -143,7 +143,7 @@ public class ProductJpaEntity {
                                 it.getSize().getWeight(),
                                 it.getSize().getHeight(),
                                 it.getSize().getWidth(),
-                                it.getSize().getDepth()
+                                it.getSize().getLength()
                         ), it.getSku())).collect(Collectors.toSet());
     }
 

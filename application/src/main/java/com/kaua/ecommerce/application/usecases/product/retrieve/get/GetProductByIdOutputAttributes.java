@@ -10,7 +10,7 @@ public record GetProductByIdOutputAttributes(
         double weight,
         double height,
         double width,
-        double depth,
+        double length,
         String sku
 ) {
 
@@ -23,7 +23,7 @@ public record GetProductByIdOutputAttributes(
                 aAttributes.getSize().getWeight(),
                 aAttributes.getSize().getHeight(),
                 aAttributes.getSize().getWidth(),
-                aAttributes.getSize().getDepth(),
+                aAttributes.getSize().getLength(),
                 aAttributes.getSku()
         );
     }

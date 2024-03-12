@@ -101,7 +101,7 @@ public class DefaultCreateProductUseCase extends CreateProductUseCase {
                     attribute.weight(),
                     attribute.height(),
                     attribute.width(),
-                    attribute.depth());
+                    attribute.length());
             final var aProductAttribute = ProductAttributes.create(aColor, aProductSize, aProductName);
             return new AbstractMap.SimpleImmutableEntry<>(aProductAttribute, attribute.quantity());
         }).collect(Collectors.toSet());

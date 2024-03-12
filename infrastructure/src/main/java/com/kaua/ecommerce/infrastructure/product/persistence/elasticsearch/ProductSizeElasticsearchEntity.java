@@ -24,8 +24,8 @@ public class ProductSizeElasticsearchEntity {
     @Field(name = "width", type = FieldType.Double)
     private double width;
 
-    @Field(name = "depth", type = FieldType.Double)
-    private double depth;
+    @Field(name = "length", type = FieldType.Double)
+    private double length;
 
     public ProductSizeElasticsearchEntity() {
     }
@@ -36,14 +36,14 @@ public class ProductSizeElasticsearchEntity {
             final double weight,
             final double height,
             final double width,
-            final double depth
+            final double length
     ) {
         this.id = id;
         this.size = size;
         this.weight = weight;
         this.height = height;
         this.width = width;
-        this.depth = depth;
+        this.length = length;
     }
 
     public static ProductSizeElasticsearchEntity toEntity(final ProductSize aProductSize) {
@@ -53,11 +53,11 @@ public class ProductSizeElasticsearchEntity {
                 aProductSize.getWeight(),
                 aProductSize.getHeight(),
                 aProductSize.getWidth(),
-                aProductSize.getDepth());
+                aProductSize.getLength());
     }
 
     public ProductSize toDomain() {
-        return ProductSize.with(getId(), getSize(), getWeight(), getHeight(), getWidth(), getDepth());
+        return ProductSize.with(getId(), getSize(), getWeight(), getHeight(), getWidth(), getLength());
     }
 
     public String getId() {
@@ -100,11 +100,11 @@ public class ProductSizeElasticsearchEntity {
         this.width = width;
     }
 
-    public double getDepth() {
-        return depth;
+    public double getLength() {
+        return length;
     }
 
-    public void setDepth(double depth) {
-        this.depth = depth;
+    public void setLength(double length) {
+        this.length = length;
     }
 }

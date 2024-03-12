@@ -66,7 +66,7 @@ public class DefaultAddProductAttributesUseCase extends AddProductAttributesUseC
                             aParam.weight(),
                             aParam.height(),
                             aParam.width(),
-                            aParam.depth()
+                            aParam.length()
                     ),
                     aProduct.getName()
             );

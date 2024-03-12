@@ -12,7 +12,7 @@ public class ProductSize extends ValueObject {
     private final double weight;
     private final double height;
     private final double width;
-    private final double depth;
+    private final double length;
 
     private ProductSize(
             final String id,
@@ -20,14 +20,14 @@ public class ProductSize extends ValueObject {
             final double weight,
             final double height,
             final double width,
-            final double depth
+            final double length
     ) {
         this.id = Objects.requireNonNull(id);
         this.size = Objects.requireNonNull(size);
         this.weight = weight;
         this.height = height;
         this.width = width;
-        this.depth = depth;
+        this.length = length;
     }
 
     public static ProductSize with(
@@ -35,9 +35,9 @@ public class ProductSize extends ValueObject {
             final double weight,
             final double height,
             final double width,
-            final double depth
+            final double length
     ) {
-        return new ProductSize(IdUtils.generate(), size.toUpperCase(), weight, height, width, depth);
+        return new ProductSize(IdUtils.generate(), size.toUpperCase(), weight, height, width, length);
     }
 
     public static ProductSize with(
@@ -46,9 +46,9 @@ public class ProductSize extends ValueObject {
             final double weight,
             final double height,
             final double width,
-            final double depth
+            final double length
     ) {
-        return new ProductSize(id, size.toUpperCase(), weight, height, width, depth);
+        return new ProductSize(id, size.toUpperCase(), weight, height, width, length);
     }
 
     public String getId() {
@@ -71,7 +71,7 @@ public class ProductSize extends ValueObject {
         return width;
     }
 
-    public double getDepth() {
-        return depth;
+    public double getLength() {
+        return length;
     }
 }

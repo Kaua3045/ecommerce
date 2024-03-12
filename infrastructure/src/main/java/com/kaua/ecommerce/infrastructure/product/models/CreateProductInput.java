@@ -27,7 +27,7 @@ public record CreateProductInput(
                         attribute.weight(),
                         attribute.height(),
                         attribute.width(),
-                        attribute.depth(),
+                        attribute.length(),
                         attribute.quantity()
                 )).toList()
         );

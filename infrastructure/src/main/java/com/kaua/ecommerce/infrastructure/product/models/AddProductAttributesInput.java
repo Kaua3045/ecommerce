@@ -17,7 +17,7 @@ public record AddProductAttributesInput(
                         it.weight(),
                         it.height(),
                         it.width(),
-                        it.depth(),
+                        it.length(),
                         it.quantity()))
                 .toList();
     }

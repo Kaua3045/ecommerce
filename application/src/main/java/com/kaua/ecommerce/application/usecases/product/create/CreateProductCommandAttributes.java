@@ -6,7 +6,7 @@ public record CreateProductCommandAttributes(
         double weight,
         double height,
         double width,
-        double depth,
+        double length,
         int quantity
 ) {
 
@@ -16,7 +16,7 @@ public record CreateProductCommandAttributes(
             final double aWeight,
             final double aHeight,
             final double aWidth,
-            final double aDepth,
+            final double aLength,
             final int aQuantity
     ) {
         return new CreateProductCommandAttributes(
@@ -25,7 +25,7 @@ public record CreateProductCommandAttributes(
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
     }

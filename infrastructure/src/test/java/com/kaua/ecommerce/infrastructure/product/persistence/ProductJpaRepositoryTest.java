@@ -243,7 +243,7 @@ public class ProductJpaRepositoryTest {
         aProductSize.setWeight(1.0);
         aProductSize.setHeight(1.0);
         aProductSize.setWidth(1.0);
-        aProductSize.setDepth(1.0);
+        aProductSize.setLength(1.0);
         final var aProductSizeDomain = aProductSize.toDomain();
 
         Assertions.assertEquals(aProductSize.getId(), aProductSizeDomain.getId());
@@ -251,7 +251,7 @@ public class ProductJpaRepositoryTest {
         Assertions.assertEquals(aProductSize.getWeight(), aProductSizeDomain.getWeight());
         Assertions.assertEquals(aProductSize.getHeight(), aProductSizeDomain.getHeight());
         Assertions.assertEquals(aProductSize.getWidth(), aProductSizeDomain.getWidth());
-        Assertions.assertEquals(aProductSize.getDepth(), aProductSizeDomain.getDepth());
+        Assertions.assertEquals(aProductSize.getLength(), aProductSizeDomain.getLength());
 
         Assertions.assertEquals(0, productRepository.count());
 

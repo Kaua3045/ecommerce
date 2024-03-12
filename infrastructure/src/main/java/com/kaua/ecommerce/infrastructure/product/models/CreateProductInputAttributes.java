@@ -8,7 +8,7 @@ public record CreateProductInputAttributes(
         @JsonProperty("weight") double weight,
         @JsonProperty("height") double height,
         @JsonProperty("width") double width,
-        @JsonProperty("depth") double depth,
+        @JsonProperty("length") double length,
         @JsonProperty("quantity") int quantity
 ) {
 }

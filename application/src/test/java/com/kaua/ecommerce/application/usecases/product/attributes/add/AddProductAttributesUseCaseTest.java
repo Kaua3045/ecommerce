@@ -61,7 +61,7 @@ public class AddProductAttributesUseCaseTest extends UseCaseTest {
                         aProductAttribute.getSize().getWeight(),
                         aProductAttribute.getSize().getHeight(),
                         aProductAttribute.getSize().getWidth(),
-                        aProductAttribute.getSize().getDepth(),
+                        aProductAttribute.getSize().getLength(),
                         aQuantity
                 )));
 
@@ -110,7 +110,7 @@ public class AddProductAttributesUseCaseTest extends UseCaseTest {
                         aProductAttribute.getSize().getWeight(),
                         aProductAttribute.getSize().getHeight(),
                         aProductAttribute.getSize().getWidth(),
-                        aProductAttribute.getSize().getDepth(),
+                        aProductAttribute.getSize().getLength(),
                         aQuantity
                 )));
 
@@ -164,7 +164,7 @@ public class AddProductAttributesUseCaseTest extends UseCaseTest {
                         aProductAttribute.getSize().getWeight(),
                         aProductAttribute.getSize().getHeight(),
                         aProductAttribute.getSize().getWidth(),
-                        aProductAttribute.getSize().getDepth(),
+                        aProductAttribute.getSize().getLength(),
                         aQuantity
                 )));
 
@@ -201,7 +201,7 @@ public class AddProductAttributesUseCaseTest extends UseCaseTest {
                         aProductAttribute.getSize().getWeight(),
                         aProductAttribute.getSize().getHeight(),
                         aProductAttribute.getSize().getWidth(),
-                        aProductAttribute.getSize().getDepth(),
+                        aProductAttribute.getSize().getLength(),
                         aQuantity
                 )));
 

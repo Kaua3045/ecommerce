@@ -88,7 +88,7 @@ public class ProductElasticsearchRepositoryTest extends AbstractElasticsearchTes
         aProductSizeEntity.setWeight(10.0);
         aProductSizeEntity.setHeight(1.0);
         aProductSizeEntity.setWidth(1.0);
-        aProductSizeEntity.setDepth(1.0);
+        aProductSizeEntity.setLength(1.0);
         final var aProductSizeAfterSet = aProductSizeEntity.toDomain();
 
         final var aEntity = ProductElasticsearchEntity.toEntity(aProduct);

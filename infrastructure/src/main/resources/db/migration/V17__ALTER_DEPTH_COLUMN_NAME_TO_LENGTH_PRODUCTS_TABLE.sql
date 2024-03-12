@@ -1,0 +1,1 @@
+ALTER TABLE products_sizes RENAME COLUMN depth TO p_length;

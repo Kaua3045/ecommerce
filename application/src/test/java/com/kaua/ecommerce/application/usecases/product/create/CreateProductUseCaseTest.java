@@ -65,7 +65,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
@@ -73,7 +73,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -129,7 +129,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Category.class, aCategoryId);
 
@@ -139,7 +139,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -178,7 +178,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
         final var expectedErrorCount = 1;
@@ -189,7 +189,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -226,7 +226,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("name");
         final var expectedErrorCount = 1;
@@ -237,7 +237,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -274,7 +274,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorCount = 1;
@@ -285,7 +285,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -322,7 +322,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
         final var expectedErrorCount = 1;
@@ -333,7 +333,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -370,7 +370,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
         final var expectedErrorCount = 1;
@@ -381,7 +381,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -418,7 +418,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("price");
         final var expectedErrorCount = 1;
@@ -429,7 +429,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -466,7 +466,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("price", 0);
         final var expectedErrorCount = 1;
@@ -477,7 +477,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -514,7 +514,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("quantity", -1);
         final var expectedErrorCount = 1;
@@ -525,7 +525,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 
@@ -565,7 +565,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var aAttributes = CreateProductCommandAttributes.with(
                 aColorName,
@@ -573,7 +573,7 @@ public class CreateProductUseCaseTest extends UseCaseTest {
                 aWeight,
                 aHeight,
                 aWidth,
-                aDepth,
+                aLength,
                 aQuantity
         );
 

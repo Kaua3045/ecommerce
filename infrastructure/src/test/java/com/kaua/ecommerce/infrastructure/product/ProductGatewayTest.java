@@ -38,7 +38,7 @@ public class ProductGatewayTest {
         final var aWeight = 0.5;
         final var aHeight = 0.5;
         final var aWidth = 0.5;
-        final var aDepth = 0.5;
+        final var aLength = 0.5;
 
         final var aProduct = Product.newProduct(
                 aName,
@@ -47,7 +47,7 @@ public class ProductGatewayTest {
                 aCategoryId,
                 Set.of(ProductAttributes.create(
                         ProductColor.with(aColor),
-                        ProductSize.with(aSize, aWeight, aHeight, aWidth, aDepth),
+                        ProductSize.with(aSize, aWeight, aHeight, aWidth, aLength),
                         aName
                 ))
         );

@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.domain.utils;
 
 import com.kaua.ecommerce.domain.UnitTest;
+import com.kaua.ecommerce.domain.category.SlugUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

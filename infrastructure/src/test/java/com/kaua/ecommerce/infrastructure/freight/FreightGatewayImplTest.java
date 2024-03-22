@@ -1,8 +1,8 @@
 package com.kaua.ecommerce.infrastructure.freight;
 
 import com.kaua.ecommerce.application.gateways.FreightGateway;
-import com.kaua.ecommerce.application.gateways.commands.CalculateFreightCommand;
-import com.kaua.ecommerce.application.gateways.commands.ListFreightsCommand;
+import com.kaua.ecommerce.application.gateways.commands.CalculateFreightInput;
+import com.kaua.ecommerce.application.gateways.commands.ListFreightsInput;
 import com.kaua.ecommerce.domain.freight.FreightType;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import org.junit.jupiter.api.Assertions;
@@ -17,7 +17,7 @@ public class FreightGatewayImplTest {
 
     @Test
     void givenAValidSedexFreightType_whenCalculateFreight_thenShouldReturnFreight() {
-        final var aCommand = CalculateFreightCommand.with(
+        final var aCommand = CalculateFreightInput.with(
                 "12345678",
                 FreightType.SEDEX,
                 110.0,
@@ -37,7 +37,7 @@ public class FreightGatewayImplTest {
 
     @Test
     void givenAValidPACFreightType_whenCalculateFreight_thenShouldReturnFreight() {
-        final var aCommand = CalculateFreightCommand.with(
+        final var aCommand = CalculateFreightInput.with(
                 "12345678",
                 FreightType.PAC,
                 10.0,
@@ -57,7 +57,7 @@ public class FreightGatewayImplTest {
 
     @Test
     void givenAValidCalculateFreightCommand_whenListFreights_thenShouldReturnFreights() {
-        final var aCommand = ListFreightsCommand.with(
+        final var aCommand = ListFreightsInput.with(
                 "12345678",
                 10.0,
                 10.0,
@@ -73,7 +73,7 @@ public class FreightGatewayImplTest {
 
     @Test
     void givenAnInvalidFreightType_whenCalculateFreight_thenShouldThrowException() {
-        final var aCommand = CalculateFreightCommand.with(
+        final var aCommand = CalculateFreightInput.with(
                 "12345678",
                 FreightType.UNKNOWN,
                 10.0,

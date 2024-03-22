@@ -1,14 +1,14 @@
 package com.kaua.ecommerce.application.gateways;
 
-import com.kaua.ecommerce.application.gateways.commands.CalculateFreightCommand;
-import com.kaua.ecommerce.application.gateways.commands.ListFreightsCommand;
+import com.kaua.ecommerce.application.gateways.commands.CalculateFreightInput;
+import com.kaua.ecommerce.application.gateways.commands.ListFreightsInput;
 import com.kaua.ecommerce.domain.freight.Freight;
 
 import java.util.List;
 
 public interface FreightGateway {
 
-    Freight calculateFreight(CalculateFreightCommand command);
+    Freight calculateFreight(CalculateFreightInput command);
 
-    List<Freight> listFreights(ListFreightsCommand command);
+    List<Freight> listFreights(ListFreightsInput command);
 }

@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.service;
 
-import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.domain.resource.Resource;
 
 import java.util.List;
 

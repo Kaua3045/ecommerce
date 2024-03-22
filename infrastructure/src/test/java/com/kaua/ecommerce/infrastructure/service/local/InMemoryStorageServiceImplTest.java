@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.infrastructure.service.local;
 
 import com.kaua.ecommerce.domain.utils.IdUtils;
-import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.domain.resource.Resource;
 import com.kaua.ecommerce.infrastructure.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

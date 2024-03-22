@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.domain.product;
 
-import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.domain.resource.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

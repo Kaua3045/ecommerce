@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.infrastructure.service.impl;
 
 import com.kaua.ecommerce.domain.utils.IdUtils;
-import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.domain.resource.Resource;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.exceptions.FileStorageException;
 import org.junit.jupiter.api.Assertions;

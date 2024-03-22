@@ -13,7 +13,7 @@ import com.kaua.ecommerce.domain.product.ProductImage;
 import com.kaua.ecommerce.domain.product.ProductImageResource;
 import com.kaua.ecommerce.domain.product.ProductImageType;
 import com.kaua.ecommerce.domain.product.ProductStatus;
-import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.domain.resource.Resource;
 import com.kaua.ecommerce.domain.validation.Error;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

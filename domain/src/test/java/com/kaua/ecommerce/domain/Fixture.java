@@ -18,7 +18,7 @@ import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
-import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.domain.resource.Resource;
 import net.datafaker.Faker;
 
 import java.math.BigDecimal;

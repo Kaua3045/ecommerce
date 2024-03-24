@@ -17,6 +17,7 @@ public class CouponValidationTest extends UnitTest {
     void givenInvalidBlankCode_whenCallNewCoupon_shouldReturnDomainException() {
         final var aCode = " ";
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -24,7 +25,7 @@ public class CouponValidationTest extends UnitTest {
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("code");
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate, aIsActive, aType);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCoupon.validate(aTestValidationHandler);
@@ -37,6 +38,7 @@ public class CouponValidationTest extends UnitTest {
     void givenInvalidNullCode_whenCallNewCoupon_shouldReturnDomainException() {
         final String aCode = null;
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -44,7 +46,7 @@ public class CouponValidationTest extends UnitTest {
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("code");
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate, aIsActive, aType);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCoupon.validate(aTestValidationHandler);
@@ -57,6 +59,7 @@ public class CouponValidationTest extends UnitTest {
     void givenInvalidCodeMoreThan100Characters_whenCallNewCoupon_shouldReturnDomainException() {
         final var aCode = RandomStringUtils.generateValue(101);
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -64,7 +67,7 @@ public class CouponValidationTest extends UnitTest {
         final var expectedErrorMessage = CommonErrorMessage.maxSize("code", 100);
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate, aIsActive, aType);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCoupon.validate(aTestValidationHandler);
@@ -77,6 +80,7 @@ public class CouponValidationTest extends UnitTest {
     void givenInvalidNegativePercentage_whenCallNewCoupon_shouldReturnDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = -10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -84,7 +88,28 @@ public class CouponValidationTest extends UnitTest {
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("percentage", 0);
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate, aIsActive, aType);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCoupon.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenInvalidNegativeMinimumPurchaseAmount_whenCallNewCoupon_shouldReturnDomainException() {
+        final var aCode = "BLACKFRIDAY";
+        final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = -10.0f;
+        final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
+        final var aIsActive = true;
+        final var aType = CouponType.UNLIMITED;
+
+        final var expectedErrorMessage = CommonErrorMessage.greaterOrEqual("minimumPurchaseAmount", 0);
+        final var expectedErrorCount = 1;
+
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate, aIsActive, aType);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCoupon.validate(aTestValidationHandler);
@@ -97,6 +122,7 @@ public class CouponValidationTest extends UnitTest {
     void givenInvalidNullExpirationDate_whenCallNewCoupon_shouldReturnDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final Instant aExpirationDate = null;
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -104,7 +130,7 @@ public class CouponValidationTest extends UnitTest {
         final var expectedErrorMessage = CommonErrorMessage.nullMessage("expirationDate");
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate, aIsActive, aType);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCoupon.validate(aTestValidationHandler);
@@ -117,6 +143,7 @@ public class CouponValidationTest extends UnitTest {
     void givenInvalidExpirationDateInThePast_whenCallNewCoupon_shouldReturnDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().minus(1, ChronoUnit.DAYS);
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -124,7 +151,7 @@ public class CouponValidationTest extends UnitTest {
         final var expectedErrorMessage = CommonErrorMessage.dateMustBeFuture("expirationDate");
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate, aIsActive, aType);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCoupon.validate(aTestValidationHandler);
@@ -137,6 +164,7 @@ public class CouponValidationTest extends UnitTest {
     void givenInvalidNullType_whenCallNewCoupon_shouldReturnDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
         final var aIsActive = true;
         final CouponType aType = null;
@@ -144,7 +172,7 @@ public class CouponValidationTest extends UnitTest {
         final var expectedErrorMessage = CommonErrorMessage.nullMessage("type");
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aExpirationDate, aIsActive, aType);
+        final var aCoupon = Coupon.newCoupon(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate, aIsActive, aType);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCoupon.validate(aTestValidationHandler);
@@ -157,14 +185,15 @@ public class CouponValidationTest extends UnitTest {
     void givenAnInvalidCode_whenCallUpdate_shouldReturnDomainException() {
         final var aCode = " ";
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
 
         final var expectedErrorMessage = CommonErrorMessage.nullOrBlank("code");
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
+        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, aMinimumPurchaseAmount, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
 
-        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aExpirationDate);
+        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCouponUpdated.validate(aTestValidationHandler);
@@ -177,14 +206,15 @@ public class CouponValidationTest extends UnitTest {
     void givenAnInvalidNegativePercentage_whenCallUpdate_shouldReturnDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = -10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("percentage", 0);
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
+        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, aMinimumPurchaseAmount, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
 
-        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aExpirationDate);
+        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCouponUpdated.validate(aTestValidationHandler);
@@ -197,14 +227,15 @@ public class CouponValidationTest extends UnitTest {
     void givenAnInvalidNullExpirationDate_whenCallUpdate_shouldReturnDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final Instant aExpirationDate = null;
 
         final var expectedErrorMessage = CommonErrorMessage.nullMessage("expirationDate");
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
+        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, aMinimumPurchaseAmount, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
 
-        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aExpirationDate);
+        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCouponUpdated.validate(aTestValidationHandler);
@@ -217,14 +248,36 @@ public class CouponValidationTest extends UnitTest {
     void givenAnInvalidExpirationDateInThePast_whenCallUpdate_shouldReturnDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().minus(1, ChronoUnit.DAYS);
 
         final var expectedErrorMessage = CommonErrorMessage.dateMustBeFuture("expirationDate");
         final var expectedErrorCount = 1;
 
-        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
+        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, aMinimumPurchaseAmount, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
 
-        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aExpirationDate);
+        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
+
+        final var aTestValidationHandler = new TestValidationHandler();
+        aCouponUpdated.validate(aTestValidationHandler);
+
+        Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
+        Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenAnInvalidNegativeMinimumPurchaseAmount_whenCallUpdate_shouldReturnDomainException() {
+        final var aCode = "BLACKFRIDAY";
+        final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = -10.0f;
+        final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
+
+        final var expectedErrorMessage = CommonErrorMessage.greaterOrEqual("minimumPurchaseAmount", 0);
+        final var expectedErrorCount = 1;
+
+        final var aCoupon = Coupon.newCoupon("BLACKFRIDAY", 10.0f, 0.0f, InstantUtils.now().plus(1, ChronoUnit.DAYS), true, CouponType.UNLIMITED);
+
+        final var aCouponUpdated = aCoupon.update(aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aCouponUpdated.validate(aTestValidationHandler);

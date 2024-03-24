@@ -1,0 +1,1 @@
+ALTER TABLE coupons DROP COLUMN minimum_purchase_amount;

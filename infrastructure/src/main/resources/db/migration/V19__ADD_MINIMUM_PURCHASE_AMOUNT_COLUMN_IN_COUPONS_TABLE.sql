@@ -1,0 +1,1 @@
+ALTER TABLE coupons ADD COLUMN minimum_purchase_amount DECIMAL(5,2) DEFAULT 0 NOT NULL;

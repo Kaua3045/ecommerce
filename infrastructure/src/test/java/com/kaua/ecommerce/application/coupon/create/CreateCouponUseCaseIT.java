@@ -28,6 +28,7 @@ public class CreateCouponUseCaseIT {
     void givenAValidValuesWithUnlimitedType_whenCallCreateCouponUseCase_thenShouldCreateCoupon() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 100.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "UNLIMITED";
@@ -35,6 +36,7 @@ public class CreateCouponUseCaseIT {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -57,6 +59,7 @@ public class CreateCouponUseCaseIT {
     void givenAValidValuesWithLimitedType_whenCallCreateCouponUseCase_thenShouldCreateCoupon() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 150.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "LIMITED";
@@ -65,6 +68,7 @@ public class CreateCouponUseCaseIT {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,

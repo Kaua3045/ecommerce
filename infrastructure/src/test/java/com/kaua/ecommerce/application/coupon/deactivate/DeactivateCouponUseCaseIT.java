@@ -26,6 +26,7 @@ public class DeactivateCouponUseCaseIT {
     void givenAValidIdAndCouponAlreadyActive_whenCallExecute_thenShouldReturnCouponDeactivated() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS);
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -33,6 +34,7 @@ public class DeactivateCouponUseCaseIT {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType
@@ -57,6 +59,7 @@ public class DeactivateCouponUseCaseIT {
     void givenAValidIdAndCouponAlreadyInactive_whenCallExecute_thenShouldReturnCouponDeactivated() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS);
         final var aIsActive = false;
         final var aType = CouponType.UNLIMITED;
@@ -64,6 +67,7 @@ public class DeactivateCouponUseCaseIT {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType

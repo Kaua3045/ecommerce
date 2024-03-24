@@ -31,9 +31,10 @@ public class UpdateCouponUseCaseIT {
 
         final var aCode = "NEWCODE";
         final var aPercentage = 200.0f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now().plus(5, ChronoUnit.DAYS).toString();
 
-        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aExpirationDate);
+        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aMinimumPurchase, aExpirationDate);
 
         final var aOutput = this.updateCouponUseCase.execute(aCommand).getRight();
 
@@ -45,6 +46,7 @@ public class UpdateCouponUseCaseIT {
 
         Assertions.assertEquals(aCode, aCouponUpdated.getCode().getValue());
         Assertions.assertEquals(aPercentage, aCouponUpdated.getPercentage());
+        Assertions.assertEquals(aMinimumPurchase, aCouponUpdated.getMinimumPurchaseAmount());
         Assertions.assertEquals(aExpirationDate, aCouponUpdated.getExpirationDate().toString());
     }
 }

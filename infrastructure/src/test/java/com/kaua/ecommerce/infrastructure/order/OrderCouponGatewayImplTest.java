@@ -1,8 +1,8 @@
 package com.kaua.ecommerce.infrastructure.order;
 
 import com.kaua.ecommerce.application.exceptions.CouponNoMoreAvailableException;
-import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotOutput;
-import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponOutput;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import org.junit.jupiter.api.Assertions;
@@ -18,14 +18,14 @@ public class OrderCouponGatewayImplTest {
     private OrderCouponGatewayImpl orderCouponGatewayImpl;
 
     @MockBean
-    private RemoveCouponSlotUseCase removeCouponSlotUseCase;
+    private ApplyCouponUseCase applyCouponUseCase;
 
     @Test
     void givenAValidCouponCode_whenCallApplyCoupon_thenCouponIsApplied() {
         final var aCoupon = Fixture.Coupons.limitedCouponActivated();
 
-        Mockito.when(removeCouponSlotUseCase.execute(aCoupon.getCode().getValue()))
-                .thenReturn(RemoveCouponSlotOutput.from(aCoupon));
+        Mockito.when(applyCouponUseCase.execute(aCoupon.getCode().getValue()))
+                .thenReturn(ApplyCouponOutput.from(aCoupon));
 
         final var aOutput = this.orderCouponGatewayImpl.applyCoupon(aCoupon.getCode().getValue());
 
@@ -38,7 +38,7 @@ public class OrderCouponGatewayImplTest {
     void givenAValidCouponCode_whenCallApplyCouponButNoMoreSlot_thenThrowCouponNoMoreAvailableException() {
         final var aCoupon = Fixture.Coupons.limitedCouponActivated();
 
-        Mockito.when(removeCouponSlotUseCase.execute(aCoupon.getCode().getValue()))
+        Mockito.when(applyCouponUseCase.execute(aCoupon.getCode().getValue()))
                 .thenThrow(new CouponNoMoreAvailableException());
 
         Assertions.assertThrows(CouponNoMoreAvailableException.class, () ->

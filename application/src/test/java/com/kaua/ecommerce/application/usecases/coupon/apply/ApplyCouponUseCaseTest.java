@@ -1,4 +1,4 @@
-package com.kaua.ecommerce.application.usecases.coupon.slot.remove;
+package com.kaua.ecommerce.application.usecases.coupon.apply;
 
 import com.kaua.ecommerce.application.UseCaseTest;
 import com.kaua.ecommerce.application.gateways.CouponGateway;
@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 
 import java.util.Optional;
 
-public class RemoveCouponSlotUseCaseTest extends UseCaseTest {
+public class ApplyCouponUseCaseTest extends UseCaseTest {
 
     @Mock
     private CouponGateway couponGateway;
@@ -24,7 +24,7 @@ public class RemoveCouponSlotUseCaseTest extends UseCaseTest {
     private CouponSlotGateway couponSlotGateway;
 
     @InjectMocks
-    private DefaultRemoveCouponSlotUseCase removeCouponSlotUseCase;
+    private DefaultApplyCouponUseCase applyCouponUseCase;
 
     @Test
     void givenAValidCouponCodeWithTypeLimited_whenCallExecute_thenShouldRemoveCouponSlot() {
@@ -36,7 +36,7 @@ public class RemoveCouponSlotUseCaseTest extends UseCaseTest {
                 .thenReturn(true);
 
         final var aOutput = Assertions.assertDoesNotThrow(() ->
-                this.removeCouponSlotUseCase.execute(aCoupon.getCode().getValue()));
+                this.applyCouponUseCase.execute(aCoupon.getCode().getValue()));
 
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
@@ -58,7 +58,7 @@ public class RemoveCouponSlotUseCaseTest extends UseCaseTest {
                 .thenReturn(false);
 
         final var aException = Assertions.assertThrows(DomainException.class, () ->
-                this.removeCouponSlotUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCouponCode));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
@@ -76,7 +76,7 @@ public class RemoveCouponSlotUseCaseTest extends UseCaseTest {
                 .thenReturn(Optional.empty());
 
         final var aException = Assertions.assertThrows(NotFoundException.class, () ->
-                this.removeCouponSlotUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCouponCode));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
@@ -95,7 +95,7 @@ public class RemoveCouponSlotUseCaseTest extends UseCaseTest {
                 .thenReturn(Optional.of(aCoupon));
 
         final var aException = Assertions.assertThrows(DomainException.class, () ->
-                this.removeCouponSlotUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCouponCode));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
@@ -112,7 +112,7 @@ public class RemoveCouponSlotUseCaseTest extends UseCaseTest {
                 .thenReturn(Optional.of(aCoupon));
 
         final var aOutput = Assertions.assertDoesNotThrow(() ->
-                this.removeCouponSlotUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCouponCode));
 
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());

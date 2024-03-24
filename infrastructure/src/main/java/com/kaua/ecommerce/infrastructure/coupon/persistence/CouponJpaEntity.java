@@ -19,6 +19,9 @@ public class CouponJpaEntity {
     @Column(name = "percentage", nullable = false)
     private float percentage;
 
+    @Column(name = "minimum_purchase_amount", nullable = false)
+    private float minimumPurchaseAmount;
+
     @Column(name = "expiration_date", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant expirationDate;
 
@@ -45,6 +48,7 @@ public class CouponJpaEntity {
             final String id,
             final String code,
             final float percentage,
+            final float minimumPurchaseAmount,
             final Instant expirationDate,
             final boolean isActive,
             final CouponType type,
@@ -55,6 +59,7 @@ public class CouponJpaEntity {
         this.id = id;
         this.code = code;
         this.percentage = percentage;
+        this.minimumPurchaseAmount = minimumPurchaseAmount;
         this.expirationDate = expirationDate;
         this.isActive = isActive;
         this.type = type;
@@ -68,6 +73,7 @@ public class CouponJpaEntity {
                 aCoupon.getId().getValue(),
                 aCoupon.getCode().getValue(),
                 aCoupon.getPercentage(),
+                aCoupon.getMinimumPurchaseAmount(),
                 aCoupon.getExpirationDate(),
                 aCoupon.isActive(),
                 aCoupon.getType(),
@@ -82,6 +88,7 @@ public class CouponJpaEntity {
                 getId(),
                 getCode(),
                 getPercentage(),
+                getMinimumPurchaseAmount(),
                 getExpirationDate(),
                 isActive(),
                 getType(),
@@ -113,6 +120,14 @@ public class CouponJpaEntity {
 
     public void setPercentage(float percentage) {
         this.percentage = percentage;
+    }
+
+    public float getMinimumPurchaseAmount() {
+        return minimumPurchaseAmount;
+    }
+
+    public void setMinimumPurchaseAmount(float minimumPurchaseAmount) {
+        this.minimumPurchaseAmount = minimumPurchaseAmount;
     }
 
     public Instant getExpirationDate() {

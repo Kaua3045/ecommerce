@@ -1,7 +1,7 @@
-package com.kaua.ecommerce.application.coupon.slot.remove;
+package com.kaua.ecommerce.application.coupon.apply;
 
 import com.kaua.ecommerce.application.exceptions.CouponNoMoreAvailableException;
-import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
@@ -22,10 +22,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @IntegrationTest
-public class RemoveCouponSlotUseCaseIT {
+public class ApplyCouponUseCaseIT {
 
     @Autowired
-    private RemoveCouponSlotUseCase removeCouponSlotUseCase;
+    private ApplyCouponUseCase applyCouponUseCase;
 
     @Autowired
     private CouponSlotJpaEntityRepository couponSlotJpaEntityRepository;
@@ -52,7 +52,7 @@ public class RemoveCouponSlotUseCaseIT {
         Assertions.assertEquals(2, this.couponSlotJpaEntityRepository.count());
 
         final var aOutput = Assertions.assertDoesNotThrow(() ->
-                this.removeCouponSlotUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCouponCode));
 
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
@@ -72,7 +72,7 @@ public class RemoveCouponSlotUseCaseIT {
         Assertions.assertEquals(0, this.couponSlotJpaEntityRepository.count());
 
         final var aException = Assertions.assertThrows(CouponNoMoreAvailableException.class, () ->
-                this.removeCouponSlotUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCouponCode));
 
         Assertions.assertEquals("Coupon no more available", aException.getMessage());
 
@@ -90,7 +90,7 @@ public class RemoveCouponSlotUseCaseIT {
         Assertions.assertEquals(0, this.couponSlotJpaEntityRepository.count());
 
         final var aException = Assertions.assertThrows(Exception.class, () ->
-                this.removeCouponSlotUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCouponCode));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
@@ -127,7 +127,7 @@ public class RemoveCouponSlotUseCaseIT {
         for (int i = 0; i < aExecutions; i++) {
             tasks.add(() -> {
                 try {
-                    this.removeCouponSlotUseCase.execute(aCouponCode);
+                    this.applyCouponUseCase.execute(aCouponCode);
                     aCountSuccessExecutionAtomic.incrementAndGet();
                 } catch (Exception e) {
                     e.printStackTrace();

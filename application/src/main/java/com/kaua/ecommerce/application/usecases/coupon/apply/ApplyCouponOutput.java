@@ -1,16 +1,16 @@
-package com.kaua.ecommerce.application.usecases.coupon.slot.remove;
+package com.kaua.ecommerce.application.usecases.coupon.apply;
 
 import com.kaua.ecommerce.domain.coupon.Coupon;
 
-public record RemoveCouponSlotOutput(
+public record ApplyCouponOutput(
         String couponId,
         String couponCode,
         float couponPercentage,
         float couponMinimumPurchaseAmount
 ) {
 
-    public static RemoveCouponSlotOutput from(final Coupon aCoupon) {
-        return new RemoveCouponSlotOutput(
+    public static ApplyCouponOutput from(final Coupon aCoupon) {
+        return new ApplyCouponOutput(
                 aCoupon.getId().getValue(),
                 aCoupon.getCode().getValue(),
                 aCoupon.getPercentage(),

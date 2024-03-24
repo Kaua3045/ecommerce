@@ -41,6 +41,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAValidCommandWithLimitedType_whenCallExecute_thenShouldCreateCoupon() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "LIMITED";
@@ -49,6 +50,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -74,6 +76,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         Mockito.verify(couponGateway, Mockito.times(1)).create(argThat(aCmd ->
                 Objects.equals(aCode, aCmd.getCode().getValue())
                         && Objects.equals(aPercentage, aCmd.getPercentage())
+                        && Objects.equals(aMinimumPurchaseAmount, aCmd.getMinimumPurchaseAmount())
                         && Objects.equals(aIsActive, aCmd.isActive())
                         && Objects.equals(aType, aCmd.getType().name())));
         Mockito.verify(couponSlotGateway, Mockito.times(1))
@@ -84,6 +87,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAValidCommandWithUnlimitedType_whenCallExecute_thenShouldCreateCoupon() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "UNLIMITED";
@@ -91,6 +95,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -115,6 +120,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         Mockito.verify(couponGateway, Mockito.times(1)).create(argThat(aCmd ->
                 Objects.equals(aCode, aCmd.getCode().getValue())
                         && Objects.equals(aPercentage, aCmd.getPercentage())
+                        && Objects.equals(aMinimumPurchaseAmount, aCmd.getMinimumPurchaseAmount())
                         && Objects.equals(aIsActive, aCmd.isActive())
                         && Objects.equals(aType, aCmd.getType().name())));
         Mockito.verify(couponSlotGateway, Mockito.times(0))
@@ -125,6 +131,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenACommandWithExistingCode_whenCallExecute_thenShouldReturnDomainException() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "UNLIMITED";
@@ -135,6 +142,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -160,6 +168,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAnInvalidNullCode_whenCallExecute_thenShouldReturnDomainException() {
         final String aCode = null;
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "UNLIMITED";
@@ -170,6 +179,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -195,6 +205,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAnInvalidBlankCode_whenCallExecute_thenShouldReturnDomainException() {
         final var aCode = " ";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "UNLIMITED";
@@ -205,6 +216,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -230,6 +242,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAnInvalidCodeMoreThan100Characters_whenCallExecute_thenShouldReturnDomainException() {
         final var aCode = "a".repeat(101);
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "UNLIMITED";
@@ -240,6 +253,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -265,6 +279,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAnInvalidNegativePercentage_whenCallExecute_thenShouldReturnDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = -10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "UNLIMITED";
@@ -275,6 +290,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -300,6 +316,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAnInvalidExpirationDateInThePast_whenCallExecute_thenShouldReturnDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().minus(1, ChronoUnit.DAYS);
         final var aIsActive = true;
         final var aType = "UNLIMITED";
@@ -310,6 +327,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate.toString(),
                 aIsActive,
                 aType,
@@ -335,6 +353,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAnInvalidType_whenCallExecute_thenShouldThrowDomainException() {
         final var aCode = "BLACKFRIDAY";
         final var aPercentage = 10.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final String aType = null;
@@ -344,6 +363,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -368,6 +388,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAValidCommandWithLimitedTypeAndMaxUsesLessThanOne_whenCallExecute_thenShouldReturnDomainException() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "LIMITED";
@@ -379,6 +400,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -404,6 +426,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAValidCommandWithLimitedTypeAndTransactionManagerThrows_whenCallExecute_thenShouldThrowTransactionFailureException() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "LIMITED";
@@ -412,6 +435,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -441,6 +465,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
     void givenAValidCommandWithUnlimitedTypeAndTransactionManagerThrows_whenCallExecute_thenShouldThrowTransactionFailureException() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = Instant.now().plus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = "UNLIMITED";
@@ -448,6 +473,7 @@ public class CreateCouponUseCaseTest extends UseCaseTest {
         final var aCommand = CreateCouponCommand.with(
                 aCode,
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,

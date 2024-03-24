@@ -6,6 +6,7 @@ public record ValidateCouponOutput(
         String couponId,
         String couponCode,
         float couponPercentage,
+        float couponMinimumPurchaseAmount,
         boolean couponValid
 ) {
 
@@ -14,6 +15,7 @@ public record ValidateCouponOutput(
                 aCoupon.getId().getValue(),
                 aCoupon.getCode().getValue(),
                 aCoupon.getPercentage(),
+                aCoupon.getMinimumPurchaseAmount(),
                 aCouponValid
         );
     }

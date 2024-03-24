@@ -6,7 +6,7 @@ import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsUseCase;
-import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
@@ -36,7 +36,7 @@ public class CouponController implements CouponAPI {
     private final DeactivateCouponUseCase deactivateCouponUseCase;
     private final DeleteCouponUseCase deleteCouponUseCase;
     private final ValidateCouponUseCase validateCouponUseCase;
-    private final RemoveCouponSlotUseCase removeCouponSlotUseCase;
+    private final ApplyCouponUseCase applyCouponUseCase;
     private final ListCouponsUseCase listCouponsUseCase;
     private final UpdateCouponUseCase updateCouponUseCase;
 
@@ -46,7 +46,7 @@ public class CouponController implements CouponAPI {
             final DeactivateCouponUseCase deactivateCouponUseCase,
             final DeleteCouponUseCase deleteCouponUseCase,
             final ValidateCouponUseCase validateCouponUseCase,
-            final RemoveCouponSlotUseCase removeCouponSlotUseCase,
+            final ApplyCouponUseCase applyCouponUseCase,
             final ListCouponsUseCase listCouponsUseCase,
             final UpdateCouponUseCase updateCouponUseCase
     ) {
@@ -55,7 +55,7 @@ public class CouponController implements CouponAPI {
         this.deactivateCouponUseCase = deactivateCouponUseCase;
         this.deleteCouponUseCase = deleteCouponUseCase;
         this.validateCouponUseCase = validateCouponUseCase;
-        this.removeCouponSlotUseCase = removeCouponSlotUseCase;
+        this.applyCouponUseCase = applyCouponUseCase;
         this.listCouponsUseCase = listCouponsUseCase;
         this.updateCouponUseCase = updateCouponUseCase;
     }
@@ -65,6 +65,7 @@ public class CouponController implements CouponAPI {
         final var aCommand = CreateCouponCommand.with(
                 body.code(),
                 body.percentage(),
+                body.minimumPurchaseAmount(),
                 body.expirationDate(),
                 body.isActive(),
                 body.type(),
@@ -149,6 +150,7 @@ public class CouponController implements CouponAPI {
                 id,
                 body.code(),
                 body.percentage(),
+                body.minimumPurchaseAmount(),
                 body.expirationDate()
         );
 
@@ -168,7 +170,7 @@ public class CouponController implements CouponAPI {
 
     @Override
     public ResponseEntity<?> removeCouponSlot(String code) {
-        final var aResult = this.removeCouponSlotUseCase.execute(code);
+        final var aResult = this.applyCouponUseCase.execute(code);
 
         LogControllerResult.logResult(
                 log,

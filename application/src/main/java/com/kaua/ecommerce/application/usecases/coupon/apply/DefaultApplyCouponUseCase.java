@@ -1,4 +1,4 @@
-package com.kaua.ecommerce.application.usecases.coupon.slot.remove;
+package com.kaua.ecommerce.application.usecases.coupon.apply;
 
 import com.kaua.ecommerce.application.exceptions.CouponNoMoreAvailableException;
 import com.kaua.ecommerce.application.gateways.CouponGateway;
@@ -9,12 +9,12 @@ import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 
 import java.util.Objects;
 
-public class DefaultRemoveCouponSlotUseCase extends RemoveCouponSlotUseCase {
+public class DefaultApplyCouponUseCase extends ApplyCouponUseCase {
 
     private final CouponGateway couponGateway;
     private final CouponSlotGateway couponSlotGateway;
 
-    public DefaultRemoveCouponSlotUseCase(
+    public DefaultApplyCouponUseCase(
             final CouponGateway couponGateway,
             final CouponSlotGateway couponSlotGateway
     ) {
@@ -23,7 +23,7 @@ public class DefaultRemoveCouponSlotUseCase extends RemoveCouponSlotUseCase {
     }
 
     @Override
-    public RemoveCouponSlotOutput execute(final String aCouponCode) {
+    public ApplyCouponOutput execute(final String aCouponCode) {
         final var aCoupon = this.couponGateway.findByCode(aCouponCode)
                 .orElseThrow(NotFoundException.with(Coupon.class, aCouponCode));
 
@@ -39,6 +39,6 @@ public class DefaultRemoveCouponSlotUseCase extends RemoveCouponSlotUseCase {
             }
         }
 
-        return RemoveCouponSlotOutput.from(aCoupon);
+        return ApplyCouponOutput.from(aCoupon);
     }
 }

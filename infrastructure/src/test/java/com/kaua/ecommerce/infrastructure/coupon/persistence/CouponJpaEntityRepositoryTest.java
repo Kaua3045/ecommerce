@@ -172,4 +172,24 @@ public class CouponJpaEntityRepositoryTest {
         Assertions.assertEquals(aEntity.getUpdatedAt(), actual.getUpdatedAt());
         Assertions.assertFalse(actual.isActive());
     }
+
+    @Test
+    void givenAValidMinimumPurchaseAmount_whenCallSave_shouldReturnAnEntity() {
+        final var aCoupon = Fixture.Coupons.unlimitedCouponActivated();
+
+        final var aEntity = CouponJpaEntity.toEntity(aCoupon);
+        aEntity.setMinimumPurchaseAmount(100f);
+
+        final var actual = couponJpaRepository.save(aEntity);
+
+        Assertions.assertNotNull(actual);
+        Assertions.assertEquals(aEntity.getId(), actual.getId());
+        Assertions.assertEquals(aEntity.getCode(), actual.getCode());
+        Assertions.assertEquals(aEntity.getPercentage(), actual.getPercentage());
+        Assertions.assertEquals(aEntity.getExpirationDate(), actual.getExpirationDate());
+        Assertions.assertEquals(aEntity.getType(), actual.getType());
+        Assertions.assertEquals(aEntity.getCreatedAt(), actual.getCreatedAt());
+        Assertions.assertEquals(aEntity.getUpdatedAt(), actual.getUpdatedAt());
+        Assertions.assertEquals(100f, actual.getMinimumPurchaseAmount());
+    }
 }

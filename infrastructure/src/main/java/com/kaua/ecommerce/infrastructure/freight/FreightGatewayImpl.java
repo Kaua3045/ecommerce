@@ -1,8 +1,8 @@
 package com.kaua.ecommerce.infrastructure.freight;
 
 import com.kaua.ecommerce.application.gateways.FreightGateway;
-import com.kaua.ecommerce.application.gateways.commands.CalculateFreightCommand;
-import com.kaua.ecommerce.application.gateways.commands.ListFreightsCommand;
+import com.kaua.ecommerce.application.gateways.commands.CalculateFreightInput;
+import com.kaua.ecommerce.application.gateways.commands.ListFreightsInput;
 import com.kaua.ecommerce.domain.freight.Freight;
 import com.kaua.ecommerce.domain.freight.FreightType;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.List;
 public class FreightGatewayImpl implements FreightGateway {
 
     @Override
-    public Freight calculateFreight(CalculateFreightCommand aCommand) {
+    public Freight calculateFreight(CalculateFreightInput aCommand) {
         final var aFreightCalculator = FreightCalculatorFactory.create(aCommand.type());
         final var aFreightResponse = aFreightCalculator.calculate(
                 aCommand.cep(),
@@ -31,7 +31,7 @@ public class FreightGatewayImpl implements FreightGateway {
     }
 
     @Override
-    public List<Freight> listFreights(ListFreightsCommand aCommand) {
+    public List<Freight> listFreights(ListFreightsInput aCommand) {
         final List<Freight> aFreights = new ArrayList<>();
 
         for (final var aType : FreightType.values()) {

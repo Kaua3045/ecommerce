@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.domain.product;
 
 import com.kaua.ecommerce.domain.ValueObject;
-import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.domain.resource.Resource;
 
 import java.util.Objects;
 

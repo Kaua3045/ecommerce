@@ -11,14 +11,18 @@ import com.kaua.ecommerce.domain.customer.CustomerID;
 import com.kaua.ecommerce.domain.customer.Telephone;
 import com.kaua.ecommerce.domain.customer.address.Address;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.domain.freight.Freight;
+import com.kaua.ecommerce.domain.freight.FreightType;
 import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.domain.inventory.InventoryID;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
+import com.kaua.ecommerce.domain.order.*;
+import com.kaua.ecommerce.domain.order.identifiers.OrderPaymentID;
 import com.kaua.ecommerce.domain.product.*;
+import com.kaua.ecommerce.domain.resource.Resource;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
-import com.kaua.ecommerce.domain.utils.Resource;
 import net.datafaker.Faker;
 
 import java.math.BigDecimal;
@@ -357,6 +361,126 @@ public final class Fixture {
         public static CouponSlot generateValidCouponSlot(final Coupon aCoupon) {
             return CouponSlot.newCouponSlot(
                     aCoupon.getId().getValue()
+            );
+        }
+    }
+
+    public static final class Freights {
+        private Freights() {
+        }
+
+        public static Freight freightPAC() {
+            return Freight.newFreight(
+                    faker.address().zipCode(),
+                    FreightType.PAC,
+                    10.0f,
+                    5
+            );
+        }
+    }
+
+    public static final class Orders {
+        private static final OrderDelivery ORDER_DELIVERY = OrderDelivery.newOrderDelivery(
+                "PAC",
+                25.0f,
+                10,
+                "Rua Teste",
+                "123",
+                null,
+                "Bairro Teste",
+                "Cidade Teste",
+                "Estado Teste",
+                "12345678"
+        );
+
+        private static final OrderPayment ORDER_PAYMENT_WITH_ZERO_INSTALLMENTS = OrderPayment.newOrderPayment(
+                IdUtils.generateWithoutDash(),
+                0
+        );
+
+        private static final Order ORDER_WITH_COUPON = Order.newOrder(
+                OrderCode.create(faker.random().nextLong(0, 999999)),
+                IdUtils.generate(),
+                "coupon-code",
+                10.0f,
+                ORDER_DELIVERY,
+                OrderPaymentID.unique()
+        );
+        private static final OrderItem ORDER_ITEM = OrderItem.create(
+                ORDER_WITH_COUPON.getId().getValue(),
+                "product-id",
+                Fixture.createSku(faker.book().title()),
+                10,
+                BigDecimal.valueOf(100.0)
+        );
+        private static final Order ORDER_WITHOUT_COUPON = Order.newOrder(
+                OrderCode.create(faker.random().nextLong(0, 999999)),
+                IdUtils.generate(),
+                null,
+                0.0f,
+                ORDER_DELIVERY,
+                OrderPaymentID.unique()
+        );
+
+        private Orders() {
+        }
+
+        public static Order orderWithCoupon() {
+            ORDER_WITH_COUPON.addItem(OrderItem.create(
+                    ORDER_WITH_COUPON.getId().getValue(),
+                    "product-id",
+                    Fixture.createSku(faker.book().title()),
+                    10,
+                    BigDecimal.valueOf(100.0)
+            ));
+            ORDER_WITH_COUPON.calculateTotalAmount(ORDER_DELIVERY);
+            return Order.with(ORDER_WITH_COUPON);
+        }
+
+        public static Order orderWithoutCoupon() {
+            ORDER_WITHOUT_COUPON.addItem(OrderItem.create(
+                    ORDER_WITHOUT_COUPON.getId().getValue(),
+                    "product-id",
+                    Fixture.createSku(faker.book().title()),
+                    10,
+                    BigDecimal.valueOf(100.0)
+            ));
+            ORDER_WITHOUT_COUPON.calculateTotalAmount(ORDER_DELIVERY);
+            return Order.with(ORDER_WITHOUT_COUPON);
+        }
+
+        public static OrderDelivery orderDelivery() {
+            return OrderDelivery.with(
+                    ORDER_DELIVERY.getId().getValue(),
+                    ORDER_DELIVERY.getFreightType(),
+                    ORDER_DELIVERY.getFreightPrice(),
+                    ORDER_DELIVERY.getDeliveryEstimated(),
+                    ORDER_DELIVERY.getStreet(),
+                    ORDER_DELIVERY.getNumber(),
+                    ORDER_DELIVERY.getComplement().orElse(null),
+                    ORDER_DELIVERY.getDistrict(),
+                    ORDER_DELIVERY.getCity(),
+                    ORDER_DELIVERY.getState(),
+                    ORDER_DELIVERY.getZipCode()
+            );
+        }
+
+        public static OrderPayment orderPaymentWithZeroInstallments() {
+            return OrderPayment.with(
+                    ORDER_PAYMENT_WITH_ZERO_INSTALLMENTS.getId().getValue(),
+                    ORDER_PAYMENT_WITH_ZERO_INSTALLMENTS.getPaymentMethodId(),
+                    ORDER_PAYMENT_WITH_ZERO_INSTALLMENTS.getInstallments()
+            );
+        }
+
+        public static OrderItem orderItem() {
+            return OrderItem.with(
+                    ORDER_ITEM.getOrderItemId(),
+                    ORDER_ITEM.getOrderId(),
+                    ORDER_ITEM.getProductId(),
+                    ORDER_ITEM.getSku(),
+                    ORDER_ITEM.getQuantity(),
+                    ORDER_ITEM.getPrice()
             );
         }
     }

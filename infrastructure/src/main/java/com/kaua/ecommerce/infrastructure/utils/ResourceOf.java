@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.infrastructure.utils;
 
 import com.kaua.ecommerce.domain.exceptions.DomainException;
-import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.domain.resource.Resource;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.infrastructure.exceptions.ImageSizeNotValidException;
 import com.kaua.ecommerce.infrastructure.exceptions.ImageTypeNotValidException;

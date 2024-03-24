@@ -52,7 +52,10 @@ public class CouponSlotMySQLGateway implements CouponSlotGateway {
     @Override
     public boolean deleteFirstSlotByCouponId(String couponId) {
         final var aResult = this.couponSlotJpaEntityRepository.deleteFirstSlotByCouponId(couponId);
-        log.info("deleted first coupon slot with coupon id: {}", couponId);
-        return aResult == 1;
+        if (aResult == 1) {
+            log.info("deleted first coupon slot with coupon id: {}", couponId);
+            return true;
+        }
+        return false;
     }
 }

@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.application.usecases.freight.list;
 
 import com.kaua.ecommerce.application.gateways.FreightGateway;
-import com.kaua.ecommerce.application.gateways.commands.ListFreightsCommand;
+import com.kaua.ecommerce.application.gateways.commands.ListFreightsInput;
 import com.kaua.ecommerce.domain.freight.Freight;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class DefaultListFreightsByCepUseCase extends ListFreightsByCepUseCase {
 
     @Override
     public List<Freight> execute(ListFreightsByCepCommand input) {
-        final var aListFreightsCommand = ListFreightsCommand.with(
+        final var aListFreightsCommand = ListFreightsInput.with(
                 input.cep(),
                 input.height(),
                 input.width(),

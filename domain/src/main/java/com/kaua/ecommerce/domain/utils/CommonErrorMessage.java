@@ -13,12 +13,20 @@ public final class CommonErrorMessage {
         return "'" + fieldName + "' should not be null";
     }
 
+    public static String blankMessage(final String fieldName) {
+        return "'" + fieldName + "' should not be blank";
+    }
+
     public static String lengthBetween(final String fieldName, final int min, final int max) {
         return "'" + fieldName + "' must be between " + min + " and " + max + " characters";
     }
 
     public static String maxSize(final String fieldName, final int max) {
         return "'" + fieldName + "' must be less than " + max + " characters";
+    }
+
+    public static String minSize(final String fieldName, final int min) {
+        return "'" + fieldName + "' must be greater than " + min + " characters";
     }
 
     public static String greaterThan(final String fieldName, final int value) {

@@ -4,13 +4,15 @@ import com.kaua.ecommerce.domain.coupon.Coupon;
 
 public record RemoveCouponSlotOutput(
         String couponId,
-        String couponCode
+        String couponCode,
+        float couponPercentage
 ) {
 
     public static RemoveCouponSlotOutput from(final Coupon aCoupon) {
         return new RemoveCouponSlotOutput(
                 aCoupon.getId().getValue(),
-                aCoupon.getCode().getValue()
+                aCoupon.getCode().getValue(),
+                aCoupon.getPercentage()
         );
     }
 }

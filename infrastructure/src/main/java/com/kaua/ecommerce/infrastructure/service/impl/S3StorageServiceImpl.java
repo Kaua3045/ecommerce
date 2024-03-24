@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.service.impl;
 
-import com.kaua.ecommerce.domain.utils.Resource;
+import com.kaua.ecommerce.domain.resource.Resource;
 import com.kaua.ecommerce.infrastructure.exceptions.FileStorageException;
 import com.kaua.ecommerce.infrastructure.service.StorageService;
 import software.amazon.awssdk.core.sync.RequestBody;

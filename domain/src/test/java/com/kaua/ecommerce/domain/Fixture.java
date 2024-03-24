@@ -310,6 +310,7 @@ public final class Fixture {
                 faker.options()
                         .option("BLACK_FRIDAY", "CYBER_MONDAY"),
                 (float) Math.round(faker.random().nextDouble(1, 100)),
+                0.0f,
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 true,
                 CouponType.UNLIMITED
@@ -319,6 +320,7 @@ public final class Fixture {
                 faker.options()
                         .option("CHRISTMAS", "NEW_YEAR", "EASTER"),
                 (float) Math.round(faker.random().nextDouble(1, 100)),
+                0.0f,
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 false,
                 CouponType.UNLIMITED
@@ -328,6 +330,7 @@ public final class Fixture {
                 faker.options()
                         .option("TEST_FREE_2024", "TEST_FREE_2025", "OFFER5", "OFFER10"),
                 (float) Math.round(faker.random().nextDouble(1, 100)),
+                0.0f,
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 true,
                 CouponType.LIMITED
@@ -337,6 +340,7 @@ public final class Fixture {
                 faker.options()
                         .option("VIP_DISCOUNT", "CUSTOMER10OFF", "WELCOME10"),
                 (float) Math.round(faker.random().nextDouble(1, 100)),
+                0.0f,
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 false,
                 CouponType.LIMITED

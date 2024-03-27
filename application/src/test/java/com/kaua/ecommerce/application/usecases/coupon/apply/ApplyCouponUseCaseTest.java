@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.application.usecases.coupon.apply;
 
 import com.kaua.ecommerce.application.UseCaseTest;
+import com.kaua.ecommerce.application.exceptions.CouponMinimumPurchaseAmountException;
 import com.kaua.ecommerce.application.gateways.CouponGateway;
 import com.kaua.ecommerce.application.gateways.CouponSlotGateway;
 import com.kaua.ecommerce.domain.Fixture;
@@ -35,8 +36,10 @@ public class ApplyCouponUseCaseTest extends UseCaseTest {
         Mockito.when(couponSlotGateway.deleteFirstSlotByCouponId(aCoupon.getId().getValue()))
                 .thenReturn(true);
 
+        final var aCommand = ApplyCouponCommand.with(aCoupon.getCode().getValue(), 100f);
+
         final var aOutput = Assertions.assertDoesNotThrow(() ->
-                this.applyCouponUseCase.execute(aCoupon.getCode().getValue()));
+                this.applyCouponUseCase.execute(aCommand));
 
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
@@ -57,8 +60,10 @@ public class ApplyCouponUseCaseTest extends UseCaseTest {
         Mockito.when(couponSlotGateway.deleteFirstSlotByCouponId(aCoupon.getId().getValue()))
                 .thenReturn(false);
 
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
         final var aException = Assertions.assertThrows(DomainException.class, () ->
-                this.applyCouponUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCommand));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
@@ -75,8 +80,10 @@ public class ApplyCouponUseCaseTest extends UseCaseTest {
         Mockito.when(couponGateway.findByCode(aCouponCode))
                 .thenReturn(Optional.empty());
 
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
         final var aException = Assertions.assertThrows(NotFoundException.class, () ->
-                this.applyCouponUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCommand));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
@@ -94,8 +101,10 @@ public class ApplyCouponUseCaseTest extends UseCaseTest {
         Mockito.when(couponGateway.findByCode(aCoupon.getCode().getValue()))
                 .thenReturn(Optional.of(aCoupon));
 
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
         final var aException = Assertions.assertThrows(DomainException.class, () ->
-                this.applyCouponUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCommand));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
@@ -111,11 +120,35 @@ public class ApplyCouponUseCaseTest extends UseCaseTest {
         Mockito.when(couponGateway.findByCode(aCoupon.getCode().getValue()))
                 .thenReturn(Optional.of(aCoupon));
 
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
         final var aOutput = Assertions.assertDoesNotThrow(() ->
-                this.applyCouponUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCommand));
 
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
+
+        Mockito.verify(couponGateway, Mockito.times(1)).findByCode(aCoupon.getCode().getValue());
+        Mockito.verify(couponSlotGateway, Mockito.times(0)).deleteFirstSlotByCouponId(Mockito.any());
+    }
+
+    @Test
+    void givenAValidCouponCodeWithMinimumPurchaseAmount_whenCallExecute_thenShouldThrowDomainException() {
+        final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+        final var aCouponCode = aCoupon.getCode().getValue();
+        final var aTotalAmount = aCoupon.getMinimumPurchaseAmount() - 1;
+
+        final var expectedErrorMessage = "Coupon minimum purchase amount is not reached";
+
+        Mockito.when(couponGateway.findByCode(aCoupon.getCode().getValue()))
+                .thenReturn(Optional.of(aCoupon));
+
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, aTotalAmount);
+
+        final var aException = Assertions.assertThrows(CouponMinimumPurchaseAmountException.class, () ->
+                this.applyCouponUseCase.execute(aCommand));
+
+        Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
         Mockito.verify(couponGateway, Mockito.times(1)).findByCode(aCoupon.getCode().getValue());
         Mockito.verify(couponSlotGateway, Mockito.times(0)).deleteFirstSlotByCouponId(Mockito.any());

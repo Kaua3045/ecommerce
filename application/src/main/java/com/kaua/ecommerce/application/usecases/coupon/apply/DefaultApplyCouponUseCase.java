@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.application.usecases.coupon.apply;
 
+import com.kaua.ecommerce.application.exceptions.CouponMinimumPurchaseAmountException;
 import com.kaua.ecommerce.application.exceptions.CouponNoMoreAvailableException;
 import com.kaua.ecommerce.application.gateways.CouponGateway;
 import com.kaua.ecommerce.application.gateways.CouponSlotGateway;
@@ -23,9 +24,11 @@ public class DefaultApplyCouponUseCase extends ApplyCouponUseCase {
     }
 
     @Override
-    public ApplyCouponOutput execute(final String aCouponCode) {
-        final var aCoupon = this.couponGateway.findByCode(aCouponCode)
-                .orElseThrow(NotFoundException.with(Coupon.class, aCouponCode));
+    public ApplyCouponOutput execute(final ApplyCouponCommand aCommand) {
+        final var aCoupon = this.couponGateway.findByCode(aCommand.couponCode())
+                .orElseThrow(NotFoundException.with(Coupon.class, aCommand.couponCode()));
+
+        if (aCommand.totalAmount() < aCoupon.getMinimumPurchaseAmount()) throw new CouponMinimumPurchaseAmountException();
 
         if (aCoupon.getType().equals(CouponType.LIMITED)) {
             if (!aCoupon.isActiveAndNotExpired()) throw new CouponNoMoreAvailableException();

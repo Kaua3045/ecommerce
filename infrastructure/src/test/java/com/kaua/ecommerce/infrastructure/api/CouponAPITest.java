@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponCommand;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponOutput;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
@@ -12,8 +15,6 @@ import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCoupo
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsOutput;
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsUseCase;
-import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponOutput;
-import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponUseCase;
@@ -321,17 +322,20 @@ public class CouponAPITest {
     }
 
     @Test
-    void givenAValidCode_whenCallRemoveCouponSlot_thenReturnStatusOkAndCouponSlotRemoved() throws Exception {
+    void givenAValidCode_whenCallApplyCoupon_thenReturnStatusOkAndCouponSlotRemoved() throws Exception {
         final var aCoupon = Fixture.Coupons.limitedCouponActivated();
 
         final var aCouponCode = aCoupon.getCode().getValue();
 
-        Mockito.when(applyCouponUseCase.execute(aCouponCode))
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
+        Mockito.when(applyCouponUseCase.execute(aCommand))
                 .thenReturn(ApplyCouponOutput.from(aCoupon));
 
         final var request = MockMvcRequestBuilders.delete("/v1/coupons/slots/{code}", aCouponCode)
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aCommand));
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
@@ -339,7 +343,7 @@ public class CouponAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_id", equalTo(aCoupon.getId().getValue())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_code", equalTo(aCoupon.getCode().getValue())));
 
-        Mockito.verify(applyCouponUseCase, Mockito.times(1)).execute(aCouponCode);
+        Mockito.verify(applyCouponUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 
     @Test

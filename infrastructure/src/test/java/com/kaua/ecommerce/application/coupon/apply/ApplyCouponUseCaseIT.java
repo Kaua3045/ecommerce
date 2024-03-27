@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.application.coupon.apply;
 
 import com.kaua.ecommerce.application.exceptions.CouponNoMoreAvailableException;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.coupon.Coupon;
@@ -48,11 +49,13 @@ public class ApplyCouponUseCaseIT {
 
         final var aCouponCode = aCoupon.getCode().getValue();
 
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
         Assertions.assertEquals(1, this.couponJpaEntityRepository.count());
         Assertions.assertEquals(2, this.couponSlotJpaEntityRepository.count());
 
         final var aOutput = Assertions.assertDoesNotThrow(() ->
-                this.applyCouponUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCommand));
 
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
@@ -68,11 +71,13 @@ public class ApplyCouponUseCaseIT {
 
         final var aCouponCode = aCoupon.getCode().getValue();
 
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
         Assertions.assertEquals(1, this.couponJpaEntityRepository.count());
         Assertions.assertEquals(0, this.couponSlotJpaEntityRepository.count());
 
         final var aException = Assertions.assertThrows(CouponNoMoreAvailableException.class, () ->
-                this.applyCouponUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCommand));
 
         Assertions.assertEquals("Coupon no more available", aException.getMessage());
 
@@ -86,11 +91,13 @@ public class ApplyCouponUseCaseIT {
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Coupon.class, aCouponCode);
 
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
         Assertions.assertEquals(0, this.couponJpaEntityRepository.count());
         Assertions.assertEquals(0, this.couponSlotJpaEntityRepository.count());
 
         final var aException = Assertions.assertThrows(Exception.class, () ->
-                this.applyCouponUseCase.execute(aCouponCode));
+                this.applyCouponUseCase.execute(aCommand));
 
         Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
 
@@ -118,6 +125,8 @@ public class ApplyCouponUseCaseIT {
         final var aExpectedSuccessExecution = 2;
         final var aExpectedErrorExecution = 3;
 
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
         Assertions.assertEquals(1, this.couponJpaEntityRepository.count());
         Assertions.assertEquals(2, this.couponSlotJpaEntityRepository.count());
 
@@ -127,7 +136,7 @@ public class ApplyCouponUseCaseIT {
         for (int i = 0; i < aExecutions; i++) {
             tasks.add(() -> {
                 try {
-                    this.applyCouponUseCase.execute(aCouponCode);
+                    this.applyCouponUseCase.execute(aCommand);
                     aCountSuccessExecutionAtomic.incrementAndGet();
                 } catch (Exception e) {
                     e.printStackTrace();

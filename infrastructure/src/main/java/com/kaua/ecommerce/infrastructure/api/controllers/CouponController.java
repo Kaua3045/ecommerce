@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
@@ -15,6 +16,7 @@ import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.pagination.Period;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.api.CouponAPI;
+import com.kaua.ecommerce.infrastructure.coupon.models.ApplyCouponInput;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
 import com.kaua.ecommerce.infrastructure.coupon.models.ListCouponsResponse;
 import com.kaua.ecommerce.infrastructure.coupon.models.UpdateCouponInput;
@@ -169,8 +171,8 @@ public class CouponController implements CouponAPI {
     }
 
     @Override
-    public ResponseEntity<?> removeCouponSlot(String code) {
-        final var aResult = this.applyCouponUseCase.execute(code);
+    public ResponseEntity<?> applyCoupon(String code, ApplyCouponInput input) {
+        final var aResult = this.applyCouponUseCase.execute(ApplyCouponCommand.with(code, input.totalAmount()));
 
         LogControllerResult.logResult(
                 log,

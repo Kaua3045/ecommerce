@@ -48,6 +48,7 @@ public class DefaultCreateCouponUseCase extends CreateCouponUseCase {
         final var aCoupon = Coupon.newCoupon(
                 input.code(),
                 input.percentage(),
+                input.minimumPurchase(),
                 InstantUtils.parse(input.expirationDate()),
                 input.isActive(),
                 aCouponType

@@ -10,6 +10,7 @@ public class Coupon extends AggregateRoot<CouponID> {
 
     private CouponCode code;
     private float percentage;
+    private float minimumPurchaseAmount;
     private Instant expirationDate;
     private boolean isActive;
     private CouponType type;
@@ -20,6 +21,7 @@ public class Coupon extends AggregateRoot<CouponID> {
             final CouponID aCouponID,
             final CouponCode aCode,
             final float aPercentage,
+            final float aMinimumPurchaseAmount,
             final Instant aExpirationDate,
             final boolean aIsActive,
             final CouponType aType,
@@ -30,6 +32,7 @@ public class Coupon extends AggregateRoot<CouponID> {
         super(aCouponID, aVersion);
         this.code = aCode;
         this.percentage = aPercentage;
+        this.minimumPurchaseAmount = aMinimumPurchaseAmount;
         this.expirationDate = aExpirationDate;
         this.isActive = aIsActive;
         this.type = aType;
@@ -40,6 +43,7 @@ public class Coupon extends AggregateRoot<CouponID> {
     public static Coupon newCoupon(
             final String aCode,
             final float aPercentage,
+            final float aMinimumPurchaseAmount,
             final Instant aExpirationDate,
             final boolean aIsActive,
             final CouponType aType
@@ -47,13 +51,14 @@ public class Coupon extends AggregateRoot<CouponID> {
         final var aId = CouponID.unique();
         final var aNow = InstantUtils.now();
         final var aCouponCode = CouponCode.create(aCode);
-        return new Coupon(aId, aCouponCode, aPercentage, aExpirationDate, aIsActive, aType, aNow, aNow, 0);
+        return new Coupon(aId, aCouponCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate, aIsActive, aType, aNow, aNow, 0);
     }
 
     public static Coupon with(
             final String aCouponID,
             final String aCode,
             final float aPercentage,
+            final float aMinimumPurchaseAmount,
             final Instant aExpirationDate,
             final boolean aIsActive,
             final CouponType aType,
@@ -65,6 +70,7 @@ public class Coupon extends AggregateRoot<CouponID> {
                 CouponID.from(aCouponID),
                 CouponCode.create(aCode),
                 aPercentage,
+                aMinimumPurchaseAmount,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -79,6 +85,7 @@ public class Coupon extends AggregateRoot<CouponID> {
                 aCoupon.getId(),
                 aCoupon.getCode(),
                 aCoupon.getPercentage(),
+                aCoupon.getMinimumPurchaseAmount(),
                 aCoupon.getExpirationDate(),
                 aCoupon.isActive(),
                 aCoupon.getType(),
@@ -108,9 +115,10 @@ public class Coupon extends AggregateRoot<CouponID> {
         return this;
     }
 
-    public Coupon update(final String aCode, final float aPercentage, final Instant aExpirationDate) {
+    public Coupon update(final String aCode, final float aPercentage, final float aMinimumPurchaseAmount, final Instant aExpirationDate) {
         this.code = CouponCode.create(aCode);
         this.percentage = aPercentage;
+        this.minimumPurchaseAmount = aMinimumPurchaseAmount;
         this.expirationDate = aExpirationDate;
         this.updatedAt = InstantUtils.now();
         return this;
@@ -127,6 +135,10 @@ public class Coupon extends AggregateRoot<CouponID> {
 
     public float getPercentage() {
         return percentage;
+    }
+
+    public float getMinimumPurchaseAmount() {
+        return minimumPurchaseAmount;
     }
 
     public Instant getExpirationDate() {

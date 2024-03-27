@@ -33,6 +33,10 @@ public final class CommonErrorMessage {
         return "'" + fieldName + "' must be greater than " + value;
     }
 
+    public static String greaterOrEqual(final String fieldName, final int value) {
+        return "'" + fieldName + "' must be greater or equal to " + value;
+    }
+
     public static String dateMustBeFuture(final String fieldName) {
         return "'" + fieldName + "' must be a future date";
     }

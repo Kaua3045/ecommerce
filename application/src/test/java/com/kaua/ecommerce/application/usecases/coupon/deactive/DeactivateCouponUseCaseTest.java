@@ -33,6 +33,7 @@ public class DeactivateCouponUseCaseTest extends UseCaseTest {
     void givenAValidIdAndCouponAlreadyActive_whenCallExecute_thenShouldReturnCouponDeactivated() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -40,6 +41,7 @@ public class DeactivateCouponUseCaseTest extends UseCaseTest {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType
@@ -67,6 +69,7 @@ public class DeactivateCouponUseCaseTest extends UseCaseTest {
     void givenAValidIdAndCouponAlreadyDeactivated_whenCallExecute_thenShouldReturnCouponDeactivatedButNotUpdate() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now().plus(1, ChronoUnit.DAYS);
         final var aIsActive = false;
         final var aType = CouponType.UNLIMITED;
@@ -74,6 +77,7 @@ public class DeactivateCouponUseCaseTest extends UseCaseTest {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType

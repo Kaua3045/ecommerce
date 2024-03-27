@@ -39,6 +39,7 @@ public class ValidateCouponUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
         Assertions.assertEquals(aCoupon.getPercentage(), aOutput.couponPercentage());
+        Assertions.assertEquals(aCoupon.getMinimumPurchaseAmount(), aOutput.couponMinimumPurchaseAmount());
         Assertions.assertTrue(aOutput.couponValid());
 
         Mockito.verify(couponGateway, Mockito.times(1)).findByCode(Mockito.any());
@@ -57,6 +58,7 @@ public class ValidateCouponUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
         Assertions.assertEquals(aCoupon.getPercentage(), aOutput.couponPercentage());
+        Assertions.assertEquals(aCoupon.getMinimumPurchaseAmount(), aOutput.couponMinimumPurchaseAmount());
         Assertions.assertTrue(aOutput.couponValid());
 
         Mockito.verify(couponGateway, Mockito.times(1)).findByCode(Mockito.any());
@@ -77,6 +79,7 @@ public class ValidateCouponUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
         Assertions.assertEquals(aCoupon.getPercentage(), aOutput.couponPercentage());
+        Assertions.assertEquals(aCoupon.getMinimumPurchaseAmount(), aOutput.couponMinimumPurchaseAmount());
         Assertions.assertFalse(aOutput.couponValid());
 
         Mockito.verify(couponGateway, Mockito.times(1)).findByCode(Mockito.any());
@@ -95,6 +98,7 @@ public class ValidateCouponUseCaseTest extends UseCaseTest {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
         Assertions.assertEquals(aCoupon.getPercentage(), aOutput.couponPercentage());
+        Assertions.assertEquals(aCoupon.getMinimumPurchaseAmount(), aOutput.couponMinimumPurchaseAmount());
         Assertions.assertFalse(aOutput.couponValid());
 
         Mockito.verify(couponGateway, Mockito.times(1)).findByCode(Mockito.any());

@@ -19,6 +19,7 @@ public class CouponValidation extends Validator {
     public void validate() {
         this.checkCodeConstraints();
         this.checkPercentageConstraints();
+        this.checkMinimumPurchaseAmountConstraints();
         this.checkExpirationDateConstraints();
         this.checkTypeConstraints();
     }
@@ -38,6 +39,12 @@ public class CouponValidation extends Validator {
     private void checkPercentageConstraints() {
         if (this.coupon.getPercentage() <= 0) {
             this.validationHandler().append(new Error(CommonErrorMessage.greaterThan("percentage", 0)));
+        }
+    }
+
+    private void checkMinimumPurchaseAmountConstraints() {
+        if (this.coupon.getMinimumPurchaseAmount() < 0) {
+            this.validationHandler().append(new Error(CommonErrorMessage.greaterOrEqual("minimumPurchaseAmount", 0)));
         }
     }
 

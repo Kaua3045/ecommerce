@@ -35,9 +35,10 @@ public class UpdateCouponUseCaseTest extends UseCaseTest {
 
         final var aCode = "NEWCODE";
         final var aPercentage = 200.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().plus(5, ChronoUnit.DAYS).toString();
 
-        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aExpirationDate);
+        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         Mockito.when(couponGateway.findById(aCouponId)).thenReturn(Optional.of(aCoupon));
         Mockito.when(couponGateway.existsByCode(aCode)).thenReturn(false);
@@ -54,6 +55,7 @@ public class UpdateCouponUseCaseTest extends UseCaseTest {
         Mockito.verify(couponGateway, Mockito.times(1)).update(argThat(aCmd ->
                 Objects.equals(aCmd.getCode().getValue(), aCode)
                         && aCmd.getPercentage() == aPercentage
+                        && aCmd.getMinimumPurchaseAmount() == aMinimumPurchaseAmount
                         && aCmd.getExpirationDate().toString().equals(aExpirationDate)));
     }
 
@@ -64,9 +66,10 @@ public class UpdateCouponUseCaseTest extends UseCaseTest {
 
         final var aCode = "NEWCODE";
         final var aPercentage = 200.0f;
+        final var aMinimumPurchaseAmount = 10.0f;
         final var aExpirationDate = InstantUtils.now().minus(5, ChronoUnit.DAYS).toString();
 
-        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aExpirationDate);
+        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         final var expectedErrorMessage = "'code' already exists";
         final var expectedErrorCount = 1;
@@ -91,9 +94,10 @@ public class UpdateCouponUseCaseTest extends UseCaseTest {
         final var aCouponId = "123456789";
         final var aCode = "NEWCODE";
         final var aPercentage = 200.0f;
+        final var aMinimumPurchaseAmount = 05.0f;
         final var aExpirationDate = InstantUtils.now().minus(5, ChronoUnit.DAYS).toString();
 
-        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aExpirationDate);
+        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         final var expectedErrorMessage = Fixture.notFoundMessage(Coupon.class, aCouponId);
 
@@ -117,9 +121,10 @@ public class UpdateCouponUseCaseTest extends UseCaseTest {
 
         final var aCode = "NEWCODE";
         final var aPercentage = 200.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = "";
 
-        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aExpirationDate);
+        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         Mockito.when(couponGateway.findById(aCouponId)).thenReturn(Optional.of(aCoupon));
         Mockito.when(couponGateway.existsByCode(aCode)).thenReturn(false);
@@ -146,9 +151,10 @@ public class UpdateCouponUseCaseTest extends UseCaseTest {
 
         final var aCode = "NEWCODE";
         final var aPercentage = 200.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final String aExpirationDate = null;
 
-        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aExpirationDate);
+        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         Mockito.when(couponGateway.findById(aCouponId)).thenReturn(Optional.of(aCoupon));
         Mockito.when(couponGateway.existsByCode(aCode)).thenReturn(false);
@@ -175,9 +181,10 @@ public class UpdateCouponUseCaseTest extends UseCaseTest {
 
         final var aCode = "NEWCODE";
         final var aPercentage = 0.0f;
+        final var aMinimumPurchaseAmount = 0.0f;
         final var aExpirationDate = InstantUtils.now().plus(5, ChronoUnit.DAYS).toString();
 
-        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aExpirationDate);
+        final var aCommand = UpdateCouponCommand.with(aCouponId, aCode, aPercentage, aMinimumPurchaseAmount, aExpirationDate);
 
         final var expectedErrorMessage = CommonErrorMessage.greaterThan("percentage", 0);
 

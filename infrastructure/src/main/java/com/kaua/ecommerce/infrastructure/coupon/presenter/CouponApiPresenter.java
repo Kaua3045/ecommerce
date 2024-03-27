@@ -13,6 +13,7 @@ public final class CouponApiPresenter {
                 aOutput.id(),
                 aOutput.code(),
                 aOutput.percentage(),
+                aOutput.minimumPurchaseAmount(),
                 aOutput.expirationDate(),
                 aOutput.isActive(),
                 aOutput.type(),

@@ -37,6 +37,7 @@ public class ValidateCouponUseCaseIT {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
         Assertions.assertEquals(aCoupon.getPercentage(), aOutput.couponPercentage());
+        Assertions.assertEquals(aCoupon.getMinimumPurchaseAmount(), aOutput.couponMinimumPurchaseAmount());
         Assertions.assertTrue(aOutput.couponValid());
     }
 
@@ -51,6 +52,7 @@ public class ValidateCouponUseCaseIT {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
         Assertions.assertEquals(aCoupon.getPercentage(), aOutput.couponPercentage());
+        Assertions.assertEquals(aCoupon.getMinimumPurchaseAmount(), aOutput.couponMinimumPurchaseAmount());
         Assertions.assertTrue(aOutput.couponValid());
     }
 }

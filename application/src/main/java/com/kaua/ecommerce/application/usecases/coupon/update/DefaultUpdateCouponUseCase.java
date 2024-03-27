@@ -33,7 +33,7 @@ public class DefaultUpdateCouponUseCase extends UpdateCouponUseCase {
                 ? aCoupon.getExpirationDate()
                 : InstantUtils.parse(input.expirationDate());
 
-        final var aCouponUpdated = aCoupon.update(input.code(), input.percentage(), aExpirationDate);
+        final var aCouponUpdated = aCoupon.update(input.code(), input.percentage(), input.minimumPurchase(), aExpirationDate);
         aCouponUpdated.validate(aNotification);
 
         if (aNotification.hasError()) {

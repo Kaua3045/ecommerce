@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponCommand;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponOutput;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
@@ -12,8 +15,6 @@ import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCoupo
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsOutput;
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsUseCase;
-import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotOutput;
-import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponOutput;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponUseCase;
@@ -75,7 +76,7 @@ public class CouponAPITest {
     private ValidateCouponUseCase validateCouponUseCase;
 
     @MockBean
-    private RemoveCouponSlotUseCase removeCouponSlotUseCase;
+    private ApplyCouponUseCase applyCouponUseCase;
 
     @MockBean
     private ListCouponsUseCase listCouponsUseCase;
@@ -89,6 +90,7 @@ public class CouponAPITest {
 
         final var aCode = aCoupon.getCode().getValue();
         final var aPercentage = 15.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now().toString();
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED.name();
@@ -96,6 +98,7 @@ public class CouponAPITest {
         final var aInput = new CreateCouponInput(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -124,6 +127,7 @@ public class CouponAPITest {
 
         Assertions.assertEquals(aCode, actualCmd.code());
         Assertions.assertEquals(aPercentage, actualCmd.percentage());
+        Assertions.assertEquals(aMinimumPurchase, actualCmd.minimumPurchase());
         Assertions.assertEquals(aExpirationDate, actualCmd.expirationDate());
         Assertions.assertEquals(aIsActive, actualCmd.isActive());
         Assertions.assertEquals(aType, actualCmd.type());
@@ -134,6 +138,7 @@ public class CouponAPITest {
     void givenAnInvalidAllInputParams_whenCallCreateCoupon_thenReturnDomainException() throws Exception {
         final var aCode = " ";
         final var aPercentage = -15.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now().minus(1, ChronoUnit.DAYS).toString();
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED.name();
@@ -141,6 +146,7 @@ public class CouponAPITest {
         final var aInput = new CreateCouponInput(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType,
@@ -316,17 +322,20 @@ public class CouponAPITest {
     }
 
     @Test
-    void givenAValidCode_whenCallRemoveCouponSlot_thenReturnStatusOkAndCouponSlotRemoved() throws Exception {
+    void givenAValidCode_whenCallApplyCoupon_thenReturnStatusOkAndCouponSlotRemoved() throws Exception {
         final var aCoupon = Fixture.Coupons.limitedCouponActivated();
 
         final var aCouponCode = aCoupon.getCode().getValue();
 
-        Mockito.when(removeCouponSlotUseCase.execute(aCouponCode))
-                .thenReturn(RemoveCouponSlotOutput.from(aCoupon));
+        final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
+
+        Mockito.when(applyCouponUseCase.execute(aCommand))
+                .thenReturn(ApplyCouponOutput.from(aCoupon));
 
         final var request = MockMvcRequestBuilders.delete("/v1/coupons/slots/{code}", aCouponCode)
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aCommand));
 
         this.mvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
@@ -334,7 +343,7 @@ public class CouponAPITest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_id", equalTo(aCoupon.getId().getValue())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_code", equalTo(aCoupon.getCode().getValue())));
 
-        Mockito.verify(removeCouponSlotUseCase, Mockito.times(1)).execute(aCouponCode);
+        Mockito.verify(applyCouponUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 
     @Test
@@ -397,11 +406,13 @@ public class CouponAPITest {
 
         final var aCode = "NEWCODE";
         final var aPercentage = 200.0f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now().plus(5, ChronoUnit.DAYS).toString();
 
         final var aInput = new UpdateCouponInput(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate
         );
 
@@ -410,6 +421,7 @@ public class CouponAPITest {
                         aCoupon.getId().getValue(),
                         aCode,
                         aPercentage,
+                        aMinimumPurchase,
                         aCoupon.getExpirationDate(),
                         aCoupon.isActive(),
                         aCoupon.getType(),
@@ -447,11 +459,13 @@ public class CouponAPITest {
 
         final String aCode = null;
         final var aPercentage = 200.0f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now().plus(5, ChronoUnit.DAYS).toString();
 
         final var aInput = new UpdateCouponInput(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate
         );
 

@@ -1,5 +1,6 @@
-package com.kaua.ecommerce.application.usecases.coupon.slot.remove;
+package com.kaua.ecommerce.application.usecases.coupon.apply;
 
+import com.kaua.ecommerce.application.exceptions.CouponMinimumPurchaseAmountException;
 import com.kaua.ecommerce.application.exceptions.CouponNoMoreAvailableException;
 import com.kaua.ecommerce.application.gateways.CouponGateway;
 import com.kaua.ecommerce.application.gateways.CouponSlotGateway;
@@ -9,12 +10,12 @@ import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 
 import java.util.Objects;
 
-public class DefaultRemoveCouponSlotUseCase extends RemoveCouponSlotUseCase {
+public class DefaultApplyCouponUseCase extends ApplyCouponUseCase {
 
     private final CouponGateway couponGateway;
     private final CouponSlotGateway couponSlotGateway;
 
-    public DefaultRemoveCouponSlotUseCase(
+    public DefaultApplyCouponUseCase(
             final CouponGateway couponGateway,
             final CouponSlotGateway couponSlotGateway
     ) {
@@ -23,9 +24,11 @@ public class DefaultRemoveCouponSlotUseCase extends RemoveCouponSlotUseCase {
     }
 
     @Override
-    public RemoveCouponSlotOutput execute(final String aCouponCode) {
-        final var aCoupon = this.couponGateway.findByCode(aCouponCode)
-                .orElseThrow(NotFoundException.with(Coupon.class, aCouponCode));
+    public ApplyCouponOutput execute(final ApplyCouponCommand aCommand) {
+        final var aCoupon = this.couponGateway.findByCode(aCommand.couponCode())
+                .orElseThrow(NotFoundException.with(Coupon.class, aCommand.couponCode()));
+
+        if (aCommand.totalAmount() < aCoupon.getMinimumPurchaseAmount()) throw new CouponMinimumPurchaseAmountException();
 
         if (aCoupon.getType().equals(CouponType.LIMITED)) {
             if (!aCoupon.isActiveAndNotExpired()) throw new CouponNoMoreAvailableException();
@@ -39,6 +42,6 @@ public class DefaultRemoveCouponSlotUseCase extends RemoveCouponSlotUseCase {
             }
         }
 
-        return RemoveCouponSlotOutput.from(aCoupon);
+        return ApplyCouponOutput.from(aCoupon);
     }
 }

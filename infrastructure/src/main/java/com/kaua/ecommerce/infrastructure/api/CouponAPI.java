@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.api;
 
 import com.kaua.ecommerce.domain.pagination.Pagination;
+import com.kaua.ecommerce.infrastructure.coupon.models.ApplyCouponInput;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
 import com.kaua.ecommerce.infrastructure.coupon.models.ListCouponsResponse;
 import com.kaua.ecommerce.infrastructure.coupon.models.UpdateCouponInput;
@@ -99,13 +100,13 @@ public interface CouponAPI {
             value = "slots/{code}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @Operation(summary = "Remove a coupon slot by it's code")
+    @Operation(summary = "Apply a coupon by it's code and remove a slot from it's slots list")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Removed successfully"),
+            @ApiResponse(responseCode = "200", description = "Applied successfully"),
             @ApiResponse(responseCode = "404", description = "Coupon not found"),
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
-    ResponseEntity<?> removeCouponSlot(@PathVariable String code);
+    ResponseEntity<?> applyCoupon(@PathVariable String code, @RequestBody ApplyCouponInput input);
 
     @DeleteMapping(value = "{id}")
     @Operation(summary = "Delete a coupon by it's identifier")

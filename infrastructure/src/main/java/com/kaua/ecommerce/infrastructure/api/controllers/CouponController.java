@@ -1,12 +1,13 @@
 package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.application.usecases.coupon.activate.ActivateCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.create.CreateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.deactivate.DeactivateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsUseCase;
-import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.ValidateCouponUseCase;
@@ -15,6 +16,7 @@ import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.pagination.Period;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
 import com.kaua.ecommerce.infrastructure.api.CouponAPI;
+import com.kaua.ecommerce.infrastructure.coupon.models.ApplyCouponInput;
 import com.kaua.ecommerce.infrastructure.coupon.models.CreateCouponInput;
 import com.kaua.ecommerce.infrastructure.coupon.models.ListCouponsResponse;
 import com.kaua.ecommerce.infrastructure.coupon.models.UpdateCouponInput;
@@ -36,7 +38,7 @@ public class CouponController implements CouponAPI {
     private final DeactivateCouponUseCase deactivateCouponUseCase;
     private final DeleteCouponUseCase deleteCouponUseCase;
     private final ValidateCouponUseCase validateCouponUseCase;
-    private final RemoveCouponSlotUseCase removeCouponSlotUseCase;
+    private final ApplyCouponUseCase applyCouponUseCase;
     private final ListCouponsUseCase listCouponsUseCase;
     private final UpdateCouponUseCase updateCouponUseCase;
 
@@ -46,7 +48,7 @@ public class CouponController implements CouponAPI {
             final DeactivateCouponUseCase deactivateCouponUseCase,
             final DeleteCouponUseCase deleteCouponUseCase,
             final ValidateCouponUseCase validateCouponUseCase,
-            final RemoveCouponSlotUseCase removeCouponSlotUseCase,
+            final ApplyCouponUseCase applyCouponUseCase,
             final ListCouponsUseCase listCouponsUseCase,
             final UpdateCouponUseCase updateCouponUseCase
     ) {
@@ -55,7 +57,7 @@ public class CouponController implements CouponAPI {
         this.deactivateCouponUseCase = deactivateCouponUseCase;
         this.deleteCouponUseCase = deleteCouponUseCase;
         this.validateCouponUseCase = validateCouponUseCase;
-        this.removeCouponSlotUseCase = removeCouponSlotUseCase;
+        this.applyCouponUseCase = applyCouponUseCase;
         this.listCouponsUseCase = listCouponsUseCase;
         this.updateCouponUseCase = updateCouponUseCase;
     }
@@ -65,6 +67,7 @@ public class CouponController implements CouponAPI {
         final var aCommand = CreateCouponCommand.with(
                 body.code(),
                 body.percentage(),
+                body.minimumPurchaseAmount(),
                 body.expirationDate(),
                 body.isActive(),
                 body.type(),
@@ -149,6 +152,7 @@ public class CouponController implements CouponAPI {
                 id,
                 body.code(),
                 body.percentage(),
+                body.minimumPurchaseAmount(),
                 body.expirationDate()
         );
 
@@ -167,8 +171,8 @@ public class CouponController implements CouponAPI {
     }
 
     @Override
-    public ResponseEntity<?> removeCouponSlot(String code) {
-        final var aResult = this.removeCouponSlotUseCase.execute(code);
+    public ResponseEntity<?> applyCoupon(String code, ApplyCouponInput input) {
+        final var aResult = this.applyCouponUseCase.execute(ApplyCouponCommand.with(code, input.totalAmount()));
 
         LogControllerResult.logResult(
                 log,

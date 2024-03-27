@@ -4,6 +4,7 @@ public record UpdateCouponCommand(
         String id,
         String code,
         float percentage,
+        float minimumPurchase,
         String expirationDate
 ) {
 
@@ -11,8 +12,9 @@ public record UpdateCouponCommand(
             final String aId,
             final String aCode,
             final float aPercentage,
+            final float aMinimumPurchase,
             final String aExpirationDate
     ) {
-        return new UpdateCouponCommand(aId, aCode, aPercentage, aExpirationDate);
+        return new UpdateCouponCommand(aId, aCode, aPercentage, aMinimumPurchase, aExpirationDate);
     }
 }

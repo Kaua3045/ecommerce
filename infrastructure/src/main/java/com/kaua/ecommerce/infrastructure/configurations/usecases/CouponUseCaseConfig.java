@@ -13,8 +13,8 @@ import com.kaua.ecommerce.application.usecases.coupon.delete.DefaultDeleteCoupon
 import com.kaua.ecommerce.application.usecases.coupon.delete.DeleteCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.DefaultListCouponsUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.retrieve.list.ListCouponsUseCase;
-import com.kaua.ecommerce.application.usecases.coupon.slot.remove.DefaultRemoveCouponSlotUseCase;
-import com.kaua.ecommerce.application.usecases.coupon.slot.remove.RemoveCouponSlotUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.DefaultApplyCouponUseCase;
+import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.update.DefaultUpdateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.update.UpdateCouponUseCase;
 import com.kaua.ecommerce.application.usecases.coupon.validate.DefaultValidateCouponUseCase;
@@ -67,8 +67,8 @@ public class CouponUseCaseConfig {
     }
 
     @Bean
-    public RemoveCouponSlotUseCase removeCouponSlotUseCase() {
-        return new DefaultRemoveCouponSlotUseCase(couponGateway, couponSlotGateway);
+    public ApplyCouponUseCase removeCouponSlotUseCase() {
+        return new DefaultApplyCouponUseCase(couponGateway, couponSlotGateway);
     }
 
     @Bean

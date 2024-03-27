@@ -29,6 +29,7 @@ public class CouponGatewayTest {
     void givenAValidCoupon_whenCallCreate_thenShouldCreateCoupon() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now();
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -36,6 +37,7 @@ public class CouponGatewayTest {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType
@@ -49,6 +51,7 @@ public class CouponGatewayTest {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.getId().getValue());
         Assertions.assertEquals(aCode, aOutput.getCode().getValue());
         Assertions.assertEquals(aPercentage, aOutput.getPercentage());
+        Assertions.assertEquals(aMinimumPurchase, aOutput.getMinimumPurchaseAmount());
         Assertions.assertEquals(aExpirationDate, aOutput.getExpirationDate());
         Assertions.assertEquals(aIsActive, aOutput.isActive());
         Assertions.assertEquals(aType, aOutput.getType());
@@ -61,6 +64,7 @@ public class CouponGatewayTest {
     void givenAValidCode_whenCallExistsByCode_thenShouldReturnTrue() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now();
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -68,6 +72,7 @@ public class CouponGatewayTest {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType
@@ -91,6 +96,7 @@ public class CouponGatewayTest {
     void givenAValidId_whenCallFindById_thenShouldReturnCoupon() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now();
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -98,6 +104,7 @@ public class CouponGatewayTest {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType
@@ -111,6 +118,7 @@ public class CouponGatewayTest {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.get().getId().getValue());
         Assertions.assertEquals(aCode, aOutput.get().getCode().getValue());
         Assertions.assertEquals(aPercentage, aOutput.get().getPercentage());
+        Assertions.assertEquals(aMinimumPurchase, aOutput.get().getMinimumPurchaseAmount());
         Assertions.assertEquals(aExpirationDate, aOutput.get().getExpirationDate());
         Assertions.assertEquals(aIsActive, aOutput.get().isActive());
         Assertions.assertEquals(aType, aOutput.get().getType());
@@ -128,6 +136,7 @@ public class CouponGatewayTest {
     void givenAValidCoupon_whenCallUpdate_thenShouldUpdateCoupon() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now();
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -135,6 +144,7 @@ public class CouponGatewayTest {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType
@@ -150,6 +160,7 @@ public class CouponGatewayTest {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.getId().getValue());
         Assertions.assertEquals(aCode, aOutput.getCode().getValue());
         Assertions.assertEquals(aPercentage, aOutput.getPercentage());
+        Assertions.assertEquals(aMinimumPurchase, aOutput.getMinimumPurchaseAmount());
         Assertions.assertEquals(aExpirationDate, aOutput.getExpirationDate());
         Assertions.assertFalse(aOutput.isActive());
         Assertions.assertEquals(aType, aOutput.getType());
@@ -161,6 +172,7 @@ public class CouponGatewayTest {
     void givenAValidId_whenCallDelete_thenShouldDeleteCoupon() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now();
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -168,6 +180,7 @@ public class CouponGatewayTest {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType
@@ -193,6 +206,7 @@ public class CouponGatewayTest {
     void givenAValidCode_whenCallFindByCode_thenShouldReturnCoupon() {
         final var aCode = "BLACK_FRIDAY";
         final var aPercentage = 10.5f;
+        final var aMinimumPurchase = 100.0f;
         final var aExpirationDate = InstantUtils.now();
         final var aIsActive = true;
         final var aType = CouponType.UNLIMITED;
@@ -200,6 +214,7 @@ public class CouponGatewayTest {
         final var aCoupon = Coupon.newCoupon(
                 aCode,
                 aPercentage,
+                aMinimumPurchase,
                 aExpirationDate,
                 aIsActive,
                 aType
@@ -213,6 +228,7 @@ public class CouponGatewayTest {
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.get().getId().getValue());
         Assertions.assertEquals(aCode, aOutput.get().getCode().getValue());
         Assertions.assertEquals(aPercentage, aOutput.get().getPercentage());
+        Assertions.assertEquals(aMinimumPurchase, aOutput.get().getMinimumPurchaseAmount());
         Assertions.assertEquals(aExpirationDate, aOutput.get().getExpirationDate());
         Assertions.assertEquals(aIsActive, aOutput.get().isActive());
         Assertions.assertEquals(aType, aOutput.get().getType());
@@ -232,6 +248,7 @@ public class CouponGatewayTest {
         final var aCouponUnlimited = Coupon.newCoupon(
                 "Z_FREE_SHIPPING50",
                 50.0f,
+                5.0f,
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 true,
                 CouponType.UNLIMITED
@@ -282,6 +299,7 @@ public class CouponGatewayTest {
         final var aCouponUnlimited = Coupon.newCoupon(
                 "Z_FREE_SHIPPING50",
                 50.0f,
+                10.0f,
                 InstantUtils.now().plus(1, ChronoUnit.DAYS),
                 true,
                 CouponType.UNLIMITED
@@ -314,6 +332,7 @@ public class CouponGatewayTest {
         final var aCouponUnlimited = Coupon.newCoupon(
                 "Z_FREE_SHIPPING50",
                 50.0f,
+                80.0f,
                 InstantUtils.now().plus(2, ChronoUnit.HOURS),
                 true,
                 CouponType.UNLIMITED
@@ -349,6 +368,7 @@ public class CouponGatewayTest {
         final var aCouponLimited = Fixture.Coupons.limitedCouponActivated();
         final var aCouponUnlimited = Coupon.newCoupon(
                 "Z_FREE_SHIPPING50",
+                50.0f,
                 50.0f,
                 InstantUtils.now().plus(2, ChronoUnit.HOURS),
                 true,
@@ -386,6 +406,7 @@ public class CouponGatewayTest {
         final var aCouponUnlimited = Coupon.newCoupon(
                 "Z_FREE_SHIPPING50",
                 50.0f,
+                0.0f,
                 InstantUtils.now().plus(2, ChronoUnit.HOURS),
                 true,
                 CouponType.UNLIMITED

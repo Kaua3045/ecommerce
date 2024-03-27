@@ -105,6 +105,7 @@ public class ListCouponsUseCaseIT {
         final var aCouponLimited = Coupon.newCoupon(
                 "COUPON_1",
                 10.5f,
+                10.0f,
                 InstantUtils.now().plus(5, ChronoUnit.MINUTES),
                 true,
                 CouponType.LIMITED
@@ -153,6 +154,7 @@ public class ListCouponsUseCaseIT {
         final var aCouponLimited = Coupon.newCoupon(
                 "COUPON_1",
                 10.5f,
+                5.0f,
                 InstantUtils.now().plus(5, ChronoUnit.MINUTES),
                 true,
                 CouponType.LIMITED

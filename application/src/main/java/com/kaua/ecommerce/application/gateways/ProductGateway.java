@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.application.gateways;
 
+import com.kaua.ecommerce.application.gateways.responses.ProductDetails;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductColor;
 
@@ -12,6 +13,8 @@ public interface ProductGateway {
     Optional<Product> findById(String aProductID);
 
     Optional<ProductColor> findColorByName(String aColorName);
+
+    Optional<ProductDetails> findProductDetailsBySku(String aSku);
 
     Product update(Product aProduct);
 

@@ -24,13 +24,14 @@ public class OrderCouponGatewayImplTest {
     @Test
     void givenAValidCouponCode_whenCallApplyCoupon_thenCouponIsApplied() {
         final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+        final var aTotalAmount = 100f;
 
-        final var aCommand = ApplyCouponCommand.with(aCoupon.getCode().getValue(), 100f);
+        final var aCommand = ApplyCouponCommand.with(aCoupon.getCode().getValue(), aTotalAmount);
 
         Mockito.when(applyCouponUseCase.execute(aCommand))
                 .thenReturn(ApplyCouponOutput.from(aCoupon));
 
-        final var aOutput = this.orderCouponGatewayImpl.applyCoupon(aCoupon.getCode().getValue());
+        final var aOutput = this.orderCouponGatewayImpl.applyCoupon(aCoupon.getCode().getValue(), aTotalAmount);
 
         Assertions.assertEquals(aCoupon.getId().getValue(), aOutput.couponId());
         Assertions.assertEquals(aCoupon.getCode().getValue(), aOutput.couponCode());
@@ -40,13 +41,14 @@ public class OrderCouponGatewayImplTest {
     @Test
     void givenAValidCouponCode_whenCallApplyCouponButNoMoreSlot_thenThrowCouponNoMoreAvailableException() {
         final var aCoupon = Fixture.Coupons.limitedCouponActivated();
+        final var aTotalAmount = 100f;
         
-        final var aCommand = ApplyCouponCommand.with(aCoupon.getCode().getValue(), 100f);
+        final var aCommand = ApplyCouponCommand.with(aCoupon.getCode().getValue(), aTotalAmount);
 
         Mockito.when(applyCouponUseCase.execute(aCommand))
                 .thenThrow(new CouponNoMoreAvailableException());
 
         Assertions.assertThrows(CouponNoMoreAvailableException.class, () ->
-                this.orderCouponGatewayImpl.applyCoupon(aCoupon.getCode().getValue()));
+                this.orderCouponGatewayImpl.applyCoupon(aCoupon.getCode().getValue(), aTotalAmount));
     }
 }

@@ -96,7 +96,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
                 .thenReturn(Optional.of(createOrderProductDetailsOutput("bola", BigDecimal.valueOf(200.0))));
         Mockito.when(orderFreightGateway.calculateFreight(Mockito.any()))
                 .thenReturn(createOrderFreightDetails());
-        Mockito.when(orderCouponGateway.applyCoupon(aCouponCode))
+        Mockito.when(orderCouponGateway.applyCoupon(Mockito.anyString(), Mockito.anyFloat()))
                 .thenReturn(createOrderCouponOutput(aCoupon));
         Mockito.when(orderGateway.count())
                 .thenReturn(1L);
@@ -120,7 +120,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
         Mockito.verify(orderCustomerGateway, Mockito.times(1)).findByCustomerId(aCustomerId);
         Mockito.verify(orderProductGateway, Mockito.times(2)).getProductDetailsBySku(Mockito.any());
         Mockito.verify(orderFreightGateway, Mockito.times(1)).calculateFreight(Mockito.any());
-        Mockito.verify(orderCouponGateway, Mockito.times(1)).applyCoupon(aCouponCode);
+        Mockito.verify(orderCouponGateway, Mockito.times(1)).applyCoupon(Mockito.anyString(), Mockito.anyFloat());
         Mockito.verify(orderGateway, Mockito.times(1)).count();
         Mockito.verify(orderGateway, Mockito.times(1))
                 .createInBatch(argThat(it -> it.size() == aItems.size()));
@@ -201,7 +201,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
         Mockito.verify(orderCustomerGateway, Mockito.times(1)).findByCustomerId(aCustomerId);
         Mockito.verify(orderProductGateway, Mockito.times(2)).getProductDetailsBySku(Mockito.any());
         Mockito.verify(orderFreightGateway, Mockito.times(1)).calculateFreight(Mockito.any());
-        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any());
+        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any(), Mockito.anyFloat());
         Mockito.verify(orderGateway, Mockito.times(1)).count();
         Mockito.verify(orderGateway, Mockito.times(1))
                 .createInBatch(argThat(it -> it.size() == aItems.size()));
@@ -282,7 +282,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
         Mockito.verify(orderCustomerGateway, Mockito.times(1)).findByCustomerId(aCustomerId);
         Mockito.verify(orderProductGateway, Mockito.times(2)).getProductDetailsBySku(Mockito.any());
         Mockito.verify(orderFreightGateway, Mockito.times(1)).calculateFreight(Mockito.any());
-        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any());
+        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any(), Mockito.anyFloat());
         Mockito.verify(orderGateway, Mockito.times(1)).count();
         Mockito.verify(orderGateway, Mockito.times(1))
                 .createInBatch(argThat(it -> it.size() == aItems.size()));
@@ -344,7 +344,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
                 .thenReturn(Optional.of(createOrderProductDetailsOutput("bola", BigDecimal.valueOf(200.0))));
         Mockito.when(orderFreightGateway.calculateFreight(Mockito.any()))
                 .thenReturn(createOrderFreightDetails());
-        Mockito.when(orderCouponGateway.applyCoupon(aCouponCode))
+        Mockito.when(orderCouponGateway.applyCoupon(Mockito.anyString(), Mockito.anyFloat()))
                 .thenReturn(createOrderCouponOutput(aCoupon));
         Mockito.when(orderGateway.count())
                 .thenReturn(1L);
@@ -360,7 +360,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
         Mockito.verify(orderCustomerGateway, Mockito.times(1)).findByCustomerId(aCustomerId);
         Mockito.verify(orderProductGateway, Mockito.times(2)).getProductDetailsBySku(Mockito.any());
         Mockito.verify(orderFreightGateway, Mockito.times(1)).calculateFreight(Mockito.any());
-        Mockito.verify(orderCouponGateway, Mockito.times(1)).applyCoupon(Mockito.any());
+        Mockito.verify(orderCouponGateway, Mockito.times(1)).applyCoupon(Mockito.any(), Mockito.anyFloat());
         Mockito.verify(orderGateway, Mockito.times(1)).count();
         Mockito.verify(orderGateway, Mockito.times(0)).createInBatch(Mockito.any());
         Mockito.verify(orderDeliveryGateway, Mockito.times(0)).create(Mockito.any());
@@ -407,10 +407,10 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
                 .thenReturn(Optional.of(createOrderProductDetailsOutput("bola", BigDecimal.valueOf(200.0))));
         Mockito.when(orderFreightGateway.calculateFreight(Mockito.any()))
                 .thenReturn(createOrderFreightDetails());
-        Mockito.when(orderCouponGateway.applyCoupon(aCouponCode))
-                .thenReturn(createOrderCouponOutput(aCoupon));
         Mockito.when(orderGateway.count())
                 .thenReturn(1L);
+        Mockito.when(orderCouponGateway.applyCoupon(Mockito.anyString(), Mockito.anyFloat()))
+                .thenReturn(createOrderCouponOutput(aCoupon));
 
         final var aOutput = this.createOrderUseCase.execute(aCommand).getLeft();
 
@@ -421,7 +421,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
         Mockito.verify(orderCustomerGateway, Mockito.times(1)).findByCustomerId(aCustomerId);
         Mockito.verify(orderProductGateway, Mockito.times(2)).getProductDetailsBySku(Mockito.any());
         Mockito.verify(orderFreightGateway, Mockito.times(1)).calculateFreight(Mockito.any());
-        Mockito.verify(orderCouponGateway, Mockito.times(1)).applyCoupon(Mockito.any());
+        Mockito.verify(orderCouponGateway, Mockito.times(1)).applyCoupon(Mockito.any(), Mockito.anyFloat());
         Mockito.verify(orderGateway, Mockito.times(1)).count();
         Mockito.verify(orderGateway, Mockito.times(0)).createInBatch(Mockito.any());
         Mockito.verify(orderDeliveryGateway, Mockito.times(0)).create(Mockito.any());
@@ -473,7 +473,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
         Mockito.verify(orderCustomerGateway, Mockito.times(1)).findByCustomerId(aCustomerId);
         Mockito.verify(orderProductGateway, Mockito.times(0)).getProductDetailsBySku(Mockito.any());
         Mockito.verify(orderFreightGateway, Mockito.times(0)).calculateFreight(Mockito.any());
-        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any());
+        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any(), Mockito.anyFloat());
         Mockito.verify(orderGateway, Mockito.times(0)).count();
         Mockito.verify(orderGateway, Mockito.times(0)).createInBatch(Mockito.any());
         Mockito.verify(orderDeliveryGateway, Mockito.times(0)).create(Mockito.any());
@@ -531,7 +531,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
         Mockito.verify(orderCustomerGateway, Mockito.times(1)).findByCustomerId(aCustomerId);
         Mockito.verify(orderProductGateway, Mockito.times(2)).getProductDetailsBySku(Mockito.any());
         Mockito.verify(orderFreightGateway, Mockito.times(0)).calculateFreight(Mockito.any());
-        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any());
+        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any(), Mockito.anyFloat());
         Mockito.verify(orderGateway, Mockito.times(0)).count();
         Mockito.verify(orderGateway, Mockito.times(0)).createInBatch(Mockito.any());
         Mockito.verify(orderDeliveryGateway, Mockito.times(0)).create(Mockito.any());
@@ -589,7 +589,7 @@ public class CreateOrderUseCaseTest extends UseCaseTest {
         Mockito.verify(orderCustomerGateway, Mockito.times(1)).findByCustomerId(aCustomerId);
         Mockito.verify(orderProductGateway, Mockito.times(2)).getProductDetailsBySku(Mockito.any());
         Mockito.verify(orderFreightGateway, Mockito.times(0)).calculateFreight(Mockito.any());
-        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any());
+        Mockito.verify(orderCouponGateway, Mockito.times(0)).applyCoupon(Mockito.any(), Mockito.anyFloat());
         Mockito.verify(orderGateway, Mockito.times(0)).count();
         Mockito.verify(orderGateway, Mockito.times(0)).createInBatch(Mockito.any());
         Mockito.verify(orderDeliveryGateway, Mockito.times(0)).create(Mockito.any());

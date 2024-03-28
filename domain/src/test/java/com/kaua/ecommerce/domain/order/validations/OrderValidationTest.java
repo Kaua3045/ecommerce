@@ -18,8 +18,6 @@ public class OrderValidationTest extends UnitTest {
     void givenAInvalidDuplicatedSku_whenCallNewOrder_shouldThrowsNotAcceptDuplicatedItemsException() {
         final var aSequence = 0;
         final var aCustomerId = "aCustomerId";
-        final var aCouponCode = "aCouponCode";
-        final var aCouponPercentage = 10.0F;
         final var aOrderCode = OrderCode.create(aSequence);
 
         final var expectedErrorMessage = "The item with SKU aSkuOne is already in the order";
@@ -64,8 +62,6 @@ public class OrderValidationTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPaymentId
         );
@@ -80,8 +76,6 @@ public class OrderValidationTest extends UnitTest {
     void givenInvalidBlankCustomerId_whenCallNewOrder_shouldReturnDomainException() {
         final var aSequence = 0;
         final var aCustomerId = " ";
-        final var aCouponCode = "aCouponCode";
-        final var aCouponPercentage = 10.0F;
         final var aOrderCode = OrderCode.create(aSequence);
         final var aItem = OrderItem.create(
                 "aOrderId",
@@ -113,8 +107,6 @@ public class OrderValidationTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
@@ -132,8 +124,6 @@ public class OrderValidationTest extends UnitTest {
     void givenInvalidNullCustomerId_whenCallNewOrder_shouldReturnDomainException() {
         final var aSequence = 0;
         final String aCustomerId = null;
-        final var aCouponCode = "aCouponCode";
-        final var aCouponPercentage = 10.0F;
         final var aOrderCode = OrderCode.create(aSequence);
         final var aItem = OrderItem.create(
                 "aOrderId",
@@ -165,8 +155,6 @@ public class OrderValidationTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
@@ -181,11 +169,11 @@ public class OrderValidationTest extends UnitTest {
     }
 
     @Test
-    void givenInvalidBlankCouponCode_whenCallNewOrder_shouldReturnDomainException() {
+    void givenInvalidBlankCouponCode_whenCallApplyCoupon_shouldReturnDomainException() {
         final var aSequence = 0;
         final var aCustomerId = "aCustomerId";
         final var aCouponCode = " ";
-        final var aCouponPercentage = 10.0F;
+        final var aCouponPercentage = 0.0F;
         final var aOrderCode = OrderCode.create(aSequence);
         final var aItem = OrderItem.create(
                 "aOrderId",
@@ -217,13 +205,12 @@ public class OrderValidationTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
         aOrder.addItem(aItem);
         aOrder.calculateTotalAmount(aOrderDelivery);
+        aOrder.applyCoupon(aCouponCode, aCouponPercentage);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aOrder.validate(aTestValidationHandler);
@@ -233,7 +220,7 @@ public class OrderValidationTest extends UnitTest {
     }
 
     @Test
-    void givenInvalidNegativeCouponPercentage_whenCallNewOrder_shouldReturnDomainException() {
+    void givenInvalidNegativeCouponPercentage_whenCallApplyCoupon_shouldReturnDomainException() {
         final var aSequence = 0;
         final var aCustomerId = "aCustomerId";
         final var aCouponCode = "aCouponCode";
@@ -269,13 +256,12 @@ public class OrderValidationTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
         aOrder.addItem(aItem);
         aOrder.calculateTotalAmount(aOrderDelivery);
+        aOrder.applyCoupon(aCouponCode, aCouponPercentage);
 
         final var aTestValidationHandler = new TestValidationHandler();
         aOrder.validate(aTestValidationHandler);
@@ -288,8 +274,6 @@ public class OrderValidationTest extends UnitTest {
     void givenInvalidNullOrderDeliveryId_whenCallNewOrder_shouldReturnDomainException() {
         final var aSequence = 0;
         final var aCustomerId = "aCustomerId";
-        final var aCouponCode = "aCouponCode";
-        final var aCouponPercentage = 10.0F;
         final var aOrderCode = OrderCode.create(aSequence);
         final var aOrderPayment = OrderPayment.newOrderPayment(
                 "aPaymentMethodId",
@@ -303,8 +287,6 @@ public class OrderValidationTest extends UnitTest {
                 () -> Order.newOrder(
                         aOrderCode,
                         aCustomerId,
-                        aCouponCode,
-                        aCouponPercentage,
                         null,
                         aOrderPayment.getId()
                 ));
@@ -317,8 +299,6 @@ public class OrderValidationTest extends UnitTest {
     void givenInvalidNullOrderPaymentId_whenCallNewOrder_shouldReturnDomainException() {
         final var aSequence = 0;
         final var aCustomerId = "aCustomerId";
-        final var aCouponCode = "aCouponCode";
-        final var aCouponPercentage = 10.0F;
         final var aOrderCode = OrderCode.create(aSequence);
         final var aItem = OrderItem.create(
                 "aOrderId",
@@ -346,8 +326,6 @@ public class OrderValidationTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 null
         );
@@ -393,8 +371,6 @@ public class OrderValidationTest extends UnitTest {
     void givenInvalidZeroOrderItem_whenCallValidate_shouldReturnDomainException() {
         final var aSequence = 0;
         final var aCustomerId = "aCustomerId";
-        final var aCouponCode = "aCouponCode";
-        final var aCouponPercentage = 10.0F;
         final var aOrderCode = OrderCode.create(aSequence);
         final var aOrderDelivery = OrderDelivery.newOrderDelivery(
                 "sedex",
@@ -419,8 +395,6 @@ public class OrderValidationTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
@@ -436,8 +410,6 @@ public class OrderValidationTest extends UnitTest {
     void givenValidOrderWithItemsButNotCallCalculate_whenCallValidate_shouldReturnDomainException() {
         final var aSequence = 0;
         final var aCustomerId = "aCustomerId";
-        final var aCouponCode = "aCouponCode";
-        final var aCouponPercentage = 10.0F;
         final var aOrderCode = OrderCode.create(aSequence);
         final var aItem = OrderItem.create(
                 "aOrderId",
@@ -469,8 +441,6 @@ public class OrderValidationTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );

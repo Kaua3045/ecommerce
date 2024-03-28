@@ -26,11 +26,11 @@ public class Order extends AggregateRoot<OrderID> {
     private final OrderStatus orderStatus;
     private final Set<OrderItem> orderItems;
     private final String customerId;
-    private final String couponCode;
-    private final float couponPercentage;
     private final OrderDeliveryID orderDeliveryId;
     private final OrderPaymentID orderPaymentId;
     private final Instant createdAt;
+    private String couponCode;
+    private float couponPercentage;
     private BigDecimal totalAmount;
     private Instant updatedAt;
 
@@ -66,8 +66,6 @@ public class Order extends AggregateRoot<OrderID> {
     public static Order newOrder(
             final OrderCode aOrderCode,
             final String aCustomerId,
-            final String aCouponCode,
-            final float aCouponPercentage,
             final OrderDelivery aOrderDelivery,
             final OrderPaymentID aOrderPaymentId
     ) {
@@ -86,8 +84,8 @@ public class Order extends AggregateRoot<OrderID> {
                 new HashSet<>(),
                 BigDecimal.ZERO,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
+                null,
+                0.0f,
                 aOrderDelivery.getId(),
                 aOrderPaymentId,
                 aNow,
@@ -151,7 +149,15 @@ public class Order extends AggregateRoot<OrderID> {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         this.totalAmount = this.totalAmount.add(BigDecimal.valueOf(aOrderDelivery.getFreightPrice()));
+    }
 
+    public void applyCoupon(final String aCouponCode, final float aCouponPercentage) {
+        this.couponCode = aCouponCode;
+        this.couponPercentage = aCouponPercentage;
+        applyCouponDiscount();
+    }
+
+    private void applyCouponDiscount() {
         if (this.getCouponCode().isPresent()) {
             this.totalAmount = this.totalAmount.subtract(this.totalAmount
                     .multiply(BigDecimal.valueOf(this.couponPercentage / 100)));

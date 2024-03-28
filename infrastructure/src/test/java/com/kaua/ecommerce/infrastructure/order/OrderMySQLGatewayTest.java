@@ -55,8 +55,6 @@ public class OrderMySQLGatewayTest {
         final var aOrder = Order.newOrder(
                 OrderCode.create(1L),
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
@@ -68,6 +66,7 @@ public class OrderMySQLGatewayTest {
                 BigDecimal.valueOf(10.0)
         ));
         aOrder.calculateTotalAmount(aOrderDelivery);
+        aOrder.applyCoupon(aCouponCode, aCouponPercentage);
 
         Assertions.assertEquals(0, this.orderJpaEntityRepository.count());
         Assertions.assertEquals(0, this.orderDeliveryJpaEntityRepository.count());

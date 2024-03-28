@@ -405,8 +405,6 @@ public final class Fixture {
         private static final Order ORDER_WITH_COUPON = Order.newOrder(
                 OrderCode.create(faker.random().nextLong(0, 999999)),
                 IdUtils.generate(),
-                "coupon-code",
-                10.0f,
                 ORDER_DELIVERY,
                 OrderPaymentID.unique()
         );
@@ -420,8 +418,6 @@ public final class Fixture {
         private static final Order ORDER_WITHOUT_COUPON = Order.newOrder(
                 OrderCode.create(faker.random().nextLong(0, 999999)),
                 IdUtils.generate(),
-                null,
-                0.0f,
                 ORDER_DELIVERY,
                 OrderPaymentID.unique()
         );
@@ -438,6 +434,7 @@ public final class Fixture {
                     BigDecimal.valueOf(100.0)
             ));
             ORDER_WITH_COUPON.calculateTotalAmount(ORDER_DELIVERY);
+            ORDER_WITH_COUPON.applyCoupon("BLACK_FRIDAY", 10.0f);
             return Order.with(ORDER_WITH_COUPON);
         }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.exceptions.OnlyOneBannerImagePermittedException;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
+import com.kaua.ecommerce.application.gateways.responses.ProductDetails;
 import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesOutput;
 import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesUseCase;
 import com.kaua.ecommerce.application.usecases.product.attributes.remove.RemoveProductAttributesUseCase;
@@ -15,6 +16,7 @@ import com.kaua.ecommerce.application.usecases.product.media.remove.RemoveProduc
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageOutput;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
+import com.kaua.ecommerce.application.usecases.product.retrieve.details.GetProductDetailsBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.product.retrieve.get.GetProductByIdOutput;
 import com.kaua.ecommerce.application.usecases.product.retrieve.get.GetProductByIdUseCase;
 import com.kaua.ecommerce.application.usecases.product.search.retrieve.list.ListProductsOutput;
@@ -58,8 +60,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.argThat;
 
 @ControllerTest(controllers = ProductAPI.class)
@@ -100,6 +101,9 @@ public class ProductAPITest {
 
     @MockBean
     private RemoveProductAttributesUseCase removeProductAttributesUseCase;
+
+    @MockBean
+    private GetProductDetailsBySkuUseCase getProductDetailsBySkuUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateProduct_thenReturnStatusOkAndProductId() throws Exception {
@@ -1532,5 +1536,40 @@ public class ProductAPITest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(removeProductAttributesUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidSku_whenCallGetProductDetailsBySku_shouldReturnProductDetails() throws Exception {
+        final var aProduct = Fixture.Products.tshirt();
+
+        final var aAttribute = aProduct.getAttributes().stream().findFirst().get();
+        final var aSku = aAttribute.getSku();
+
+        final var aProductDetails = new ProductDetails(
+                aSku,
+                aProduct.getPrice(),
+                aAttribute.getSize().getWeight(),
+                aAttribute.getSize().getWidth(),
+                aAttribute.getSize().getHeight(),
+                aAttribute.getSize().getLength()
+        );
+
+        Mockito.when(getProductDetailsBySkuUseCase.execute(Mockito.any()))
+                .thenReturn(aProductDetails);
+
+        final var request = MockMvcRequestBuilders.get("/v1/products/details/{sku}", aSku)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sku", equalTo(aSku)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.price", equalTo(aProduct.getPrice().doubleValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.weight").value(is(aAttribute.getSize().getWeight()), Double.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.width").value(is(aAttribute.getSize().getWidth()), Double.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.height").value(is(aAttribute.getSize().getHeight()), Double.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length").value(is(aAttribute.getSize().getLength()), Double.class));
+
+        Mockito.verify(getProductDetailsBySkuUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 }

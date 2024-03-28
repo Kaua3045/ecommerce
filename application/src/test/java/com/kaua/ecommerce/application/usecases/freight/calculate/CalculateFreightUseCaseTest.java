@@ -94,6 +94,45 @@ public class CalculateFreightUseCaseTest extends UseCaseTest {
     }
 
     @Test
+    void givenAValidCommandWithTwoProductWithSameMeasures_whenCallCalculateFreight_thenShouldReturnFreight() {
+        final var aZipCode = "12345678";
+        final var aType = "PAC";
+        final var aHeight = 15.0;
+        final var aWidth = 30.0;
+        final var aLength = 45.0;
+        final var aWeight = 55.5;
+
+        final var aFreight = Freight.newFreight(aZipCode, FreightType.PAC, 10.0f, 3);
+
+        final var aCommand = CalculateFreightCommand.with(
+                aZipCode,
+                aType,
+                Set.of(CalculateFreightItemsCommand.with(
+                                aWeight,
+                                aWidth,
+                                aHeight,
+                                aLength
+                        ),
+                        CalculateFreightItemsCommand.with(
+                                1.0f,
+                                aWidth,
+                                aHeight,
+                                aLength
+                        ))
+        );
+
+        Mockito.when(this.freightGateway.calculateFreight(Mockito.any()))
+                .thenReturn(aFreight);
+
+        final var aOutput = this.calculateFreightUseCase.execute(aCommand);
+
+        Assertions.assertEquals(aFreight.getCep(), aOutput.getCep());
+        Assertions.assertEquals(aFreight.getType(), aOutput.getType());
+        Assertions.assertEquals(aFreight.getPrice(), aOutput.getPrice());
+        Assertions.assertEquals(aFreight.getDeadline(), aOutput.getDeadline());
+    }
+
+    @Test
     void givenAnInvalidType_whenCallCalculateFreight_thenShouldThrowDomainException() {
         final var aZipCode = "12345678";
         final var aType = "INVALID";

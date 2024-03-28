@@ -100,4 +100,36 @@ public class OrderDeliveryTest extends UnitTest {
         Assertions.assertFalse(aOrderDeliveryId.equals(""));
         Assertions.assertEquals(aOrderDeliveryId.hashCode(), anotherOrderDeliveryId.hashCode());
     }
+
+    @Test
+    void givenAOrderDelivery_whenCallToString_shouldReturnStringRepresentation() {
+        final var aOrderDelivery = OrderDelivery.newOrderDelivery(
+                "sedex",
+                5.0F,
+                5,
+                "aStreet",
+                "235",
+                null,
+                "aDistrict",
+                "aCity",
+                "aState",
+                "aZipCode"
+        );
+
+        final var aStringRepresentation = aOrderDelivery.toString();
+
+        Assertions.assertNotNull(aStringRepresentation);
+        Assertions.assertTrue(aStringRepresentation.contains("OrderDelivery("));
+        Assertions.assertTrue(aStringRepresentation.contains("id='"));
+        Assertions.assertTrue(aStringRepresentation.contains("freightType=sedex"));
+        Assertions.assertTrue(aStringRepresentation.contains("freightPrice=5.0"));
+        Assertions.assertTrue(aStringRepresentation.contains("deliveryEstimated=5"));
+        Assertions.assertTrue(aStringRepresentation.contains("street='aStreet'"));
+        Assertions.assertTrue(aStringRepresentation.contains("number='235'"));
+        Assertions.assertTrue(aStringRepresentation.contains("complement='null'"));
+        Assertions.assertTrue(aStringRepresentation.contains("district='aDistrict'"));
+        Assertions.assertTrue(aStringRepresentation.contains("city='aCity'"));
+        Assertions.assertTrue(aStringRepresentation.contains("state='aState'"));
+        Assertions.assertTrue(aStringRepresentation.contains("zipCode='aZipCode'"));
+    }
 }

@@ -24,6 +24,7 @@ public class OrderController implements OrderAPI {
 
     @Override
     public ResponseEntity<?> createOrder(CreateOrderInput body) {
+        // TODO: In the future, send body to a topic in Kafka and return 201 to the client, receive in kafka and process the order in async
         final var aCommand = body.toCommand();
 
         final var aResult = this.createOrderUseCase.execute(aCommand);

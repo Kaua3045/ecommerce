@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.infrastructure.api.controllers;
 
+import com.kaua.ecommerce.application.gateways.responses.ProductDetails;
 import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesCommand;
 import com.kaua.ecommerce.application.usecases.product.attributes.add.AddProductAttributesUseCase;
 import com.kaua.ecommerce.application.usecases.product.attributes.remove.RemoveProductAttributesCommand;
@@ -10,6 +11,7 @@ import com.kaua.ecommerce.application.usecases.product.media.remove.RemoveProduc
 import com.kaua.ecommerce.application.usecases.product.media.remove.RemoveProductImageUseCase;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageCommand;
 import com.kaua.ecommerce.application.usecases.product.media.upload.UploadProductImageUseCase;
+import com.kaua.ecommerce.application.usecases.product.retrieve.details.GetProductDetailsBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.product.retrieve.get.GetProductByIdUseCase;
 import com.kaua.ecommerce.application.usecases.product.search.retrieve.list.ListProductsUseCase;
 import com.kaua.ecommerce.application.usecases.product.update.UpdateProductCommand;
@@ -52,6 +54,7 @@ public class ProductController implements ProductAPI {
     private final RemoveProductImageUseCase removeProductImageUseCase;
     private final AddProductAttributesUseCase addProductAttributesUseCase;
     private final RemoveProductAttributesUseCase removeProductAttributesUseCase;
+    private final GetProductDetailsBySkuUseCase getProductDetailsBySkuUseCase;
 
     public ProductController(
             final CreateProductUseCase createProductUseCase,
@@ -63,7 +66,8 @@ public class ProductController implements ProductAPI {
             final ListProductsUseCase listProductsUseCase,
             final RemoveProductImageUseCase removeProductImageUseCase,
             final AddProductAttributesUseCase addProductAttributesUseCase,
-            final RemoveProductAttributesUseCase removeProductAttributesUseCase
+            final RemoveProductAttributesUseCase removeProductAttributesUseCase,
+            final GetProductDetailsBySkuUseCase getProductDetailsBySkuUseCase
     ) {
         this.createProductUseCase = createProductUseCase;
         this.uploadProductImageUseCase = uploadProductImageUseCase;
@@ -75,6 +79,7 @@ public class ProductController implements ProductAPI {
         this.removeProductImageUseCase = removeProductImageUseCase;
         this.addProductAttributesUseCase = addProductAttributesUseCase;
         this.removeProductAttributesUseCase = removeProductAttributesUseCase;
+        this.getProductDetailsBySkuUseCase = getProductDetailsBySkuUseCase;
     }
 
     @Override
@@ -104,6 +109,11 @@ public class ProductController implements ProductAPI {
     @Override
     public GetProductResponse getProductById(String id) {
         return ProductApiPresenter.present(this.getProductByIdUseCase.execute(id));
+    }
+
+    @Override
+    public ProductDetails getProductDetailsBySku(String sku) {
+        return this.getProductDetailsBySkuUseCase.execute(sku);
     }
 
     @Override

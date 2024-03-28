@@ -2,7 +2,7 @@ package com.kaua.ecommerce.application.gateways.order;
 
 public interface OrderCouponGateway {
 
-    OrderCouponApplyOutput applyCoupon(String couponCode);
+    OrderCouponApplyOutput applyCoupon(String couponCode, float totalAmount);
 
     record OrderCouponApplyOutput(
             String couponId,

@@ -56,4 +56,13 @@ public class OrderPayment extends AggregateRoot<OrderPaymentID> {
     public int getInstallments() {
         return installments;
     }
+
+    @Override
+    public String toString() {
+        return "OrderPayment(" +
+                "id='" + getId().getValue() + '\'' +
+                ", paymentMethodId=" + paymentMethodId +
+                ", installments=" + installments +
+                ')';
+    }
 }

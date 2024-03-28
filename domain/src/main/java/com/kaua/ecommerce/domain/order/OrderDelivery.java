@@ -146,4 +146,21 @@ public class OrderDelivery extends AggregateRoot<OrderDeliveryID> {
     public String getZipCode() {
         return zipCode;
     }
+
+    @Override
+    public String toString() {
+        return "OrderDelivery(" +
+                "id='" + getId().getValue() + '\'' +
+                ", freightType=" + freightType +
+                ", freightPrice=" + freightPrice +
+                ", deliveryEstimated=" + deliveryEstimated +
+                ", street='" + street + '\'' +
+                ", number='" + number + '\'' +
+                ", complement='" + complement + '\'' +
+                ", district='" + district + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ')';
+    }
 }

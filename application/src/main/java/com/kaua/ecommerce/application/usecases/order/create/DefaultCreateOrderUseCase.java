@@ -4,6 +4,7 @@ import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.order.*;
+import com.kaua.ecommerce.application.gateways.order.OrderCouponGateway.OrderCouponApplyOutput;
 import com.kaua.ecommerce.domain.customer.Customer;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
@@ -59,27 +60,27 @@ public class DefaultCreateOrderUseCase extends CreateOrderUseCase {
         final var aOrderProductDetails = getOrderProductsDetails(input);
         final var aFreight = getCalculateFreight(aOrderProductDetails, aCustomer, input.freightType());
 
-        // In microservices, applyCoupon call an external service and possible failure point
-        final var aCoupon = input.getCouponCode().map(this.orderCouponGateway::applyCoupon);
         final var aOrderDelivery = createOrderDelivery(aFreight, aCustomer);
         final var aOrderPayment = createOrderPayment(input);
 
         final var aOrderCode = OrderCode.create(this.orderGateway.count());
-        final var aCouponCode = aCoupon.map(OrderCouponGateway.OrderCouponApplyOutput::couponCode)
-                .orElse(null);
-        final var aCouponPercentage = aCoupon.map(OrderCouponGateway.OrderCouponApplyOutput::couponPercentage)
-                .orElse(0.0f);
-
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomer.customerId(),
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
         addOrderItems(input, aOrderProductDetails, aOrder);
         aOrder.calculateTotalAmount(aOrderDelivery);
+
+        // In microservices, applyCoupon call an external service and possible failure point
+        final var aCoupon = input.getCouponCode().map(it -> applyCoupon(it, aOrder));
+
+        aOrder.applyCoupon(
+                aCoupon.map(OrderCouponApplyOutput::couponCode)
+                        .orElse(null),
+                aCoupon.map(OrderCouponApplyOutput::couponPercentage)
+                        .orElse(0.0f));
 
         validateOrderComponents(aOrderDelivery, aNotification, aOrderPayment, aOrder);
 
@@ -100,6 +101,10 @@ public class DefaultCreateOrderUseCase extends CreateOrderUseCase {
         }
 
         return Either.right(CreateOrderOutput.from(aOrder));
+    }
+
+    private OrderCouponApplyOutput applyCoupon(String aCouponCode, Order aOrder) {
+        return this.orderCouponGateway.applyCoupon(aCouponCode, aOrder.getTotalAmount().floatValue());
     }
 
     private Set<OrderProductGateway.OrderProductDetails> getOrderProductsDetails(CreateOrderCommand input) {

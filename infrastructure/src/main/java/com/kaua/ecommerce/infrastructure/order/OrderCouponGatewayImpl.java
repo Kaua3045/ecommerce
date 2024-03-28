@@ -17,9 +17,8 @@ public class OrderCouponGatewayImpl implements OrderCouponGateway {
     }
 
     @Override
-    public OrderCouponApplyOutput applyCoupon(String couponCode) {
-        // TODO - Implement this method to receive total amount from order to validate coupon and apply it
-        final var aCommand = ApplyCouponCommand.with(couponCode, 100f);
+    public OrderCouponApplyOutput applyCoupon(final String couponCode, final float totalAmount) {
+        final var aCommand = ApplyCouponCommand.with(couponCode, totalAmount);
         final var aOutput = this.applyCouponUseCase.execute(aCommand);
         return new OrderCouponApplyOutput(
                 aOutput.couponId(),

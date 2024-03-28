@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -66,7 +67,7 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAValidInventoryCreatedRollbackBySkusEvent_whenReceiveThrowsExceptionAndSendToDLT_shouldResendToPrimaryTopic() throws InterruptedException, ExecutionException {
+    void givenAValidInventoryCreatedRollbackBySkusEvent_whenReceiveThrowsExceptionAndSendToDLT_shouldResendToPrimaryTopic() throws InterruptedException, ExecutionException, TimeoutException {
         final var expectedMaxAttempts = 4;
         final var expectedMaxDltAttempts = 1;
         final var expectedMainTopic = "inventory-topic";
@@ -94,8 +95,7 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
             return null;
         }).when(inventoryEventListener).onDltMessage(Mockito.any(), Mockito.any(), Mockito.any());
 
-        producer().send(new ProducerRecord<>(inventoryTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(inventoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -167,8 +167,7 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(removeInventoryBySkuUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(inventoryTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(inventoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -178,15 +177,14 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() {
+    void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() throws ExecutionException, InterruptedException, TimeoutException {
         // given
         final var aOutboxEntity = OutboxEventEntity.from(new
                 TestListenerDomainEvent(InventoryID.unique().getValue()));
         final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEntity, aOutboxEntity, aSource(), Operation.CREATE)));
 
         // when
-        producer().send(new ProducerRecord<>(inventoryTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(inventoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         // then
         Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(0))

@@ -34,7 +34,9 @@ import org.springframework.kafka.support.Acknowledgment;
 
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -65,7 +67,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     private ArgumentCaptor<ConsumerRecordMetadata> metadata;
 
     @Test
-    void givenAValidProductDeletedEvent_whenReceiveThrowsExceptionAndSendToDLT_shouldNotDeleteProduct() throws InterruptedException {
+    void givenAValidProductDeletedEvent_whenReceiveThrowsExceptionAndSendToDLT_shouldNotDeleteProduct() throws InterruptedException, ExecutionException, TimeoutException {
         final var expectedMaxAttempts = 4;
         final var expectedMaxDltAttempts = 1;
         final var expectedMainTopic = "product-topic";
@@ -92,8 +94,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
             return null;
         }).when(productEventListener).onDltMessage(Mockito.any(), Mockito.any(), Mockito.any());
 
-        producer().send(new ProducerRecord<>(productTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(productTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -129,8 +130,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(saveProductUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(productTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(productTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -158,8 +158,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
                 });
 
         // when
-        producer().send(new ProducerRecord<>(productTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(productTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -192,8 +191,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(saveProductUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(productTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(productTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -222,8 +220,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
                 });
 
         // when
-        producer().send(new ProducerRecord<>(productTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(productTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -254,8 +251,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(removeProductUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(productTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(productTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -264,7 +260,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAnInvalidProductDeletedEventOccurredIsOld_whenReceiveButNotProcessThisSendDLT_shouldNotProcessProductDeletedEvent() throws InterruptedException {
+    void givenAnInvalidProductDeletedEventOccurredIsOld_whenReceiveButNotProcessThisSendDLT_shouldNotProcessProductDeletedEvent() throws InterruptedException, ExecutionException, TimeoutException {
         // given
         final var aProduct = Fixture.Products.book();
         final var aProductEvent = ProductDeletedEvent.from(aProduct);
@@ -281,8 +277,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
                 });
 
         // when
-        producer().send(new ProducerRecord<>(productTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(productTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -296,15 +291,14 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() {
+    void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() throws ExecutionException, InterruptedException, TimeoutException {
         // given
         final var aOutboxEntity = OutboxEventEntity.from(new
                 TestListenerDomainEvent(ProductID.unique().getValue()));
         final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEntity, aOutboxEntity, aSource(), Operation.CREATE)));
 
         // when
-        producer().send(new ProducerRecord<>(productTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(productTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         // then
         Mockito.verify(productGateway, Mockito.times(0)).findById(Mockito.any());
@@ -381,7 +375,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAnInvalidProductUpdatedEventOccurredIsOld_whenReceiveButNotProcessThisSendDLT_shouldNotProcessProductUpdatedEvent() throws InterruptedException {
+    void givenAnInvalidProductUpdatedEventOccurredIsOld_whenReceiveButNotProcessThisSendDLT_shouldNotProcessProductUpdatedEvent() throws InterruptedException, ExecutionException, TimeoutException {
         // given
         final var aProduct = Fixture.Products.book();
         final var aProductEvent = ProductUpdatedEvent.from(aProduct);
@@ -400,8 +394,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
                 });
 
         // when
-        producer().send(new ProducerRecord<>(productTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(productTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 

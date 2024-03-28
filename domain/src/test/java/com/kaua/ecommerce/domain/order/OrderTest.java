@@ -17,9 +17,9 @@ public class OrderTest extends UnitTest {
     void givenAValidValues_whenCallNewOrder_shouldCreateNewOrder() {
         final var aSequence = 0;
         final var aCustomerId = "aCustomerId";
+        final var aOrderCode = OrderCode.create(aSequence);
         final var aCouponCode = "aCouponCode";
         final var aCouponPercentage = 10.0F;
-        final var aOrderCode = OrderCode.create(aSequence);
 
         final var aOrderDelivery = OrderDelivery.newOrderDelivery(
                 "sedex",
@@ -42,8 +42,6 @@ public class OrderTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
@@ -67,6 +65,7 @@ public class OrderTest extends UnitTest {
         aOrder.addItem(aItemTwo);
 
         aOrder.calculateTotalAmount(aOrderDelivery);
+        aOrder.applyCoupon(aCouponCode, aCouponPercentage);
 
         Assertions.assertEquals(aOrderCode, aOrder.getOrderCode());
         Assertions.assertEquals(2, aOrder.getOrderItems().size());
@@ -175,8 +174,6 @@ public class OrderTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                null,
-                0,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
@@ -267,8 +264,6 @@ public class OrderTest extends UnitTest {
         final var aOrder = Order.newOrder(
                 aOrderCode,
                 aCustomerId,
-                aCouponCode,
-                aCouponPercentage,
                 aOrderDelivery,
                 aOrderPayment.getId()
         );
@@ -292,6 +287,7 @@ public class OrderTest extends UnitTest {
         aOrder.addItem(aItemTwo);
 
         aOrder.calculateTotalAmount(aOrderDelivery);
+        aOrder.applyCoupon(aCouponCode, aCouponPercentage);
 
         final var aExpected = "Order(" +
                 "id=" + aOrder.getId().getValue() +
@@ -332,5 +328,15 @@ public class OrderTest extends UnitTest {
         Assertions.assertEquals(aOrder.getCreatedAt(), aOrderWith.getCreatedAt());
         Assertions.assertEquals(aOrder.getUpdatedAt(), aOrderWith.getUpdatedAt());
         Assertions.assertDoesNotThrow(() -> aOrderWith.validate(new ThrowsValidationHandler()));
+    }
+
+    @Test
+    void givenAValidOrder_whenCallApplyCouponWithNull_shouldNotApplyCoupon() {
+        final var aOrder = Fixture.Orders.orderWithoutCoupon();
+
+        aOrder.applyCoupon(null, 0.0F);
+
+        Assertions.assertTrue(aOrder.getCouponCode().isEmpty());
+        Assertions.assertEquals(0.0f, aOrder.getCouponPercentage());
     }
 }

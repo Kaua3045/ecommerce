@@ -1,5 +1,6 @@
 package com.kaua.ecommerce.infrastructure.api;
 
+import com.kaua.ecommerce.application.gateways.responses.ProductDetails;
 import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.infrastructure.product.models.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,6 +59,18 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
     })
     GetProductResponse getProductById(@PathVariable String id);
+
+    @GetMapping(
+            value = "details/{sku}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Get product details by it's sku")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product details found successfully"),
+            @ApiResponse(responseCode = "404", description = "Product details was not found"),
+            @ApiResponse(responseCode = "500", description = "An internal server error was thrown")
+    })
+    ProductDetails getProductDetailsBySku(@PathVariable String sku);
 
     @PostMapping(
             value = "{id}/medias/{type}",

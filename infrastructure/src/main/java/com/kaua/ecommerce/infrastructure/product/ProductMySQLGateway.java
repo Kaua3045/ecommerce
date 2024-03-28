@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.infrastructure.product;
 
 import com.kaua.ecommerce.application.gateways.ProductGateway;
+import com.kaua.ecommerce.application.gateways.responses.ProductDetails;
 import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductColor;
 import com.kaua.ecommerce.infrastructure.product.persistence.ProductColorJpaEntity;
@@ -50,6 +51,11 @@ public class ProductMySQLGateway implements ProductGateway {
     public Optional<ProductColor> findColorByName(String aColorName) {
         return this.productColorEntityRepository.findByColorIgnoreCase(aColorName)
                 .map(ProductColorJpaEntity::toDomain);
+    }
+
+    @Override
+    public Optional<ProductDetails> findProductDetailsBySku(String aSku) {
+        return this.productEntityRepository.findFirstProductDetailsBySku(aSku);
     }
 
     @Override

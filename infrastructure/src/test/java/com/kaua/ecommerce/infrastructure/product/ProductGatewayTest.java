@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Set;
 
 @DatabaseGatewayTest
@@ -232,5 +233,29 @@ public class ProductGatewayTest {
         this.productGateway.delete(aProductId.getValue());
 
         Assertions.assertEquals(0, this.productRepository.count());
+    }
+
+    @Test
+    void givenAValidSku_whenCallFindProductDetailsBySku_shouldReturnProductDetails() {
+        this.productRepository.saveAndFlush(ProductJpaEntity.toEntity(Fixture.Products.book()));
+
+        final var aProduct = Fixture.Products.tshirt();
+        aProduct.addAttribute(Fixture.Products.productAttributes(aProduct.getName()));
+
+        final var aAttribute = aProduct.getAttributes().stream().findFirst().get();
+        final var aSku = aAttribute.getSku();
+
+        this.productRepository.save(ProductJpaEntity.toEntity(aProduct));
+
+        Assertions.assertEquals(2, this.productRepository.count());
+
+        final var aPersistedProductDetails = this.productGateway.findProductDetailsBySku(aSku).get();
+
+        Assertions.assertEquals(aAttribute.getSku(), aPersistedProductDetails.sku());
+        Assertions.assertEquals(aProduct.getPrice().setScale(2, RoundingMode.HALF_UP), aPersistedProductDetails.price());
+        Assertions.assertEquals(aAttribute.getSize().getWeight(), aPersistedProductDetails.weight());
+        Assertions.assertEquals(aAttribute.getSize().getWidth(), aPersistedProductDetails.width());
+        Assertions.assertEquals(aAttribute.getSize().getHeight(), aPersistedProductDetails.height());
+        Assertions.assertEquals(aAttribute.getSize().getLength(), aPersistedProductDetails.length());
     }
 }

@@ -22,7 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -54,8 +56,7 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(saveCategoryUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(categoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -80,8 +81,7 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(saveCategoryUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(categoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -107,8 +107,7 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(removeCategoryUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(categoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -117,15 +116,14 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() {
+    void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() throws ExecutionException, InterruptedException, TimeoutException {
         // given
         final var aOutboxEntity = OutboxEventEntity.from(new
                 TestListenerDomainEvent(CategoryID.unique().getValue()));
         final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEntity, aOutboxEntity, aSource(), Operation.CREATE)));
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage));
-        producer().flush();
+        producer().send(new ProducerRecord<>(categoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
 
         // then
         Mockito.verify(saveCategoryUseCase, Mockito.times(0)).execute(Mockito.any());

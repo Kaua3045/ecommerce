@@ -4,6 +4,8 @@ import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.application.usecases.product.search.remove.RemoveProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.search.save.SaveProductUseCase;
 import com.kaua.ecommerce.domain.Fixture;
+import com.kaua.ecommerce.domain.category.CategoryID;
+import com.kaua.ecommerce.domain.product.Product;
 import com.kaua.ecommerce.domain.product.ProductID;
 import com.kaua.ecommerce.domain.product.events.ProductCreatedEvent;
 import com.kaua.ecommerce.domain.product.events.ProductDeletedEvent;
@@ -32,7 +34,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.adapter.ConsumerRecordMetadata;
 import org.springframework.kafka.support.Acknowledgment;
 
+import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -262,7 +266,13 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     @Test
     void givenAnInvalidProductDeletedEventOccurredIsOld_whenReceiveButNotProcessThisSendDLT_shouldNotProcessProductDeletedEvent() throws InterruptedException, ExecutionException, TimeoutException {
         // given
-        final var aProduct = Fixture.Products.book();
+        final var aProduct = Product.newProduct(
+                "Refactoring: Improving the Design of Existing Code",
+                null,
+                BigDecimal.valueOf(64.99),
+                CategoryID.unique(),
+                Set.of(Fixture.Products.
+                        productAttributes("Refactoring: Improving the Design of Existing Code")));
         final var aProductEvent = ProductDeletedEvent.from(aProduct);
         final var aOutboxEvent = OutboxEventEntity.from(aProductEvent);
 

@@ -55,4 +55,20 @@ public class OrderPaymentTest extends UnitTest {
         Assertions.assertFalse(aOrderPaymentId.equals(""));
         Assertions.assertEquals(aOrderPaymentId.hashCode(), anotherOrderPaymentId.hashCode());
     }
+
+    @Test
+    void givenAOrderPayment_whenCallToString_shouldReturnStringRepresentation() {
+        final var aOrderPayment = OrderPayment.newOrderPayment(
+                "aPaymentMethodId",
+                0
+        );
+
+        final var aStringRepresentation = aOrderPayment.toString();
+
+        Assertions.assertNotNull(aStringRepresentation);
+        Assertions.assertTrue(aStringRepresentation.contains("OrderPayment("));
+        Assertions.assertTrue(aStringRepresentation.contains("id='"));
+        Assertions.assertTrue(aStringRepresentation.contains("paymentMethodId="));
+        Assertions.assertTrue(aStringRepresentation.contains("installments="));
+    }
 }

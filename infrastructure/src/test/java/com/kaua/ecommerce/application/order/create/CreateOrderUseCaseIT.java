@@ -6,6 +6,7 @@ import com.kaua.ecommerce.application.gateways.order.OrderProductGateway;
 import com.kaua.ecommerce.application.usecases.order.create.CreateOrderCommand;
 import com.kaua.ecommerce.application.usecases.order.create.CreateOrderItemsCommand;
 import com.kaua.ecommerce.application.usecases.order.create.CreateOrderUseCase;
+import com.kaua.ecommerce.config.ConcurrentlyTestHelper;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.coupon.persistence.CouponJpaEntity;
@@ -21,13 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @IntegrationTest
@@ -58,7 +54,7 @@ public class CreateOrderUseCaseIT {
     private OrderProductGateway orderProductGateway;
 
     @Test
-    void testConcurrencyOnCallCreateOrderUseCase() {
+    void testConcurrencyOnCallCreateOrderUseCase() throws InterruptedException {
         final var aCustomer = Fixture.Customers.customerWithAllParams;
 
         final var aCoupon = Fixture.Coupons.limitedCouponActivated();
@@ -121,44 +117,18 @@ public class CreateOrderUseCaseIT {
         Assertions.assertEquals(1, this.couponJpaEntityRepository.count());
         Assertions.assertEquals(1, this.couponSlotJpaEntityRepository.count());
 
-        ExecutorService executorService = Executors.newFixedThreadPool(aExecutions);
-        List<Callable<Void>> tasks = new ArrayList<>();
+        ConcurrentlyTestHelper.doSyncAndConcurrently(5, s ->
+                this.createOrderUseCase.execute(CreateOrderCommand.with(
+                        aCustomerId,
+                        aCouponCode,
+                        aFreightType,
+                        aPaymentMethodId,
+                        aPaymentInstallments,
+                        aOrderItems
+                )), this.getClass().getSimpleName(), 1, 4);
 
-        for (int i = 0; i < aExecutions; i++) {
-            tasks.add(() -> {
-                try {
-                    this.createOrderUseCase.execute(
-                            CreateOrderCommand.with(
-                                    aCustomerId,
-                                    aCouponCode,
-                                    aFreightType,
-                                    aPaymentMethodId,
-                                    aPaymentInstallments,
-                                    aOrderItems
-                            )
-                    );
-                    aCountSuccessExecutionAtomic.incrementAndGet();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    aCountErrorExecutionAtomic.incrementAndGet();
-                }
-                return null;
-            });
-        }
-
-        try {
-            executorService.invokeAll(tasks);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            executorService.shutdown();
-        }
-
-        Assertions.assertEquals(1, this.couponJpaEntityRepository.count());
         Assertions.assertEquals(0, this.couponSlotJpaEntityRepository.count());
         Assertions.assertEquals(1, this.orderJpaEntityRepository.count());
         Assertions.assertEquals(1, this.orderItemJpaEntityRepository.count());
-        Assertions.assertEquals(aExpectedSuccessExecution, aCountSuccessExecutionAtomic.get());
-        Assertions.assertEquals(aExpectedErrorExecution, aCountErrorExecutionAtomic.get());
     }
 }

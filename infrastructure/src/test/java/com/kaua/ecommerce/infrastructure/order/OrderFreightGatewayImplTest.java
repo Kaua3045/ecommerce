@@ -2,8 +2,10 @@ package com.kaua.ecommerce.infrastructure.order;
 
 import com.kaua.ecommerce.application.gateways.order.OrderFreightGateway;
 import com.kaua.ecommerce.application.usecases.freight.calculate.CalculateFreightUseCase;
+import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.freight.Freight;
 import com.kaua.ecommerce.domain.freight.FreightType;
+import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -52,5 +54,36 @@ public class OrderFreightGatewayImplTest {
         Assertions.assertEquals(aFreight.getType().name(), aOutput.type());
         Assertions.assertEquals(aFreight.getPrice(), aOutput.price());
         Assertions.assertEquals(aFreight.getDeadline(), aOutput.deadlineInDays());
+    }
+
+    @Test
+    void givenAnInvalidType_whenCallCalculateFreight_thenThrowException() {
+        final var aZipCode = "12345678";
+        final var aType = "INVALID";
+        final var aHeight = 15.0;
+        final var aWidth = 30.0;
+        final var aLength = 45.0;
+        final var aWeight = 55.5;
+
+        final var expectedErrorMessage = "Invalid freight type";
+
+        final var aCommand = new OrderFreightGateway.CalculateOrderFreightInput(
+                aZipCode,
+                aType,
+                Set.of(new OrderFreightGateway.CalculateOrderFreightItemsInput(
+                        aWeight,
+                        aWidth,
+                        aHeight,
+                        aLength
+                ))
+        );
+
+        Mockito.when(this.calculateFreightUseCase.execute(Mockito.any()))
+                .thenThrow(DomainException.with(new Error(expectedErrorMessage)));
+
+        final var aException = Assertions.assertThrows(DomainException.class,
+                () -> this.orderFreightGatewayImpl.calculateFreight(aCommand));
+
+        Assertions.assertEquals(expectedErrorMessage, aException.getErrors().get(0).message());
     }
 }

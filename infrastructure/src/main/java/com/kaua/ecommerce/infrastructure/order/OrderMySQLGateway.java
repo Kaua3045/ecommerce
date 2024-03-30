@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -52,5 +53,11 @@ public class OrderMySQLGateway implements OrderGateway {
 
         log.info("inserted order items: {}", aResult.size());
         return orderItems;
+    }
+
+    @Override
+    public Optional<Order> findByCode(String code) {
+        return this.orderJpaEntityRepository.findByOrderCode(code)
+                .map(OrderJpaEntity::toDomain);
     }
 }

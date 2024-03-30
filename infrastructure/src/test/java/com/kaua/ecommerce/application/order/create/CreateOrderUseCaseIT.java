@@ -24,7 +24,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @IntegrationTest
 public class CreateOrderUseCaseIT {
@@ -78,12 +77,6 @@ public class CreateOrderUseCaseIT {
                         aSkuCamiseta,
                         10
                 ));
-
-        final var aExecutions = 5;
-        final var aCountSuccessExecutionAtomic = new AtomicInteger(0);
-        final var aCountErrorExecutionAtomic = new AtomicInteger(0);
-        final var aExpectedSuccessExecution = 1;
-        final var aExpectedErrorExecution = 4;
 
         Mockito.when(this.orderCustomerGateway.findByCustomerId(Mockito.anyString()))
                 .thenReturn(Optional.of(new OrderCustomerGateway.OrderCustomerOutput(

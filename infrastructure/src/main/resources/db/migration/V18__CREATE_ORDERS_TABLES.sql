@@ -43,5 +43,3 @@ CREATE TABLE orders_items (
     quantity integer NOT NULL,
     price DECIMAL(19,2) NOT NULL
 );
-
-CREATE SEQUENCE order_code_sequence AS BIGINT START WITH 0 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;

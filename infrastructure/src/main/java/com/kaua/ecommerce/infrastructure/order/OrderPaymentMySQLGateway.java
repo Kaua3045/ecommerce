@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class OrderPaymentMySQLGateway implements OrderPaymentGateway {
@@ -26,5 +27,11 @@ public class OrderPaymentMySQLGateway implements OrderPaymentGateway {
         this.orderPaymentJpaEntityRepository.save(OrderPaymentJpaEntity.toEntity(orderPayment));
         log.info("inserted order payment: {}", orderPayment);
         return orderPayment;
+    }
+
+    @Override
+    public Optional<OrderPayment> findById(String id) {
+        return this.orderPaymentJpaEntityRepository.findById(id)
+                .map(OrderPaymentJpaEntity::toDomain);
     }
 }

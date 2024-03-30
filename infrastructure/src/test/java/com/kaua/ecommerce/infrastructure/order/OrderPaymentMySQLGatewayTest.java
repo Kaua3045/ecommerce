@@ -30,4 +30,20 @@ public class OrderPaymentMySQLGatewayTest {
 
         Assertions.assertEquals(1, this.orderPaymentJpaEntityRepository.count());
     }
+
+    @Test
+    void givenAValidOrderPayment_whenCallFindById_thenOrderPaymentIsReturned() {
+        final var aPaymentMethodId = IdUtils.generateWithoutDash();
+        final var aInstallments = 3;
+
+        final var aOrderPayment = OrderPayment.newOrderPayment(aPaymentMethodId, aInstallments);
+
+        this.orderPaymentMySQLGateway.create(aOrderPayment);
+
+        final var aResult = this.orderPaymentMySQLGateway.findById(aOrderPayment.getId().getValue());
+
+        Assertions.assertTrue(aResult.isPresent());
+        Assertions.assertEquals(aPaymentMethodId, aResult.get().getPaymentMethodId());
+        Assertions.assertEquals(aInstallments, aResult.get().getInstallments());
+    }
 }

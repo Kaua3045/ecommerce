@@ -5,6 +5,8 @@ import com.kaua.ecommerce.application.either.Either;
 import com.kaua.ecommerce.application.usecases.order.create.CreateOrderCommand;
 import com.kaua.ecommerce.application.usecases.order.create.CreateOrderOutput;
 import com.kaua.ecommerce.application.usecases.order.create.CreateOrderUseCase;
+import com.kaua.ecommerce.application.usecases.order.retrieve.get.GetOrderByCodeOutput;
+import com.kaua.ecommerce.application.usecases.order.retrieve.get.GetOrderByCodeUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
@@ -26,8 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 @ControllerTest(controllers = OrderAPI.class)
 public class OrderAPITest {
@@ -40,6 +41,9 @@ public class OrderAPITest {
 
     @MockBean
     private CreateOrderUseCase createOrderUseCase;
+
+    @MockBean
+    private GetOrderByCodeUseCase getOrderByCodeUseCase;
 
     @Test
     void givenAValidInput_whenCallCreateOrder_thenReturnStatusOkAndOrderId() throws Exception {
@@ -129,5 +133,38 @@ public class OrderAPITest {
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors", hasSize(expectedErrorCount)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].message", equalTo(expectedErrorMessage)));
+    }
+
+    @Test
+    void givenAValidOrderCode_whenCallGetOrderByCode_thenReturnStatusOkAndOrder() throws Exception {
+        final var aOrderDelivery = Fixture.Orders.orderDelivery();
+        final var aOrderPayment = Fixture.Orders.orderPaymentWithZeroInstallments();
+        final var aOrder = Fixture.Orders.orderWithCoupon();
+
+        final var aOrderCode = aOrder.getOrderCode().getValue();
+
+        Mockito.when(getOrderByCodeUseCase.execute(Mockito.any()))
+                .thenReturn(GetOrderByCodeOutput.from(aOrder, aOrderDelivery, aOrderPayment));
+
+        final var request = MockMvcRequestBuilders.get("/v1/orders/{code}", aOrderCode)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.order_id", equalTo(aOrder.getId().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.order_code", equalTo(aOrder.getOrderCode().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.order_status", equalTo(aOrder.getOrderStatus().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.customer_id", equalTo(aOrder.getCustomerId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_code", equalTo(aOrder.getCouponCode().orElse(null))))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.coupon_percentage").value(is(aOrder.getCouponPercentage()), Float.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total_amount", equalTo(aOrder.getTotalAmount().doubleValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.created_at", equalTo(aOrder.getCreatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.updated_at", equalTo(aOrder.getUpdatedAt().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.version").value(is(aOrder.getVersion()), Long.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.order_items", hasSize(aOrder.getOrderItems().size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.order_delivery").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.order_payment").exists());
     }
 }

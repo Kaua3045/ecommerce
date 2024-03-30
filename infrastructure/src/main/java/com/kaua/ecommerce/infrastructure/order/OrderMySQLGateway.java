@@ -33,14 +33,16 @@ public class OrderMySQLGateway implements OrderGateway {
 
     @Override
     public Order create(final Order order) {
-        this.orderJpaEntityRepository.save(OrderJpaEntity.toEntity(order));
-        log.info("inserted order: {}", order);
-        return order;
+        // TODO: assim retorna a version final (1) do objeto
+        final var aOutput = this.orderJpaEntityRepository.saveAndFlush(OrderJpaEntity.toEntity(order))
+                .toDomain();
+        log.info("inserted order: {}", aOutput);
+        return aOutput;
     }
 
     @Override
     public long count() {
-        return this.orderJpaEntityRepository.getNextSequence();
+        return this.orderJpaEntityRepository.count();
     }
 
     @Override

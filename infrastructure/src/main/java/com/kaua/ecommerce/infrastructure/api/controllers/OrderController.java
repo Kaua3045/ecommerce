@@ -1,6 +1,8 @@
 package com.kaua.ecommerce.infrastructure.api.controllers;
 
 import com.kaua.ecommerce.application.usecases.order.create.CreateOrderUseCase;
+import com.kaua.ecommerce.application.usecases.order.retrieve.get.GetOrderByCodeOutput;
+import com.kaua.ecommerce.application.usecases.order.retrieve.get.GetOrderByCodeUseCase;
 import com.kaua.ecommerce.domain.order.Order;
 import com.kaua.ecommerce.infrastructure.api.OrderAPI;
 import com.kaua.ecommerce.infrastructure.order.models.CreateOrderInput;
@@ -11,15 +13,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @RestController
 public class OrderController implements OrderAPI {
 
     private static final Logger log = LoggerFactory.getLogger(OrderController.class);
 
     private final CreateOrderUseCase createOrderUseCase;
+    private final GetOrderByCodeUseCase getOrderByCodeUseCase;
 
-    public OrderController(final CreateOrderUseCase createOrderUseCase) {
-        this.createOrderUseCase = createOrderUseCase;
+    public OrderController(
+            final CreateOrderUseCase createOrderUseCase,
+            final GetOrderByCodeUseCase getOrderByCodeUseCase
+    ) {
+        this.createOrderUseCase = Objects.requireNonNull(createOrderUseCase);
+        this.getOrderByCodeUseCase = Objects.requireNonNull(getOrderByCodeUseCase);
     }
 
     @Override
@@ -39,5 +48,10 @@ public class OrderController implements OrderAPI {
         return aResult.isLeft()
                 ? ResponseEntity.unprocessableEntity().body(aResult.getLeft())
                 : ResponseEntity.status(HttpStatus.CREATED).body(aResult.getRight());
+    }
+
+    @Override
+    public GetOrderByCodeOutput getOrderByCode(String code) {
+        return this.getOrderByCodeUseCase.execute(code);
     }
 }

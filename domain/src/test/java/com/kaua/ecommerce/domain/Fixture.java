@@ -406,7 +406,7 @@ public final class Fixture {
                 OrderCode.create(faker.random().nextLong(0, 999999)),
                 IdUtils.generate(),
                 ORDER_DELIVERY,
-                OrderPaymentID.unique()
+                orderPaymentWithZeroInstallments().getId()
         );
         private static final OrderItem ORDER_ITEM = OrderItem.create(
                 ORDER_WITH_COUPON.getId().getValue(),
@@ -419,7 +419,7 @@ public final class Fixture {
                 OrderCode.create(faker.random().nextLong(0, 999999)),
                 IdUtils.generate(),
                 ORDER_DELIVERY,
-                OrderPaymentID.unique()
+                orderPaymentWithZeroInstallments().getId()
         );
 
         private Orders() {

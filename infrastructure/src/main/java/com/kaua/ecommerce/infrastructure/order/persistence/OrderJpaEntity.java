@@ -4,6 +4,8 @@ import com.kaua.ecommerce.domain.order.Order;
 import com.kaua.ecommerce.domain.order.OrderItem;
 import com.kaua.ecommerce.domain.order.OrderStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -49,6 +51,7 @@ public class OrderJpaEntity {
     @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME(6)")
     private Instant updatedAt;
 
+    @Fetch(FetchMode.JOIN)
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "order_id")
     private Set<OrderItemJpaEntity> orderItems;

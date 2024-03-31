@@ -115,4 +115,67 @@ public class OrderMySQLGatewayTest {
 
         Assertions.assertEquals(2, this.orderItemJpaEntityRepository.count());
     }
+
+    @Test
+    void givenAValidOrderCode_whenCallFindByCode_thenReturnOrder() {
+        final var aOrderDelivery = OrderDelivery.newOrderDelivery(
+                "SEDEX",
+                10.0f,
+                5,
+                "aStreet",
+                "aNumber",
+                "aComplement",
+                "aDistrict",
+                "aCity",
+                "aState",
+                "aZipCode"
+        );
+        final var aOrderPayment = OrderPayment.newOrderPayment(
+                IdUtils.generateWithoutDash(),
+                0
+        );
+
+        final var aOrder = Order.newOrder(
+                OrderCode.create(1L),
+                "aCustomerId",
+                aOrderDelivery,
+                aOrderPayment.getId()
+        );
+        aOrder.addItem(OrderItem.create(
+                aOrder.getId().getValue(),
+                "aProductId",
+                "aSku",
+                1,
+                BigDecimal.valueOf(10.0)
+        ));
+        aOrder.addItem(OrderItem.create(
+                aOrder.getId().getValue(),
+                "aProductId2",
+                "aSku2",
+                2,
+                BigDecimal.valueOf(20.0)
+        ));
+        aOrder.calculateTotalAmount(aOrderDelivery);
+
+        this.orderDeliveryJpaEntityRepository.save(OrderDeliveryJpaEntity.toEntity(aOrderDelivery));
+        this.orderPaymentJpaEntityRepository.save(OrderPaymentJpaEntity.toEntity(aOrderPayment));
+        this.orderMySQLGateway.createInBatch(aOrder.getOrderItems());
+        this.orderMySQLGateway.create(aOrder);
+
+        final var aResult = this.orderMySQLGateway.findByCode(aOrder.getOrderCode().getValue()).get();
+
+        Assertions.assertEquals(aOrder.getId().getValue(), aResult.getId().getValue());
+        Assertions.assertEquals(aOrder.getOrderCode().getValue(), aResult.getOrderCode().getValue());
+        Assertions.assertEquals(aOrder.getOrderStatus(), aResult.getOrderStatus());
+        Assertions.assertEquals(aOrder.getCustomerId(), aResult.getCustomerId());
+        Assertions.assertEquals(aOrder.getTotalAmount(), aResult.getTotalAmount());
+        Assertions.assertEquals(aOrder.getCouponCode().orElse(null), aResult.getCouponCode().orElse(null));
+        Assertions.assertEquals(aOrder.getCouponPercentage(), aResult.getCouponPercentage());
+        Assertions.assertEquals(aOrder.getOrderDeliveryId().getValue(), aResult.getOrderDeliveryId().getValue());
+        Assertions.assertEquals(aOrder.getOrderPaymentId().getValue(), aResult.getOrderPaymentId().getValue());
+        Assertions.assertEquals(aOrder.getCreatedAt(), aResult.getCreatedAt());
+        Assertions.assertEquals(aOrder.getUpdatedAt(), aResult.getUpdatedAt());
+        Assertions.assertEquals(1, aResult.getVersion());
+        Assertions.assertEquals(aOrder.getOrderItems().size(), aResult.getOrderItems().size());
+    }
 }

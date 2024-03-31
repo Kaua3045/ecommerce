@@ -131,7 +131,7 @@ public class Order extends AggregateRoot<OrderID> {
                 aOrder.getVersion(),
                 aOrder.getOrderCode(),
                 aOrder.getOrderStatus(),
-                aOrder.getOrderItems(),
+                new HashSet<>(aOrder.getOrderItems()),
                 aOrder.getTotalAmount(),
                 aOrder.getCustomerId(),
                 aOrder.getCouponCode().orElse(null),

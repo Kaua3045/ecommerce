@@ -4,6 +4,8 @@ import com.kaua.ecommerce.application.adapters.TransactionManager;
 import com.kaua.ecommerce.application.gateways.order.*;
 import com.kaua.ecommerce.application.usecases.order.create.CreateOrderUseCase;
 import com.kaua.ecommerce.application.usecases.order.create.DefaultCreateOrderUseCase;
+import com.kaua.ecommerce.application.usecases.order.retrieve.get.DefaultGetOrderByCodeUseCase;
+import com.kaua.ecommerce.application.usecases.order.retrieve.get.GetOrderByCodeUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -52,6 +54,15 @@ public class OrderUseCaseConfig {
                 orderProductGateway,
                 orderFreightGateway,
                 transactionManager
+        );
+    }
+
+    @Bean
+    public GetOrderByCodeUseCase getOrderByCodeUseCase() {
+        return new DefaultGetOrderByCodeUseCase(
+                orderGateway,
+                orderDeliveryGateway,
+                orderPaymentGateway
         );
     }
 }

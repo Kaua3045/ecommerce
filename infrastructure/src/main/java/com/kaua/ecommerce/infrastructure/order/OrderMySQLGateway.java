@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -32,14 +33,16 @@ public class OrderMySQLGateway implements OrderGateway {
 
     @Override
     public Order create(final Order order) {
-        this.orderJpaEntityRepository.save(OrderJpaEntity.toEntity(order));
-        log.info("inserted order: {}", order);
-        return order;
+        // TODO: assim retorna a version final (1) do objeto
+        final var aOutput = this.orderJpaEntityRepository.saveAndFlush(OrderJpaEntity.toEntity(order))
+                .toDomain();
+        log.info("inserted order: {}", aOutput);
+        return aOutput;
     }
 
     @Override
     public long count() {
-        return this.orderJpaEntityRepository.getNextSequence();
+        return this.orderJpaEntityRepository.count();
     }
 
     @Override
@@ -52,5 +55,11 @@ public class OrderMySQLGateway implements OrderGateway {
 
         log.info("inserted order items: {}", aResult.size());
         return orderItems;
+    }
+
+    @Override
+    public Optional<Order> findByCode(String code) {
+        return this.orderJpaEntityRepository.findByOrderCode(code)
+                .map(OrderJpaEntity::toDomain);
     }
 }

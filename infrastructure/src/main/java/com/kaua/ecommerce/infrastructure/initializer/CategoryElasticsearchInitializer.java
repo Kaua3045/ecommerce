@@ -21,7 +21,7 @@ public class CategoryElasticsearchInitializer implements CommandLineRunner {
 
     private final ElasticsearchOperations elasticsearchOperations;
 
-    private CategoryElasticsearchInitializer(final ElasticsearchOperations elasticsearchOperations) {
+    public CategoryElasticsearchInitializer(final ElasticsearchOperations elasticsearchOperations) {
         this.elasticsearchOperations = Objects.requireNonNull(elasticsearchOperations);
     }
 

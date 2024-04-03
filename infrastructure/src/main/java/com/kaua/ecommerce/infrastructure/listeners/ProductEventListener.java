@@ -1,6 +1,5 @@
 package com.kaua.ecommerce.infrastructure.listeners;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.application.usecases.product.search.remove.RemoveProductUseCase;
 import com.kaua.ecommerce.application.usecases.product.search.save.SaveProductUseCase;
@@ -11,9 +10,10 @@ import com.kaua.ecommerce.domain.product.events.ProductDeletedEvent;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
-import com.kaua.ecommerce.infrastructure.listeners.models.MessageValue;
-import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
+import com.kaua.ecommerce.infrastructure.exceptions.KafkaHeadersException;
+import com.kaua.ecommerce.infrastructure.exceptions.NewerEventProcessedException;
 import com.kaua.ecommerce.infrastructure.service.EventValidationService;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -21,20 +21,18 @@ import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.adapter.ConsumerRecordMetadata;
 import org.springframework.kafka.retrytopic.TopicSuffixingStrategy;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.Objects;
 
 @Component
-public class ProductEventListener {
+public class ProductEventListener extends EventListener {
 
-    public static final TypeReference<MessageValue<OutboxEventEntity>> PRODUCT_MESSAGE = new TypeReference<>() {
-    };
     private static final Logger LOG = LoggerFactory.getLogger(ProductEventListener.class);
 
     private static final String NOT_FOUND_MESSAGE = "Product not found in database: {}";
@@ -45,7 +43,6 @@ public class ProductEventListener {
     private final ProductGateway productGateway;
     private final SaveProductUseCase saveProductUseCase;
     private final RemoveProductUseCase removeProductUseCase;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final EventValidationService eventValidationService;
 
     public ProductEventListener(
@@ -55,17 +52,22 @@ public class ProductEventListener {
             final KafkaTemplate<String, Object> kafkaTemplate,
             final EventValidationService eventValidationService
     ) {
+        super(kafkaTemplate);
         this.productGateway = Objects.requireNonNull(productGateway);
         this.saveProductUseCase = Objects.requireNonNull(saveProductUseCase);
         this.removeProductUseCase = Objects.requireNonNull(removeProductUseCase);
-        this.kafkaTemplate = Objects.requireNonNull(kafkaTemplate);
         this.eventValidationService = Objects.requireNonNull(eventValidationService);
     }
 
     @KafkaListener(
             concurrency = "${kafka.consumers.products.concurrency}",
             containerFactory = "kafkaListenerFactory",
-            topics = "${kafka.consumers.products.topics}",
+            topics = {
+                    "${kafka.consumers.products.topics.[0]}",
+                    "${kafka.consumers.products.topics.[1]}",
+                    "${kafka.consumers.products.topics.[2]}",
+                    "${kafka.consumers.products.topics.[3]}"
+            },
             groupId = "${kafka.consumers.products.group-id}",
             id = "${kafka.consumers.products.id}",
             properties = {
@@ -81,77 +83,104 @@ public class ProductEventListener {
             topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE
     )
     public void onMessage(
-            @Payload final String payload,
-            final Acknowledgment ack,
-            final ConsumerRecordMetadata metadata
+            @Payload final ConsumerRecord<String, String> record,
+            final Acknowledgment ack
     ) {
         LOG.atLevel(Level.INFO).log("Message received from Kafka [topic:{}] [partition:{}] [offset:{}]: {}",
-                metadata.topic(), metadata.partition(), metadata.offset(), payload);
+                record.topic(), record.partition(), record.offset(), record.value());
 
-        final var aOutBoxEvent = Json.readValue(payload, PRODUCT_MESSAGE).payload().after();
+        try {
+            final var payload = record.value();
+            final var eventType = getEventTypeHeaderValue(record);
 
-        switch (aOutBoxEvent.getEventType()) {
-            case EventsTypes.PRODUCT_CREATED -> {
-                final var aProductCreated = Json.readValue(aOutBoxEvent.getData(), ProductCreatedEvent.class);
-                final var aProductId = aProductCreated.id();
+            switch (eventType) {
+                case EventsTypes.PRODUCT_CREATED -> {
+                    final var aProductCreated = Json.readValue(payload, ProductCreatedEvent.class);
+                    final var aProductId = aProductCreated.id();
 
-                processCreatedAndUpdatedEvent(
-                        aProductId,
-                        ack,
-                        "created",
-                        aProductCreated,
-                        payload
-                );
-            }
-            case EventsTypes.PRODUCT_UPDATED -> {
-                final var aProductUpdated = Json.readValue(aOutBoxEvent.getData(), ProductUpdatedEvent.class);
-                final var aProductId = aProductUpdated.id();
-
-                processCreatedAndUpdatedEvent(
-                        aProductId,
-                        ack,
-                        "updated",
-                        aProductUpdated,
-                        payload
-                );
-            }
-            case EventsTypes.PRODUCT_DELETED -> {
-                final var aProductUpdated = Json.readValue(aOutBoxEvent.getData(), ProductDeletedEvent.class);
-                final var aProductId = aProductUpdated.id();
-
-                if (this.eventValidationService.isInvalid(aProductUpdated, aProductId)) {
-                    this.kafkaTemplate.send(PRODUCT_DLT_INVALID, payload);
-                    LOG.error("Product event is old, sent to DLT: {} and now: {}, payload: {}",
-                            aProductUpdated.occurredOn(), InstantUtils.now(), payload);
-                    ack.acknowledge();
-                    return;
+                    processCreatedAndUpdatedEvent(
+                            aProductId,
+                            ack,
+                            "created",
+                            aProductCreated,
+                            record
+                    );
                 }
+                case EventsTypes.PRODUCT_UPDATED -> {
+                    final var aProductUpdated = Json.readValue(payload, ProductUpdatedEvent.class);
+                    final var aProductId = aProductUpdated.id();
 
-                this.removeProductUseCase.execute(aProductId);
-                ack.acknowledge();
-                this.eventValidationService.invalidate(aProductUpdated.aggregateName(), aProductId);
-                LOG.info(EVENT_RECEIVED_MESSAGE, "deleted", aProductId);
+                    processCreatedAndUpdatedEvent(
+                            aProductId,
+                            ack,
+                            "updated",
+                            aProductUpdated,
+                            record
+                    );
+                }
+                case EventsTypes.PRODUCT_DELETED -> {
+                    final var aProductDeleted = Json.readValue(payload, ProductDeletedEvent.class);
+                    final var aProductId = aProductDeleted.id();
+
+                    if (this.eventValidationService.isInvalid(aProductDeleted, aProductId)) {
+                        LOG.info("Product event is old, sent to DLT: {} and now: {}, payload: {}",
+                                aProductDeleted.occurredOn(), InstantUtils.now(), payload);
+                        handleMessagingErrorAndSendToDlt(
+                                record,
+                                PRODUCT_DLT_INVALID,
+                                ack,
+                                LOG,
+                                NewerEventProcessedException.getExceptionMessage(aProductId)
+                        );
+                        return;
+                    }
+
+                    this.removeProductUseCase.execute(aProductId);
+                    ack.acknowledge();
+                    this.eventValidationService.invalidate(aProductDeleted.aggregateName(), aProductId);
+                    LOG.info(EVENT_RECEIVED_MESSAGE, "deleted", aProductId);
+                }
+                default -> handleMessagingTypeNotSupported(
+                        record,
+                        eventType,
+                        PRODUCT_DLT_INVALID,
+                        ack,
+                        LOG
+                );
             }
-            default -> LOG.warn("Event type not supported: {}", aOutBoxEvent.getEventType());
+        } catch (final KafkaHeadersException ex) {
+            handleMessagingErrorAndSendToDlt(
+                    record,
+                    PRODUCT_DLT_INVALID,
+                    ack,
+                    LOG,
+                    ex.getMessage()
+            );
         }
     }
 
     @DltHandler
     public void onDltMessage(
-            @Payload String payload,
-            final Acknowledgment acknowledgment,
-            final ConsumerRecordMetadata metadata
+            @Payload ConsumerRecord<String, String> record,
+            final Acknowledgment acknowledgment
     ) {
         LOG.atLevel(Level.WARN).log("Message received from Kafka at DLT [topic:{}] [partition:{}] [offset:{}]: {}",
-                metadata.topic(), metadata.partition(), metadata.offset(), payload);
+                record.topic(), record.partition(), record.offset(), record.value());
 
-        final var aOutBoxEvent = Json.readValue(payload, PRODUCT_MESSAGE).payload().after();
-        final var aInstantNow = InstantUtils.now();
+        // Usamos o getEventType pois aqui usamos product_event_type O event type seria por ex product_created
+        // então seria mandado pro topico product_created, se não tivermos mais de 1 topico por entity
+        // então não precisamos disso
+        final var aTopicRetry = new String(record.headers().lastHeader("kafka_original-topic").value())
+                .equalsIgnoreCase(PRODUCT_TOPIC)
+                ? PRODUCT_TOPIC
+                : getEventTypeHeaderValue(record) + "-topic";
 
-        this.kafkaTemplate.send(PRODUCT_TOPIC, payload);
-        acknowledgment.acknowledge();
-        LOG.warn("Event sent to product topic for retry: {}, occurred on: {} and now: {}, payload: {}",
-                PRODUCT_TOPIC, aOutBoxEvent.getOccurredOn(), aInstantNow, payload);
+        handlePublishMessageToRetryTopic(
+                record,
+                aTopicRetry,
+                acknowledgment,
+                LOG
+        );
     }
 
     private <T extends DomainEvent> void processCreatedAndUpdatedEvent(
@@ -159,13 +188,16 @@ public class ProductEventListener {
             final Acknowledgment ack,
             final String type,
             final T aDomainEvent,
-            final String aPayload
+            final ConsumerRecord<String, String> record
     ) {
         if (this.eventValidationService.isInvalid(aDomainEvent, aId)) {
-            this.kafkaTemplate.send(PRODUCT_DLT_INVALID, aPayload);
-            ack.acknowledge();
-            LOG.error("Product event is old, sent to DLT: {} and now: {}, payload: {}",
-                    aDomainEvent.occurredOn(), InstantUtils.now(), aPayload);
+            handleMessagingErrorAndSendToDlt(
+                    record,
+                    PRODUCT_DLT_INVALID,
+                    ack,
+                    LOG,
+                    NewerEventProcessedException.getExceptionMessage(aId)
+            );
             return;
         }
 
@@ -174,6 +206,9 @@ public class ProductEventListener {
                     this.saveProductUseCase.execute(aProduct);
                     ack.acknowledge();
                     LOG.info(EVENT_RECEIVED_MESSAGE, type, aId);
-                }, () -> LOG.debug(NOT_FOUND_MESSAGE, aId));
+                }, () -> {
+                    LOG.debug(NOT_FOUND_MESSAGE, aId);
+                    ack.nack(Duration.ofSeconds(5));
+                });
     }
 }

@@ -5,16 +5,16 @@ import com.kaua.ecommerce.domain.category.events.CategoryCreatedEvent;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventRepository;
-import com.kaua.ecommerce.infrastructure.service.EventDatabaseService;
+import com.kaua.ecommerce.infrastructure.service.EventStorageService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @IntegrationTest
-public class MySQLEventDatabaseServiceImplTest {
+public class MySQLEventStorageServiceImplTest {
 
     @Autowired
-    private EventDatabaseService eventDatabaseService;
+    private EventStorageService eventStorageService;
 
     @Autowired
     private OutboxEventRepository outboxEventRepository;
@@ -23,7 +23,7 @@ public class MySQLEventDatabaseServiceImplTest {
     void givenAValidDomainEvent_whenCallSend_shouldPersistOutboxEvent() {
         final var aDomainEvent = CategoryCreatedEvent.from(Fixture.Categories.tech());
 
-        Assertions.assertDoesNotThrow(() -> this.eventDatabaseService.send(aDomainEvent, null));
+        Assertions.assertDoesNotThrow(() -> this.eventStorageService.send(aDomainEvent));
 
         final var aSavedOutboxEvent = this.outboxEventRepository.findAll().stream().findFirst().get();
 
@@ -39,7 +39,7 @@ public class MySQLEventDatabaseServiceImplTest {
     void givenAnInvalidDomainEvent_whenCallSend_shouldDoesNotPersistOutboxEvent() {
         final var aEvent = new TestSaveEvent(IdUtils.generate());
 
-        Assertions.assertDoesNotThrow(() -> this.eventDatabaseService.send(aEvent, null));
+        Assertions.assertDoesNotThrow(() -> this.eventStorageService.send(aEvent));
         Assertions.assertEquals(0, this.outboxEventRepository.count());
     }
 

@@ -2,7 +2,7 @@ package com.kaua.ecommerce.infrastructure.service.impl;
 
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.UnitTest;
-import com.kaua.ecommerce.infrastructure.exceptions.KafkaEventException;
+import com.kaua.ecommerce.infrastructure.exceptions.InternalServerErrorException;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -15,12 +15,12 @@ import org.springframework.kafka.support.SendResult;
 import java.util.concurrent.CompletableFuture;
 
 @UnitTest
-public class KafkaEventServiceImplTest {
+public class KafkaEventProducerServiceImplTest {
 
     @Test
     void testSendMethodException() {
         KafkaTemplate<String, Object> kafkaTemplateMock = Mockito.mock(KafkaTemplate.class);
-        KafkaEventServiceImpl kafkaEventService = new KafkaEventServiceImpl(kafkaTemplateMock);
+        KafkaEventProducerServiceImpl kafkaEventService = new KafkaEventProducerServiceImpl(kafkaTemplateMock);
 
         CompletableFuture<SendResult<String, Object>> failedFuture = new CompletableFuture<>();
         failedFuture.completeExceptionally(new RuntimeException("Simulated exception"));
@@ -34,7 +34,7 @@ public class KafkaEventServiceImplTest {
 
         Mockito.when(kafkaTemplateMock.send(aProducerRecord)).thenReturn(failedFuture);
 
-        final var aException = Assertions.assertThrows(KafkaEventException.class,
+        final var aException = Assertions.assertThrows(InternalServerErrorException.class,
                 () -> kafkaEventService.send(aOutboxEvent, "testTopic"));
 
         Assertions.assertEquals("Error sending message to topic testTopic", aException.getMessage());
@@ -45,7 +45,7 @@ public class KafkaEventServiceImplTest {
     @Test
     void testSendMethodSuccess() {
         KafkaTemplate<String, Object> kafkaTemplateMock = Mockito.mock(KafkaTemplate.class);
-        KafkaEventServiceImpl kafkaEventService = new KafkaEventServiceImpl(kafkaTemplateMock);
+        KafkaEventProducerServiceImpl kafkaEventService = new KafkaEventProducerServiceImpl(kafkaTemplateMock);
 
         CompletableFuture<SendResult<String, Object>> successFuture = new CompletableFuture<>();
         successFuture.complete(Mockito.mock(SendResult.class));

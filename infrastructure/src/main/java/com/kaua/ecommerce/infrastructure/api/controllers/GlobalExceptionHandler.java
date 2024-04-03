@@ -3,6 +3,8 @@ package com.kaua.ecommerce.infrastructure.api.controllers;
 import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
+import com.kaua.ecommerce.infrastructure.exceptions.InternalServerErrorException;
+import com.kaua.ecommerce.infrastructure.exceptions.KafkaHeadersException;
 import com.kaua.ecommerce.infrastructure.utils.ApiError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,5 +39,11 @@ public class GlobalExceptionHandler {
 
         log.error("An error occurred while processing the transaction", exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiError.from("An error occurred while processing the transaction"));
+    }
+
+    @ExceptionHandler({InternalServerErrorException.class, Exception.class})
+    public ResponseEntity<ApiError> handleInternalServerErrorException(final Exception exception) {
+        log.error("An internal server error occurred", exception);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiError.from("An internal server error occurred"));
     }
 }

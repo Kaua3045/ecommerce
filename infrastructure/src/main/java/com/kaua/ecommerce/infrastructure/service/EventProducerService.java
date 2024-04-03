@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.service;
 
-public interface EventService {
+public interface EventProducerService {
 
     void send(final Object message, final String topic);
 }

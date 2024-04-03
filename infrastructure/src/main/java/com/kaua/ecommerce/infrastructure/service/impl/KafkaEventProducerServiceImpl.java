@@ -1,9 +1,8 @@
 package com.kaua.ecommerce.infrastructure.service.impl;
 
-import com.kaua.ecommerce.domain.event.DomainEvent;
-import com.kaua.ecommerce.infrastructure.exceptions.KafkaEventException;
+import com.kaua.ecommerce.infrastructure.exceptions.InternalServerErrorException;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
-import com.kaua.ecommerce.infrastructure.service.EventService;
+import com.kaua.ecommerce.infrastructure.service.EventProducerService;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +13,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class KafkaEventServiceImpl implements EventService {
+public class KafkaEventProducerServiceImpl implements EventProducerService {
 
-    private static final Logger log = LoggerFactory.getLogger(KafkaEventServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(KafkaEventProducerServiceImpl.class);
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public KafkaEventServiceImpl(final KafkaTemplate<String, Object> kafkaTemplate) {
+    public KafkaEventProducerServiceImpl(final KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = Objects.requireNonNull(kafkaTemplate);
     }
 
@@ -36,7 +35,7 @@ public class KafkaEventServiceImpl implements EventService {
             log.info("Event sent to topic {} payload: {} headers: {}", topic, aProducerRecord.value(), aProducerRecord.headers().toArray());
         } catch (final InterruptedException | ExecutionException | TimeoutException | RuntimeException ex) {
             log.error("Error sending message {} to topic {}", aMessage, topic);
-            throw KafkaEventException.with("Error sending message to topic " + topic, ex);
+            throw InternalServerErrorException.with("Error sending message to topic " + topic, ex);
         }
     }
 }

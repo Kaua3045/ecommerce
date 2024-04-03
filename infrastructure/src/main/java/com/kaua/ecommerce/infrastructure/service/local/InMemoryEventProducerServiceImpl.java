@@ -1,18 +1,14 @@
 package com.kaua.ecommerce.infrastructure.service.local;
 
-import com.kaua.ecommerce.infrastructure.service.EventService;
+import com.kaua.ecommerce.infrastructure.service.EventProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+public class InMemoryEventProducerServiceImpl implements EventProducerService {
 
-public class InMemoryEventServiceImpl implements EventService {
+    private static Logger LOG = LoggerFactory.getLogger(InMemoryEventProducerServiceImpl.class);
 
-    private static Logger LOG = LoggerFactory.getLogger(InMemoryEventServiceImpl.class);
-
-    public InMemoryEventServiceImpl() {}
+    public InMemoryEventProducerServiceImpl() {}
 
     @Override
     public void send(final Object message, final String topic) {

@@ -1,0 +1,1 @@
+ALTER TABLE outbox DROP COLUMN status;

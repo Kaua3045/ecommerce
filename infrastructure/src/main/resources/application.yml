@@ -37,25 +37,34 @@ kafka:
     categories:
       auto-offset-reset: earliest
       concurrency: 1
-      id: kafka-listener-categories
+      id: kafka-listener-categories-${INSTANCE_ID:1}
       topics: category-topic
       group-id: categories-group
     products:
       auto-offset-reset: earliest
       concurrency: 1
-      id: kafka-listener-products
-      topics: product-topic
+      id: kafka-listener-products-${INSTANCE_ID:1}
+      topics:
+        - product-topic
+        - product_created-topic
+        - product_updated-topic
+        - product_deleted-topic
       group-id: products-group
       max-attempts: 4
       auto-create-topics: false
     inventories:
       auto-offset-reset: earliest
       concurrency: 1
-      id: kafka-listener-inventories
+      id: kafka-listener-inventories-${INSTANCE_ID:1}
       topics: inventory-topic
       group-id: inventories-group
       max-attempts: 4
       auto-create-topics: false
+
+ecommerce:
+  outbox:
+    publish-rate-minutes: 1
+    publish-initial-delay-minutes: 1
 
 server:
   port: 8080
@@ -94,6 +103,8 @@ spring:
       hibernate:
         jdbc:
           batch_size: 10
+        order_inserts: true
+        order_updates: true
   rabbitmq:
     publisher-confirm-type: correlated
     publisher-returns: true

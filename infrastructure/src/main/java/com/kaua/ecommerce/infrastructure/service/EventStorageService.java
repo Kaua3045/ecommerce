@@ -1,6 +1,6 @@
 package com.kaua.ecommerce.infrastructure.service;
 
-public interface EventDatabaseService {
+public interface EventStorageService {
 
-    void send(final Object event, final String topic);
+    void send(final Object event);
 }

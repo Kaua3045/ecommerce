@@ -2,6 +2,7 @@ package com.kaua.ecommerce.domain.inventory;
 
 import com.kaua.ecommerce.domain.TestValidationHandler;
 import com.kaua.ecommerce.domain.UnitTest;
+import com.kaua.ecommerce.domain.exceptions.ItemOutOfStockException;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -96,5 +97,19 @@ public class InventoryValidationTest extends UnitTest {
 
         Assertions.assertEquals(expectedErrorCount, aTestValidationHandler.getErrors().size());
         Assertions.assertEquals(expectedErrorMessage, aTestValidationHandler.getErrors().get(0).message());
+    }
+
+    @Test
+    void givenInvalidQuantity_whenCallDecreaseQuantity_shouldThrowItemOutOfStockException() {
+        final var aInventory = Inventory
+                .newInventory("1", "123-tshirt-red-gg", 1);
+        final var aQuantity = 2;
+
+        final var expectedErrorMessage = "Item 123-tshirt-red-gg out of stock";
+
+        final var aException = Assertions.assertThrows(ItemOutOfStockException.class,
+                () -> aInventory.decreaseQuantity(aQuantity));
+
+        Assertions.assertEquals(expectedErrorMessage, aException.getMessage());
     }
 }

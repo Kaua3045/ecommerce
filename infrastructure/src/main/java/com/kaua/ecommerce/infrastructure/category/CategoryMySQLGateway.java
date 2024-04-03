@@ -5,7 +5,7 @@ import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.category.events.CategoryDeletedEvent;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntityRepository;
-import com.kaua.ecommerce.infrastructure.service.EventDatabaseService;
+import com.kaua.ecommerce.infrastructure.service.EventStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,21 +20,21 @@ public class CategoryMySQLGateway implements CategoryGateway {
     private static final Logger log = LoggerFactory.getLogger(CategoryMySQLGateway.class);
 
     private final CategoryJpaEntityRepository categoryJpaEntityRepository;
-    private final EventDatabaseService eventDatabaseService;
+    private final EventStorageService eventStorageService;
 
     public CategoryMySQLGateway(
             final CategoryJpaEntityRepository categoryJpaEntityRepository,
-            final EventDatabaseService eventDatabaseService
+            final EventStorageService eventStorageService
     ) {
         this.categoryJpaEntityRepository = Objects.requireNonNull(categoryJpaEntityRepository);
-        this.eventDatabaseService = Objects.requireNonNull(eventDatabaseService);
+        this.eventStorageService = Objects.requireNonNull(eventStorageService);
     }
 
     @Transactional
     @Override
     public Category create(Category aCategory) {
         this.categoryJpaEntityRepository.save(CategoryJpaEntity.toEntity(aCategory));
-        aCategory.publishDomainEvent(this.eventDatabaseService::send);
+        aCategory.publishDomainEvent(this.eventStorageService::send);
         log.info("inserted category: {}", aCategory);
         return aCategory;
     }
@@ -54,7 +54,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
     @Override
     public Category update(Category aCategory) {
         this.categoryJpaEntityRepository.save(CategoryJpaEntity.toEntity(aCategory));
-        aCategory.publishDomainEvent(this.eventDatabaseService::send);
+        aCategory.publishDomainEvent(this.eventStorageService::send);
         log.info("updated category: {}", aCategory);
         return aCategory;
     }
@@ -80,6 +80,6 @@ public class CategoryMySQLGateway implements CategoryGateway {
 
     private void publishRootCategoryDeletedEvent(final String aId) {
         final var aCategoryDeletedEvent = CategoryDeletedEvent.from(aId, null);
-        this.eventDatabaseService.send(aCategoryDeletedEvent, null);
+        this.eventStorageService.send(aCategoryDeletedEvent);
     }
 }

@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kaua.ecommerce.domain.event.DomainEvent;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 
@@ -36,6 +33,10 @@ public class OutboxEventEntity {
     @JsonProperty("occurred_on")
     private Instant occurredOn;
 
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OutboxEventStatus status;
+
     public OutboxEventEntity() {
     }
 
@@ -44,22 +45,25 @@ public class OutboxEventEntity {
             final String aggregateName,
             final String eventType,
             final String data,
-            final Instant occurredOn
+            final Instant occurredOn,
+            final OutboxEventStatus status
     ) {
         this.eventId = eventId;
         this.aggregateName = aggregateName;
         this.eventType = eventType;
         this.data = data;
         this.occurredOn = occurredOn;
+        this.status = status;
     }
 
-    public static OutboxEventEntity from(final DomainEvent aDomainEvent) {
+    public static OutboxEventEntity create(final DomainEvent aDomainEvent) {
         return new OutboxEventEntity(
                 IdUtils.generate(),
                 aDomainEvent.aggregateName(),
                 aDomainEvent.eventType(),
                 Json.writeValueAsString(aDomainEvent),
-                aDomainEvent.occurredOn()
+                aDomainEvent.occurredOn(),
+                OutboxEventStatus.PENDING
         );
     }
 
@@ -103,6 +107,14 @@ public class OutboxEventEntity {
         this.occurredOn = occurredOn;
     }
 
+    public OutboxEventStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OutboxEventStatus status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "OutboxEventEntity(" +
@@ -111,6 +123,7 @@ public class OutboxEventEntity {
                 ", eventType='" + eventType + '\'' +
                 ", data='" + data + '\'' +
                 ", occurredOn=" + occurredOn +
+                ", status='" + status.name() + '\'' +
                 ')';
     }
 }

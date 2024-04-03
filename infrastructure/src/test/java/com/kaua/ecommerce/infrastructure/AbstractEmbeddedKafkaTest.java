@@ -2,12 +2,14 @@ package com.kaua.ecommerce.infrastructure;
 
 import com.kaua.ecommerce.config.IntegrationTestConfiguration;
 import com.kaua.ecommerce.infrastructure.configurations.properties.kafka.KafkaProperties;
-import com.kaua.ecommerce.infrastructure.listeners.models.Source;
+import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterAll;
@@ -80,9 +82,28 @@ public abstract class AbstractEmbeddedKafkaTest {
         return producer;
     }
 
-    protected Source aSource() {
-        return new Source("ecommerce-mysql", "ecommerce", "outbox");
+    protected ProducerRecord<String, String> createProducerRecord(
+            final String aTopic,
+            final String aMessage,
+            final OutboxEventEntity aOutboxEntity
+    ) {
+        final var aProducerRecord = new ProducerRecord<String, String>(aTopic, aMessage);
+        aProducerRecord.headers().add("event_type", aOutboxEntity.getEventType().getBytes());
+        aProducerRecord.headers().add("event_occurred_on", aOutboxEntity.getOccurredOn().toString().getBytes());
+        return aProducerRecord;
     }
+
+    protected ConsumerRecord<String, String> createConsumerRecord(
+            final String aTopic,
+            final String aMessage,
+            final OutboxEventEntity aOutboxEntity
+    ) {
+        final var aConsumerRecord = new ConsumerRecord<String, String>(aTopic, 1, 0, null, aMessage);
+        aConsumerRecord.headers().add("event_type", aOutboxEntity.getEventType().getBytes());
+        aConsumerRecord.headers().add("event_occurred_on", aOutboxEntity.getOccurredOn().toString().getBytes());
+        return aConsumerRecord;
+    }
+
 
     protected Map<String, Object> consumerConfigs(final String groupId) {
         final var props = new HashMap<String, Object>();

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.annotation.DirtiesContext;
@@ -17,7 +18,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @ActiveProfiles("test-integration")
-@EnableAutoConfiguration(exclude = ElasticsearchRepositoriesAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = {
+        ElasticsearchRepositoriesAutoConfiguration.class,
+        KafkaAutoConfiguration.class
+})
 @SpringBootTest(classes = {Main.class, IntegrationTestConfiguration.class})
 @ExtendWith(JpaCleanUpExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)

@@ -5,14 +5,10 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.inventory.InventoryID;
 import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkusEvent;
 import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
-import com.kaua.ecommerce.infrastructure.configurations.json.Json;
-import com.kaua.ecommerce.infrastructure.listeners.models.MessageValue;
-import com.kaua.ecommerce.infrastructure.listeners.models.Operation;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
-import com.kaua.ecommerce.infrastructure.listeners.models.ValuePayload;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.record.TimestampType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,17 +19,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.adapter.ConsumerRecordMetadata;
 import org.springframework.kafka.support.Acknowledgment;
 
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import static org.mockito.ArgumentMatchers.eq;
 
 public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
 
@@ -50,7 +44,7 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     private String inventoryTopic;
 
     @Captor
-    private ArgumentCaptor<ConsumerRecordMetadata> metadata;
+    private ArgumentCaptor<ConsumerRecord<String, String>> record;
 
     @AfterEach
     void clean() {
@@ -79,9 +73,9 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         final var aInventory = Fixture.Inventories.tshirtInventory();
         final var aInventoryCreatedRollbackEvent = InventoryCreatedRollbackBySkusEvent
                 .from(List.of(aInventory.getSku()));
-        final var aOutboxEvent = OutboxEventEntity.from(aInventoryCreatedRollbackEvent);
+        final var aOutboxEvent = OutboxEventEntity.create(aInventoryCreatedRollbackEvent);
 
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
+        final var aMessage = aOutboxEvent.getData();
 
         final var latch = new CountDownLatch(5);
 
@@ -93,55 +87,51 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         Mockito.doAnswer(t -> {
             latch.countDown();
             return null;
-        }).when(inventoryEventListener).onDltMessage(Mockito.any(), Mockito.any(), Mockito.any());
+        }).when(inventoryEventListener).onDltMessage(Mockito.any(), Mockito.any());
 
-        producer().send(new ProducerRecord<>(inventoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
+        final var aProducerRecord = createProducerRecord(inventoryTopic, aMessage, aOutboxEvent);
+        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
-        Mockito.verify(inventoryEventListener, Mockito.times(expectedMaxAttempts)).onMessage(eq(aMessage), Mockito.any(), metadata.capture());
+        Mockito.verify(inventoryEventListener, Mockito.times(expectedMaxAttempts)).onMessage(record.capture(), Mockito.any());
 
-        final var allMetas = metadata.getAllValues();
+        final var allMetas = record.getAllValues();
         Assertions.assertEquals(expectedMainTopic, allMetas.get(0).topic());
         Assertions.assertEquals(expectedRetry0Topic, allMetas.get(1).topic());
         Assertions.assertEquals(expectedRetry1Topic, allMetas.get(2).topic());
         Assertions.assertEquals(expectedRetry2Topic, allMetas.get(3).topic());
 
-        Mockito.verify(inventoryEventListener, Mockito.times(expectedMaxDltAttempts)).onDltMessage(eq(aMessage), Mockito.any(), metadata.capture());
+        Mockito.verify(inventoryEventListener, Mockito.times(expectedMaxDltAttempts)).onDltMessage(record.capture(), Mockito.any());
 
-        Assertions.assertEquals(expectedDltTopic, metadata.getValue().topic());
+        Assertions.assertEquals(expectedDltTopic, record.getValue().topic());
     }
 
     @Test
     void givenAValidInventoryCreatedRollbackBySkusEventButOccurredOnIsAfter10Days_whenReceive_shouldNotProcessIt() throws Exception {
         // given
-        final var aMockMetadata = Mockito.mock(ConsumerRecordMetadata.class);
         final var aMockAcknowledgment = Mockito.mock(Acknowledgment.class);
 
         final var aInventory = Fixture.Inventories.tshirtInventory();
         final var aInventoryCreatedRollbackEvent = InventoryCreatedRollbackBySkusEvent
                 .from(List.of(aInventory.getSku()));
-        final var aOutboxEvent = OutboxEventEntity.from(aInventoryCreatedRollbackEvent);
+        final var aOutboxEvent = OutboxEventEntity.create(aInventoryCreatedRollbackEvent);
         aOutboxEvent.setOccurredOn(aOutboxEvent.getOccurredOn()
                 .minus(11, ChronoUnit.DAYS));
 
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
+        final var aMessage = aOutboxEvent.getData();
 
         final var aLatch = new CountDownLatch(1);
 
         // when
-        Mockito.when(aMockMetadata.topic()).thenReturn(inventoryTopic);
-        Mockito.when(aMockMetadata.partition()).thenReturn(1);
-        Mockito.when(aMockMetadata.offset()).thenReturn(1L);
-        Mockito.when(aMockMetadata.timestampType()).thenReturn(TimestampType.CREATE_TIME);
-        Mockito.when(aMockMetadata.timestamp()).thenReturn(1L);
         Mockito.doAnswer(it -> {
             aLatch.countDown();
             return null;
         }).when(aMockAcknowledgment).acknowledge();
 
+        final var aConsumerRecord = createConsumerRecord(inventoryTopic, aMessage, aOutboxEvent);
         final var aInventoryListener = new InventoryEventListener(removeInventoryBySkuUseCase, kafkaTemplate);
-        aInventoryListener.onMessage(aMessage, aMockAcknowledgment, aMockMetadata);
+        aInventoryListener.onMessage(aConsumerRecord, aMockAcknowledgment);
 
         // then
         Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
@@ -155,9 +145,9 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         final var aInventory = Fixture.Inventories.tshirtInventory();
         final var aInventoryCreatedRollbackEvent = InventoryCreatedRollbackBySkusEvent
                 .from(List.of(aInventory.getSku()));
-        final var aOutboxEvent = OutboxEventEntity.from(aInventoryCreatedRollbackEvent);
+        final var aOutboxEvent = OutboxEventEntity.create(aInventoryCreatedRollbackEvent);
 
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
+        final var aMessage = aOutboxEvent.getData();
 
         final var latch = new CountDownLatch(1);
 
@@ -167,7 +157,8 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(removeInventoryBySkuUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(inventoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
+        final var aProducerRecord = createProducerRecord(inventoryTopic, aMessage, aOutboxEvent);
+        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -179,12 +170,13 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     @Test
     void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() throws ExecutionException, InterruptedException, TimeoutException {
         // given
-        final var aOutboxEntity = OutboxEventEntity.from(new
+        final var aOutboxEntity = OutboxEventEntity.create(new
                 TestListenerDomainEvent(InventoryID.unique().getValue()));
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEntity, aOutboxEntity, aSource(), Operation.CREATE)));
+        final var aMessage = aOutboxEntity.getData();
 
         // when
-        producer().send(new ProducerRecord<>(inventoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
+        final var aProducerRecord = createProducerRecord(inventoryTopic, aMessage, aOutboxEntity);
+        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
 
         // then
         Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(0))
@@ -194,31 +186,167 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     @Test
     void givenAValidInventoryCreatedRollbackBySkusEvent_whenReceiveOnDLTAndSendToPrimaryTopic_shouldResendToPrimaryTopic() throws Exception {
         // given
-        final var mockMetadata = Mockito.mock(ConsumerRecordMetadata.class);
         final var mockAcknowledgment = Mockito.mock(Acknowledgment.class);
 
         final var aInventory = Fixture.Inventories.tshirtInventory();
         final var aInventoryCreatedRollbackEvent = InventoryCreatedRollbackBySkusEvent
                 .from(List.of(aInventory.getSku()));
-        final var aOutboxEvent = OutboxEventEntity.from(aInventoryCreatedRollbackEvent);
+        final var aOutboxEvent = OutboxEventEntity.create(aInventoryCreatedRollbackEvent);
 
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
+        final var aMessage = aOutboxEvent.getData();
 
         final var aLatch = new CountDownLatch(1);
 
         // when
-        Mockito.when(mockMetadata.topic()).thenReturn(inventoryTopic);
-        Mockito.when(mockMetadata.partition()).thenReturn(1);
-        Mockito.when(mockMetadata.offset()).thenReturn(1L);
-        Mockito.when(mockMetadata.timestampType()).thenReturn(TimestampType.CREATE_TIME);
-        Mockito.when(mockMetadata.timestamp()).thenReturn(1L);
         Mockito.doAnswer(it -> {
             aLatch.countDown();
             return null;
         }).when(mockAcknowledgment).acknowledge();
 
+        final var aConsumerRecord = createConsumerRecord(inventoryTopic, aMessage, aOutboxEvent);
         final var aInventoryEventListener = new InventoryEventListener(removeInventoryBySkuUseCase, kafkaTemplate);
-        aInventoryEventListener.onDltMessage(aMessage, mockAcknowledgment, mockMetadata);
+        aInventoryEventListener.onDltMessage(aConsumerRecord, mockAcknowledgment);
+
+        // then
+        Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
+        Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(0))
+                .execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidInventoryCreatedRollbackBySkusEventButOccurredOnIsAfter10Days_whenReceiveAndSendToDltThrowsTimeout_shouldNotProcessItAndNack() throws Exception {
+        // given
+        final var aMockAcknowledgment = Mockito.mock(Acknowledgment.class);
+        final var aMockKafkaTemplate = Mockito.mock(KafkaTemplate.class);
+
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+        final var aInventoryCreatedRollbackEvent = InventoryCreatedRollbackBySkusEvent
+                .from(List.of(aInventory.getSku()));
+        final var aOutboxEvent = OutboxEventEntity.create(aInventoryCreatedRollbackEvent);
+        aOutboxEvent.setOccurredOn(aOutboxEvent.getOccurredOn()
+                .minus(11, ChronoUnit.DAYS));
+
+        final var aMessage = aOutboxEvent.getData();
+
+        final var aLatch = new CountDownLatch(2);
+
+        // when
+        Mockito.doAnswer(it -> {
+            aLatch.countDown();
+            throw new TimeoutException("Error on sending message to DLT topic");
+        }).when(aMockKafkaTemplate).send(Mockito.any(ProducerRecord.class));
+
+        Mockito.doAnswer(it -> {
+            aLatch.countDown();
+            return null;
+        }).when(aMockAcknowledgment).nack(Mockito.any(Duration.class));
+
+        final var aConsumerRecord = createConsumerRecord(inventoryTopic, aMessage, aOutboxEvent);
+        final var aInventoryListener = new InventoryEventListener(removeInventoryBySkuUseCase, aMockKafkaTemplate);
+        aInventoryListener.onMessage(aConsumerRecord, aMockAcknowledgment);
+
+        // then
+        Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
+        Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(0))
+                .execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidInventoryCreatedRollbackBySkusEventButOccurredOnIsAfter10Days_whenReceiveInDltRetryAndSendToDltThrowsTimeout_shouldNotProcessItAndNack() throws Exception {
+        // given
+        final var aMockAcknowledgment = Mockito.mock(Acknowledgment.class);
+        final var aMockKafkaTemplate = Mockito.mock(KafkaTemplate.class);
+
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+        final var aInventoryCreatedRollbackEvent = InventoryCreatedRollbackBySkusEvent
+                .from(List.of(aInventory.getSku()));
+        final var aOutboxEvent = OutboxEventEntity.create(aInventoryCreatedRollbackEvent);
+        aOutboxEvent.setOccurredOn(aOutboxEvent.getOccurredOn()
+                .minus(11, ChronoUnit.DAYS));
+
+        final var aMessage = aOutboxEvent.getData();
+
+        final var aLatch = new CountDownLatch(2);
+
+        // when
+        Mockito.doAnswer(it -> {
+            aLatch.countDown();
+            throw new TimeoutException("Error on sending message to DLT topic");
+        }).when(aMockKafkaTemplate).send(Mockito.any(ProducerRecord.class));
+
+        Mockito.doAnswer(it -> {
+            aLatch.countDown();
+            return null;
+        }).when(aMockAcknowledgment).nack(Mockito.any(Duration.class));
+
+        final var aConsumerRecord = createConsumerRecord(inventoryTopic, aMessage, aOutboxEvent);
+        final var aInventoryListener = new InventoryEventListener(removeInventoryBySkuUseCase, aMockKafkaTemplate);
+        aInventoryListener.onDltMessage(aConsumerRecord, aMockAcknowledgment);
+
+        // then
+        Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
+        Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(0))
+                .execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidInventoryCreatedRollbackBySkusEventButNotContainsHeaders_whenReceiveAndSendToDlt_shouldNotProcessIt() throws Exception {
+        // given
+        final var aMockAcknowledgment = Mockito.mock(Acknowledgment.class);
+
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+        final var aInventoryCreatedRollbackEvent = InventoryCreatedRollbackBySkusEvent
+                .from(List.of(aInventory.getSku()));
+        final var aOutboxEvent = OutboxEventEntity.create(aInventoryCreatedRollbackEvent);
+        aOutboxEvent.setOccurredOn(aOutboxEvent.getOccurredOn()
+                .minus(11, ChronoUnit.DAYS));
+
+        final var aMessage = aOutboxEvent.getData();
+
+        final var aLatch = new CountDownLatch(1);
+
+        // when
+        Mockito.doAnswer(it -> {
+            aLatch.countDown();
+            return null;
+        }).when(aMockAcknowledgment).acknowledge();
+
+        final var aConsumerRecord = new ConsumerRecord<String, String>(inventoryTopic, 1, 0, null, aMessage);
+        aConsumerRecord.headers().add("event_occurred_on", aOutboxEvent.getOccurredOn().toString().getBytes());
+        final var aInventoryListener = new InventoryEventListener(removeInventoryBySkuUseCase, kafkaTemplate);
+        aInventoryListener.onMessage(aConsumerRecord, aMockAcknowledgment);
+
+        // then
+        Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
+        Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(0))
+                .execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidInventoryCreatedRollbackBySkusEventButNotContainsHeaders_whenReceiveInDltRetryAndSendToDlt_shouldNotProcessIt() throws Exception {
+        // given
+        final var aMockAcknowledgment = Mockito.mock(Acknowledgment.class);
+
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+        final var aInventoryCreatedRollbackEvent = InventoryCreatedRollbackBySkusEvent
+                .from(List.of(aInventory.getSku()));
+        final var aOutboxEvent = OutboxEventEntity.create(aInventoryCreatedRollbackEvent);
+        aOutboxEvent.setOccurredOn(aOutboxEvent.getOccurredOn()
+                .minus(11, ChronoUnit.DAYS));
+
+        final var aMessage = aOutboxEvent.getData();
+
+        final var aLatch = new CountDownLatch(1);
+
+        // when
+        Mockito.doAnswer(it -> {
+            aLatch.countDown();
+            return null;
+        }).when(aMockAcknowledgment).acknowledge();
+
+        final var aConsumerRecord = new ConsumerRecord<String, String>(inventoryTopic, 1, 0, null, aMessage);
+        final var aInventoryListener = new InventoryEventListener(removeInventoryBySkuUseCase, kafkaTemplate);
+        aInventoryListener.onDltMessage(aConsumerRecord, aMockAcknowledgment);
 
         // then
         Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));

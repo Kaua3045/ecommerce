@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @UnitTest
-public class InMemoryEventServiceImplTest {
+public class InMemoryEventProducerServiceImplTest {
 
-    private final InMemoryEventServiceImpl target = new InMemoryEventServiceImpl();
+    private final InMemoryEventProducerServiceImpl target = new InMemoryEventProducerServiceImpl();
 
     @Test
     void givenAValidObject_whenCallSendEvent_shouldDoesNotThrow() {

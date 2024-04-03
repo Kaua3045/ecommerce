@@ -31,23 +31,12 @@ public abstract class Entity<ID extends Identifier> {
         return Collections.unmodifiableList(domainEvents);
     }
 
-    public void publishDomainEvent(final DomainEventPublisher eventPublisher, final String aTopic) {
-        if (eventPublisher == null) {
-            return;
-        }
-
-        getDomainEvents().forEach(event -> eventPublisher.publish(event, aTopic));
-
-        this.domainEvents.clear();
-    }
-
     public void publishDomainEvent(final DomainEventPublisher eventPublisher) {
         if (eventPublisher == null) {
             return;
         }
 
-        // TODO: IN FUTURE REFACTOR THIS TO PUBLISH METHOD DOES NOT RECEIVE TOPIC
-        getDomainEvents().forEach(event -> eventPublisher.publish(event, null));
+        getDomainEvents().forEach(eventPublisher::publish);
 
         this.domainEvents.clear();
     }

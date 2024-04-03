@@ -7,6 +7,7 @@ import com.kaua.ecommerce.application.exceptions.TransactionFailureException;
 import com.kaua.ecommerce.application.gateways.InventoryGateway;
 import com.kaua.ecommerce.application.gateways.InventoryMovementGateway;
 import com.kaua.ecommerce.domain.Fixture;
+import com.kaua.ecommerce.domain.exceptions.ItemOutOfStockException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
@@ -130,6 +131,34 @@ public class DecreaseInventoryUseCaseTest extends UseCaseTest {
 
         final var aOutput = Assertions.assertThrows(
                 TransactionFailureException.class,
+                () -> this.decreaseInventoryQuantityUseCase.execute(aCommand));
+
+        Assertions.assertEquals(expectedErrorMessage, aOutput.getMessage());
+
+        Mockito.verify(inventoryGateway, Mockito.times(1)).findBySku(aSku);
+        Mockito.verify(inventoryGateway, Mockito.times(0)).update(Mockito.any());
+        Mockito.verify(inventoryMovementGateway, Mockito.times(0)).create(Mockito.any());
+    }
+
+    @Test
+    void givenAInventoryWithZeroQuantity_whenCallDecreaseQuantity_shouldThrowItemOutOfStockException() {
+        final var aInventory = Inventory.newInventory(
+                "1",
+                "134-tshirt-red-gg",
+                1
+        );
+
+        final var aSku = aInventory.getSku();
+        final var aQuantity = 5;
+
+        final var aCommand = DecreaseInventoryQuantityCommand.with(aSku, aQuantity);
+
+        final var expectedErrorMessage = "Item %s out of stock".formatted(aSku);
+
+        Mockito.when(inventoryGateway.findBySku(aSku)).thenReturn(Optional.of(aInventory));
+
+        final var aOutput = Assertions.assertThrows(
+                ItemOutOfStockException.class,
                 () -> this.decreaseInventoryQuantityUseCase.execute(aCommand));
 
         Assertions.assertEquals(expectedErrorMessage, aOutput.getMessage());

@@ -1,6 +1,7 @@
 package com.kaua.ecommerce.domain.inventory;
 
 import com.kaua.ecommerce.domain.AggregateRoot;
+import com.kaua.ecommerce.domain.exceptions.ItemOutOfStockException;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 
@@ -49,6 +50,11 @@ public class Inventory extends AggregateRoot<InventoryID> {
 
     public Inventory decreaseQuantity(final int aQuantity) {
         this.quantity -= aQuantity;
+
+        if (this.quantity < 0) {
+            throw new ItemOutOfStockException(this.sku);
+        }
+
         this.updatedAt = InstantUtils.now();
         return this;
     }

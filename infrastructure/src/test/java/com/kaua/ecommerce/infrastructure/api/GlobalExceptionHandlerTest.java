@@ -162,4 +162,29 @@ public class GlobalExceptionHandlerTest {
 
         Mockito.verify(updateCustomerCpfUseCase, Mockito.times(1)).execute(Mockito.any());
     }
+
+    @Test
+    void testThrowInternalServerErrorException() throws Exception {
+        final var aCleanCpf = "81595915001";
+        final var aAccountId = "123";
+
+        final var expectedErrorMessage = "An internal server error occurred";
+
+        final var aInput = new UpdateCustomerCpfInput(aCleanCpf);
+
+        Mockito.when(updateCustomerCpfUseCase.execute(Mockito.any()))
+                .thenThrow(new RuntimeException(expectedErrorMessage));
+
+        final var request = MockMvcRequestBuilders.patch("/v1/customers/{accountId}/cpf", aAccountId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.mapper.writeValueAsString(aInput));
+
+        this.mvc.perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(expectedErrorMessage)));
+
+        Mockito.verify(updateCustomerCpfUseCase, Mockito.times(1)).execute(Mockito.any());
+    }
 }

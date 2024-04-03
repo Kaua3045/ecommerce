@@ -8,13 +8,8 @@ import com.kaua.ecommerce.domain.category.events.CategoryCreatedEvent;
 import com.kaua.ecommerce.domain.category.events.CategoryDeletedEvent;
 import com.kaua.ecommerce.domain.category.events.CategoryUpdatedEvent;
 import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
-import com.kaua.ecommerce.infrastructure.configurations.json.Json;
-import com.kaua.ecommerce.infrastructure.listeners.models.MessageValue;
-import com.kaua.ecommerce.infrastructure.listeners.models.Operation;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
-import com.kaua.ecommerce.infrastructure.listeners.models.ValuePayload;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -44,9 +39,9 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         // given
         final var aCategory = Fixture.Categories.tech();
         final var aCategoryEvent = CategoryCreatedEvent.from(aCategory);
-        final var aOutboxEvent = OutboxEventEntity.from(aCategoryEvent);
+        final var aOutboxEvent = OutboxEventEntity.create(aCategoryEvent);
 
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
+        final var aMessage = aOutboxEvent.getData();
 
         final var latch = new CountDownLatch(1);
 
@@ -56,7 +51,8 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(saveCategoryUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
+        final var aProducerRecord = createProducerRecord(categoryTopic, aMessage, aOutboxEvent);
+        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -69,9 +65,9 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         // given
         final var aCategory = Fixture.Categories.home();
         final var aCategoryEvent = CategoryUpdatedEvent.from(aCategory);
-        final var aOutboxEvent = OutboxEventEntity.from(aCategoryEvent);
+        final var aOutboxEvent = OutboxEventEntity.create(aCategoryEvent);
 
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
+        final var aMessage = aOutboxEvent.getData();
 
         final var latch = new CountDownLatch(1);
 
@@ -81,7 +77,8 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(saveCategoryUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
+        final var aProducerRecord = createProducerRecord(categoryTopic, aMessage, aOutboxEvent);
+        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -95,9 +92,9 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         final var aCategory = Fixture.Categories.tech();
         final var aId = aCategory.getId().getValue();
         final var aCategoryEvent = CategoryDeletedEvent.from(aId, null);
-        final var aOutboxEvent = OutboxEventEntity.from(aCategoryEvent);
+        final var aOutboxEvent = OutboxEventEntity.create(aCategoryEvent);
 
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEvent, aOutboxEvent, aSource(), Operation.CREATE)));
+        final var aMessage = aOutboxEvent.getData();
 
         final var latch = new CountDownLatch(1);
 
@@ -107,7 +104,8 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(removeCategoryUseCase).execute(Mockito.any());
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
+        final var aProducerRecord = createProducerRecord(categoryTopic, aMessage, aOutboxEvent);
+        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
 
         Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
 
@@ -118,12 +116,13 @@ public class CategoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     @Test
     void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothing() throws ExecutionException, InterruptedException, TimeoutException {
         // given
-        final var aOutboxEntity = OutboxEventEntity.from(new
+        final var aOutboxEntity = OutboxEventEntity.create(new
                 TestListenerDomainEvent(CategoryID.unique().getValue()));
-        final var aMessage = Json.writeValueAsString(new MessageValue<>(new ValuePayload<>(aOutboxEntity, aOutboxEntity, aSource(), Operation.CREATE)));
+        final var aMessage = aOutboxEntity.getData();
 
         // when
-        producer().send(new ProducerRecord<>(categoryTopic, aMessage)).get(1, TimeUnit.MINUTES);
+        final var aProducerRecord = createProducerRecord(categoryTopic, aMessage, aOutboxEntity);
+        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
 
         // then
         Mockito.verify(saveCategoryUseCase, Mockito.times(0)).execute(Mockito.any());

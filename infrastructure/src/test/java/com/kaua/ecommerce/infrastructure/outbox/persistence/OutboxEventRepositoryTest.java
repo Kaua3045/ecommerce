@@ -26,7 +26,7 @@ public class OutboxEventRepositoryTest {
 
         final var aCategory = Fixture.Categories.tech();
 
-        final var aEntity = OutboxEventEntity.from(CategoryCreatedEvent.from(aCategory));
+        final var aEntity = OutboxEventEntity.create(CategoryCreatedEvent.from(aCategory));
         aEntity.setAggregateName(null);
 
         final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
@@ -46,7 +46,7 @@ public class OutboxEventRepositoryTest {
 
         final var aCategory = Fixture.Categories.tech();
 
-        final var aEntity = OutboxEventEntity.from(CategoryCreatedEvent.from(aCategory));
+        final var aEntity = OutboxEventEntity.create(CategoryCreatedEvent.from(aCategory));
         aEntity.setEventType(null);
 
         final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
@@ -66,7 +66,7 @@ public class OutboxEventRepositoryTest {
 
         final var aCategory = Fixture.Categories.tech();
 
-        final var aEntity = OutboxEventEntity.from(CategoryCreatedEvent.from(aCategory));
+        final var aEntity = OutboxEventEntity.create(CategoryCreatedEvent.from(aCategory));
         aEntity.setData(null);
 
         final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
@@ -86,7 +86,7 @@ public class OutboxEventRepositoryTest {
 
         final var aCategory = Fixture.Categories.tech();
 
-        final var aEntity = OutboxEventEntity.from(CategoryCreatedEvent.from(aCategory));
+        final var aEntity = OutboxEventEntity.create(CategoryCreatedEvent.from(aCategory));
         aEntity.setOccurredOn(null);
 
         final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
@@ -105,7 +105,7 @@ public class OutboxEventRepositoryTest {
 
         final var aCategory = Fixture.Categories.tech();
 
-        final var aEntity = OutboxEventEntity.from(CategoryCreatedEvent.from(aCategory));
+        final var aEntity = OutboxEventEntity.create(CategoryCreatedEvent.from(aCategory));
         aEntity.setEventId(null);
 
         final var actualException = Assertions.assertThrows(JpaSystemException.class,
@@ -121,7 +121,7 @@ public class OutboxEventRepositoryTest {
     void givenAnValidEntity_whenCallSave_shouldPersistDataAndCallToString() {
         final var aCategory = Fixture.Categories.tech();
 
-        final var aEntity = OutboxEventEntity.from(CategoryCreatedEvent.from(aCategory));
+        final var aEntity = OutboxEventEntity.create(CategoryCreatedEvent.from(aCategory));
 
         final var actualEntity = outboxEventRepository.save(aEntity);
 
@@ -129,5 +129,25 @@ public class OutboxEventRepositoryTest {
 
         Assertions.assertNotNull(actualEntity);
         Assertions.assertNotNull(actualEntityToString);
+    }
+
+    @Test
+    void givenAnInvalidNullStatus_whenCallSave_shouldReturnAnException() {
+        final var expectedPropertyName = "status";
+        final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity.status";
+
+        final var aCategory = Fixture.Categories.tech();
+
+        final var aEntity = OutboxEventEntity.create(CategoryCreatedEvent.from(aCategory));
+        aEntity.setStatus(null);
+
+        final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> outboxEventRepository.save(aEntity));
+
+        final var actualCause = Assertions.assertInstanceOf(PropertyValueException.class,
+                actualException.getCause());
+
+        Assertions.assertEquals(expectedPropertyName, actualCause.getPropertyName());
+        Assertions.assertEquals(expectedErrorMessage, actualCause.getMessage());
     }
 }

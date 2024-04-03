@@ -24,7 +24,7 @@ public class MySQLEventDatabaseServiceImpl implements EventDatabaseService {
     @Override
     public void send(final Object message, final String topic) {
         if (message instanceof DomainEvent aEvent) {
-            final var aOutboxEvent = OutboxEventEntity.from(aEvent);
+            final var aOutboxEvent = OutboxEventEntity.create(aEvent);
             this.outboxEventRepository.save(aOutboxEvent);
             log.info("Event sent to database: {}", aOutboxEvent);
         } else {

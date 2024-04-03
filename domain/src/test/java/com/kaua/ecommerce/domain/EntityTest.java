@@ -67,7 +67,7 @@ public class EntityTest extends UnitTest {
 
         Assertions.assertEquals(1, entity1.getDomainEvents().size());
 
-        entity1.publishDomainEvent(new SampleEntityPublisherEvent(), "topic");
+        entity1.publishDomainEvent(new SampleEntityPublisherEvent());
 
         Assertions.assertEquals(0, entity1.getDomainEvents().size());
     }
@@ -83,7 +83,7 @@ public class EntityTest extends UnitTest {
 
         Assertions.assertEquals(0, entity1.getDomainEvents().size());
 
-        entity1.publishDomainEvent(null, null);
+        entity1.publishDomainEvent(null);
 
         Assertions.assertEquals(0, entity1.getDomainEvents().size());
     }
@@ -170,7 +170,7 @@ public class EntityTest extends UnitTest {
     private static class SampleEntityPublisherEvent implements DomainEventPublisher {
 
         @Override
-        public <T extends DomainEvent> void publish(T event, String topic) {
+        public <T extends DomainEvent> void publish(T event) {
             // Lógica de publicação de evento simulada
         }
     }

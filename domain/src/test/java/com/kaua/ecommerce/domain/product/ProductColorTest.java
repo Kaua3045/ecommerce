@@ -1,9 +1,10 @@
 package com.kaua.ecommerce.domain.product;
 
+import com.kaua.ecommerce.domain.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ProductColorTest {
+public class ProductColorTest extends UnitTest {
 
     @Test
     void givenAValidColor_whenCallWith_shouldBeInstantiateProductColor() {

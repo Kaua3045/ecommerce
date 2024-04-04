@@ -2,6 +2,7 @@ package com.kaua.ecommerce.domain.product;
 
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.TestValidationHandler;
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.category.CategoryID;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.Set;
 
-public class ProductValidationTest {
+public class ProductValidationTest extends UnitTest {
 
     @Test
     void givenInvalidBlankName_whenCallNewProduct_shouldReturnDomainException() {

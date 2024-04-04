@@ -1,9 +1,10 @@
 package com.kaua.ecommerce.domain.product;
 
+import com.kaua.ecommerce.domain.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ProductSizeTest {
+public class ProductSizeTest extends UnitTest {
 
     @Test
     void givenAValidValues_whenCallWith_shouldBeInstantiateProductSize() {

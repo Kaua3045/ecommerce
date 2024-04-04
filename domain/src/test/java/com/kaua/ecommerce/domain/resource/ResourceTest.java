@@ -1,11 +1,11 @@
 package com.kaua.ecommerce.domain.resource;
 
-import com.kaua.ecommerce.domain.resource.Resource;
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ResourceTest {
+public class ResourceTest extends UnitTest {
 
     @Test
     void givenAValidParams_whenCallWithResource_shouldInstantiate() {

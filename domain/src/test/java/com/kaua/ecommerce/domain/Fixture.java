@@ -251,7 +251,7 @@ public final class Fixture {
         private static final Inventory TSHIRT_SKU = Inventory.newInventory(
                 ProductID.unique().getValue(),
                 "sku-tshirt",
-                faker.random().nextInt(1, 500)
+                faker.random().nextInt(10, 500)
         );
 
         public static Inventory tshirtInventory() {
@@ -263,7 +263,7 @@ public final class Fixture {
                     aProduct.getId().getValue(),
                     aProduct.getAttributes().stream()
                             .findFirst().get().getSku(),
-                    faker.random().nextInt(1, 500)
+                    faker.random().nextInt(10, 500)
             );
         }
     }

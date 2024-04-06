@@ -10,6 +10,11 @@ jobs:
   code-analysis:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: true
+      matrix:
+        modules: ['application', 'application', 'infrastructure']
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,12 +24,14 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Run tests and calculate coverage for ${{ matrix.modules }}
+        run: ./gradlew :${{ matrix.modules }}:test jacocoTestCoverageVerification
 
-      - name: Run tests and calculate coverage for domain
-        run: ./gradlew :domain:test jacocoTestCoverageVerification
+      # - name: Run tests and calculate coverage for domain
+      #   run: ./gradlew :domain:test jacocoTestCoverageVerification
 
-      - name: Run tests and calculate coverage for application
-        run: ./gradlew :application:test jacocoTestCoverageVerification
+      # - name: Run tests and calculate coverage for application
+      #   run: ./gradlew :application:test jacocoTestCoverageVerification
 
-      - name: Run tests and calculate coverage for infrastructure
-        run: ./gradlew :infrastructure:test jacocoTestCoverageVerification
+      # - name: Run tests and calculate coverage for infrastructure
+      #   run: ./gradlew :infrastructure:test jacocoTestCoverageVerification

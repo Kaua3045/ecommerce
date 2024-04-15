@@ -58,7 +58,7 @@ public class OutboxEventEntity {
 
     public static OutboxEventEntity create(final DomainEvent aDomainEvent) {
         return new OutboxEventEntity(
-                IdUtils.generate(),
+                aDomainEvent.eventId(),
                 aDomainEvent.aggregateName(),
                 aDomainEvent.eventType(),
                 Json.writeValueAsString(aDomainEvent),

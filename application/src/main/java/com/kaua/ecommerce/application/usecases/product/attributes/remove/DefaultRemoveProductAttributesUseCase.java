@@ -59,7 +59,7 @@ public class DefaultRemoveProductAttributesUseCase extends RemoveProductAttribut
 
             final var aTransactionResult = this.transactionManager.execute(() -> {
                 final var aUpdateResult = this.productGateway.update(aResultAfterCallRemove);
-                this.eventPublisher.publish(ProductUpdatedEvent.from(aResultAfterCallRemove));
+                this.eventPublisher.publish(ProductUpdatedEvent.from(aUpdateResult));
                 return aUpdateResult;
             });
 

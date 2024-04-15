@@ -48,7 +48,7 @@ public class DefaultRemoveProductImageUseCase extends RemoveProductImageUseCase 
 
                 final var aTransactionResult = this.transactionManager.execute(() -> {
                     final var aResult = this.productGateway.update(aProduct);
-                    this.eventPublisher.publish(ProductUpdatedEvent.from(aProduct));
+                    this.eventPublisher.publish(ProductUpdatedEvent.from(aResult));
                     return aResult;
                 });
 
@@ -65,7 +65,7 @@ public class DefaultRemoveProductImageUseCase extends RemoveProductImageUseCase 
 
             final var aTransactionResult = this.transactionManager.execute(() -> {
                 final var aResult = this.productGateway.update(aProduct);
-                this.eventPublisher.publish(ProductUpdatedEvent.from(aProduct));
+                this.eventPublisher.publish(ProductUpdatedEvent.from(aResult));
                 return aResult;
             });
 

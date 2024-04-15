@@ -17,7 +17,7 @@ import com.kaua.ecommerce.application.usecases.inventory.retrieve.get.GetInvento
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.get.GetInventoryBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdOutput;
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdUseCase;
-import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryDeletedBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
 import com.kaua.ecommerce.domain.inventory.Inventory;
@@ -70,7 +70,7 @@ public class InventoryAPITest {
     private RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
 
     @MockBean
-    private RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase;
+    private RollbackInventoryDeletedBySkuUseCase rollbackInventoryDeletedBySkuUseCase;
 
     @MockBean
     private IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase;
@@ -292,7 +292,7 @@ public class InventoryAPITest {
         final var aProductId = ProductID.unique().getValue();
         final var aSku = Fixture.createSku("sku");
 
-        Mockito.doNothing().when(rollbackInventoryBySkuUseCase).execute(Mockito.any());
+        Mockito.doNothing().when(rollbackInventoryDeletedBySkuUseCase).execute(Mockito.any());
 
         final var request = MockMvcRequestBuilders.post("/v1/inventories/rollback/{productId}/{sku}", aProductId, aSku)
                 .accept(MediaType.APPLICATION_JSON)
@@ -302,7 +302,7 @@ public class InventoryAPITest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Mockito.verify(rollbackInventoryBySkuUseCase, Mockito.times(1)).execute(Mockito.any());
+        Mockito.verify(rollbackInventoryDeletedBySkuUseCase, Mockito.times(1)).execute(Mockito.any());
     }
 
     @Test

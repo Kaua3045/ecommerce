@@ -12,7 +12,7 @@ import com.kaua.ecommerce.application.usecases.inventory.retrieve.get.GetInvento
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdCommand;
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuCommand;
-import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryDeletedBySkuUseCase;
 import com.kaua.ecommerce.domain.inventory.Inventory;
 import com.kaua.ecommerce.domain.pagination.Pagination;
 import com.kaua.ecommerce.domain.pagination.SearchQuery;
@@ -34,7 +34,7 @@ public class InventoryController implements InventoryAPI {
     private final CreateInventoryUseCase createInventoryUseCase;
     private final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase;
     private final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
-    private final RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase;
+    private final RollbackInventoryDeletedBySkuUseCase rollbackInventoryDeletedBySkuUseCase;
     private final IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase;
     private final DecreaseInventoryQuantityUseCase decreaseInventoryQuantityUseCase;
     private final ListInventoriesByProductIdUseCase listInventoriesByProductIdUseCase;
@@ -44,7 +44,7 @@ public class InventoryController implements InventoryAPI {
             final CreateInventoryUseCase createInventoryUseCase,
             final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase,
             final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase,
-            final RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase,
+            final RollbackInventoryDeletedBySkuUseCase rollbackInventoryDeletedBySkuUseCase,
             final IncreaseInventoryQuantityUseCase increaseInventoryQuantityUseCase,
             final DecreaseInventoryQuantityUseCase decreaseInventoryQuantityUseCase,
             final ListInventoriesByProductIdUseCase listInventoriesByProductIdUseCase,
@@ -53,7 +53,7 @@ public class InventoryController implements InventoryAPI {
         this.createInventoryUseCase = createInventoryUseCase;
         this.cleanInventoriesByProductIdUseCase = cleanInventoriesByProductIdUseCase;
         this.removeInventoryBySkuUseCase = removeInventoryBySkuUseCase;
-        this.rollbackInventoryBySkuUseCase = rollbackInventoryBySkuUseCase;
+        this.rollbackInventoryDeletedBySkuUseCase = rollbackInventoryDeletedBySkuUseCase;
         this.increaseInventoryQuantityUseCase = increaseInventoryQuantityUseCase;
         this.decreaseInventoryQuantityUseCase = decreaseInventoryQuantityUseCase;
         this.listInventoriesByProductIdUseCase = listInventoriesByProductIdUseCase;
@@ -101,7 +101,7 @@ public class InventoryController implements InventoryAPI {
 
     @Override
     public void rollbackInventoryBySkuAndProductId(String productId, String sku) {
-        this.rollbackInventoryBySkuUseCase.execute(RollbackInventoryBySkuCommand.with(productId, sku));
+        this.rollbackInventoryDeletedBySkuUseCase.execute(RollbackInventoryBySkuCommand.with(productId, sku));
         LogControllerResult.logResult(
                 log,
                 Inventory.class,

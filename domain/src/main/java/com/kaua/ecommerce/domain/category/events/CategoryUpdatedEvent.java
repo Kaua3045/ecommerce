@@ -4,6 +4,7 @@ import com.kaua.ecommerce.domain.category.Category;
 import com.kaua.ecommerce.domain.category.CategoryID;
 import com.kaua.ecommerce.domain.event.DomainEvent;
 import com.kaua.ecommerce.domain.event.EventsTypes;
+import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 
 import java.time.Instant;
@@ -20,6 +21,7 @@ public record CategoryUpdatedEvent(
         int level,
         Instant createdAt,
         Instant updatedAt,
+        String eventId,
         String aggregateName,
         String eventType,
         Instant occurredOn
@@ -46,6 +48,7 @@ public record CategoryUpdatedEvent(
                 level,
                 createdAt,
                 updatedAt,
+                IdUtils.generate(),
                 Category.class.getSimpleName().toLowerCase(),
                 EventsTypes.CATEGORY_UPDATED,
                 InstantUtils.now()

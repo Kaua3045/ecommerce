@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.argThat;
 
-public class RollbackInventoryBySkuUseCaseTest extends UseCaseTest {
+public class RollbackInventoryDeletedBySkuUseCaseTest extends UseCaseTest {
 
     @Mock
     private InventoryMovementGateway inventoryMovementGateway;
@@ -34,7 +34,7 @@ public class RollbackInventoryBySkuUseCaseTest extends UseCaseTest {
     private TransactionManager transactionManager;
 
     @InjectMocks
-    private DefaultRollbackInventoryBySkuUseCase rollbackBySkuUseCase;
+    private DefaultRollbackInventoryDeletedBySkuUseCase rollbackBySkuUseCase;
 
     @Test
     void givenAValidValues_whenCallExecute_shouldRollbackInventory() {

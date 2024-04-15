@@ -2,6 +2,7 @@ package com.kaua.ecommerce.domain;
 
 import com.kaua.ecommerce.domain.event.DomainEvent;
 import com.kaua.ecommerce.domain.event.DomainEventPublisher;
+import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.domain.validation.ValidationHandler;
 import org.junit.jupiter.api.Assertions;
@@ -159,11 +160,11 @@ public class EntityTest extends UnitTest {
         }
     }
 
-    private record SampleEntityEvent(String id, String aggregateName, String eventType,
+    private record SampleEntityEvent(String id, String eventId, String aggregateName, String eventType,
                                      Instant occurredOn) implements DomainEvent {
 
         public SampleEntityEvent(final String id) {
-            this(id, "test", "test_created", InstantUtils.now());
+            this(id, IdUtils.generate(), "test", "test_created", InstantUtils.now());
         }
     }
 

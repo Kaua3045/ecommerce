@@ -3,7 +3,6 @@ package com.kaua.ecommerce.infrastructure.listeners;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkuEvent;
-import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity;
@@ -127,18 +126,6 @@ public class InventoryEventListener extends EventListener {
         LOG.atLevel(Level.WARN).log("Message received from Kafka at DLT [topic:{}] [partition:{}] [offset:{}]: {}",
                 record.topic(), record.partition(), record.offset(), record.value());
 
-        try {
-            handlePublishMessageToRetryTopic(record, INVENTORY_TOPIC, acknowledgment, LOG);
-            LOG.warn("Event sent to inventory topic for retry: {}, occurred on: {} and now: {}, payload: {}",
-                    INVENTORY_TOPIC, getOccurredOnHeaderValue(record), InstantUtils.now(), record.value());
-        } catch (final KafkaHeadersException e) {
-            handleMessagingNotContainsHeaders(
-                    record,
-                    INVENTORY_DLT_INVALID,
-                    acknowledgment,
-                    LOG,
-                    e.getMessage()
-            );
-        }
+        handlePublishMessageToRetryTopic(record, INVENTORY_TOPIC, acknowledgment, LOG);
     }
 }

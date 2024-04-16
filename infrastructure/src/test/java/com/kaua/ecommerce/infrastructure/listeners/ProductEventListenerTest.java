@@ -15,10 +15,9 @@ import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
-import org.apache.kafka.clients.admin.TopicListing;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -76,14 +75,9 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     @Captor
     private ArgumentCaptor<ConsumerRecord<String, String>> record;
 
-    @AfterEach
+    @BeforeEach
     void clean() throws ExecutionException, InterruptedException, TimeoutException {
-        final var aTopicsName = admin().listTopics().listings().get(1, TimeUnit.MINUTES).stream()
-                .map(TopicListing::name)
-                .filter(it -> it.contains("product"))
-                .toList();
-
-        cleanUpMessages("test-product-event-listener", aTopicsName);
+        cleanUpTopics("product");
     }
 
     @Test
@@ -166,7 +160,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAnInvalidProductCreatedEvent_whenReceiveAsVersionIsBefore_shouldNotProcessAndMarkAck() throws Exception {
+    void givenAnInvalidProductCreatedEvent_whenReceiveAsVersionIsOld_shouldNotProcessAndMarkAck() throws Exception {
         // given
         final var aProduct = Fixture.Products.book();
         final var aProductEvent = ProductCreatedEvent.from(aProduct);
@@ -176,7 +170,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         final var latch = new CountDownLatch(1);
 
-        Mockito.when(eventMetadataGateway.newerEventProcessed(Mockito.any(), Mockito.anyLong()))
+        Mockito.when(eventMetadataGateway.newerEventProcessed(eq(aProductEvent.id()), eq(aProductEvent.version())))
                 .thenAnswer(t -> {
                     latch.countDown();
                     return true;
@@ -325,13 +319,21 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     @Test
     void givenAValidEventButEventTypeDoesNotMatch_whenReceive_shouldDoNothingAndNack() throws ExecutionException, InterruptedException, TimeoutException {
         // given
+        final var aMockedAck = Mockito.mock(Acknowledgment.class);
         final var aOutboxEntity = OutboxEventEntity.create(new
                 TestListenerDomainEvent(ProductID.unique().getValue()));
         final var aMessage = aOutboxEntity.getData();
 
+        final var aLatch = new CountDownLatch(1);
+
+        Mockito.doAnswer(t -> {
+            aLatch.countDown();
+            return null;
+        }).when(aMockedAck).nack(Mockito.any(Duration.class));
+
         // when
-        final var aProducerRecord = createProducerRecord(productTopic, aMessage, aOutboxEntity);
-        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
+        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase, removeProductUseCase, kafkaTemplate, eventMetadataGateway);
+        aProductEventListener.onMessage(createConsumerRecord(productTopic, aMessage, aOutboxEntity), aMockedAck);
 
         // then
         Mockito.verify(productGateway, Mockito.times(0)).findById(Mockito.any());
@@ -371,7 +373,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAValidProductCreatedEvent_whenReceiveButProductNotExists_shouldNotProcessProductCreatedEvent() {
+    void givenAValidProductCreatedEvent_whenReceiveButProductNotExists_shouldNotProcessProductCreatedEvent() throws ExecutionException, InterruptedException, TimeoutException {
         // given
         final var aMockedAck = Mockito.mock(Acknowledgment.class);
 
@@ -399,7 +401,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAValidProductUpdatedEvent_whenReceiveButProductNotExists_shouldNotProcessProductUpdatedEvent() {
+    void givenAValidProductUpdatedEvent_whenReceiveButProductNotExists_shouldNotProcessProductUpdatedEvent() throws ExecutionException, InterruptedException, TimeoutException {
         // given
         final var aMockedAck = Mockito.mock(Acknowledgment.class);
 
@@ -428,7 +430,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAValidProductUpdatedEvent_whenReceiveInErrorDLTButNotProcessThis_shouldNotProcessProductUpdatedEvent() throws InterruptedException {
+    void givenAValidProductUpdatedEvent_whenReceiveInErrorDLTButNotProcessThis_shouldNotProcessProductUpdatedEvent() throws InterruptedException, ExecutionException, TimeoutException {
         final var mockAcknowledgment = Mockito.mock(Acknowledgment.class);
 
         // given
@@ -459,7 +461,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAValidProductTestEventSenderInProductTopic_whenReceiveInErrorDTLTButNotProcessThisAndSendToProductTopic_shouldNotProcessProductTestEvent() throws InterruptedException {
+    void givenAValidProductTestEventSenderInProductTopic_whenReceiveInErrorDTLTButNotProcessThisAndSendToProductTopic_shouldNotProcessProductTestEvent() throws InterruptedException, ExecutionException, TimeoutException {
         final var mockAcknowledgment = Mockito.mock(Acknowledgment.class);
 
         // given

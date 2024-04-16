@@ -50,7 +50,7 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
 
     @BeforeEach
     void clean() throws ExecutionException, InterruptedException, TimeoutException {
-        cleanUpTopics("inventory");
+        cleanUpMessages("inventory");
     }
 
     @Test

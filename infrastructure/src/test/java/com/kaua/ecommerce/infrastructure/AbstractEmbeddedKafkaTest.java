@@ -1,15 +1,15 @@
 package com.kaua.ecommerce.infrastructure;
 
 import com.kaua.ecommerce.config.IntegrationTestConfiguration;
-import com.kaua.ecommerce.infrastructure.configurations.properties.kafka.KafkaProperties;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.RecordsToDelete;
 import org.apache.kafka.clients.admin.TopicListing;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.TopicCollection;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 @EmbeddedKafka(partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
 @ActiveProfiles("test-integration-kafka")
@@ -44,9 +45,6 @@ public abstract class AbstractEmbeddedKafkaTest {
 
     @Autowired
     protected EmbeddedKafkaBroker kafkaBroker;
-
-    @Autowired
-    private KafkaProperties kafkaProperties;
 
     private Producer<String, String> producer;
     private AdminClient admin;
@@ -99,13 +97,17 @@ public abstract class AbstractEmbeddedKafkaTest {
         return aConsumerRecord;
     }
 
-    protected void cleanUpTopics(final String prefixName) throws ExecutionException, InterruptedException, TimeoutException {
+    protected void cleanUpMessages(final String prefixTopicName) throws ExecutionException, InterruptedException, TimeoutException {
         final var aTopicsNames = admin().listTopics().listings().get(1, TimeUnit.MINUTES).stream()
                 .map(TopicListing::name)
-                .filter(it -> it.contains(prefixName))
+                .filter(it -> it.contains(prefixTopicName))
                 .toList();
 
-        admin().deleteTopics(TopicCollection.ofTopicNames(aTopicsNames)).all()
-                .get(1, TimeUnit.MINUTES);
+        final var aRecordsToDelete = aTopicsNames.stream()
+                .collect(Collectors.toMap(name ->
+                                new TopicPartition(name, 0),
+                        name -> RecordsToDelete.beforeOffset(-1)));
+
+        admin().deleteRecords(aRecordsToDelete).all().get(1, TimeUnit.MINUTES);
     }
 }

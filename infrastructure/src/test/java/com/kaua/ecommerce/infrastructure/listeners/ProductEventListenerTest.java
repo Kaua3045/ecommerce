@@ -77,7 +77,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
     @BeforeEach
     void clean() throws ExecutionException, InterruptedException, TimeoutException {
-        cleanUpTopics("product");
+        cleanUpMessages("product");
     }
 
     @Test

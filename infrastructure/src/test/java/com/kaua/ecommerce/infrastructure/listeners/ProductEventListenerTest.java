@@ -428,7 +428,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAValidProductUpdatedEvent_whenReceiveInErrorDLTButNotProcessThis_shouldNotProcessProductUpdatedEvent() {
+    void givenAValidProductUpdatedEvent_whenReceiveInErrorDLTButNotProcessThis_shouldNotProcessProductUpdatedEvent() throws InterruptedException {
         final var mockAcknowledgment = Mockito.mock(Acknowledgment.class);
 
         // given
@@ -452,13 +452,14 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         aProductEventListener.onDltMessage(aConsumerRecord, mockAcknowledgment);
 
         // then
+        Assertions.assertTrue(aLatch.await(2, TimeUnit.MINUTES));
         Mockito.verify(productGateway, Mockito.times(0)).findById(Mockito.any());
         Mockito.verify(saveProductUseCase, Mockito.times(0)).execute(Mockito.any());
         Mockito.verify(removeProductUseCase, Mockito.times(0)).execute(Mockito.any());
     }
 
     @Test
-    void givenAValidProductTestEventSenderInProductTopic_whenReceiveInErrorDOLTButNotProcessThisAndSendToProductTopic_shouldNotProcessProductTestEvent() {
+    void givenAValidProductTestEventSenderInProductTopic_whenReceiveInErrorDTLTButNotProcessThisAndSendToProductTopic_shouldNotProcessProductTestEvent() throws InterruptedException {
         final var mockAcknowledgment = Mockito.mock(Acknowledgment.class);
 
         // given
@@ -481,6 +482,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         aProductEventListener.onDltMessage(aConsumerRecord, mockAcknowledgment);
 
         // then
+        Assertions.assertTrue(aLatch.await(2, TimeUnit.MINUTES));
         Mockito.verify(productGateway, Mockito.times(0)).findById(Mockito.any());
         Mockito.verify(saveProductUseCase, Mockito.times(0)).execute(Mockito.any());
         Mockito.verify(removeProductUseCase, Mockito.times(0)).execute(Mockito.any());

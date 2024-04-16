@@ -8,7 +8,7 @@ import com.kaua.ecommerce.application.gateways.ProductGateway;
 import com.kaua.ecommerce.application.gateways.ProductInventoryGateway;
 import com.kaua.ecommerce.domain.exceptions.DomainException;
 import com.kaua.ecommerce.domain.exceptions.NotFoundException;
-import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkusEvent;
+import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkuEvent;
 import com.kaua.ecommerce.domain.product.*;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.domain.validation.Error;
@@ -94,11 +94,8 @@ public class DefaultAddProductAttributesUseCase extends AddProductAttributesUseC
         });
 
         if (aResult.isFailure()) {
-            this.eventPublisher.publish(InventoryCreatedRollbackBySkusEvent.from(
-                    aAttributesToCreateInventories.stream()
-                            .map(ProductInventoryGateway.CreateInventoryParams::sku)
-                            .toList()
-            ));
+            aAttributesToCreateInventories.forEach(aParam ->
+                    this.eventPublisher.publish(InventoryCreatedRollbackBySkuEvent.from(aParam.sku())));
             throw TransactionFailureException.with(aResult.getErrorResult());
         }
 

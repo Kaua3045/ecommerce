@@ -25,80 +25,122 @@ public abstract class EventListener {
         this.kafkaTemplate = Objects.requireNonNull(kafkaTemplate);
     }
 
-    Instant getOccurredOnHeaderValue(final ConsumerRecord<String, String> record) {
-        final var aOccurredOnHeader = getEventOccurredOnHeader(record);
+    Instant getOccurredOnHeaderValue(final ConsumerRecord<String, String> message) {
+        final var aOccurredOnHeader = getEventOccurredOnHeader(message);
         final var aOccurredOnString = new String(aOccurredOnHeader);
         return InstantUtils.parse(aOccurredOnString);
     }
 
-    String getEventTypeHeaderValue(final ConsumerRecord<String, String> record) {
-        final var aEventTypeHeader = getEventTypeHeader(record);
+    String getEventTypeHeaderValue(final ConsumerRecord<String, String> message) {
+        final var aEventTypeHeader = getEventTypeHeader(message);
         return new String(aEventTypeHeader);
     }
 
-    ProducerRecord<String, Object> createProducerRecordWithHeaders(final ConsumerRecord<String, String> record, final String topic) {
-        final var aProducerRecord = new ProducerRecord<String, Object>(topic, record.value());
-        record.headers().forEach(aProducerRecord.headers()::add);
+    String getEventIdHeaderValue(final ConsumerRecord<String, String> message) {
+        final var aEventIdHeader = getEventIdHeader(message);
+        return new String(aEventIdHeader);
+    }
+
+    ProducerRecord<String, Object> createProducerRecordWithHeaders(final ConsumerRecord<String, String> message, final String topic) {
+        final var aProducerRecord = new ProducerRecord<String, Object>(topic, message.value());
+        message.headers().forEach(aProducerRecord.headers()::add);
         return aProducerRecord;
     }
 
     void handlePublishMessageTimeout(
-            final ConsumerRecord<String, String> record,
+            final ConsumerRecord<String, String> message,
             final String topic,
             final Acknowledgment ack,
             final Exception ex,
             final Logger log
     ) {
-        log.error("Error sending message to topic {} and nack message: {}", topic, record, ex);
+        log.error("Error on sending message to topic {} and nack message {}", topic, message, ex);
         ack.nack(Duration.ofSeconds(5));
     }
 
     void handlePublishMessageToRetryTopic(
-            final ConsumerRecord<String, String> record,
+            final ConsumerRecord<String, String> message,
             final String topic,
             final Acknowledgment ack,
             final Logger log
     ) {
         try {
-            kafkaTemplate.send(createProducerRecordWithHeaders(record, topic)).get(1, TimeUnit.MINUTES);
+            kafkaTemplate.send(createProducerRecordWithHeaders(message, topic)).get(1, TimeUnit.MINUTES);
             ack.acknowledge();
-            log.warn("Event sent to retry topic: {}, payload: {}", topic, record.value());
+            final var aEventType = getEventTypeHeaderValue(message);
+            final var aEventId = getEventIdHeaderValue(message);
+            log.warn("Event [type:{}] [eventId:{}] sent to retry topic: {}, payload: {}",
+                    aEventType,
+                    aEventId,
+                    topic,
+                    message.value()
+            );
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            handlePublishMessageTimeout(record, topic, ack, e, log);
+            handlePublishMessageTimeout(message, topic, ack, e, log);
+        }
+    }
+
+    void handleMessagingNotContainsHeaders(
+            final ConsumerRecord<String, String> message,
+            final String topic,
+            final Acknowledgment ack,
+            final Logger log,
+            final String errorMessage
+    ) {
+        message.headers().add("error_message", errorMessage.getBytes());
+        try {
+            kafkaTemplate.send(createProducerRecordWithHeaders(message, topic)).get(1, TimeUnit.MINUTES);
+            ack.acknowledge();
+            log.warn("Event sent to DLT topic: {}, because: {}, payload: {}",
+                    topic,
+                    errorMessage,
+                    message.value()
+            );
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            handlePublishMessageTimeout(message, topic, ack, e, log);
         }
     }
 
     void handleMessagingErrorAndSendToDlt(
-            final ConsumerRecord<String, String> record,
+            final ConsumerRecord<String, String> message,
             final String topic,
             final Acknowledgment ack,
             final Logger log,
             final String errorMessage
     ) {
         try {
-            record.headers().add("error_message", errorMessage.getBytes());
-            kafkaTemplate.send(createProducerRecordWithHeaders(record, topic)).get(1, TimeUnit.MINUTES);
+            message.headers().add("error_message", errorMessage.getBytes());
+            kafkaTemplate.send(createProducerRecordWithHeaders(message, topic)).get(1, TimeUnit.MINUTES);
             ack.acknowledge();
-            log.warn("Event sent to DLT topic: {}, payload: {}", topic, record.value());
+
+            final var aEventType = getEventTypeHeaderValue(message);
+            final var aEventId = getEventIdHeaderValue(message);
+            log.warn("Event [type:{}] [eventId:{}] sent to DLT topic: {}, because: {}, payload: {}",
+                    aEventType,
+                    aEventId,
+                    topic,
+                    errorMessage,
+                    message.value()
+            );
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            handlePublishMessageTimeout(record, topic, ack, e, log);
+            handlePublishMessageTimeout(message, topic, ack, e, log);
         }
     }
 
     void handleMessagingTypeNotSupported(
-            final ConsumerRecord<String, String> record,
+            final ConsumerRecord<String, String> message,
             final String eventType,
             final String dltTopic,
             final Acknowledgment ack,
             final Logger log
     ) {
-        final var aOccurredOn = getOccurredOnHeaderValue(record);
+        final var aOccurredOn = getOccurredOnHeaderValue(message);
         final var aDuration = Duration.between(aOccurredOn, InstantUtils.now());
 
         if (aDuration.toDays() >= 7) {
             log.warn("Event with type {} not supported after {} days, sent to DLT: {}", eventType, aDuration.toDays(), dltTopic);
             handleMessagingErrorAndSendToDlt(
-                    record,
+                    message,
                     dltTopic,
                     ack,
                     log,
@@ -110,15 +152,21 @@ public abstract class EventListener {
         }
     }
 
-    private byte[] getEventOccurredOnHeader(final ConsumerRecord<String, String> record) {
-        return Optional.ofNullable(record.headers().lastHeader("event_occurred_on"))
+    private byte[] getEventOccurredOnHeader(final ConsumerRecord<String, String> message) {
+        return Optional.ofNullable(message.headers().lastHeader("event_occurred_on"))
                 .map(Header::value)
-                .orElseThrow(() -> KafkaHeadersException.with("Event occurred on header not found"));
+                .orElseThrow(() -> KafkaHeadersException.with("event_occurred_on header not found"));
     }
 
-    private byte[] getEventTypeHeader(final ConsumerRecord<String, String> record) {
-        return Optional.ofNullable(record.headers().lastHeader("event_type"))
+    private byte[] getEventTypeHeader(final ConsumerRecord<String, String> message) {
+        return Optional.ofNullable(message.headers().lastHeader("event_type"))
                 .map(Header::value)
-                .orElseThrow(() -> KafkaHeadersException.with("Event type header not found"));
+                .orElseThrow(() -> KafkaHeadersException.with("event_type header not found"));
+    }
+
+    private byte[] getEventIdHeader(final ConsumerRecord<String, String> message) {
+        return Optional.ofNullable(message.headers().lastHeader("event_id"))
+                .map(Header::value)
+                .orElseThrow(() -> KafkaHeadersException.with("event_id header not found"));
     }
 }

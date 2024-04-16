@@ -88,6 +88,7 @@ public abstract class AbstractEmbeddedKafkaTest {
             final OutboxEventEntity aOutboxEntity
     ) {
         final var aProducerRecord = new ProducerRecord<String, String>(aTopic, aMessage);
+        aProducerRecord.headers().add("event_id", aOutboxEntity.getEventId().getBytes());
         aProducerRecord.headers().add("event_type", aOutboxEntity.getEventType().getBytes());
         aProducerRecord.headers().add("event_occurred_on", aOutboxEntity.getOccurredOn().toString().getBytes());
         return aProducerRecord;
@@ -99,6 +100,7 @@ public abstract class AbstractEmbeddedKafkaTest {
             final OutboxEventEntity aOutboxEntity
     ) {
         final var aConsumerRecord = new ConsumerRecord<String, String>(aTopic, 1, 0, null, aMessage);
+        aConsumerRecord.headers().add("event_id", aOutboxEntity.getEventId().getBytes());
         aConsumerRecord.headers().add("event_type", aOutboxEntity.getEventType().getBytes());
         aConsumerRecord.headers().add("event_occurred_on", aOutboxEntity.getOccurredOn().toString().getBytes());
         return aConsumerRecord;

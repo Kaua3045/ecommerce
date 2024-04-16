@@ -1,7 +1,7 @@
 package com.kaua.ecommerce.application.inventory.rollback;
 
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuCommand;
-import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryDeletedBySkuUseCase;
 import com.kaua.ecommerce.domain.inventory.InventoryID;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @IntegrationTest
-public class RollbackInventoryBySkuUseCaseIT {
+public class RollbackInventoryDeletedBySkuUseCaseIT {
 
     @Autowired
     private InventoryMovementJpaEntityRepository inventoryMovementJpaRepository;
@@ -30,7 +30,7 @@ public class RollbackInventoryBySkuUseCaseIT {
     private InventoryJpaEntityRepository inventoryJpaRepository;
 
     @Autowired
-    private RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase;
+    private RollbackInventoryDeletedBySkuUseCase rollbackInventoryDeletedBySkuUseCase;
 
     @Test
     void givenAValidSkuAndProductId_whenRollbackInventoryBySku_shouldRollbackInventory() {
@@ -51,7 +51,7 @@ public class RollbackInventoryBySkuUseCaseIT {
 
         Assertions.assertEquals(1, this.inventoryMovementJpaRepository.count());
 
-        Assertions.assertDoesNotThrow(() -> this.rollbackInventoryBySkuUseCase.execute(aCommand));
+        Assertions.assertDoesNotThrow(() -> this.rollbackInventoryDeletedBySkuUseCase.execute(aCommand));
 
         Assertions.assertEquals(1, this.inventoryMovementJpaRepository.count());
         Assertions.assertEquals(1, this.inventoryJpaRepository.count());
@@ -95,7 +95,7 @@ public class RollbackInventoryBySkuUseCaseIT {
 
         for (int i = 0; i < 5; i++) {
             tasks.add(() -> {
-                this.rollbackInventoryBySkuUseCase.execute(aCommand);
+                this.rollbackInventoryDeletedBySkuUseCase.execute(aCommand);
                 return null;
             });
         }

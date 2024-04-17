@@ -5,6 +5,7 @@ import com.kaua.ecommerce.infrastructure.coupon.persistence.CouponJpaEntityRepos
 import com.kaua.ecommerce.infrastructure.coupon.slot.persistence.CouponSlotJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.customer.address.persistence.AddressJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.customer.persistence.CustomerJpaEntityRepository;
+import com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.inventory.movement.persistence.InventoryMovementJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntityRepository;
 import com.kaua.ecommerce.infrastructure.order.persistence.OrderDeliveryJpaEntityRepository;
@@ -42,7 +43,8 @@ public class JpaCleanUpExtension implements BeforeEachCallback {
                 appContext.getBean(OrderItemJpaEntityRepository.class),
                 appContext.getBean(OrderDeliveryJpaEntityRepository.class),
                 appContext.getBean(OrderPaymentJpaEntityRepository.class),
-                appContext.getBean(OrderJpaEntityRepository.class)
+                appContext.getBean(OrderJpaEntityRepository.class),
+                appContext.getBean(EventMetadataJpaEntityRepository.class)
         ));
     }
 

@@ -17,8 +17,8 @@ import com.kaua.ecommerce.application.usecases.inventory.retrieve.get.DefaultGet
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.get.GetInventoryBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.DefaultListInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.retrieve.list.ListInventoriesByProductIdUseCase;
-import com.kaua.ecommerce.application.usecases.inventory.rollback.DefaultRollbackInventoryBySkuUseCase;
-import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.DefaultRollbackInventoryDeletedBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryDeletedBySkuUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -67,8 +67,8 @@ public class InventoryUseCaseConfig {
     }
 
     @Bean
-    public RollbackInventoryBySkuUseCase rollbackBySkuUseCase() {
-        return new DefaultRollbackInventoryBySkuUseCase(inventoryGateway, inventoryMovementGateway, transactionManager);
+    public RollbackInventoryDeletedBySkuUseCase rollbackBySkuUseCase() {
+        return new DefaultRollbackInventoryDeletedBySkuUseCase(inventoryGateway, inventoryMovementGateway, transactionManager);
     }
 
     @Bean

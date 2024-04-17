@@ -11,13 +11,13 @@ import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
 import java.util.Objects;
 import java.util.Set;
 
-public class DefaultRollbackInventoryBySkuUseCase extends RollbackInventoryBySkuUseCase {
+public class DefaultRollbackInventoryDeletedBySkuUseCase extends RollbackInventoryDeletedBySkuUseCase {
 
     private final InventoryGateway inventoryGateway;
     private final InventoryMovementGateway inventoryMovementGateway;
     private final TransactionManager transactionManager;
 
-    public DefaultRollbackInventoryBySkuUseCase(
+    public DefaultRollbackInventoryDeletedBySkuUseCase(
             final InventoryGateway inventoryGateway,
             final InventoryMovementGateway inventoryMovementGateway,
             final TransactionManager transactionManager

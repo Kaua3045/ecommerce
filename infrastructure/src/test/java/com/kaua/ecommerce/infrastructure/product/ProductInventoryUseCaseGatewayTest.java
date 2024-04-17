@@ -5,7 +5,7 @@ import com.kaua.ecommerce.application.usecases.inventory.create.CreateInventoryU
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuCommand;
-import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryDeletedBySkuUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.inventory.InventoryID;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
@@ -129,7 +129,7 @@ public class ProductInventoryUseCaseGatewayTest {
                 Mockito.mock(CreateInventoryUseCase.class),
                 aMockCleanInventoriesByProductIdUseCase,
                 Mockito.mock(RemoveInventoryBySkuUseCase.class),
-                Mockito.mock(RollbackInventoryBySkuUseCase.class));
+                Mockito.mock(RollbackInventoryDeletedBySkuUseCase.class));
 
         final var aProductId = "invalid-id";
 
@@ -175,7 +175,7 @@ public class ProductInventoryUseCaseGatewayTest {
                 Mockito.mock(CreateInventoryUseCase.class),
                 Mockito.mock(CleanInventoriesByProductIdUseCase.class),
                 aMockRemoveInventoryBySkuUseCase,
-                Mockito.mock(RollbackInventoryBySkuUseCase.class));
+                Mockito.mock(RollbackInventoryDeletedBySkuUseCase.class));
 
         final var aSku = "invalid-sku";
 
@@ -219,7 +219,7 @@ public class ProductInventoryUseCaseGatewayTest {
 
     @Test
     void givenAnInvalidSkuAndProductId_whenCallRollbackInventoryBySku_thenThrowProductInventoryException() {
-        final var aMockRollbackInventoryBySkuUseCase = Mockito.mock(RollbackInventoryBySkuUseCase.class);
+        final var aMockRollbackInventoryBySkuUseCase = Mockito.mock(RollbackInventoryDeletedBySkuUseCase.class);
         final var aMockProductInventoryGateway = new ProductInventoryUseCaseGateway(
                 Mockito.mock(CreateInventoryUseCase.class),
                 Mockito.mock(CleanInventoriesByProductIdUseCase.class),

@@ -196,14 +196,23 @@ public class AddProductAttributesUseCaseTest extends UseCaseTest {
 
         final var aCommand = AddProductAttributesCommand.with(
                 aProductId, List.of(new AddProductAttributesCommandParams(
-                        aProductAttribute.getColor().getColor(),
-                        aProductAttribute.getSize().getSize(),
-                        aProductAttribute.getSize().getWeight(),
-                        aProductAttribute.getSize().getHeight(),
-                        aProductAttribute.getSize().getWidth(),
-                        aProductAttribute.getSize().getLength(),
-                        aQuantity
-                )));
+                                aProductAttribute.getColor().getColor(),
+                                aProductAttribute.getSize().getSize(),
+                                aProductAttribute.getSize().getWeight(),
+                                aProductAttribute.getSize().getHeight(),
+                                aProductAttribute.getSize().getWidth(),
+                                aProductAttribute.getSize().getLength(),
+                                aQuantity
+                        ),
+                        new AddProductAttributesCommandParams(
+                                aProductAttribute.getColor().getColor(),
+                                aProductAttribute.getSize().getSize(),
+                                aProductAttribute.getSize().getWeight() + 1,
+                                aProductAttribute.getSize().getHeight(),
+                                aProductAttribute.getSize().getWidth(),
+                                aProductAttribute.getSize().getLength(),
+                                aQuantity + 2
+                        )));
 
         final var expectedErrorMessage = "Error on publish event";
 
@@ -224,6 +233,6 @@ public class AddProductAttributesUseCaseTest extends UseCaseTest {
         Mockito.verify(productInventoryGateway, Mockito.times(1))
                 .createInventory(Mockito.any(), Mockito.anyList());
         Mockito.verify(productGateway, Mockito.times(0)).update(Mockito.any());
-        Mockito.verify(eventPublisher, Mockito.times(1)).publish(Mockito.any());
+        Mockito.verify(eventPublisher, Mockito.times(2)).publish(Mockito.any());
     }
 }

@@ -2,9 +2,10 @@ package com.kaua.ecommerce.infrastructure.listeners;
 
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.event.EventsTypes;
-import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkusEvent;
-import com.kaua.ecommerce.domain.utils.InstantUtils;
+import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkuEvent;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
+import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
+import com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity;
 import com.kaua.ecommerce.infrastructure.exceptions.KafkaHeadersException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
+import java.util.Objects;
 
 @Component
 public class InventoryEventListener extends EventListener {
@@ -32,15 +33,16 @@ public class InventoryEventListener extends EventListener {
     private static final String INVENTORY_DLT_INVALID = "inventory-dlt-invalid";
 
     private final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
-//    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final EventMetadataGateway eventMetadataGateway;
 
     public InventoryEventListener(
             final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase,
-            final KafkaTemplate<String, Object> kafkaTemplate
+            final KafkaTemplate<String, Object> kafkaTemplate,
+            final EventMetadataGateway eventMetadataGateway
     ) {
         super(kafkaTemplate);
-        this.removeInventoryBySkuUseCase = removeInventoryBySkuUseCase;
-//        this.kafkaTemplate = Objects.requireNonNull(kafkaTemplate);
+        this.removeInventoryBySkuUseCase = Objects.requireNonNull(removeInventoryBySkuUseCase);
+        this.eventMetadataGateway = Objects.requireNonNull(eventMetadataGateway);
     }
 
     @KafkaListener(
@@ -68,48 +70,51 @@ public class InventoryEventListener extends EventListener {
                 record.topic(), record.partition(), record.offset(), record.value());
 
         try {
-            final var aOccurredOn = getOccurredOnHeaderValue(record);
+            final var aEventId = getEventIdHeaderValue(record);
             final var aEventType = getEventTypeHeaderValue(record);
+            final var aOccurredOn = getOccurredOnHeaderValue(record);
 
-            final var aInstantNow = InstantUtils.now();
-            final var aDuration = Duration.between(aOccurredOn, aInstantNow);
-            final var payload = record.value();
-
-            if (aDuration.toDays() > 10) {
-                handleMessagingErrorAndSendToDlt(
-                        record,
-                        INVENTORY_DLT_INVALID,
-                        ack,
-                        LOG,
-                        "Event occurred more than 10 days ago: " + aOccurredOn
-                );
+            if (this.eventMetadataGateway.existsByEventId(aEventId)) {
+                LOG.warn("Event {} occurredOn: {} already processed eventId: {}, payload: {}", aEventType, aOccurredOn, aEventId, record.value());
+                ack.acknowledge();
                 return;
             }
 
+            final var payload = record.value();
+
             switch (aEventType) {
-                case EventsTypes.INVENTORY_CREATED_ROLLBACK_BY_SKUS -> {
-                    final var aInventoryCreatedRollbackBySkus = Json.readValue(
-                            payload, InventoryCreatedRollbackBySkusEvent.class);
+                case EventsTypes.INVENTORY_CREATED_ROLLBACK_BY_SKU -> {
+                    final var aInventoryCreatedRollbackBySku = Json.readValue(
+                            payload, InventoryCreatedRollbackBySkuEvent.class);
 
-                    final var aSkus = aInventoryCreatedRollbackBySkus.skus();
-                    aSkus.forEach(this.removeInventoryBySkuUseCase::execute);
+                    this.eventMetadataGateway.save(EventMetadataJpaEntity.from(
+                            aInventoryCreatedRollbackBySku,
+                            aInventoryCreatedRollbackBySku.sku()
+                    ));
+                    this.removeInventoryBySkuUseCase.execute(aInventoryCreatedRollbackBySku.sku());
 
-                    LOG.info(EVENT_RECEIVED_MESSAGE, "created rollback by skus", aInventoryCreatedRollbackBySkus);
+                    LOG.info(EVENT_RECEIVED_MESSAGE, "created rollback by sku", aInventoryCreatedRollbackBySku);
                     ack.acknowledge();
                 }
-                default -> {
-                    LOG.warn("Event type not supported: {}", aEventType);
-                    ack.nack(Duration.ofSeconds(5));
-                }
+                default -> handleMessagingTypeNotSupported(
+                        record,
+                        aEventType,
+                        INVENTORY_DLT_INVALID,
+                        ack,
+                        LOG
+                );
             }
-        } catch (KafkaHeadersException e) {
-            handleMessagingErrorAndSendToDlt(
+        } catch (final KafkaHeadersException e) {
+            handleMessagingNotContainsHeaders(
                     record,
                     INVENTORY_DLT_INVALID,
                     ack,
                     LOG,
                     e.getMessage()
             );
+        } catch (final Exception ex) {
+            this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(record));
+            throw ex;
         }
     }
 
@@ -121,18 +126,6 @@ public class InventoryEventListener extends EventListener {
         LOG.atLevel(Level.WARN).log("Message received from Kafka at DLT [topic:{}] [partition:{}] [offset:{}]: {}",
                 record.topic(), record.partition(), record.offset(), record.value());
 
-        try {
-            handlePublishMessageToRetryTopic(record, INVENTORY_TOPIC, acknowledgment, LOG);
-            LOG.warn("Event sent to inventory topic for retry: {}, occurred on: {} and now: {}, payload: {}",
-                    INVENTORY_TOPIC, getOccurredOnHeaderValue(record), InstantUtils.now(), record.value());
-        } catch (KafkaHeadersException e) {
-            handleMessagingErrorAndSendToDlt(
-                    record,
-                    INVENTORY_DLT_INVALID,
-                    acknowledgment,
-                    LOG,
-                    e.getMessage()
-            );
-        }
+        handlePublishMessageToRetryTopic(record, INVENTORY_TOPIC, acknowledgment, LOG);
     }
 }

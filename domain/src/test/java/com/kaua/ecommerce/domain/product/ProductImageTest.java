@@ -1,10 +1,11 @@
 package com.kaua.ecommerce.domain.product;
 
+import com.kaua.ecommerce.domain.UnitTest;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ProductImageTest {
+public class ProductImageTest extends UnitTest {
 
     @Test
     void givenValidValues_whenCallNewProductImage_shouldBeInstantiateProductImage() {

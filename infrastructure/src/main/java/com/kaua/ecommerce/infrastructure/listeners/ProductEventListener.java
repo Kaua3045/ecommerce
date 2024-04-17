@@ -8,11 +8,11 @@ import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.product.events.ProductCreatedEvent;
 import com.kaua.ecommerce.domain.product.events.ProductDeletedEvent;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
-import com.kaua.ecommerce.domain.utils.InstantUtils;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
+import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
+import com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity;
 import com.kaua.ecommerce.infrastructure.exceptions.KafkaHeadersException;
 import com.kaua.ecommerce.infrastructure.exceptions.NewerEventProcessedException;
-import com.kaua.ecommerce.infrastructure.service.EventValidationService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,20 +43,20 @@ public class ProductEventListener extends EventListener {
     private final ProductGateway productGateway;
     private final SaveProductUseCase saveProductUseCase;
     private final RemoveProductUseCase removeProductUseCase;
-    private final EventValidationService eventValidationService;
+    private final EventMetadataGateway eventMetadataGateway;
 
     public ProductEventListener(
             final ProductGateway productGateway,
             final SaveProductUseCase saveProductUseCase,
             final RemoveProductUseCase removeProductUseCase,
             final KafkaTemplate<String, Object> kafkaTemplate,
-            final EventValidationService eventValidationService
+            final EventMetadataGateway eventMetadataGateway
     ) {
         super(kafkaTemplate);
         this.productGateway = Objects.requireNonNull(productGateway);
         this.saveProductUseCase = Objects.requireNonNull(saveProductUseCase);
         this.removeProductUseCase = Objects.requireNonNull(removeProductUseCase);
-        this.eventValidationService = Objects.requireNonNull(eventValidationService);
+        this.eventMetadataGateway = Objects.requireNonNull(eventMetadataGateway);
     }
 
     @KafkaListener(
@@ -89,9 +89,21 @@ public class ProductEventListener extends EventListener {
         LOG.atLevel(Level.INFO).log("Message received from Kafka [topic:{}] [partition:{}] [offset:{}]: {}",
                 record.topic(), record.partition(), record.offset(), record.value());
 
+        // TODO: Need to implement backoff, not consume message on databases down or application is slow
+        //  on application is slow apply rate limit on kafka consumer
+
         try {
-            final var payload = record.value();
+            final var aEventId = getEventIdHeaderValue(record);
             final var eventType = getEventTypeHeaderValue(record);
+            final var aOccurredOn = getOccurredOnHeaderValue(record);
+
+            if (this.eventMetadataGateway.existsByEventId(aEventId)) {
+                LOG.warn("Event {} occurredOn: {} already processed eventId: {}, payload: {}", eventType, aOccurredOn, aEventId, record.value());
+                ack.acknowledge();
+                return;
+            }
+
+            final var payload = record.value();
 
             switch (eventType) {
                 case EventsTypes.PRODUCT_CREATED -> {
@@ -122,9 +134,7 @@ public class ProductEventListener extends EventListener {
                     final var aProductDeleted = Json.readValue(payload, ProductDeletedEvent.class);
                     final var aProductId = aProductDeleted.id();
 
-                    if (this.eventValidationService.isInvalid(aProductDeleted, aProductId)) {
-                        LOG.info("Product event is old, sent to DLT: {} and now: {}, payload: {}",
-                                aProductDeleted.occurredOn(), InstantUtils.now(), payload);
+                    if (this.eventMetadataGateway.newerEventProcessed(aProductId, aProductDeleted.version())) {
                         handleMessagingErrorAndSendToDlt(
                                 record,
                                 PRODUCT_DLT_INVALID,
@@ -136,8 +146,8 @@ public class ProductEventListener extends EventListener {
                     }
 
                     this.removeProductUseCase.execute(aProductId);
+                    saveEventMetadata(aProductDeleted, aProductId);
                     ack.acknowledge();
-                    this.eventValidationService.invalidate(aProductDeleted.aggregateName(), aProductId);
                     LOG.info(EVENT_RECEIVED_MESSAGE, "deleted", aProductId);
                 }
                 default -> handleMessagingTypeNotSupported(
@@ -149,13 +159,16 @@ public class ProductEventListener extends EventListener {
                 );
             }
         } catch (final KafkaHeadersException ex) {
-            handleMessagingErrorAndSendToDlt(
+            handleMessagingNotContainsHeaders(
                     record,
                     PRODUCT_DLT_INVALID,
                     ack,
                     LOG,
                     ex.getMessage()
             );
+        } catch (final Exception ex) {
+            this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(record));
+            throw ex;
         }
     }
 
@@ -188,11 +201,11 @@ public class ProductEventListener extends EventListener {
             final Acknowledgment ack,
             final String type,
             final T aDomainEvent,
-            final ConsumerRecord<String, String> record
+            final ConsumerRecord<String, String> message
     ) {
-        if (this.eventValidationService.isInvalid(aDomainEvent, aId)) {
+        if (this.eventMetadataGateway.newerEventProcessed(aId, aDomainEvent.version())) {
             handleMessagingErrorAndSendToDlt(
-                    record,
+                    message,
                     PRODUCT_DLT_INVALID,
                     ack,
                     LOG,
@@ -204,11 +217,22 @@ public class ProductEventListener extends EventListener {
         this.productGateway.findById(aId)
                 .ifPresentOrElse(aProduct -> {
                     this.saveProductUseCase.execute(aProduct);
+                    // TODO: Need attention here, save event posible to throws unique constraint violation
+                    //  because the payload identifier and versions is the same
+                    saveEventMetadata(aDomainEvent, aId);
                     ack.acknowledge();
                     LOG.info(EVENT_RECEIVED_MESSAGE, type, aId);
                 }, () -> {
                     LOG.debug(NOT_FOUND_MESSAGE, aId);
+                    this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(message));
                     ack.nack(Duration.ofSeconds(5));
                 });
+    }
+
+    private void saveEventMetadata(final DomainEvent aDomainEvent, final String aPayloadId) {
+        this.eventMetadataGateway.save(EventMetadataJpaEntity.from(
+                aDomainEvent,
+                aPayloadId
+        ));
     }
 }

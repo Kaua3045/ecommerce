@@ -1,11 +1,12 @@
 package com.kaua.ecommerce.application.either;
 
+import com.kaua.ecommerce.application.UseCaseTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
-public class EitherTest {
+public class EitherTest extends UseCaseTest {
 
     @Test
     void testLeft() {

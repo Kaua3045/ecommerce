@@ -28,6 +28,7 @@ public class KafkaEventProducerServiceImpl implements EventProducerService {
         try {
             final var aOutboxEvent = (OutboxEventEntity) aMessage;
             final var aProducerRecord = new ProducerRecord<String, Object>(topic, aOutboxEvent.getData());
+            aProducerRecord.headers().add("event_id", aOutboxEvent.getEventId().getBytes());
             aProducerRecord.headers().add("event_type", aOutboxEvent.getEventType().getBytes());
             aProducerRecord.headers().add("event_occurred_on", aOutboxEvent.getOccurredOn().toString().getBytes());
 

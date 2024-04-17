@@ -8,7 +8,7 @@ import com.kaua.ecommerce.application.usecases.inventory.create.commands.CreateI
 import com.kaua.ecommerce.application.usecases.inventory.delete.clean.CleanInventoriesByProductIdUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuCommand;
-import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuUseCase;
+import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryDeletedBySkuUseCase;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import com.kaua.ecommerce.infrastructure.exceptions.ProductInventoryException;
@@ -28,18 +28,18 @@ public class ProductInventoryUseCaseGateway implements ProductInventoryGateway {
     private final CreateInventoryUseCase createInventoryUseCase;
     private final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase;
     private final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
-    private final RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase;
+    private final RollbackInventoryDeletedBySkuUseCase rollbackInventoryDeletedBySkuUseCase;
 
     public ProductInventoryUseCaseGateway(
             final CreateInventoryUseCase createInventoryUseCase,
             final CleanInventoriesByProductIdUseCase cleanInventoriesByProductIdUseCase,
             final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase,
-            final RollbackInventoryBySkuUseCase rollbackInventoryBySkuUseCase
+            final RollbackInventoryDeletedBySkuUseCase rollbackInventoryDeletedBySkuUseCase
     ) {
         this.createInventoryUseCase = Objects.requireNonNull(createInventoryUseCase);
         this.cleanInventoriesByProductIdUseCase = Objects.requireNonNull(cleanInventoriesByProductIdUseCase);
         this.removeInventoryBySkuUseCase = Objects.requireNonNull(removeInventoryBySkuUseCase);
-        this.rollbackInventoryBySkuUseCase = Objects.requireNonNull(rollbackInventoryBySkuUseCase);
+        this.rollbackInventoryDeletedBySkuUseCase = Objects.requireNonNull(rollbackInventoryDeletedBySkuUseCase);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ProductInventoryUseCaseGateway implements ProductInventoryGateway {
     @Override
     public void rollbackInventoryBySkuAndProductId(String sku, String productId) {
         try {
-            this.rollbackInventoryBySkuUseCase.execute(RollbackInventoryBySkuCommand.with(sku, productId));
+            this.rollbackInventoryDeletedBySkuUseCase.execute(RollbackInventoryBySkuCommand.with(sku, productId));
             log.info("inventory success rolled back by sku: {} and product id: {}", sku, productId);
         } catch (final Exception e) {
             throw ProductInventoryException.with("error on rollback inventory by sku %s and product id %s"

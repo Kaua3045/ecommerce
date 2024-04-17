@@ -30,8 +30,8 @@ public class DefaultDeleteProductUseCase extends DeleteProductUseCase {
             this.productGateway.findById(aId).ifPresent(aProduct -> {
                 aProduct.updateStatus(ProductStatus.DELETED);
 
-                this.productGateway.update(aProduct);
-                this.eventPublisher.publish(ProductDeletedEvent.from(aProduct));
+                final var aProductUpdated = this.productGateway.update(aProduct);
+                this.eventPublisher.publish(ProductDeletedEvent.from(aProductUpdated));
             });
             return null;
         });

@@ -8,6 +8,8 @@ import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.product.events.ProductCreatedEvent;
 import com.kaua.ecommerce.domain.product.events.ProductDeletedEvent;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
+import com.kaua.ecommerce.infrastructure.backpressure.BackpressureFactory;
+import com.kaua.ecommerce.infrastructure.backpressure.BackpressureStrategies;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity;
@@ -44,19 +46,22 @@ public class ProductEventListener extends EventListener {
     private final SaveProductUseCase saveProductUseCase;
     private final RemoveProductUseCase removeProductUseCase;
     private final EventMetadataGateway eventMetadataGateway;
+    private final BackpressureFactory backpressureFactory;
 
     public ProductEventListener(
             final ProductGateway productGateway,
             final SaveProductUseCase saveProductUseCase,
             final RemoveProductUseCase removeProductUseCase,
             final KafkaTemplate<String, Object> kafkaTemplate,
-            final EventMetadataGateway eventMetadataGateway
+            final EventMetadataGateway eventMetadataGateway,
+            final BackpressureFactory backpressureFactory
     ) {
         super(kafkaTemplate);
         this.productGateway = Objects.requireNonNull(productGateway);
         this.saveProductUseCase = Objects.requireNonNull(saveProductUseCase);
         this.removeProductUseCase = Objects.requireNonNull(removeProductUseCase);
         this.eventMetadataGateway = Objects.requireNonNull(eventMetadataGateway);
+        this.backpressureFactory = Objects.requireNonNull(backpressureFactory);
     }
 
     @KafkaListener(
@@ -69,7 +74,8 @@ public class ProductEventListener extends EventListener {
                     "${kafka.consumers.products.topics.[3]}"
             },
             groupId = "${kafka.consumers.products.group-id}",
-            id = "${kafka.consumers.products.id}",
+            // generate a random id for the consumer
+            id = "${kafka.consumers.products.id}-#{T(java.util.UUID).randomUUID().toString()}",
             properties = {
                     "auto.offset.reset=${kafka.consumers.products.auto-offset-reset}"
             }
@@ -93,6 +99,11 @@ public class ProductEventListener extends EventListener {
         //  on application is slow apply rate limit on kafka consumer
 
         try {
+            if (this.backpressureFactory.shouldWait(BackpressureStrategies.SQL_ELASTICSEARCH_CACHE)) {
+                LOG.info("Backpressure applied, waiting to process messages");
+                return;
+            }
+
             final var aEventId = getEventIdHeaderValue(record);
             final var eventType = getEventTypeHeaderValue(record);
             final var aOccurredOn = getOccurredOnHeaderValue(record);

@@ -5,6 +5,7 @@ import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.inventory.InventoryID;
 import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkuEvent;
 import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
+import com.kaua.ecommerce.infrastructure.backpressure.BackpressureFactory;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
@@ -35,6 +36,9 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
 
     @MockBean
     private EventMetadataGateway eventMetadataGateway;
+
+    @MockBean
+    private BackpressureFactory backpressureFactory;
 
     @SpyBean
     private KafkaTemplate<String, Object> kafkaTemplate;
@@ -146,7 +150,12 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         // when
         final var aConsumerRecord = createConsumerRecord(inventoryTopic, aMessage, aOutboxEntity);
-        final var aInventoryEventListener = new InventoryEventListener(removeInventoryBySkuUseCase, kafkaTemplate, eventMetadataGateway);
+        final var aInventoryEventListener = new InventoryEventListener(
+                removeInventoryBySkuUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
         aInventoryEventListener.onMessage(aConsumerRecord, aMockedAcknowledgment);
 
         // then
@@ -174,7 +183,12 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(aMockAcknowledgment).acknowledge();
 
         final var aConsumerRecord = createConsumerRecord(inventoryTopic, aMessage, aOutboxEvent);
-        final var aInventoryEventListener = new InventoryEventListener(removeInventoryBySkuUseCase, kafkaTemplate, eventMetadataGateway);
+        final var aInventoryEventListener = new InventoryEventListener(
+                removeInventoryBySkuUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
         aInventoryEventListener.onDltMessage(aConsumerRecord, aMockAcknowledgment);
 
         // then
@@ -208,7 +222,12 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         final var aConsumerRecord = new ConsumerRecord<String, String>(inventoryTopic, 1, 0, null, aMessage);
         aConsumerRecord.headers().add("event_id", aOutboxEvent.getEventId().getBytes());
         aConsumerRecord.headers().add("event_occurred_on", aOutboxEvent.getOccurredOn().toString().getBytes());
-        final var aInventoryListener = new InventoryEventListener(removeInventoryBySkuUseCase, kafkaTemplate, eventMetadataGateway);
+        final var aInventoryListener = new InventoryEventListener(
+                removeInventoryBySkuUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
         aInventoryListener.onMessage(aConsumerRecord, aMockAcknowledgment);
 
         // then
@@ -244,5 +263,37 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         // then
         Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(0))
                 .execute(Mockito.any());
+    }
+
+    @Test
+    void givenAnInvalidEvent_whenReceiveButBackpressureActive_shouldNotProcessAndMarkNack() throws InterruptedException {
+        final var aMockedAck = Mockito.mock(Acknowledgment.class);
+
+        final var aSku = Fixture.createSku("random");
+        final var aInvalidEvent = new TestListenerDomainEvent(aSku);
+        final var aOutboxEvent = OutboxEventEntity.create(aInvalidEvent);
+
+        final var aMessage = aOutboxEvent.getData();
+
+        final var aLatch = new CountDownLatch(1);
+
+        Mockito.doAnswer(t -> {
+            aLatch.countDown();
+            return true;
+        }).when(backpressureFactory).shouldWait(Mockito.any());
+
+        // when
+        final var aConsumerRecord = createConsumerRecord(inventoryTopic, aMessage, aOutboxEvent);
+        final var aInventoryEventListener = new InventoryEventListener(
+                removeInventoryBySkuUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
+        aInventoryEventListener.onMessage(aConsumerRecord, aMockedAck);
+
+        // then
+        Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
+        Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(0)).execute(Mockito.any());
     }
 }

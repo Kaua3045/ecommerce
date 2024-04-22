@@ -43,7 +43,7 @@ kafka:
     products:
       auto-offset-reset: earliest
       concurrency: 1
-      id: kafka-listener-products-${INSTANCE_ID:1}
+      id: kafka-listener-products
       topics:
         - product-topic
         - product_created-topic
@@ -55,7 +55,7 @@ kafka:
     inventories:
       auto-offset-reset: earliest
       concurrency: 1
-      id: kafka-listener-inventories-${INSTANCE_ID:1}
+      id: kafka-listener-inventories
       topics: inventory-topic
       group-id: inventories-group
       max-attempts: 4

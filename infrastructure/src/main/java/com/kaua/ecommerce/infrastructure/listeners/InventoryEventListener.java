@@ -3,6 +3,8 @@ package com.kaua.ecommerce.infrastructure.listeners;
 import com.kaua.ecommerce.application.usecases.inventory.delete.remove.RemoveInventoryBySkuUseCase;
 import com.kaua.ecommerce.domain.event.EventsTypes;
 import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkuEvent;
+import com.kaua.ecommerce.infrastructure.backpressure.BackpressureFactory;
+import com.kaua.ecommerce.infrastructure.backpressure.BackpressureStrategies;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity;
@@ -34,15 +36,18 @@ public class InventoryEventListener extends EventListener {
 
     private final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase;
     private final EventMetadataGateway eventMetadataGateway;
+    private final BackpressureFactory backpressureFactory;
 
     public InventoryEventListener(
             final RemoveInventoryBySkuUseCase removeInventoryBySkuUseCase,
             final KafkaTemplate<String, Object> kafkaTemplate,
-            final EventMetadataGateway eventMetadataGateway
+            final EventMetadataGateway eventMetadataGateway,
+            final BackpressureFactory backpressureFactory
     ) {
         super(kafkaTemplate);
         this.removeInventoryBySkuUseCase = Objects.requireNonNull(removeInventoryBySkuUseCase);
         this.eventMetadataGateway = Objects.requireNonNull(eventMetadataGateway);
+        this.backpressureFactory = Objects.requireNonNull(backpressureFactory);
     }
 
     @KafkaListener(
@@ -50,7 +55,7 @@ public class InventoryEventListener extends EventListener {
             containerFactory = "kafkaListenerFactory",
             topics = "${kafka.consumers.inventories.topics}",
             groupId = "${kafka.consumers.inventories.group-id}",
-            id = "${kafka.consumers.inventories.id}",
+            id = "${kafka.consumers.inventories.id}-#{T(java.util.UUID).randomUUID().toString()}",
             properties = {
                     "auto.offset.reset=${kafka.consumers.inventories.auto-offset-reset}"
             }
@@ -70,6 +75,11 @@ public class InventoryEventListener extends EventListener {
                 record.topic(), record.partition(), record.offset(), record.value());
 
         try {
+            if (this.backpressureFactory.shouldWait(BackpressureStrategies.SQL_CACHE)) {
+                LOG.info("Backpressure applied, waiting to process messages");
+                return;
+            }
+
             final var aEventId = getEventIdHeaderValue(record);
             final var aEventType = getEventTypeHeaderValue(record);
             final var aOccurredOn = getOccurredOnHeaderValue(record);

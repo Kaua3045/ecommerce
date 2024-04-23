@@ -6,6 +6,7 @@ import com.kaua.ecommerce.infrastructure.outbox.OutboxEventStatus;
 import com.kaua.ecommerce.infrastructure.service.EventProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Profile("!test-integration-kafka")
 public class PublishOutboxEventsJob {
 
     private static final Logger log = LoggerFactory.getLogger(PublishOutboxEventsJob.class);

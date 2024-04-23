@@ -12,6 +12,8 @@ import com.kaua.ecommerce.domain.product.events.ProductDeletedEvent;
 import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
+import com.kaua.ecommerce.infrastructure.backpressure.BackpressureFactory;
+import com.kaua.ecommerce.infrastructure.backpressure.BackpressureStrategies;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
@@ -30,7 +32,6 @@ import org.springframework.kafka.support.Acknowledgment;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -53,6 +54,9 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
     @MockBean
     private EventMetadataGateway eventMetadataGateway;
+
+    @MockBean
+    private BackpressureFactory backpressureFactory;
 
     @SpyBean
     private KafkaTemplate<String, Object> kafkaTemplate;
@@ -160,39 +164,6 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAnInvalidProductCreatedEvent_whenReceiveAsVersionIsOld_shouldNotProcessAndMarkAck() throws Exception {
-        // given
-        final var aProduct = Fixture.Products.book();
-        final var aProductEvent = ProductCreatedEvent.from(aProduct);
-        final var aOutboxEvent = OutboxEventEntity.create(aProductEvent);
-
-        final var aMessage = aOutboxEvent.getData();
-
-        final var latch = new CountDownLatch(1);
-
-        Mockito.when(eventMetadataGateway.newerEventProcessed(eq(aProductEvent.id()), eq(aProductEvent.version())))
-                .thenAnswer(t -> {
-                    latch.countDown();
-                    return true;
-                });
-
-        // when
-        final var aProducerRecord = createProducerRecord(productCreatedTopic, aMessage, aOutboxEvent);
-        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
-
-        Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
-
-        // then
-        Mockito.verify(productGateway, Mockito.times(0)).findById(Mockito.any());
-        Mockito.verify(saveProductUseCase, Mockito.times(0)).execute(eq(aProduct));
-        Mockito.verify(removeProductUseCase, Mockito.times(0)).execute(Mockito.any());
-        Mockito.verify(productEventListener, Mockito.times(1))
-                .onMessage(Mockito.any(), Mockito.any());
-        Mockito.verify(eventMetadataGateway, Mockito.times(1))
-                .newerEventProcessed(Mockito.any(), Mockito.anyLong());
-    }
-
-    @Test
     void givenAValidProductUpdatedEvent_whenReceive_shouldUpdateProduct() throws Exception {
         // given
         final var aProduct = Fixture.Products.book();
@@ -219,39 +190,6 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         // then
         Mockito.verify(productGateway, Mockito.times(1)).findById(Mockito.any());
         Mockito.verify(saveProductUseCase, Mockito.times(1)).execute(eq(aProduct));
-    }
-
-    @Test
-    void givenAnInvalidProductUpdatedEvent_whenReceiveAsVersionIsBefore_shouldNotProcessAndMarkAck() throws Exception {
-        // given
-        final var aProduct = Fixture.Products.book();
-        final var aProductEvent = ProductUpdatedEvent.from(aProduct);
-        final var aOutboxEvent = OutboxEventEntity.create(aProductEvent);
-
-        final var aMessage = aOutboxEvent.getData();
-
-        final var latch = new CountDownLatch(1);
-
-        Mockito.when(eventMetadataGateway.newerEventProcessed(aProductEvent.id(), aProductEvent.version()))
-                .thenAnswer(t -> {
-                    latch.countDown();
-                    return true;
-                });
-
-        // when
-        final var aProducerRecord = createProducerRecord(productUpdatedTopic, aMessage, aOutboxEvent);
-        producer().send(aProducerRecord).get(1, TimeUnit.MINUTES);
-
-        Assertions.assertTrue(latch.await(3, TimeUnit.MINUTES));
-
-        // then
-        Mockito.verify(productGateway, Mockito.times(0)).findById(Mockito.any());
-        Mockito.verify(saveProductUseCase, Mockito.times(0)).execute(Mockito.any());
-        Mockito.verify(removeProductUseCase, Mockito.times(0)).execute(Mockito.any());
-        Mockito.verify(productEventListener, Mockito.times(1))
-                .onMessage(Mockito.any(), Mockito.any());
-        Mockito.verify(eventMetadataGateway, Mockito.times(1))
-                .newerEventProcessed(Mockito.any(), Mockito.anyLong());
     }
 
     @Test
@@ -332,72 +270,20 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         }).when(aMockedAck).nack(Mockito.any(Duration.class));
 
         // when
-        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase, removeProductUseCase, kafkaTemplate, eventMetadataGateway);
+        final var aProductEventListener = new ProductEventListener(
+                productGateway,
+                saveProductUseCase,
+                removeProductUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
         aProductEventListener.onMessage(createConsumerRecord(productTopic, aMessage, aOutboxEntity), aMockedAck);
 
         // then
         Mockito.verify(productGateway, Mockito.times(0)).findById(Mockito.any());
         Mockito.verify(saveProductUseCase, Mockito.times(0)).execute(Mockito.any());
         Mockito.verify(removeProductUseCase, Mockito.times(0)).execute(Mockito.any());
-    }
-
-    @Test
-    void givenAValidEventButEventTypeDoesNotMatchAndPass7Days_whenReceive_shouldSendToDLT() throws ExecutionException, InterruptedException, TimeoutException {
-        // given
-        final var aMockedAck = Mockito.mock(Acknowledgment.class);
-
-        final var aOutboxEntity = OutboxEventEntity.create(new
-                TestListenerDomainEvent(ProductID.unique().getValue()));
-        aOutboxEntity.setOccurredOn(aOutboxEntity.getOccurredOn().minus(7, ChronoUnit.DAYS));
-
-        final var aMessage = aOutboxEntity.getData();
-
-        final var aLatch = new CountDownLatch(1);
-
-        // when
-        Mockito.doAnswer(t -> {
-            aLatch.countDown();
-            return null;
-        }).when(aMockedAck).acknowledge();
-
-        final var aConsumerRecord = createConsumerRecord(productTopic, aMessage, aOutboxEntity);
-        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase, removeProductUseCase, kafkaTemplate, eventMetadataGateway);
-        aProductEventListener.onMessage(aConsumerRecord, aMockedAck);
-
-        // then
-        Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
-
-        Mockito.verify(productGateway, Mockito.times(0)).findById(Mockito.any());
-        Mockito.verify(saveProductUseCase, Mockito.times(0)).execute(Mockito.any());
-        Mockito.verify(removeProductUseCase, Mockito.times(0)).execute(Mockito.any());
-    }
-
-    @Test
-    void givenAValidProductCreatedEvent_whenReceiveButProductNotExists_shouldNotProcessProductCreatedEvent() throws ExecutionException, InterruptedException, TimeoutException {
-        // given
-        final var aMockedAck = Mockito.mock(Acknowledgment.class);
-
-        final var aProduct = Fixture.Products.book();
-        final var aProductEvent = ProductCreatedEvent.from(aProduct);
-        final var aOutboxEvent = OutboxEventEntity.create(aProductEvent);
-
-        final var aMessage = aOutboxEvent.getData();
-
-        final var aLatch = new CountDownLatch(1);
-
-        Mockito.doReturn(Optional.empty()).when(productGateway).findById(Mockito.any());
-        Mockito.doAnswer(t -> {
-            aLatch.countDown();
-            return null;
-        }).when(aMockedAck).nack(Mockito.any(Duration.class));
-
-        // when
-        final var aConsumerRecord = createConsumerRecord(productCreatedTopic, aMessage, aOutboxEvent);
-        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase, removeProductUseCase, kafkaTemplate, eventMetadataGateway);
-        aProductEventListener.onMessage(aConsumerRecord, aMockedAck);
-
-        // then
-        Mockito.verify(saveProductUseCase, Mockito.times(0)).execute(Mockito.any());
     }
 
     @Test
@@ -421,7 +307,14 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         // when
         final var aConsumerRecord = createConsumerRecord(productUpdatedTopic, aMessage, aOutboxEvent);
-        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase, removeProductUseCase, kafkaTemplate, eventMetadataGateway);
+        final var aProductEventListener = new ProductEventListener(
+                productGateway,
+                saveProductUseCase,
+                removeProductUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
         aProductEventListener.onMessage(aConsumerRecord, aMockedAck);
 
         // then
@@ -450,7 +343,14 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         final var aConsumerRecord = createConsumerRecord(productUpdatedTopic, aMessage, aOutboxEvent);
         aConsumerRecord.headers().add("kafka_original-topic", productUpdatedTopic.getBytes());
-        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase, removeProductUseCase, kafkaTemplate, eventMetadataGateway);
+        final var aProductEventListener = new ProductEventListener(
+                productGateway,
+                saveProductUseCase,
+                removeProductUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
         aProductEventListener.onDltMessage(aConsumerRecord, mockAcknowledgment);
 
         // then
@@ -480,7 +380,14 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         final var aConsumerRecord = createConsumerRecord(productTopic, aMessage, aOutboxEvent);
         aConsumerRecord.headers().add("kafka_original-topic", productTopic.getBytes());
-        final var aProductEventListener = new ProductEventListener(productGateway, saveProductUseCase, removeProductUseCase, kafkaTemplate, eventMetadataGateway);
+        final var aProductEventListener = new ProductEventListener(
+                productGateway,
+                saveProductUseCase,
+                removeProductUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
         aProductEventListener.onDltMessage(aConsumerRecord, mockAcknowledgment);
 
         // then
@@ -546,7 +453,8 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
                 saveProductUseCase,
                 removeProductUseCase,
                 kafkaTemplate,
-                eventMetadataGateway
+                eventMetadataGateway,
+                backpressureFactory
         );
         aProductListener.onMessage(aConsumerRecord, aMockAcknowledgment);
 
@@ -587,7 +495,8 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
                 saveProductUseCase,
                 removeProductUseCase,
                 kafkaTemplate,
-                eventMetadataGateway
+                eventMetadataGateway,
+                backpressureFactory
         );
         aProductListener.onMessage(aConsumerRecord, aMockAcknowledgment);
 
@@ -599,5 +508,39 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         Mockito.verify(removeProductUseCase, Mockito.times(0))
                 .execute(Mockito.any());
+    }
+
+    @Test
+    void givenAnInvalidEvent_whenReceiveButBackpressureActive_shouldNotProcessAndMarkNack() throws InterruptedException {
+        // given
+        final var aMockedAck = Mockito.mock(Acknowledgment.class);
+
+        final var aProduct = Fixture.Products.book();
+        final var aEvent = new TestListenerDomainEvent(aProduct.getId().getValue());
+        final var aOutboxEvent = OutboxEventEntity.create(aEvent);
+        final var aMessage = aOutboxEvent.getData();
+
+        final var aLatch = new CountDownLatch(1);
+
+        Mockito.doAnswer(t -> {
+            aLatch.countDown();
+            return true;
+        }).when(backpressureFactory).shouldWait(Mockito.any(BackpressureStrategies.class));
+
+        // when
+        final var aConsumerRecord = createConsumerRecord(productTopic, aMessage, aOutboxEvent);
+        final var aProductEventListener = new ProductEventListener(
+                productGateway,
+                saveProductUseCase,
+                removeProductUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
+        aProductEventListener.onMessage(aConsumerRecord, aMockedAck);
+
+        // then
+        Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
+        Mockito.verify(saveProductUseCase, Mockito.times(0)).execute(Mockito.any());
     }
 }

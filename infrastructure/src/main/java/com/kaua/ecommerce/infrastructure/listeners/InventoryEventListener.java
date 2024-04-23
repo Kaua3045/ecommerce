@@ -13,6 +13,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
@@ -122,6 +123,13 @@ public class InventoryEventListener extends EventListener {
                     LOG,
                     e.getMessage()
             );
+        } catch (final DataIntegrityViolationException ex) {
+            handleMessagingErrorAndSendToDlt(
+                    record,
+                    INVENTORY_DLT_INVALID,
+                    ack,
+                    LOG,
+                    ex.getMessage());
         } catch (final Exception ex) {
             this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(record));
             throw ex;

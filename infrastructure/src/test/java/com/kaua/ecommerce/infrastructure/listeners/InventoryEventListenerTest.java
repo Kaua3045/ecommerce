@@ -10,6 +10,7 @@ import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
 
@@ -266,7 +268,7 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
     }
 
     @Test
-    void givenAnInvalidEvent_whenReceiveButBackpressureActive_shouldNotProcessAndMarkNack() throws InterruptedException {
+    void givenAnInvalidEvent_whenReceiveButBackpressureActive_shouldNotProcess() throws InterruptedException {
         final var aMockedAck = Mockito.mock(Acknowledgment.class);
 
         final var aSku = Fixture.createSku("random");
@@ -295,5 +297,45 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
         // then
         Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
         Mockito.verify(removeInventoryBySkuUseCase, Mockito.times(0)).execute(Mockito.any());
+    }
+
+    @Test
+    void givenAValidInventoryCreatedRollbackBySku_whenReceiveButEventMetadataVersionIsSameAndThrows_shouldSendToErrorDlt() throws InterruptedException, ExecutionException, TimeoutException {
+        // given
+        final var aMockedAck = Mockito.mock(Acknowledgment.class);
+
+        final var aInventory = Fixture.Inventories.tshirtInventory();
+        final var aInventoryCreatedRollbackBySkuEvent = InventoryCreatedRollbackBySkuEvent.from(aInventory.getSku());
+        final var aOutboxEvent = OutboxEventEntity.create(aInventoryCreatedRollbackBySkuEvent);
+
+        final var aMessage = aOutboxEvent.getData();
+
+        final var aLatch = new CountDownLatch(2);
+
+        Mockito.doAnswer(t -> {
+            aLatch.countDown();
+            throw new DataIntegrityViolationException("Error on save event metadata",
+                    new ConstraintViolationException("Unique constraint", null, "idx_payload_identifier_version"));
+        }).when(eventMetadataGateway).save(Mockito.any());
+
+        Mockito.doAnswer(t -> {
+            aLatch.countDown();
+            return null;
+        }).when(aMockedAck).acknowledge();
+
+        // when
+        final var aConsumerRecord = createConsumerRecord(inventoryTopic, aMessage, aOutboxEvent);
+        final var aInventoryEventListener = new InventoryEventListener(
+                removeInventoryBySkuUseCase,
+                kafkaTemplate,
+                eventMetadataGateway,
+                backpressureFactory
+        );
+        aInventoryEventListener.onMessage(aConsumerRecord, aMockedAck);
+
+        // then
+        Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
+        Mockito.verify(eventMetadataGateway, Mockito.times(1)).save(Mockito.any());
+        Mockito.verify(aMockedAck, Mockito.times(1)).acknowledge();
     }
 }

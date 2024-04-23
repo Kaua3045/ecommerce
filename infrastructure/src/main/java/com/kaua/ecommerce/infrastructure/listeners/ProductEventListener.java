@@ -19,6 +19,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
@@ -153,8 +154,8 @@ public class ProductEventListener extends EventListener {
                         return;
                     }
 
-                    this.removeProductUseCase.execute(aProductId);
                     saveEventMetadata(aProductDeleted, aProductId);
+                    this.removeProductUseCase.execute(aProductId);
                     ack.acknowledge();
                     LOG.info(EVENT_RECEIVED_MESSAGE, "deleted", aProductId);
                 }
@@ -174,6 +175,13 @@ public class ProductEventListener extends EventListener {
                     LOG,
                     ex.getMessage()
             );
+        } catch (final DataIntegrityViolationException ex) {
+            handleMessagingErrorAndSendToDlt(
+                    record,
+                    PRODUCT_DLT_INVALID,
+                    ack,
+                    LOG,
+                    ex.getMessage());
         } catch (final Exception ex) {
             this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(record));
             throw ex;
@@ -224,15 +232,13 @@ public class ProductEventListener extends EventListener {
 
         this.productGateway.findById(aId)
                 .ifPresentOrElse(aProduct -> {
-                    this.saveProductUseCase.execute(aProduct);
-                    // TODO: Need attention here, save event possible to throws unique constraint violation
-                    //  because the payload identifier and versions is the same
                     saveEventMetadata(aDomainEvent, aId);
+                    this.saveProductUseCase.execute(aProduct);
                     ack.acknowledge();
                     LOG.info(EVENT_RECEIVED_MESSAGE, type, aId);
                 }, () -> {
                     LOG.debug(NOT_FOUND_MESSAGE, aId);
-                    this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(message));
+//                    this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(message));
                     ack.nack(Duration.ofSeconds(5));
                 });
     }

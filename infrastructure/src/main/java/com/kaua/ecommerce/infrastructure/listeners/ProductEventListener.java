@@ -95,9 +95,6 @@ public class ProductEventListener extends EventListener {
         LOG.atLevel(Level.INFO).log("Message received from Kafka [topic:{}] [partition:{}] [offset:{}]: {}",
                 record.topic(), record.partition(), record.offset(), record.value());
 
-        // TODO: Need to implement backoff, not consume message on databases down or application is slow
-        //  on application is slow apply rate limit on kafka consumer
-
         try {
             if (this.backpressureFactory.shouldWait(BackpressureStrategies.SQL_ELASTICSEARCH_CACHE)) {
                 LOG.info("Backpressure applied, waiting to process messages");
@@ -228,7 +225,7 @@ public class ProductEventListener extends EventListener {
         this.productGateway.findById(aId)
                 .ifPresentOrElse(aProduct -> {
                     this.saveProductUseCase.execute(aProduct);
-                    // TODO: Need attention here, save event posible to throws unique constraint violation
+                    // TODO: Need attention here, save event possible to throws unique constraint violation
                     //  because the payload identifier and versions is the same
                     saveEventMetadata(aDomainEvent, aId);
                     ack.acknowledge();

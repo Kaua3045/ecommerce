@@ -6,6 +6,7 @@ import com.kaua.ecommerce.domain.inventory.InventoryID;
 import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkuEvent;
 import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
 import com.kaua.ecommerce.infrastructure.backpressure.BackpressureFactory;
+import com.kaua.ecommerce.infrastructure.event.EventMetadataConsumer;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
@@ -250,7 +251,7 @@ public class InventoryEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         final var aLatch = new CountDownLatch(1);
 
-        Mockito.when(eventMetadataGateway.existsByEventId(Mockito.anyString()))
+        Mockito.when(eventMetadataGateway.existsByEventId(Mockito.anyString(), Mockito.any(EventMetadataConsumer.class)))
                 .thenAnswer(t -> {
                     aLatch.countDown();
                     return true;

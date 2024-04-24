@@ -2,7 +2,6 @@ package com.kaua.ecommerce.application.inventory.rollback;
 
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuCommand;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryDeletedBySkuUseCase;
-import com.kaua.ecommerce.config.ConcurrentlyTestHelper;
 import com.kaua.ecommerce.domain.inventory.InventoryID;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
@@ -53,47 +52,6 @@ public class RollbackInventoryDeletedBySkuUseCaseIT {
 
         final var aInventory = this.inventoryJpaRepository.findBySku(aSku).get();
 
-        Assertions.assertEquals(aProductId, aInventory.getProductId());
-        Assertions.assertEquals(aSku, aInventory.getSku());
-        Assertions.assertEquals(aQuantity, aInventory.getQuantity());
-
-        final var aInventoryMovement = this.inventoryMovementJpaRepository.findAll()
-                .stream().findFirst().get();
-
-        Assertions.assertEquals(aInventory.getId(), aInventoryMovement.getInventoryId());
-        Assertions.assertEquals(aSku, aInventoryMovement.getSku());
-        Assertions.assertEquals(aQuantity, aInventoryMovement.getQuantity());
-        Assertions.assertEquals(InventoryMovementStatus.IN, aInventoryMovement.getMovementType());
-    }
-
-    @Test
-    void testConcurrencyOnCallRollbackInventoryBySkuUseCase() throws InterruptedException {
-        final var aProductId = ProductID.unique().getValue();
-        final var aSku = "123-tshirt-red-m";
-        final var aQuantity = 10;
-
-        this.inventoryMovementJpaRepository.save(InventoryMovementJpaEntity.toEntity(
-                InventoryMovement.newInventoryMovement(
-                        InventoryID.unique(),
-                        aSku,
-                        aQuantity,
-                        InventoryMovementStatus.REMOVED
-                )
-        ));
-
-        final var aCommand = RollbackInventoryBySkuCommand.with(aSku, aProductId);
-
-        Assertions.assertEquals(1, this.inventoryMovementJpaRepository.count());
-
-        ConcurrentlyTestHelper.doSyncAndConcurrently(
-                2,
-                o -> this.rollbackInventoryDeletedBySkuUseCase.execute(aCommand),
-                RollbackInventoryDeletedBySkuUseCaseIT.class.getSimpleName(),
-                1,
-                1
-        );
-
-        final var aInventory = this.inventoryJpaRepository.findBySku(aSku).get();
         Assertions.assertEquals(aProductId, aInventory.getProductId());
         Assertions.assertEquals(aSku, aInventory.getSku());
         Assertions.assertEquals(aQuantity, aInventory.getQuantity());

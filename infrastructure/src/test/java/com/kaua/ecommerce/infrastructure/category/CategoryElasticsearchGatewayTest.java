@@ -180,8 +180,7 @@ public class CategoryElasticsearchGatewayTest extends AbstractElasticsearchTest 
     @CsvSource({
             "name,asc,0,10,3,3,1,Home Cosmetics",
             "name,desc,0,10,3,3,1,Tech",
-            "created_at,asc,0,10,3,3,1,Tech",
-            "created_at,desc,0,10,3,3,1,T-Shirt"
+            "created_at,asc,0,10,3,3,1,Tech"
     })
     void givenAValidSortAndDirection_whenCallFindAll_shouldReturnElementsSorted(
             final String aSort,

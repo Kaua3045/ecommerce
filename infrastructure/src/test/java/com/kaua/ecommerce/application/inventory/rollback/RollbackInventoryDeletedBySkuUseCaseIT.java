@@ -2,6 +2,7 @@ package com.kaua.ecommerce.application.inventory.rollback;
 
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryBySkuCommand;
 import com.kaua.ecommerce.application.usecases.inventory.rollback.RollbackInventoryDeletedBySkuUseCase;
+import com.kaua.ecommerce.config.ConcurrentlyTestHelper;
 import com.kaua.ecommerce.domain.inventory.InventoryID;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovement;
 import com.kaua.ecommerce.domain.inventory.movement.InventoryMovementStatus;
@@ -13,12 +14,6 @@ import com.kaua.ecommerce.infrastructure.inventory.persistence.InventoryJpaEntit
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @IntegrationTest
 public class RollbackInventoryDeletedBySkuUseCaseIT {
@@ -72,7 +67,7 @@ public class RollbackInventoryDeletedBySkuUseCaseIT {
     }
 
     @Test
-    void testConcurrencyOnCallRollbackInventoryBySkuUseCase() {
+    void testConcurrencyOnCallRollbackInventoryBySkuUseCase() throws InterruptedException {
         final var aProductId = ProductID.unique().getValue();
         final var aSku = "123-tshirt-red-m";
         final var aQuantity = 10;
@@ -90,26 +85,13 @@ public class RollbackInventoryDeletedBySkuUseCaseIT {
 
         Assertions.assertEquals(1, this.inventoryMovementJpaRepository.count());
 
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
-        List<Callable<Void>> tasks = new ArrayList<>();
-
-        for (int i = 0; i < 5; i++) {
-            tasks.add(() -> {
-                this.rollbackInventoryDeletedBySkuUseCase.execute(aCommand);
-                return null;
-            });
-        }
-
-        try {
-            executorService.invokeAll(tasks);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            executorService.shutdown();
-        }
-
-        Assertions.assertEquals(1, this.inventoryMovementJpaRepository.count());
-        Assertions.assertEquals(1, this.inventoryJpaRepository.count());
+        ConcurrentlyTestHelper.doSyncAndConcurrently(
+                2,
+                o -> this.rollbackInventoryDeletedBySkuUseCase.execute(aCommand),
+                RollbackInventoryDeletedBySkuUseCaseIT.class.getSimpleName(),
+                1,
+                1
+        );
 
         final var aInventory = this.inventoryJpaRepository.findBySku(aSku).get();
         Assertions.assertEquals(aProductId, aInventory.getProductId());

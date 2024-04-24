@@ -6,6 +6,7 @@ import com.kaua.ecommerce.domain.inventory.events.InventoryCreatedRollbackBySkuE
 import com.kaua.ecommerce.infrastructure.backpressure.BackpressureFactory;
 import com.kaua.ecommerce.infrastructure.backpressure.BackpressureStrategies;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
+import com.kaua.ecommerce.infrastructure.event.EventMetadataConsumer;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity;
 import com.kaua.ecommerce.infrastructure.exceptions.KafkaHeadersException;
@@ -85,7 +86,7 @@ public class InventoryEventListener extends EventListener {
             final var aEventType = getEventTypeHeaderValue(record);
             final var aOccurredOn = getOccurredOnHeaderValue(record);
 
-            if (this.eventMetadataGateway.existsByEventId(aEventId)) {
+            if (this.eventMetadataGateway.existsByEventId(aEventId, EventMetadataConsumer.INVENTORY_CONSUMER)) {
                 LOG.warn("Event {} occurredOn: {} already processed eventId: {}, payload: {}", aEventType, aOccurredOn, aEventId, record.value());
                 ack.acknowledge();
                 return;
@@ -100,7 +101,8 @@ public class InventoryEventListener extends EventListener {
 
                     this.eventMetadataGateway.save(EventMetadataJpaEntity.from(
                             aInventoryCreatedRollbackBySku,
-                            aInventoryCreatedRollbackBySku.sku()
+                            aInventoryCreatedRollbackBySku.sku(),
+                            EventMetadataConsumer.INVENTORY_CONSUMER
                     ));
                     this.removeInventoryBySkuUseCase.execute(aInventoryCreatedRollbackBySku.sku());
 
@@ -131,7 +133,7 @@ public class InventoryEventListener extends EventListener {
                     LOG,
                     ex.getMessage());
         } catch (final Exception ex) {
-            this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(record));
+            this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(record), EventMetadataConsumer.INVENTORY_CONSUMER);
             throw ex;
         }
     }

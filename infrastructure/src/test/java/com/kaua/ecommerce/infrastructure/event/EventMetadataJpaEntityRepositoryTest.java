@@ -22,12 +22,16 @@ public class EventMetadataJpaEntityRepositoryTest {
 
     @Test
     void givenAnInvalidNullId_whenCallSave_shouldReturnAnException() {
-        final var expectedErrorMessage = "ids for this class must be manually assigned before calling save(): com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity";
+        final var expectedErrorMessage = "null id generated for: class com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity";
 
         final var aEventMetadata = new EventMetadataDomainEventRepository(IdUtils.generate(), 0);
 
-        final var aEntity = EventMetadataJpaEntity.from(aEventMetadata, aEventMetadata.id());
-        aEntity.setId(null);
+        final var aEntity = EventMetadataJpaEntity.from(
+                aEventMetadata,
+                aEventMetadata.id(),
+                EventMetadataConsumer.PRODUCT_CONSUMER
+        );
+        aEntity.setEventMetadataId(null);
 
         final var actualException = Assertions.assertThrows(JpaSystemException.class,
                 () -> eventMetadataJpaEntityRepository.save(aEntity));
@@ -45,7 +49,11 @@ public class EventMetadataJpaEntityRepositoryTest {
 
         final var aEventMetadata = new EventMetadataDomainEventRepository(IdUtils.generate(), 0);
 
-        final var aEntity = EventMetadataJpaEntity.from(aEventMetadata, aEventMetadata.id());
+        final var aEntity = EventMetadataJpaEntity.from(
+                aEventMetadata,
+                aEventMetadata.id(),
+                EventMetadataConsumer.PRODUCT_CONSUMER
+        );
         aEntity.setPayloadIdentifier(null);
 
         final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
@@ -65,7 +73,11 @@ public class EventMetadataJpaEntityRepositoryTest {
 
         final var aEventMetadata = new EventMetadataDomainEventRepository(IdUtils.generate(), 0);
 
-        final var aEntity = EventMetadataJpaEntity.from(aEventMetadata, aEventMetadata.id());
+        final var aEntity = EventMetadataJpaEntity.from(
+                aEventMetadata,
+                aEventMetadata.id(),
+                EventMetadataConsumer.PRODUCT_CONSUMER
+        );
         aEntity.setVersion(null);
 
         final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
@@ -85,7 +97,11 @@ public class EventMetadataJpaEntityRepositoryTest {
 
         final var aEventMetadata = new EventMetadataDomainEventRepository(IdUtils.generate(), 0);
 
-        final var aEntity = EventMetadataJpaEntity.from(aEventMetadata, aEventMetadata.id());
+        final var aEntity = EventMetadataJpaEntity.from(
+                aEventMetadata,
+                aEventMetadata.id(),
+                EventMetadataConsumer.PRODUCT_CONSUMER
+        );
         aEntity.setOccurredOn(null);
 
         final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
@@ -97,6 +113,30 @@ public class EventMetadataJpaEntityRepositoryTest {
         Assertions.assertEquals(expectedPropertyName, actualCause.getPropertyName());
         Assertions.assertEquals(expectedErrorMessage, actualCause.getMessage());
     }
+
+//    @Test
+//    void givenAnInvalidNullConsumedBy_whenCallSave_shouldReturnAnException() {
+//        final var expectedPropertyName = "consumedBy";
+//        final var expectedErrorMessage = "not-null property references a null or transient value : com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity.consumedBy";
+//
+//        final var aEventMetadata = new EventMetadataDomainEventRepository(IdUtils.generate(), 0);
+//
+//        final var aEntity = EventMetadataJpaEntity.from(
+//                aEventMetadata,
+//                aEventMetadata.id(),
+//                EventMetadataConsumer.PRODUCT_CONSUMER
+//        );
+//        aEntity.setConsumedBy(null);
+//
+//        final var actualException = Assertions.assertThrows(DataIntegrityViolationException.class,
+//                () -> eventMetadataJpaEntityRepository.save(aEntity));
+//
+//        final var actualCause = Assertions.assertInstanceOf(PropertyValueException.class,
+//                actualException.getCause());
+//
+//        Assertions.assertEquals(expectedPropertyName, actualCause.getPropertyName());
+//        Assertions.assertEquals(expectedErrorMessage, actualCause.getMessage());
+//    }
 
     private record EventMetadataDomainEventRepository(
             String id,

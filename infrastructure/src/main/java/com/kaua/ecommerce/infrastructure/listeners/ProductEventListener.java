@@ -11,6 +11,7 @@ import com.kaua.ecommerce.domain.product.events.ProductUpdatedEvent;
 import com.kaua.ecommerce.infrastructure.backpressure.BackpressureFactory;
 import com.kaua.ecommerce.infrastructure.backpressure.BackpressureStrategies;
 import com.kaua.ecommerce.infrastructure.configurations.json.Json;
+import com.kaua.ecommerce.infrastructure.event.EventMetadataConsumer;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataJpaEntity;
 import com.kaua.ecommerce.infrastructure.exceptions.KafkaHeadersException;
@@ -106,7 +107,7 @@ public class ProductEventListener extends EventListener {
             final var eventType = getEventTypeHeaderValue(record);
             final var aOccurredOn = getOccurredOnHeaderValue(record);
 
-            if (this.eventMetadataGateway.existsByEventId(aEventId)) {
+            if (this.eventMetadataGateway.existsByEventId(aEventId, EventMetadataConsumer.PRODUCT_CONSUMER)) {
                 LOG.warn("Event {} occurredOn: {} already processed eventId: {}, payload: {}", eventType, aOccurredOn, aEventId, record.value());
                 ack.acknowledge();
                 return;
@@ -143,7 +144,7 @@ public class ProductEventListener extends EventListener {
                     final var aProductDeleted = Json.readValue(payload, ProductDeletedEvent.class);
                     final var aProductId = aProductDeleted.id();
 
-                    if (this.eventMetadataGateway.newerEventProcessed(aProductId, aProductDeleted.version())) {
+                    if (this.eventMetadataGateway.newerEventProcessed(aProductId, aProductDeleted.version(), EventMetadataConsumer.PRODUCT_CONSUMER)) {
                         handleMessagingErrorAndSendToDlt(
                                 record,
                                 PRODUCT_DLT_INVALID,
@@ -183,7 +184,7 @@ public class ProductEventListener extends EventListener {
                     LOG,
                     ex.getMessage());
         } catch (final Exception ex) {
-            this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(record));
+            this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(record), EventMetadataConsumer.PRODUCT_CONSUMER);
             throw ex;
         }
     }
@@ -219,7 +220,7 @@ public class ProductEventListener extends EventListener {
             final T aDomainEvent,
             final ConsumerRecord<String, String> message
     ) {
-        if (this.eventMetadataGateway.newerEventProcessed(aId, aDomainEvent.version())) {
+        if (this.eventMetadataGateway.newerEventProcessed(aId, aDomainEvent.version(), EventMetadataConsumer.PRODUCT_CONSUMER)) {
             handleMessagingErrorAndSendToDlt(
                     message,
                     PRODUCT_DLT_INVALID,
@@ -238,7 +239,6 @@ public class ProductEventListener extends EventListener {
                     LOG.info(EVENT_RECEIVED_MESSAGE, type, aId);
                 }, () -> {
                     LOG.debug(NOT_FOUND_MESSAGE, aId);
-//                    this.eventMetadataGateway.deleteByEventId(getEventIdHeaderValue(message));
                     ack.nack(Duration.ofSeconds(5));
                 });
     }
@@ -246,7 +246,8 @@ public class ProductEventListener extends EventListener {
     private void saveEventMetadata(final DomainEvent aDomainEvent, final String aPayloadId) {
         this.eventMetadataGateway.save(EventMetadataJpaEntity.from(
                 aDomainEvent,
-                aPayloadId
+                aPayloadId,
+                EventMetadataConsumer.PRODUCT_CONSUMER
         ));
     }
 }

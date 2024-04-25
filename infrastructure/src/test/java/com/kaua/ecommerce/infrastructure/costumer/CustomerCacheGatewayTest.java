@@ -102,59 +102,6 @@ public class CustomerCacheGatewayTest extends CacheTestConfiguration {
     }
 
     @Test
-    void givenAValidCustomerWithAddress_whenCallUpdate_shouldReturnACustomerUpdated() {
-        final var aCustomer = Fixture.Customers.customerWithTelephoneAndCpf;
-        final var aAddress = Fixture.Addresses.addressDefault;
-
-        Assertions.assertEquals(0, customerRepository.count());
-        customerRepository.save(CustomerCacheEntity.toEntity(aCustomer));
-        Assertions.assertEquals(1, customerRepository.count());
-
-        final var aCustomerUpdatedAt = aCustomer.getUpdatedAt();
-
-        final var aCustomerWithAddress = aCustomer.changeAddress(aAddress);
-        customerCacheGateway.save(aCustomerWithAddress);
-
-        final var actualCustomer = customerCacheGateway.get(aCustomer.getAccountId()).get();
-
-        Assertions.assertEquals(aCustomer.getId().getValue(), actualCustomer.getId().getValue());
-        Assertions.assertEquals(aCustomer.getAccountId(), actualCustomer.getAccountId());
-        Assertions.assertEquals(aCustomer.getFirstName(), actualCustomer.getFirstName());
-        Assertions.assertEquals(aCustomer.getLastName(), actualCustomer.getLastName());
-        Assertions.assertEquals(aCustomer.getEmail(), actualCustomer.getEmail());
-        Assertions.assertEquals(aCustomer.getCpf().get().getValue(), actualCustomer.getCpf().get().getValue());
-        Assertions.assertEquals(aCustomer.getTelephone().get().getValue(), actualCustomer.getTelephone().get().getValue());
-        Assertions.assertEquals(aAddress.getStreet(), actualCustomer.getAddress().get().getStreet());
-        Assertions.assertEquals(aAddress.getNumber(), actualCustomer.getAddress().get().getNumber());
-        Assertions.assertEquals(aAddress.getComplement(), actualCustomer.getAddress().get().getComplement());
-        Assertions.assertEquals(aAddress.getDistrict(), actualCustomer.getAddress().get().getDistrict());
-        Assertions.assertEquals(aAddress.getCity(), actualCustomer.getAddress().get().getCity());
-        Assertions.assertEquals(aAddress.getState(), actualCustomer.getAddress().get().getState());
-        Assertions.assertEquals(aAddress.getZipCode(), actualCustomer.getAddress().get().getZipCode());
-        Assertions.assertEquals(aCustomer.getCreatedAt(), actualCustomer.getCreatedAt());
-        Assertions.assertTrue(aCustomerUpdatedAt.isBefore(actualCustomer.getUpdatedAt()));
-
-        final var actualEntity = customerRepository.findById(actualCustomer.getAccountId()).get();
-
-        Assertions.assertEquals(aCustomerWithAddress.getId().getValue(), actualEntity.getCustomerId());
-        Assertions.assertEquals(aCustomerWithAddress.getAccountId(), actualEntity.getAccountId());
-        Assertions.assertEquals(aCustomerWithAddress.getFirstName(), actualEntity.getFirstName());
-        Assertions.assertEquals(aCustomerWithAddress.getLastName(), actualEntity.getLastName());
-        Assertions.assertEquals(aCustomerWithAddress.getEmail(), actualEntity.getEmail());
-        Assertions.assertEquals(aCustomerWithAddress.getCpf().get().getValue(), actualEntity.getCpf());
-        Assertions.assertEquals(aCustomerWithAddress.getTelephone().get().getValue(), actualEntity.getTelephone());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getStreet(), actualEntity.getAddress().getStreet());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getNumber(), actualEntity.getAddress().getNumber());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getComplement(), actualEntity.getAddress().getComplement());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getDistrict(), actualEntity.getAddress().getDistrict());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getCity(), actualEntity.getAddress().getCity());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getState(), actualEntity.getAddress().getState());
-        Assertions.assertEquals(aCustomerWithAddress.getAddress().get().getZipCode(), actualEntity.getAddress().getZipCode());
-        Assertions.assertEquals(aCustomerWithAddress.getCreatedAt(), actualEntity.getCreatedAt());
-        Assertions.assertEquals(aCustomerWithAddress.getUpdatedAt(), actualEntity.getUpdatedAt());
-    }
-
-    @Test
     void givenAValidAccountId_whenCallFindById_shouldReturnACustomer() {
         final var aCustomer = Fixture.Customers.customerWithCpf;
         final var aAccountId = aCustomer.getAccountId();

@@ -14,6 +14,7 @@ import com.kaua.ecommerce.domain.utils.IdUtils;
 import com.kaua.ecommerce.infrastructure.AbstractEmbeddedKafkaTest;
 import com.kaua.ecommerce.infrastructure.backpressure.BackpressureFactory;
 import com.kaua.ecommerce.infrastructure.backpressure.BackpressureStrategies;
+import com.kaua.ecommerce.infrastructure.event.EventMetadataConsumer;
 import com.kaua.ecommerce.infrastructure.event.EventMetadataGateway;
 import com.kaua.ecommerce.infrastructure.listeners.models.TestListenerDomainEvent;
 import com.kaua.ecommerce.infrastructure.outbox.OutboxEventEntity;
@@ -113,7 +114,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         Mockito.doAnswer(t -> {
             latch.countDown();
             return null;
-        }).when(eventMetadataGateway).deleteByEventId(aProductEvent.eventId());
+        }).when(eventMetadataGateway).deleteByEventId(aProductEvent.eventId(), EventMetadataConsumer.PRODUCT_CONSUMER);
 
         Mockito.doAnswer(t -> {
             latch.countDown();
@@ -237,7 +238,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         final var latch = new CountDownLatch(1);
 
-        Mockito.when(eventMetadataGateway.newerEventProcessed(Mockito.any(), Mockito.anyLong()))
+        Mockito.when(eventMetadataGateway.newerEventProcessed(Mockito.any(), Mockito.anyLong(), Mockito.any(EventMetadataConsumer.class)))
                 .thenAnswer(t -> {
                     latch.countDown();
                     return true;
@@ -251,7 +252,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         // then
         Mockito.verify(eventMetadataGateway, Mockito.times(1))
-                .newerEventProcessed(Mockito.any(), Mockito.anyLong());
+                .newerEventProcessed(Mockito.any(), Mockito.anyLong(), Mockito.any(EventMetadataConsumer.class));
 
         Mockito.verify(removeProductUseCase, Mockito.times(0)).execute(Mockito.any());
     }
@@ -410,7 +411,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         final var latch = new CountDownLatch(1);
 
-        Mockito.when(eventMetadataGateway.newerEventProcessed(Mockito.any(), Mockito.anyLong()))
+        Mockito.when(eventMetadataGateway.newerEventProcessed(Mockito.any(), Mockito.anyLong(), Mockito.any(EventMetadataConsumer.class)))
                 .thenAnswer(t -> {
                     latch.countDown();
                     return true;
@@ -424,7 +425,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
 
         // then
         Mockito.verify(eventMetadataGateway, Mockito.times(1))
-                .newerEventProcessed(Mockito.any(), Mockito.anyLong());
+                .newerEventProcessed(Mockito.any(), Mockito.anyLong(), Mockito.any(EventMetadataConsumer.class));
         Mockito.verify(productGateway, Mockito.times(0)).findById(Mockito.any());
         Mockito.verify(saveProductUseCase, Mockito.times(0)).execute(Mockito.any());
     }
@@ -480,7 +481,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         final var aLatch = new CountDownLatch(2);
 
         // when
-        Mockito.when(eventMetadataGateway.existsByEventId(aOutboxEvent.getEventId()))
+        Mockito.when(eventMetadataGateway.existsByEventId(aOutboxEvent.getEventId(), EventMetadataConsumer.PRODUCT_CONSUMER))
                 .thenAnswer(it -> {
                     aLatch.countDown();
                     return true;
@@ -506,7 +507,7 @@ public class ProductEventListenerTest extends AbstractEmbeddedKafkaTest {
         Assertions.assertTrue(aLatch.await(3, TimeUnit.MINUTES));
 
         Mockito.verify(eventMetadataGateway, Mockito.times(1))
-                .existsByEventId(aOutboxEvent.getEventId());
+                .existsByEventId(aOutboxEvent.getEventId(), EventMetadataConsumer.PRODUCT_CONSUMER);
 
         Mockito.verify(removeProductUseCase, Mockito.times(0))
                 .execute(Mockito.any());

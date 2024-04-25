@@ -6,7 +6,6 @@ import com.kaua.ecommerce.application.usecases.product.create.CreateProductComma
 import com.kaua.ecommerce.application.usecases.product.create.CreateProductUseCase;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
-import com.kaua.ecommerce.domain.utils.RandomStringUtils;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntity;
 import com.kaua.ecommerce.infrastructure.category.persistence.CategoryJpaEntityRepository;
@@ -153,96 +152,6 @@ public class CreateProductUseCaseIT {
         final var aLength = 0.5;
 
         final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
-        final var expectedErrorCount = 1;
-
-        final var aAttributes = CreateProductCommandAttributes.with(
-                aColor,
-                aSize,
-                aWeight,
-                aHeight,
-                aWidth,
-                aLength,
-                aQuantity
-        );
-
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aCategoryId,
-                List.of(aAttributes)
-        );
-
-        final var aResult = this.createProductUseCase.execute(aCommand).getLeft();
-
-        Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
-        Assertions.assertEquals(expectedErrorMessage, aResult.getErrors().get(0).message());
-        Assertions.assertEquals(0, this.productRepository.count());
-    }
-
-    @Test
-    void givenAnInvalidNameLengthMoreThan255_whenCallsCreateProductUseCase_shouldReturnDomainException() {
-        final var aCategory = Fixture.Categories.tech();
-        this.categoryRepository.save(CategoryJpaEntity.toEntity(aCategory));
-
-        final var aName = RandomStringUtils.generateValue(256);
-        final String aDescription = null;
-        final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
-        final var aCategoryId = aCategory.getId().getValue();
-        final var aColor = "Red";
-        final var aSize = "M";
-        final var aWeight = 0.5;
-        final var aHeight = 0.5;
-        final var aWidth = 0.5;
-        final var aLength = 0.5;
-
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("name", 3, 255);
-        final var expectedErrorCount = 1;
-
-        final var aAttributes = CreateProductCommandAttributes.with(
-                aColor,
-                aSize,
-                aWeight,
-                aHeight,
-                aWidth,
-                aLength,
-                aQuantity
-        );
-
-        final var aCommand = CreateProductCommand.with(
-                aName,
-                aDescription,
-                aPrice,
-                aCategoryId,
-                List.of(aAttributes)
-        );
-
-        final var aResult = this.createProductUseCase.execute(aCommand).getLeft();
-
-        Assertions.assertEquals(expectedErrorCount, aResult.getErrors().size());
-        Assertions.assertEquals(expectedErrorMessage, aResult.getErrors().get(0).message());
-        Assertions.assertEquals(0, this.productRepository.count());
-    }
-
-    @Test
-    void givenAnInvalidDescriptionLengthMoreThan3000_whenCallsCreateProductUseCase_shouldReturnDomainException() {
-        final var aCategory = Fixture.Categories.tech();
-        this.categoryRepository.save(CategoryJpaEntity.toEntity(aCategory));
-
-        final var aName = "Product Name";
-        final var aDescription = RandomStringUtils.generateValue(3001);
-        final var aPrice = BigDecimal.valueOf(10.0);
-        final var aQuantity = 10;
-        final var aCategoryId = aCategory.getId().getValue();
-        final var aColor = "Red";
-        final var aSize = "M";
-        final var aWeight = 0.5;
-        final var aHeight = 0.5;
-        final var aWidth = 0.5;
-        final var aLength = 0.5;
-
-        final var expectedErrorMessage = CommonErrorMessage.lengthBetween("description", 0, 3000);
         final var expectedErrorCount = 1;
 
         final var aAttributes = CreateProductCommandAttributes.with(

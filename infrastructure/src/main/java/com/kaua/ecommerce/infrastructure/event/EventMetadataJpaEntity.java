@@ -2,8 +2,8 @@ package com.kaua.ecommerce.infrastructure.event;
 
 import com.kaua.ecommerce.domain.event.DomainEvent;
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
@@ -12,8 +12,8 @@ import java.time.Instant;
 @Entity
 public class EventMetadataJpaEntity {
 
-    @Id
-    private String id;
+    @EmbeddedId
+    private EventMetadataJpaEntityId eventMetadataId;
 
     @Column(name = "payload_identifier", nullable = false)
     private String payloadIdentifier;
@@ -28,32 +28,36 @@ public class EventMetadataJpaEntity {
     }
 
     private EventMetadataJpaEntity(
-            final String id,
+            final EventMetadataJpaEntityId eventMetadataId,
             final String payloadIdentifier,
             final Long version,
             final Instant occurredOn
     ) {
-        this.id = id;
+        this.eventMetadataId = eventMetadataId;
         this.payloadIdentifier = payloadIdentifier;
         this.version = version;
         this.occurredOn = occurredOn;
     }
 
-    public static EventMetadataJpaEntity from(final DomainEvent aDomainEvent, final String payloadIdentifier) {
+    public static EventMetadataJpaEntity from(
+            final DomainEvent aDomainEvent,
+            final String aPayloadIdentifier,
+            final EventMetadataConsumer aConsumedBy
+    ) {
         return new EventMetadataJpaEntity(
-                aDomainEvent.eventId(),
-                payloadIdentifier,
+                EventMetadataJpaEntityId.from(aDomainEvent.eventId(), aConsumedBy),
+                aPayloadIdentifier,
                 aDomainEvent.version(),
                 aDomainEvent.occurredOn()
         );
     }
 
-    public String getId() {
-        return id;
+    public EventMetadataJpaEntityId getEventMetadataId() {
+        return eventMetadataId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setEventMetadataId(EventMetadataJpaEntityId eventMetadataId) {
+        this.eventMetadataId = eventMetadataId;
     }
 
     public String getPayloadIdentifier() {

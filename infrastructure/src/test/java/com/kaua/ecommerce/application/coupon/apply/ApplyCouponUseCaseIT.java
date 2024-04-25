@@ -3,6 +3,7 @@ package com.kaua.ecommerce.application.coupon.apply;
 import com.kaua.ecommerce.application.exceptions.CouponNoMoreAvailableException;
 import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponCommand;
 import com.kaua.ecommerce.application.usecases.coupon.apply.ApplyCouponUseCase;
+import com.kaua.ecommerce.config.ConcurrentlyTestHelper;
 import com.kaua.ecommerce.domain.Fixture;
 import com.kaua.ecommerce.domain.coupon.Coupon;
 import com.kaua.ecommerce.infrastructure.IntegrationTest;
@@ -14,13 +15,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @IntegrationTest
 public class ApplyCouponUseCaseIT {
@@ -106,7 +101,7 @@ public class ApplyCouponUseCaseIT {
     }
 
     @Test
-    void testConcurrencyOnCallRemoveCouponSlotUseCase() {
+    void testConcurrencyOnCallRemoveCouponSlotUseCase() throws InterruptedException {
         final var aCoupon = Fixture.Coupons.limitedCouponActivated();
         this.couponJpaEntityRepository.save(CouponJpaEntity.toEntity(aCoupon));
 
@@ -119,44 +114,18 @@ public class ApplyCouponUseCaseIT {
         ));
 
         final var aCouponCode = aCoupon.getCode().getValue();
-        final var aExecutions = 5;
-        final var aCountSuccessExecutionAtomic = new AtomicInteger(0);
-        final var aCountErrorExecutionAtomic = new AtomicInteger(0);
-        final var aExpectedSuccessExecution = 2;
-        final var aExpectedErrorExecution = 3;
 
         final var aCommand = ApplyCouponCommand.with(aCouponCode, 100f);
 
         Assertions.assertEquals(1, this.couponJpaEntityRepository.count());
         Assertions.assertEquals(2, this.couponSlotJpaEntityRepository.count());
 
-        ExecutorService executorService = Executors.newFixedThreadPool(aExecutions);
-        List<Callable<Void>> tasks = new ArrayList<>();
-
-        for (int i = 0; i < aExecutions; i++) {
-            tasks.add(() -> {
-                try {
-                    this.applyCouponUseCase.execute(aCommand);
-                    aCountSuccessExecutionAtomic.incrementAndGet();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    aCountErrorExecutionAtomic.incrementAndGet();
-                }
-                return null;
-            });
-        }
-
-        try {
-            executorService.invokeAll(tasks);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            executorService.shutdown();
-        }
-
-        Assertions.assertEquals(1, this.couponJpaEntityRepository.count());
-        Assertions.assertEquals(0, this.couponSlotJpaEntityRepository.count());
-        Assertions.assertEquals(aExpectedSuccessExecution, aCountSuccessExecutionAtomic.get());
-        Assertions.assertEquals(aExpectedErrorExecution, aCountErrorExecutionAtomic.get());
+        ConcurrentlyTestHelper.doSyncAndConcurrently(
+                4,
+                o -> this.applyCouponUseCase.execute(aCommand),
+                ApplyCouponUseCaseIT.class.getSimpleName(),
+                2,
+                2
+        );
     }
 }

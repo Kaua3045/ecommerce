@@ -12,6 +12,7 @@ import com.kaua.ecommerce.domain.utils.CommonErrorMessage;
 import com.kaua.ecommerce.domain.validation.Error;
 import com.kaua.ecommerce.domain.validation.handler.NotificationHandler;
 import com.kaua.ecommerce.infrastructure.ControllerTest;
+import com.kaua.ecommerce.infrastructure.idempotency.IdempotencyKey;
 import com.kaua.ecommerce.infrastructure.order.models.CreateOrderInput;
 import com.kaua.ecommerce.infrastructure.order.models.CreateOrderItemInput;
 import org.junit.jupiter.api.Assertions;
@@ -74,6 +75,7 @@ public class OrderAPITest {
         final var request = MockMvcRequestBuilders.post("/v1/orders")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
+                .header(IdempotencyKey.IDEMPOTENCY_KEY_HEADER, "123456")
                 .content(this.mapper.writeValueAsString(aInput));
 
         this.mvc.perform(request)
@@ -126,6 +128,7 @@ public class OrderAPITest {
         final var request = MockMvcRequestBuilders.post("/v1/orders")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
+                .header(IdempotencyKey.IDEMPOTENCY_KEY_HEADER, "123456")
                 .content(this.mapper.writeValueAsString(aInput));
 
         this.mvc.perform(request)

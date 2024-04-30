@@ -1,9 +1,8 @@
 package com.kaua.ecommerce.infrastructure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kaua.ecommerce.config.ControllerTestConfiguration;
 import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
@@ -17,6 +16,7 @@ import java.lang.annotation.*;
 @ActiveProfiles("test-integration")
 @WebMvcTest
 @AutoConfigureDataRedis
+@Import({ControllerTestConfiguration.class})
 @Tag("integrationTest")
 public @interface ControllerTest {
 

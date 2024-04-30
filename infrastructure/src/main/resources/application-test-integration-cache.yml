@@ -7,6 +7,11 @@ elasticsearch:
   username: elastic
   password: elastic
 
+logging:
+  level:
+    com.kaua.ecommerce.infrastructure: DEBUG
+    org.apache.kafka: OFF
+
 spring:
   autoconfigure:
     exclude:

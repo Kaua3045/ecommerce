@@ -14,6 +14,10 @@ kafka:
     inventories:
       auto-create-topics: false
 
+logging:
+  level:
+    com.kaua.ecommerce.infrastructure: DEBUG
+
 #logging:
 #  level:
 #    org:

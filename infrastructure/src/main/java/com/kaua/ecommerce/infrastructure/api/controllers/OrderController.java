@@ -5,6 +5,7 @@ import com.kaua.ecommerce.application.usecases.order.retrieve.get.GetOrderByCode
 import com.kaua.ecommerce.application.usecases.order.retrieve.get.GetOrderByCodeUseCase;
 import com.kaua.ecommerce.domain.order.Order;
 import com.kaua.ecommerce.infrastructure.api.OrderAPI;
+import com.kaua.ecommerce.infrastructure.idempotency.IdempotencyKey;
 import com.kaua.ecommerce.infrastructure.order.models.CreateOrderInput;
 import com.kaua.ecommerce.infrastructure.utils.LogControllerResult;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ public class OrderController implements OrderAPI {
         this.getOrderByCodeUseCase = Objects.requireNonNull(getOrderByCodeUseCase);
     }
 
+    @IdempotencyKey
     @Override
     public ResponseEntity<?> createOrder(CreateOrderInput body) {
         // TODO: In the future, send body to a topic in Kafka and return 201 to the client, receive in kafka and process the order in async

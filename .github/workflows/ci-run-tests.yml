@@ -26,4 +26,4 @@ jobs:
           distribution: 'temurin'
 
       - name: Execute tests
-        run: ./gradlew test --rerun-tasks
+        run: ./gradlew test --rerun-tasks --stacktrace
